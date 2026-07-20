@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_core.CommandCenter">
+    <div class="civora-cc">
+        <div class="civora-cc-inner">
+
+            <!-- Header -->
+            <div class="civora-cc-header">
+                <div>
+                    <h1 class="civora-cc-title">Command Center</h1>
+                    <div class="civora-cc-subtitle" t-esc="subtitle"/>
+                </div>
+                <div class="civora-cc-actions">
+                    <button class="civora-btn civora-btn-outline">Exporter</button>
+                    <button class="civora-btn civora-btn-accent">
+                        <i class="fa fa-plus"/> Nouveau bien
+                    </button>
+                </div>
+            </div>
+
+            <!-- Insights IA -->
+            <div class="civora-grid civora-grid-3 civora-mb">
+                <CivoraInsight t-foreach="insights" t-as="ins" t-key="ins_index" t-props="ins"/>
+            </div>
+
+            <!-- Grille KPI -->
+            <div class="civora-grid civora-grid-4 civora-mb">
+                <CivoraStatCard t-foreach="kpis" t-as="kpi" t-key="kpi_index" t-props="kpi"/>
+            </div>
+
+            <!-- Graphes : revenus + parc immobilier -->
+            <div class="civora-grid civora-grid-3 civora-mb">
+                <div class="civora-card civora-pad civora-col-2">
+                    <div class="civora-card-head">
+                        <div>
+                            <div class="civora-card-title">Revenus &amp; forecast IA</div>
+                            <div class="civora-card-sub">Mensuel · FCFA · forecast sur 30j</div>
+                        </div>
+                        <div class="civora-legend-inline">
+                            <span><span class="civora-lg-dot" style="background:#091e40;"/> Réalisé</span>
+                            <span><span class="civora-lg-dot" style="background:#00ab68;"/> Locations</span>
+                            <span><span class="civora-lg-dash"/> Forecast</span>
+                        </div>
+                    </div>
+                    <div class="civora-chart-wrap">
+                        <CivoraChart type="revenueChart.type" data="revenueChart.data" options="revenueChart.options"/>
+                    </div>
+                </div>
+
+                <div class="civora-card civora-pad">
+                    <div class="civora-card-head">
+                        <div>
+                            <div class="civora-card-title">Parc immobilier</div>
+                            <div class="civora-card-sub">Répartition occupation</div>
+                        </div>
+                    </div>
+                    <div class="civora-chart-wrap civora-chart-donut">
+                        <CivoraChart type="occupancyChart.type" data="occupancyChart.data" options="occupancyChart.options"/>
+                    </div>
+                    <div class="civora-donut-legend">
+                        <div t-foreach="occupancyLegend" t-as="o" t-key="o_index" class="civora-donut-leg-row">
+                            <span class="civora-donut-leg-name">
+                                <span class="civora-lg-dot" t-attf-style="background:{{o.color}};"/>
+                                <t t-esc="o.name"/>
+                            </span>
+                            <span class="civora-donut-leg-val"><t t-esc="o.value"/>%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cash flow + Pipeline + Activite -->
+            <div class="civora-grid civora-grid-3 civora-mb">
+
+                <!-- Cash flow 7j -->
+                <div class="civora-card civora-pad">
+                    <div class="civora-card-head">
+                        <div>
+                            <div class="civora-card-title">Cash flow 7j</div>
+                            <div class="civora-card-sub">Entrées vs sorties · M FCFA</div>
+                        </div>
+                    </div>
+                    <div class="civora-chart-wrap civora-chart-cash">
+                        <CivoraChart type="cashflowChart.type" data="cashflowChart.data" options="cashflowChart.options"/>
+                    </div>
+                    <div class="civora-cash-foot">
+                        <div>
+                            <div class="civora-foot-label">Solde net 7j</div>
+                            <div class="civora-foot-value civora-pos">+18,4M</div>
+                        </div>
+                        <div>
+                            <div class="civora-foot-label">Trésorerie</div>
+                            <div class="civora-foot-value">142M</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pipeline CRM -->
+                <div class="civora-card civora-pad">
+                    <div class="civora-card-head">
+                        <span class="civora-card-title">Pipeline commercial</span>
+                        <span class="civora-badge civora-badge-accent">CRM</span>
+                    </div>
+                    <div class="civora-pipe">
+                        <div t-foreach="pipeline" t-as="st" t-key="st_index" class="civora-pipe-row">
+                            <div class="civora-pipe-top">
+                                <span class="civora-pipe-stage" t-esc="st.stage"/>
+                                <span class="civora-pipe-count"><t t-esc="st.n"/> · <t t-esc="st.v"/></span>
+                            </div>
+                            <div class="civora-pipe-track">
+                                <div class="civora-pipe-fill" t-attf-style="width: {{st.pct}}%;"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Activite en direct -->
+                <div class="civora-card civora-pad">
+                    <div class="civora-card-head">
+                        <span class="civora-card-title">Activité live</span>
+                        <span class="civora-live"><span class="civora-live-dot"/> en direct</span>
+                    </div>
+                    <ul class="civora-feed">
+                        <li t-foreach="activity" t-as="it" t-key="it_index" class="civora-feed-item">
+                            <span t-att-class="dotClass(it.tone)"/>
+                            <div class="civora-feed-main">
+                                <div class="civora-feed-title" t-esc="it.t"/>
+                                <div class="civora-feed-desc" t-esc="it.d"/>
+                                <div class="civora-feed-time" t-esc="it.a"/>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <!-- Impayes + Saisonnier + Top agents -->
+            <div class="civora-grid civora-grid-3">
+
+                <div class="civora-card civora-pad">
+                    <div class="civora-mini-head civora-warn">
+                        <i class="fa fa-exclamation-circle"/> Loyers impayés
+                    </div>
+                    <div class="civora-mini-value">4,2M FCFA</div>
+                    <div class="civora-mini-sub">7 locataires · -12% vs M-1</div>
+                    <button class="civora-btn civora-btn-outline civora-mt">Lancer relance IA</button>
+                </div>
+
+                <div class="civora-card civora-pad">
+                    <div class="civora-mini-head civora-acc">
+                        <i class="fa fa-calendar-check-o"/> Saisonnier · cette semaine
+                    </div>
+                    <div class="civora-mini-value">23</div>
+                    <div class="civora-mini-sub">12 check-in · 9 check-out</div>
+                    <button class="civora-btn civora-btn-outline civora-mt">Calendrier</button>
+                </div>
+
+                <div class="civora-card civora-pad">
+                    <div class="civora-card-head">
+                        <span class="civora-mini-head civora-muted">Top agents</span>
+                        <i class="fa fa-ellipsis-h civora-muted-i"/>
+                    </div>
+                    <div class="civora-agents">
+                        <div t-foreach="agents" t-as="ag" t-key="ag_index" class="civora-agent-row">
+                            <div class="civora-agent-id">
+                                <span class="civora-agent-av" t-esc="initials(ag.n)"/>
+                                <span class="civora-agent-name" t-esc="ag.n"/>
+                            </div>
+                            <span class="civora-badge" t-att-class="ag.accent ? 'civora-badge-accent' : 'civora-badge-neutral'" t-esc="ag.v"/>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</t>
+
+</templates>

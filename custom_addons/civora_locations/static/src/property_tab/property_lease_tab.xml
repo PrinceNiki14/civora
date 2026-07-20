@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_locations.PropertyLeaseTab">
+    <div class="civora-plt">
+        <div t-if="state.loading" class="civora-plt-state">
+            <i class="fa fa-circle-o-notch fa-spin"/> Chargement…
+        </div>
+
+        <div t-elif="!state.leases.length" class="civora-plt-empty">
+            <div class="civora-plt-empty-ico"><i class="fa fa-key"/></div>
+            <div class="civora-plt-empty-t">Aucun bail</div>
+            <p>Ce bien n'a pas encore de bail rattaché. Créez-en un depuis l'écran Locations.</p>
+        </div>
+
+        <div t-else="" class="civora-plt-list">
+            <div t-foreach="state.leases" t-as="l" t-key="l.id"
+                 class="civora-plt-item" t-on-click="() => this.openLease(l)">
+                <div class="civora-plt-h">
+                    <span class="civora-plt-ref" t-esc="l.name"/>
+                    <CivoraBadge label="statusMeta(l).label" variant="statusMeta(l).variant"/>
+                </div>
+                <div class="civora-plt-meta">
+                    <span><i class="fa fa-user"/> <t t-esc="l.tenant_id ? l.tenant_id[1] : '—'"/></span>
+                    <span><i class="fa fa-calendar"/> <t t-esc="fmtDate(l.date_start)"/> — <t t-esc="fmtDate(l.date_end)"/></span>
+                </div>
+                <div class="civora-plt-fin">
+                    <span>Total mensuel : <b t-esc="kpiMoney(l.total_monthly)"/></span>
+                    <div class="civora-plt-rate">
+                        <CivoraProgress value="l.payment_rate || 0" tone="(l.payment_rate || 0) &gt;= 95 ? 'accent' : 'warning'"/>
+                        <span t-esc="(l.payment_rate || 0) + ' %'"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</t>
+
+</templates>

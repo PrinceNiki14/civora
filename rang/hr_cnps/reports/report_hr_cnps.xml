@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="hr_cnps.report_hr_cnps">
+        <t t-foreach="docs" t-as="o">
+            <t t-set="data_report_landscape" t-value="True"/>
+            <t t-set="full_width" t-value="True"/>
+            <t t-call="web.html_container">
+                <t t-call="hr_cnps.external_layout">
+                    <div class="page" style="margin-top:-10px;">
+                        <div class="row" style="margin-top:-10px;">
+                             <div class="col-3 text-center">
+                                01 BP 317 ABIDJAN 01 TEL : 20 33 17 04
+                             </div>
+                            <div class="col-6 text-center">
+                                <p>CAISSE NATIONALE DE PREVOYANCE SOCIALE DE CÔTE D'IVOIRE</p>
+                                <p style="margin-top:-15px;">APPEL DE COTISATION MENSUEL</p>
+                            </div>
+                            <div class="col-3"/>
+                        </div>
+                        <div class="row">
+                            <div class="col-4">
+                                <table class="table table-bordered" style="font-size:10px;">
+                                    <tr>
+                                        <td height="10" style="text-align:center;border:1px solid black;">Cde Etab</td>
+                                        <td style="text-align:center;border:1px solid black;">Cde Activ</td>
+                                        <td style="text-align:center;border:1px solid black;">N°Employeur</td>
+                                        <td style="text-align:center;border:1px solid black;">Période</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding:5px;text-align:center;border:1px solid black;"></td>
+                                        <td style="padding:5px;text-align:center;border:1px solid black;">
+                                            06
+                                        </td>
+                                        <td style="padding:5px;text-align:center;border:1px solid black;">
+                                            <span t-field="o.company_id.num_cnps"/>
+                                        </td>
+                                        <td style="padding:5px;text-align:center;border:1px solid black;">
+                                            <span t-esc="time.strftime('%B %Y',time.strptime(data['form']['start_date'],'%Y-%m-%d'))"/>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-1"/>
+                            <div class="col-7">
+                                <table class="table table-condensed" style="border:None;">
+                                    <tr>
+                                        <td class="fw-bold" style="border:None;">EMPLOYEUR</td>
+                                        <td class="fw-bold" style="border:None;">Société National de Gestion du Patrimoine Immobilier l'Etat</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold" style="border:None;" >ADRESSE</td>
+                                        <td class="fw-bold" style="border:None;" >BP V 263 ABIDJAN / Tél.: 20 25 64 00</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <p class="text-center fw-bold">TOTAL SALAIRES BRUTS PAYES AU COURS DE LA PERIODE</p>
+                        <div class="row" style="margin-top:-13px;">
+                            <div class="col-12">
+                                <table class="table table-condensed" style="border:None;">
+                                    <tr>
+                                        <td style="border:1px solid black;" class="text-center" rowspan="2">CATEGORIE DE SALAIRES</td>
+                                        <td style="border:1px solid black;" class="text-center" rowspan="2">NOMBRE DE SALARIES</td>
+                                        <td style="border:1px solid black;" colspan="2" class="text-center">SALAIRES BRUTS SOUMIS A COTISATIONS</td>
+                                        <td rowspan="7" class="text-center" style="border:None;">
+                                        <br/><br/><br/><br/><br/><br/><br/><br/><br/>
+                                            Bordereau certifié exact<br/>
+                                            A Abidjan le <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d %B %Y')"/><br/>
+                                            Signature et Cachet
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border:1px solid black;" class="text-center">
+                                            REGIME DE RETRAITE Plafond = 3 375 000 F par mois
+                                        </td>
+                                        <td style="border:1px solid black;" class="text-center">
+                                            REGIME DES ASSURANCES MATERNITE, DES PRESTAT. FAM. ET<br/>
+                                            DES ACCID. DU TRAVAIL
+                                            Plafond = 3 231 F par jour ou<br/>
+                                            75 000 par mois
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border:1px solid black;">
+                                            Horaires, journaliers et occasionnels inférieurs ou égaux à 3231 F par jour
+                                        </td>
+                                        <td style="text-align:right;border:1px solid black;"></td>
+                                        <td style="text-align:right;border:1px solid black;"></td>
+                                        <td style="text-align:right;border:1px solid black;"></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border:1px solid black;">
+                                            Horaires, journaliers et occasionnels inférieurs ou égaux à 3231 F par jour
+                                        </td>
+                                        <td style="text-align:right;border:1px solid black;"></td>
+                                        <td style="text-align:right;border:1px solid black;"></td>
+                                        <td style="text-align:right;border:1px solid black;"></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border:1px solid black;">
+                                            Horaires, journaliers et occasionnels supérieurs ou égaux à 3231 F par jour
+                                        </td>
+                                        <td style="text-align:right;border:1px solid black;"></td>
+                                        <td style="text-align:right;border:1px solid black;"></td>
+                                        <td style="text-align:right;border:1px solid black;"></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border:1px solid black;">
+                                            Mensuels inférieurs ou égaux à 75 000 F par mois
+                                        </td>
+                                        <td style="text-align:right;border:1px solid black;"><span t-esc="data['n_mensuel_inferieur']" t-options='{"widget": "float", "precision": 0}'/></td>
+                                        <td style="text-align:right;border:1px solid black;"><span t-esc="data['mensuel_retraite_inferieur']" t-options='{"widget": "float", "precision": 0}'/></td>
+                                        <td style="text-align:right;border:1px solid black;"><span t-esc="data['regim_mensuel_inferieur']" t-options='{"widget": "float", "precision": 0}'/></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border:1px solid black;">
+                                           Mensuels supérieurs à 75 000 F par mois et inférieurs ou égaux à 3 375 000 F par mois
+                                        </td>
+                                        <td style="text-align:right;border:1px solid black;"><span t-esc="data['n_mensuel_superieur1']" t-options='{"widget": "float", "precision": 0}'/></td>
+                                        <td style="text-align:right;border:1px solid black;"><span t-esc="data['mensuel_retraite_superieur1']" t-options='{"widget": "float", "precision": 0}'/></td>
+                                        <td style="text-align:right;border:1px solid black;"><span t-esc="data['regim_mensuel_superieur1']" t-options='{"widget": "float", "precision": 0}'/></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border:1px solid black;">
+                                           Mensuels supérieurs à 3 375 000 F par mois
+                                        </td>
+                                        <td style="text-align:right;border:1px solid black;"><span t-esc="data['n_mensuel_superieur2']" t-options='{"widget": "float", "precision": 0}'/></td>
+                                        <td style="text-align:right;border:1px solid black;"><span t-esc="data['mensuel_retraite_superieur2']" t-options='{"widget": "float", "precision": 0}'/></td>
+                                        <td  style="text-align:right;border:1px solid black;"><span t-esc="data['regim_mensuel_superieur2']" t-options='{"widget": "float", "precision": 0}'/></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold" style="border:None;text-align:right;">
+                                           TOTAL
+                                        </td>
+                                        <td class="fw-bold" style="text-align:right; border:1px solid black;"><span t-esc="data['total_emp']" t-options='{"widget": "float", "precision": 0}'/></td>
+                                        <td class="fw-bold" style="text-align:right;border:1px solid black;"><span t-esc="data['total_retraite']" t-options='{"widget": "float", "precision": 0}'/></td>
+                                        <td class="fw-bold" style="text-align:right;border:1px solid black;"><span t-esc="data['total_prestation']" t-options='{"widget": "float", "precision": 0}'/></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:5px;">
+                            <div class="col-6">
+                                <table class="table table-condensed" style="border:None;">
+                                    <tr>
+                                        <td style="border:None;"/>
+                                        <td style="border:1px solid black;">Nombre</td>
+                                        <td style="border:1px solid black;">Salaires Bruts</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border:1px solid black;">Personnes ne cotisant pas au Régime de la Retraite</td>
+                                        <td style="border:1px solid black;"></td>
+                                        <td style="border:1px solid black;"></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border:1px solid black;">Personnes ne cotisant pas au Régime de la Retraite</td>
+                                        <td style="border:1px solid black;"></td>
+                                        <td style="border:1px solid black;"></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-6"/>
+                        </div>
+                        <p class="fw-bold">DECOMPTE DES COTISATIONS DUES</p>
+                        <div class="row" style="margin-top:-17px;">
+                            <div class="col-7">
+                                <table class="table table-bordered table-condensed" style="border:1px solid black;">
+                                    <tr>
+                                        <td style="text-align:center;border:1px solid black;">Rubriques</td>
+                                        <td style="border:1px solid black;text-align:center;">SALAIRES SOUMIS</td>
+                                        <td style="border:1px solid black;text-align:center;">TAUX (%)</td>
+                                        <td style="border:1px solid black;text-align:center;">MONTANTS (Francs CFA)</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border:1px solid black;">Prestations Familiales</td>
+                                        <td style="border:1px solid black;text-align:right;"><span t-esc="data['total_prestation']" t-options='{"widget": "float", "precision": 0}'/></td>
+                                        <td style="border:1px solid black;text-align:center;">5,75</td>
+                                        <td style="border:1px solid black;text-align:right;"><span t-esc="data['prestation_familiale']" t-options='{"widget": "float", "precision": 0}'/></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border:1px solid black;">Accidents du Travail</td>
+                                        <td style="border:1px solid black;text-align:right;"><span t-esc="data['total_prestation']" t-options='{"widget": "float", "precision": 0}'/></td>
+                                        <td style="border:1px solid black;text-align:center;"><span t-field="o.company_id.taux_accident_travail"/></td>
+                                        <td style="border:1px solid black;text-align:right;"><span t-esc="data['accident_travail']" t-options='{"widget": "float", "precision": 0}'/></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border:1px solid black;">Régime de Retraite</td>
+                                        <td style="border:1px solid black;text-align:right;"><span t-esc="data['total_retraite']" t-options='{"widget": "float", "precision": 0}'/></td>
+                                        <td style="border:1px solid black;text-align:center;">14,00</td>
+                                        <td style="border:1px solid black;text-align:right;"><span t-esc="data['regime_retraite']" t-options='{"widget": "float", "precision": 0}'/></td>
+                                    </tr>
+                                    <tr>
+                                        <td  style="border:1px solid black;" colspan="3">TOTAL COTISATIONS A PAYER</td>
+                                        <td style="border:1px solid black;text-align:right;"><span t-esc="data['prestation_familiale'] + data['accident_travail'] + data['regime_retraite']" t-options='{"widget": "float", "precision": 0}'/></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-1"/>
+                            <div class="col-4" style="border:1px solid black;">
+                                <p class="text-center">ATTENTION</p>
+                                <p style="font-size:12px;">
+                                    Il est vivement conseillé d’annexer à la présente déclaration votre titre de paiement
+                                    faute de quoi vous serez responsable du retard des pertes et des erreurs de comptabilisation.
+                                    Le titre de paiement (de préférence un chèque bancaire) doit être libellé à l’ordre de
+                                    l’IPS-CNPS, même en l’absence de tout paiement.
+                                    La présente déclaration doit être dument remplie et obligatoirement retournée à la C.N.P.S.
+                                </p>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row" style="margin-top:-10px;">
+                            <table class="table table-bordered">
+                                <tr>
+                                    <td  class="text-center" style="border:1px solid black;" colspan="10">CADRE DRESERVE A LA C.N.P.S. (NE RIEN INSCRIRE S.V.P)</td>
+                                </tr>
+                                <tr>
+                                    <td style="border:1px solid black;">Code opér</td>
+                                    <td style="border:1px solid black;">Date de journée</td>
+                                    <td style="border:1px solid black;">N° Pièce</td>
+                                    <td style="border:1px solid black;">Période</td>
+                                    <td style="border:1px solid black;">Code Virement</td>
+                                    <td style="border:1px solid black;">Banque</td>
+                                    <td style="border:1px solid black;">Référence du titre de paiement</td>
+                                    <td style="border:1px solid black;">Émission du </td>
+                                    <td style="border:1px solid black;">Montant</td>
+                                    <td style="border:1px solid black;">Visa de l'Agent comptable</td>
+                                </tr>
+                                <tr>
+                                    <td height="4" style="border:1px solid black;"></td>
+                                    <td style="border:1px solid black;"></td>
+                                    <td style="border:1px solid black;"></td>
+                                    <td style="border:1px solid black;"></td>
+                                    <td style="border:1px solid black;"></td>
+                                    <td style="border:1px solid black;"></td>
+                                    <td style="border:1px solid black;"></td>
+                                    <td style="border:1px solid black;"></td>
+                                    <td style="border:1px solid black;"></td>
+                                    <td style="border:1px solid black;"></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

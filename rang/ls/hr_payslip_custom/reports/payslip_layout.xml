@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="payslip_layout">
+            <t t-if="not o" t-set="o" t-value="doc"/>
+            <t t-if="not company">
+                <t t-if="company_id">
+                    <t t-set="company" t-value="company_id"/>
+                </t>
+                <t t-elif="o and 'company_id' in o">
+                    <t t-set="company" t-value="o.company_id.sudo()"/>
+                </t>
+                <t t-else="">
+                    <t t-set="company" t-value="res_company"/>
+                </t>
+            </t>
+            <div class="header" style="border: 5px solid #f0f0f0 !important;padding-top:9px;border-bottom:0px !important;padding-left:3px;padding-right:3px;">
+                <table style="width:100%;border: 1px solid #f0f0f0;">
+                    <tr>
+                        <td rowspan="5" colspan="3" style="border-right: 1px solid #f0f0f0;height:-50px">
+                            <img t-if="company.logo" t-att-src="image_data_uri(company.logo)" style="max-height: 178px; width: 200px" alt="Logo"/>
+                        </td>
+                        <td colspan="3" style="text-align:center;background: #f0f0f0;margin-top:-50px;">
+                            <strong><br/><h2>BULLETIN DE PAIE</h2></strong>
+                        </td>
+                        <td colspan="2" style="border: 1px solid #f0f0f0;font-size:17px;">
+                            <table width="100%" style="border:none;"></table>
+                        </td>
+                    </tr>
+                    <tr style="border: 1px solid #f0f0f0;">
+                        <td colspan="1" style="height:30px">Période Paie:</td>
+                        <td colspan="2">
+                            <strong>
+                                <span t-out="o.format_date(o.date_from.strftime('%B'))"/>
+                                <span t-out="o.date_from.strftime('%Y')"/>
+                            </strong>
+                        </td>
+                        <td colspan="2" rowspan="2" style="border: 1px solid #f0f0f0;">
+                            <table width="100%" style="border:none;">
+                                <tr>
+                                    <td>Payé le :</td>
+                                    <td><strong></strong></td>
+                                </tr>
+                                <tr>
+                                    <td>N° CNPS :</td>
+                                    <td><strong><span t-out="o.employee_id.matricule_cnps"/></strong></td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="1" style="border: 1px solid #f0f0f0;height:30px">
+                            <table width="100%" style="border: none;">
+                                <tr>
+                                    <td>Date d'Entrée:</td>
+                                    <td><strong><span t-out="o.employee_id.start_date.strftime('%d/%m/%Y') if o.employee_id.start_date else ''"/></strong></td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td colspan="2" style="border: 1px solid #f0f0f0;height:30px">
+                            <table width="100%" style="border: none;">
+                                <tr>
+                                    <td>Ancienneté :</td>
+                                    <td>
+                                        <strong>
+                                            <t t-if="o.payslip_an_anciennete > 0">
+                                                <span t-out="o.payslip_an_anciennete"/> An(s)
+                                            </t>
+                                            <span t-out="o.payslip_mois_anciennete"/> Mois
+                                        </strong>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="1" style="border: 1px solid #f0f0f0;height:30px">
+                            <table width="100%" style="border: none;">
+                                <tr>
+                                    <td>Catégorie Prof :</td>
+                                    <td>
+                                        <t t-if="o.employee_id.category_id">
+                                            <strong><span t-out="o.employee_id.category_id.name"/></strong>
+                                        </t>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td colspan="2" style="border: 1px solid #f0f0f0;height:30px">
+                            <table width="100%" style="border: none;">
+                                <tr>
+                                    <td>Nombre de Parts:</td>
+                                    <td><strong><span t-out="o.employee_id.part_igr"/></strong></td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td style="border: 1px solid #f0f0f0;height:30px">
+                            <table width="100%" style="border: none;">
+                                <tr>
+                                    <td>Compteur Congé :</td>
+                                    <td><strong><span t-out="'%.2f' % o.employee_id.compteur_cong"/> j</strong></td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr></tr>
+                </table>
+            </div>
+            <div class="article">
+                <t t-out="0"/>
+            </div>
+            <div class="footer">
+                <table width="30%" style="border: 1px solid #f0f0f0;">
+                    <tr style="border: 1px solid #f0f0f0;font-size:13px;">
+                        <td style="border: 1px solid #f0f0f0; text-align: center;">
+                            <strong>
+                                <t t-if="o.company_id"><span t-out="o.company_id.name"/></t>
+                                <t t-else="">Glob'</t> RH
+                            </strong>
+                        </td>
+                        <td style="border: 1px solid #f0f0f0; text-align: center;">
+                            <strong><span t-out="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y')"/></strong>
+                        </td>
+                        <td style="border: 1px solid #f0f0f0; text-align: center;">
+                            <strong><span t-out="context_timestamp(datetime.datetime.now()).strftime('%H:%M:%S')"/></strong>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </template>
+    </data>
+</odoo>

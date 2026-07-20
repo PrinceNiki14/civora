@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <!--<report
+            id="report_301_xlsx_id"
+            model="hr.301"
+            string="Etat 301"
+            report_type="xlsx"
+            name="hr_301.report_301_xlsx"
+            file="Etat 301"
+            attachment_use="False"
+        />-->
+        <record id="report_301_xlsx_id" model="ir.actions.report">
+            <field name="name">Etat 301</field>
+            <field name="model">hr.301</field>
+            <field name="report_type">xlsx</field>
+            <field name="report_name">hr_301.report_301_xlsx</field>
+            <field name="report_file">hr_301.report_301_xlsx</field>
+            <field name="print_report_name">Etat 301</field>
+            <field name="binding_model_id" ref="model_hr_301"/>
+            <field name="binding_type">report</field>
+        </record>
+
+    </data>
+
+</odoo>

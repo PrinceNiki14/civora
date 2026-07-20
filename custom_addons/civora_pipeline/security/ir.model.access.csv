@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_civora_pipeline_stage_user,civora.pipeline.stage user,model_civora_pipeline_stage,base.group_user,1,0,0,0
+access_civora_pipeline_stage_admin,civora.pipeline.stage admin,model_civora_pipeline_stage,base.group_system,1,1,1,1
+access_civora_lead_user,civora.lead user,model_civora_lead,base.group_user,1,1,1,0
+access_civora_lead_admin,civora.lead admin,model_civora_lead,base.group_system,1,1,1,1
+access_civora_opportunity_user,civora.opportunity user,model_civora_opportunity,base.group_user,1,1,1,0
+access_civora_opportunity_admin,civora.opportunity admin,model_civora_opportunity,base.group_system,1,1,1,1

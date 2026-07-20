@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        <record model="ir.ui.view" id="hr_emp_wizard_form_view">
+            <field name="name">hr.emp.wizard.form</field>
+            <field name="model">hr.emp.wizard</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Calucul inverse">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="date_retour_conge"/>
+                            </group>
+                            <group>
+                                <field name="date_retour_conge"/>
+                            </group>
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button name="get_date_value" string="Confirmer" type="object"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="action_hr_emp_wizard_form_view">
+			<field name="name">Gestion Date Congé</field>
+			<field name="res_model">hr.emp.wizard</field>
+			<field name="view_mode">form</field>
+            <field name="target">new</field>
+		</record>
+    </data>
+</odoo>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="view_company_form_inherit">
+            <field name="name">res.company.form.inherit.payslip</field>
+            <field name="model">res.company</field>
+            <field name="inherit_id" ref="modul_conifg_paie.view_company_form"/>
+            <field name="arch" type="xml">
+                <group name="new_champ" position="inside">
+                    <separator string="Signataire des bulletins"/>
+                    <field name="signatory_id"/>
+                    <field name="stamp" widget="image" class="oe_avatar"/>
+                </group>
+            </field>
+        </record>
+    </data>
+</odoo>

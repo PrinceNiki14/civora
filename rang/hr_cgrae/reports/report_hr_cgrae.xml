@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="hr_cgrae.report_hr_cgrae">
+        <t t-foreach="docs" t-as="o">
+            <t t-set="data_report_landscape" t-value="True"/>
+            <t t-set="full_width" t-value="True"/>
+            <t t-call="web.html_container">
+                <t t-call="hr_cgrae.external_layout">
+                    <div class="page">
+                        <div class="col-12">
+                            <table class="table table-bordered" width="100">
+                                <tr>
+                                    <td rowspan="2" width="20%">
+                                        <img t-if="o.company_id.logo_cgrae" t-att-src="image_data_uri(o.company_id.logo_cgrae)" style="max-height: 50px;" alt="Logo"/>
+                                    </td>
+                                    <td class="fw-bold" style="text-align:center;font-size:20px;">Processus gestion des cotisations et contrôle d'exploitation</td>
+                                    <td  width="20%" style="font-size:15px;" rowspan="2">
+                                        Référence PO7-PG-01/ERQ05<br/>
+                                        Version: 3<br/>
+                                        Date: <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d %m %Y')"/><br/>
+                                        Page: <span class="page"/> / <span class="topage"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold" style="text-align:center;font-size:30px;">Déclaration mensuelle de cotisation</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <br/>
+                        <div class="row">
+                             <div class="col-8"/>
+                             <div class="col-4 fw-bold">
+
+                                 PERIODE: .............<span t-esc="time.strftime('%B %Y',time.strptime(data['form']['start_date'],'%Y-%m-%d'))"/> ..................
+                             </div>
+                        </div>
+                        <p>RAISON SOCIALE: SOCIETE NOTIONNALE DES GESTION DU PATRIMOINE IMMOBILIER DE L'ETAT........................................................................................</p>
+                        <p>SIGLE: ...................SONAPIE.................................................................................................................................................................................................................</p>
+                        <p>
+                            <strong>N° EMPLOYEUR</strong> : ............<strong>ADRESSE POSTALE</strong> :.........PBV 263 .............<strong>TEL</strong>: 20 25 64 00 ......<strong>FAX</strong>: ...........<strong>EMAIL</strong>:..........................................................................
+                        </p>
+                        <p>
+                            <strong>LOCALISATION GEOGRAPHIQUE</strong> : ...................Angle avenue Dr Jamot boulevard Clozel - Abidjan Plateau..................................................................................
+                        </p>
+                        <p><u><strong>DECOMPTE DES COTISATIONS DUES</strong></u></p>
+                        <div class="col-12">
+                            <table class="table table-bordered">
+                                <tr>
+                                    <td class="text-center fw-bold" rowspan="2">RUBRIQUE</td>
+                                    <td class="text-center fw-bold" rowspan="2">EFFECTIFS</td>
+                                    <td class="text-center fw-bold" rowspan="2">SALAIRE BRUT INDICIAIRES SOUMIS A COTISATION</td>
+                                    <td class="text-center fw-bold">PART SALARIALE (8,33%)</td>
+                                    <td class="text-center fw-bold">PART PATRONALE (16,67%)</td>
+                                    <td class="text-center fw-bold">TOTAL DES COTISATIONS DUES (25%)</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center fw-bold">MONTANT</td>
+                                    <td class="text-center fw-bold">MONTANT</td>
+                                    <td class="text-center fw-bold">MONTANT</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center fw-bold">PENSION DE RETRAITE</td>
+                                    <td class="text-center"><span t-esc="data['effectifs']"/></td>
+                                    <td class="text-center"><span t-esc="data['total_BASE_CGRAE']" t-options='{"widget": "float", "precision": 0}'/></td>
+                                    <td class="text-center"><span t-esc="data['total_cotisation_employe']" t-options='{"widget": "float", "precision": 0}'/></td>
+                                    <td class="text-center"><span t-esc="data['total_cotisation_employeur']" t-options='{"widget": "float", "precision": 0}'/></td>
+                                    <td class="text-center"><span t-esc="data['total_cgrae']" t-options='{"widget": "float", "precision": 0}'/></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center fw-bold">ALLOCATION VIAGERE PERSONNALITES</td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center fw-bold">VALIDATION DES SERVICES TEMPORAIRES</td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                </tr>
+                                <tr style="background-color:grey;">
+                                    <td class="text-center">TOTAL</td>
+                                    <td class="text-center"><span t-esc="data['effectifs']"/></td>
+                                    <td class="text-center"><span t-esc="data['total_BASE_CGRAE']" t-options='{"widget": "float", "precision": 0}'/></td>
+                                    <td class="text-center"><span t-esc="data['total_cotisation_employe']" t-options='{"widget": "float", "precision": 0}'/></td>
+                                    <td class="text-center"><span t-esc="data['total_cotisation_employeur']" t-options='{"widget": "float", "precision": 0}'/></td>
+                                    <td class="text-center"><span t-esc="data['total_cgrae']" t-options='{"widget": "float", "precision": 0}'/></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="row">
+                            <div class="col-4">
+                                 <span>Bordereau certifié exact</span>
+                            </div>
+                            <div class="col-4"/>
+                            <div class="col-4">
+                                A............ABIDJAN..........LE <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d %B %Y')"/>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-6" style="border:1px solid black;">
+                                <p class="text-center fw-bold">ATTENTION!</p>
+                                <p style="font-size:11px;">
+                                    Le titre de paiement doit être libellé à l'ordre de «Caisse Générale de Retraite des Agents de l'Etat». Même en
+                                l'absence de tout paiement, la présente déclaration doit être dûment rempli et obligatoirement retourné à l'IPS-CGRAE au plus tard le 30 du mois en cours.
+                                </p>
+                            </div>
+                            <div class="col-2"/>
+                            <div class="col-4 text-center fw-bold" style="border:1px solid black;">
+                                <p><u>Signature et cachet de l'employeur</u></p>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="col-12">
+                            <table class="table table-bordered">
+                                <tr>
+                                    <td class="text-center fw-bold" colspan="99">
+                                        CADRE RESERVE A L'IPS-CGRAE (NE RIEN Y INSCRIT ICI S'IL VOUS PLAIT)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center fw-bold">Date de reception</td>
+                                    <td class="text-center fw-bold">Titre de paiement</td>
+                                    <td class="text-center fw-bold">Banque</td>
+                                    <td class="text-center fw-bold">Référence du titre de paiement</td>
+                                    <td class="text-center fw-bold">Date d'émission</td>
+                                    <td class="text-center fw-bold">Montant</td>
+                                    <td class="text-center fw-bold">Visa Agent Recouvrement</td>
+                                </tr>
+                                <tr>
+                                    <td height="50"></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

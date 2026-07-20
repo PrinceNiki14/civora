@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="ir_cron_calcule_parametre_rh" model="ir.cron">
+        <field name="name">Calcul paramètre RH</field>
+        <field name="model_id" ref="model_hr_employee"/>
+        <field name="state">code</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">months</field>
+        <field name="numbercall">-1</field>
+<!--        <field name="nextcall" eval="(DateTime.now().replace(hour=2, minute=0) + timedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S')" />-->
+<!--        <field name="nextcall" eval="(DateTime.now() + relativedelta(minutes=1)).strftime('%Y-%m-%d %H:%M:%S')"/>-->
+        <field name="nextcall" eval="(DateTime.now() + relativedelta(months=1)).strftime('%Y-%m-03')"/>
+        <field name="doall" eval="False"/>
+        <field name="code">model.main_function()</field>
+        <field eval="True" name="active" />
+    </record>
+</odoo>

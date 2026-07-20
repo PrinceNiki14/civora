@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="1">
+    	<!-- Casual leave -->
+        <record id="hr_holidays.holiday_status_cl" model="hr.leave.type">
+            <field name="name">Congés payés</field>
+            <field name="allocation_validation_type">officer</field>
+            <field name="leave_validation_type">both</field>
+            <field name="color">1</field>
+            <field name="leave_notif_subtype_id" eval="ref('hr_holidays.mt_leave')"/>
+            <field name="allocation_notif_subtype_id" eval="ref('hr_holidays.mt_leave_allocation')"/>
+            <field name="responsible_ids" eval="[(4, ref('base.user_admin'))]"/>
+            <field name="code">CONG</field>
+            <field name="time_type">leave</field>
+        </record>
+        
+        <!-- Mariage -->
+        <record model="hr.leave.type" id="holiday_status_mariage_ex">
+            <field name="name">Mariage</field>
+            <field name="color">7</field>
+            <field name="code">CONG_MARIAGE</field>
+            <field name="time_type">other</field>
+            <field name="responsible_ids" eval="[(4, ref('base.user_admin'))]"/>
+        </record>
+        
+        <record model="hr.leave.type" id="holiday_status_mariage_proches_ex">
+            <field name="name">Mariage Enfants ou Frères ou Sœur</field>
+            <field name="color">7</field>
+            <field name="code">CONG_MARIAGE_PROCHES</field>
+            <field name="time_type">other</field>
+            <field name="responsible_ids" eval="[(4, ref('base.user_admin'))]"/>
+        </record>
+        
+        <!-- Décès -->
+        <record model="hr.leave.type" id="holiday_status_deces_conjoint_ex">
+            <field name="name">Décès Conjoint(e)</field>
+            <field name="color">1</field>
+            <field name="code">CONG_DECES_CONJOINT</field>
+            <field name="time_type">other</field>
+            <field name="responsible_ids" eval="[(4, ref('base.user_admin'))]"/>
+        </record>
+        
+        <record model="hr.leave.type" id="holiday_status_deces_proches_ex">
+            <field name="name">Décès Enfant ou Père ou Mère</field>
+            <field name="color">1</field>
+            <field name="code">CONG_DECES_FAMILIALE</field>
+            <field name="time_type">other</field>
+            <field name="responsible_ids" eval="[(4, ref('base.user_admin'))]"/>
+        </record>
+        
+        <record model="hr.leave.type" id="holiday_status_deces_frere_soeur_ex">
+            <field name="name">Décès Frère ou Sœur</field>
+            <field name="color">1</field>
+            <field name="code">CONG_DECES_FS</field>
+            <field name="time_type">other</field>
+            <field name="responsible_ids" eval="[(4, ref('base.user_admin'))]"/>
+        </record>
+        
+        <record model="hr.leave.type" id="holiday_status_deces_bpere_bmere_ex">
+            <field name="name">Décès beau-père ou belle-mère</field>
+            <field name="color">1</field>
+            <field name="code">CONG_DECES_BPERE_BMERE</field>
+            <field name="time_type">other</field>
+            <field name="responsible_ids" eval="[(4, ref('base.user_admin'))]"/>
+        </record>
+        
+        <!-- Naissance -->
+        <record model="hr.leave.type" id="holiday_status_naissance_ex">
+            <field name="name">Congés Naissance</field>
+            <field name="color">9</field>
+            <field name="code">CONG_NAISSANCE</field>
+            <field name="responsible_ids" eval="[(4, ref('base.user_admin'))]"/>
+        </record>
+        
+        <!-- Baptême -->
+        <record model="hr.leave.type" id="holiday_status_bapteme_ex">
+            <field name="name">Congés Baptême</field>
+            <field name="color">10</field>
+            <field name="code">CONG_BAPTEME</field>
+            <field name="time_type">other</field>
+            <field name="responsible_ids" eval="[(4, ref('base.user_admin'))]"/>
+        </record>
+        
+        <!-- Première communion -->
+        <record model="hr.leave.type" id="holiday_status_premiere_communion_ex">
+            <field name="name">Congés Première communion</field>
+            <field name="color">10</field>
+            <field name="code">CONG_PR_COMMUNION</field>
+            <field name="time_type">other</field>
+            <field name="responsible_ids" eval="[(4, ref('base.user_admin'))]"/>
+        </record>
+        
+        <!-- Déménagement -->
+        <record model="hr.leave.type" id="holiday_status_demenagement_ex">
+            <field name="name">Congés Déménagement</field>
+            <field name="color">10</field>
+            <field name="code">CONG_DEMENAGEMENT</field>
+            <field name="time_type">other</field>
+            <field name="responsible_ids" eval="[(4, ref('base.user_admin'))]"/>
+        </record>
+        
+        <!-- Congé Non Exceptionnel -->
+        <record model="hr.leave.type" id="holiday_status_non_exceptionnel_ex">
+            <field name="name">Congé Non Exceptionnel</field>
+            <field name="color">3</field>
+            <field name="code">CONG_NON_EXCEPTIONNEL</field>
+            <field name="time_type">other</field>
+            <field name="responsible_ids" eval="[(4, ref('base.user_admin'))]"/>
+        </record>
+
+        <!--Unpaid Leave -->
+        <record model="hr.leave.type" id="holiday_status_unpaid_ex">
+            <field name="name">Congé Non payé</field>
+            <field name="color">4</field>
+            <field name="time_type">other</field>
+            <field name="code">IMPAY</field>
+            <field name="responsible_ids" eval="[(4, ref('base.user_admin'))]"/>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- category salarial -->
+		<record id="BASIC" model="hr.salary.rule.category">
+            <field name="name">BASIC</field>
+            <field name="code">BASIC</field>
+        </record>
+
+        <record id="BRUT_EMP" model="hr.salary.rule.category">
+            <field name="name">Brut</field>
+            <field name="code">BRUT_EMP</field>
+        </record>
+
+        <record id="BASE" model="hr.salary.rule.category">
+            <field name="name">Salaire de base</field>
+            <field name="code">BASE</field>
+        </record>
+
+        <record id="SURSALAIRE" model="hr.salary.rule.category">
+            <field name="name">Sursalaire</field>
+            <field name="code">SURSALAIRE</field>
+        </record>
+        <record id="INDMNI" model="hr.salary.rule.category">
+            <field name="name">Indemnite Non Imposable</field>
+            <field name="code">INDMNI</field>
+        </record>
+        <record id="O_TOTALS" model="hr.salary.rule.category">
+            <field name="name">Autres Totaux</field>
+            <field name="code">O_TOTALS</field>
+        </record>
+        <record id="C_IMP" model="hr.salary.rule.category">
+            <field name="name">Net Imposable</field>
+            <field name="code">C_IMP</field>
+        </record>
+        <record id="RET_EMP" model="hr.salary.rule.category">
+            <field name="name">Retenues employés</field>
+            <field name="code">RET_EMP</field>
+        </record>
+        <record id="IMP_EMP" model="hr.salary.rule.category">
+            <field name="name">Impôts employeurs</field>
+            <field name="code">IMP_EMP</field>
+        </record>
+        <record id="ARETE" model="hr.salary.rule.category">
+            <field name="name">Autres retenues</field>
+            <field name="code">ARETE</field>
+        </record>
+        <record id="CPATR" model="hr.salary.rule.category">
+            <field name="name">Cotisations Patronales</field>
+            <field name="code">CPATR</field>
+        </record>
+        <record id="JPAY" model="hr.salary.rule.category">
+            <field name="name">Jours payés</field>
+            <field name="code">JPAY</field>
+        </record>
+        <record id="JRS" model="hr.salary.rule.category">
+            <field name="name">Jours</field>
+            <field name="code">JRS</field>
+        </record>
+        <record id="PRIM" model="hr.salary.rule.category">
+            <field name="name">Primes</field>
+            <field name="code">PRIM</field>
+        </record>
+        <record id="HSUPP" model="hr.salary.rule.category">
+            <field name="name">Heures supplémentaires</field>
+            <field name="code">HSUPP</field>
+        </record>
+        <record id="AUTR" model="hr.salary.rule.category">
+            <field name="name">Autres</field>
+            <field name="code">AUTR</field>
+        </record>
+        <record id="ASS" model="hr.salary.rule.category">
+            <field name="name">Assurances</field>
+            <field name="code">ASS</field>
+        </record>
+        <record id="RETENUES" model="hr.salary.rule.category">
+            <field name="name">Total Retenues</field>
+            <field name="code">RETENUES</field>
+        </record>
+        <record id="INDM" model="hr.salary.rule.category">
+            <field name="name">Indemnité</field>
+            <field name="code">INDM</field>
+        </record>
+        <record id="TOTAL" model="hr.salary.rule.category">
+            <field name="name">Cout total pour l'entreprise</field>
+            <field name="code">TOTAL</field>
+        </record>
+        <record id="TRETR" model="hr.salary.rule.category">
+            <field name="name">Total Cotisations Rétraite</field>
+            <field name="code">TRETR</field>
+        </record>
+        <record id="UNPAY" model="hr.salary.rule.category">
+            <field name="name">Jours impayé</field>
+            <field name="code">UNPAY</field>
+        </record>
+        <record id="RANN" model="hr.salary.rule.category">
+            <field name="name">Retenues annexes</field>
+            <field name="code">RANN</field>
+        </record>
+        <record id="COMP" model="hr.salary.rule.category">
+            <field name="name">Cotisations Patronales</field>
+            <field name="code">COMP</field>
+        </record>
+        <record id="AS" model="hr.salary.rule.category">
+            <field name="name">Accessoires de salaire</field>
+            <field name="code">AS</field>
+        </record>
+		<record id="DED" model="hr.salary.rule.category">
+            <field name="name">Déductions</field>
+            <field name="code">DED</field>
+        </record>
+		<record id="NET_IMP" model="hr.salary.rule.category">
+            <field name="name">Net</field>
+            <field name="code">NET_IMP</field>
+        </record>
+		<record id="COMP" model="hr.salary.rule.category">
+            <field name="name">Contribution de la société</field>
+            <field name="code">COMP</field>
+        </record>
+        <record id="SALC" model="hr.salary.rule.category">
+            <field name="name">Total Charges Salariales	</field>
+            <field name="code">SALC</field>
+        </record>
+    </data>
+</odoo>

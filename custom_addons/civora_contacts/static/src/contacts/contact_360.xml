@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_contacts.Contact360">
+    <div class="civora-c360">
+
+        <!-- Chargement -->
+        <div t-if="state.loading" class="civora-c360-state">
+            <i class="fa fa-circle-o-notch fa-spin"/> Chargement…
+        </div>
+
+        <!-- Erreur -->
+        <div t-elif="state.error" class="civora-c360-state">
+            <i class="fa fa-exclamation-triangle"/>
+            <span t-esc="state.error"/>
+            <button class="civora-btn civora-btn-outline" t-on-click="() => this.goBack()">
+                <i class="fa fa-arrow-left"/> <t t-esc="backLabel"/>
+            </button>
+        </div>
+
+        <t t-else="">
+            <!-- Barre haute : retour + actions -->
+            <div class="civora-c360-topbar">
+                <button class="civora-c360-back" t-on-click="() => this.goBack()">
+                    <i class="fa fa-arrow-left"/> <t t-esc="backLabel"/>
+                </button>
+                <div class="civora-c360-actions">
+                    <button class="civora-btn civora-btn-accent" t-on-click="() => this.openEdit()">
+                        <i class="fa fa-pencil"/> Modifier
+                    </button>
+                </div>
+            </div>
+
+            <!-- En-tete profil -->
+            <div class="civora-c360-header">
+                <CivoraAvatar name="record.name || ''" size="'xl'" gradient="'brand'"/>
+                <div class="civora-c360-id">
+                    <div class="civora-c360-name" t-esc="record.name || '—'"/>
+                    <div class="civora-c360-meta">
+                        <span t-if="record.company_name">
+                            <i class="fa fa-building-o"/> <t t-esc="record.company_name"/>
+                        </span>
+                        <span><i class="fa fa-user-o"/> <t t-esc="roleLabel"/></span>
+                        <CivoraBadge label="statusInfo.label" variant="statusInfo.variant"/>
+                    </div>
+                    <div class="civora-c360-contactline">
+                        <span t-if="record.email"><i class="fa fa-envelope-o"/> <t t-esc="record.email"/></span>
+                        <span t-if="record.phone"><i class="fa fa-phone"/> <t t-esc="record.phone"/></span>
+                        <span t-if="record.civora_whatsapp"><i class="fa fa-whatsapp"/> <t t-esc="record.civora_whatsapp"/></span>
+                    </div>
+                </div>
+                <div class="civora-c360-score">
+                    <div class="civora-c360-score-val" t-esc="(record.civora_ai_score || 0) + ''"/>
+                    <div class="civora-c360-score-lbl">Score IA</div>
+                    <CivoraProgress value="record.civora_ai_score || 0" tone="scoreTone(record.civora_ai_score || 0)"/>
+                </div>
+            </div>
+
+            <!-- Onglets -->
+            <div class="civora-c360-tabs">
+                <CivoraTabs tabs="tabList" active="state.activeTab" onChange="(id) => this.setTab(id)"/>
+            </div>
+
+            <!-- Contenu -->
+            <div class="civora-c360-body">
+
+                <!-- ===== APERCU ===== -->
+                <div t-if="state.activeTab === 'overview'" class="civora-c360-grid">
+
+                    <div class="civora-c360-card">
+                        <div class="civora-c360-card-h">Identité</div>
+                        <div class="civora-c360-kv"><span>Société</span><b t-esc="orDash(record.company_name)"/></div>
+                        <div class="civora-c360-kv"><span>Ville</span><b t-esc="orDash(record.city)"/></div>
+                        <div class="civora-c360-kv"><span>Quartier</span><b t-esc="orDash(record.civora_neighborhood)"/></div>
+                        <div class="civora-c360-kv"><span>Adresse</span><b t-esc="orDash(record.street)"/></div>
+                    </div>
+
+                    <div class="civora-c360-card">
+                        <div class="civora-c360-card-h">Coordonnées</div>
+                        <div class="civora-c360-kv"><span>Email</span><b t-esc="orDash(record.email)"/></div>
+                        <div class="civora-c360-kv"><span>Téléphone</span><b t-esc="orDash(record.phone)"/></div>
+                        <div class="civora-c360-kv"><span>WhatsApp</span><b t-esc="orDash(record.civora_whatsapp)"/></div>
+                    </div>
+
+                    <div class="civora-c360-card">
+                        <div class="civora-c360-card-h">Qualification</div>
+                        <div class="civora-c360-kv"><span>Rôle principal</span><b t-esc="record.civora_primary_role_id ? record.civora_primary_role_id[1] : '—'"/></div>
+                        <div class="civora-c360-kv"><span>Rôles</span><b t-esc="orDash(record.civora_role_names)"/></div>
+                        <div class="civora-c360-kv"><span>Source</span><b t-esc="m2oName(record.civora_source_id)"/></div>
+                        <div class="civora-c360-kv"><span>Agent</span><b t-esc="m2oName(record.civora_agent_id)"/></div>
+                        <div class="civora-c360-kv"><span>Budget</span><b t-esc="fmtMoney(record.civora_budget)"/></div>
+                    </div>
+
+                    <div class="civora-c360-card">
+                        <div class="civora-c360-card-h">Consentements RGPD</div>
+                        <div class="civora-c360-kv"><span>Email</span><b t-esc="consentLabel(record.civora_consent_email)"/></div>
+                        <div class="civora-c360-kv"><span>SMS</span><b t-esc="consentLabel(record.civora_consent_sms)"/></div>
+                        <div class="civora-c360-kv"><span>WhatsApp</span><b t-esc="consentLabel(record.civora_consent_whatsapp)"/></div>
+                    </div>
+
+                    <div class="civora-c360-card civora-c360-card-wide" t-if="record.civora_next_action or record.comment">
+                        <div class="civora-c360-card-h">Suivi</div>
+                        <div t-if="record.civora_next_action" class="civora-c360-kv"><span>Prochaine action</span><b t-esc="record.civora_next_action"/></div>
+                        <div t-if="record.comment" class="civora-c360-notes" t-esc="record.comment"/>
+                    </div>
+                </div>
+
+                <!-- ===== ACTIVITE (timeline civora.interaction) ===== -->
+                <div t-elif="state.activeTab === 'activity'" class="civora-c360-activity">
+
+                    <div class="civora-tl-main">
+                        <div class="civora-tl-head">
+                            <div>
+                                <div class="civora-tl-h-title">Historique des interactions</div>
+                                <div class="civora-tl-h-sub" t-esc="activitySub"/>
+                            </div>
+                            <button class="civora-btn civora-btn-accent" t-on-click="() => this.toggleAdd()">
+                                <i t-attf-class="fa {{ state.addOpen ? 'fa-times' : 'fa-plus' }}"/>
+                                <t t-esc="state.addOpen ? 'Fermer' : 'Ajouter'"/>
+                            </button>
+                        </div>
+
+                        <!-- Formulaire d'ajout rapide -->
+                        <div t-if="state.addOpen" class="civora-tl-form">
+                            <div class="civora-tl-form-row">
+                                <select class="civora-tl-inp" t-on-change="(ev) => this.setNewField('kind', ev)">
+                                    <option t-foreach="kindOptions" t-as="k" t-key="k.value"
+                                            t-att-value="k.value" t-att-selected="state.newI.kind === k.value"
+                                            t-esc="k.label"/>
+                                </select>
+                                <select class="civora-tl-inp" t-on-change="(ev) => this.setNewField('agent_id', ev)">
+                                    <option t-foreach="users" t-as="u" t-key="u.id"
+                                            t-att-value="u.id" t-att-selected="state.newI.agent_id === u.id"
+                                            t-esc="agentOptionLabel(u)"/>
+                                </select>
+                            </div>
+                            <input type="text" class="civora-tl-inp civora-tl-inp-block"
+                                   placeholder="Titre (ex : Appel sortant · 12 min)"
+                                   t-att-value="state.newI.title"
+                                   t-on-input="(ev) => this.setNewField('title', ev)"/>
+                            <textarea class="civora-tl-inp civora-tl-desc" rows="3"
+                                      placeholder="Détails, prochaine action…"
+                                      t-on-input="(ev) => this.setNewField('description', ev)"/>
+                            <div t-if="state.errI" class="civora-tl-err">
+                                <i class="fa fa-exclamation-circle"/> <t t-esc="state.errI"/>
+                            </div>
+                            <div class="civora-tl-form-actions">
+                                <button class="civora-btn civora-btn-outline" t-on-click="() => this.toggleAdd()">Annuler</button>
+                                <button class="civora-btn civora-btn-accent"
+                                        t-att-disabled="state.savingI"
+                                        t-on-click="() => this.saveInteraction()">
+                                    <t t-esc="state.savingI ? 'Enregistrement…' : 'Enregistrer'"/>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Etat vide reel -->
+                        <div t-if="!state.interactions.length" class="civora-c360-placeholder">
+                            <i class="fa fa-clock-o"/>
+                            <div class="civora-c360-ph-t">Aucune interaction</div>
+                            <p>Ajoutez le premier appel, email, RDV ou note pour ce contact.</p>
+                        </div>
+
+                        <t t-else="">
+                            <!-- Filtres timeline -->
+                            <div class="civora-tl-filters">
+                                <div class="civora-tl-chips">
+                                    <button t-foreach="kindFilters" t-as="f" t-key="f.key"
+                                            t-att-class="'civora-tl-chip' + (state.filterKind === f.key ? ' is-active' : '')"
+                                            t-on-click="() => this.setKindFilter(f.key)">
+                                        <t t-esc="f.label"/>
+                                        <span class="civora-tl-chip-n" t-esc="f.count + ''"/>
+                                    </button>
+                                </div>
+                                <div class="civora-tl-period">
+                                    <button t-foreach="periods" t-as="p" t-key="p.key"
+                                            t-att-class="'civora-tl-per' + (state.filterPeriod === p.key ? ' is-active' : '')"
+                                            t-on-click="() => this.setPeriod(p.key)"
+                                            t-esc="p.label"/>
+                                </div>
+                            </div>
+
+                            <!-- Aucun resultat pour le filtre -->
+                            <div t-if="!filteredInteractions.length" class="civora-tl-nofilter">
+                                <i class="fa fa-filter"/> Aucune interaction pour ce filtre.
+                            </div>
+
+                            <!-- Timeline -->
+                            <div t-else="" class="civora-tl">
+                                <div t-foreach="filteredInteractions" t-as="i" t-key="i.id" class="civora-tl-item">
+                                    <div class="civora-tl-ico">
+                                        <i t-attf-class="fa {{ kindMeta(i.kind).icon }}"/>
+                                    </div>
+                                    <div class="civora-tl-content">
+                                        <div class="civora-tl-item-h">
+                                            <span class="civora-tl-kind" t-esc="kindMeta(i.kind).label"/>
+                                            <div class="civora-tl-item-hr">
+                                                <span class="civora-tl-date" t-att-title="fmtDate(i.date)" t-esc="relDate(i.date)"/>
+                                                <button class="civora-tl-del" title="Supprimer"
+                                                        t-on-click="() => this.deleteInteraction(i)">
+                                                    <i class="fa fa-trash-o"/>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="civora-tl-item-title" t-esc="i.title"/>
+                                        <div t-if="i.description" class="civora-tl-item-desc" t-esc="i.description"/>
+                                        <div t-if="i.agent_id" class="civora-tl-item-agent">
+                                            <i class="fa fa-user-o"/> <t t-esc="i.agent_id[1]"/>
+                                            <t t-if="userFn(i.agent_id[0])"> · <t t-esc="userFn(i.agent_id[0])"/></t>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+
+                    <!-- Panneaux stats -->
+                    <div class="civora-tl-side">
+                        <div class="civora-tl-panel">
+                            <div class="civora-tl-panel-h">Statistiques d'engagement</div>
+                            <div class="civora-tl-stats">
+                                <div class="civora-tl-stat"><span>Appels passés</span><b t-esc="engagementStats.appel + ''"/></div>
+                                <div class="civora-tl-stat"><span>Emails envoyés</span><b t-esc="engagementStats.email + ''"/></div>
+                                <div class="civora-tl-stat"><span>WhatsApp</span><b t-esc="engagementStats.whatsapp + ''"/></div>
+                                <div class="civora-tl-stat"><span>RDV programmés</span><b t-esc="engagementStats.rdv + ''"/></div>
+                                <div class="civora-tl-stat"><span>Visites effectuées</span><b t-esc="engagementStats.visite + ''"/></div>
+                                <div class="civora-tl-stat"><span>Dernier contact</span><b t-esc="engagementStats.last"/></div>
+                            </div>
+                        </div>
+
+                        <div class="civora-tl-panel">
+                            <div class="civora-tl-panel-h">Canaux préférés</div>
+                            <div t-if="!preferredChannels.length" class="civora-tl-empty">Pas encore de données.</div>
+                            <div t-else="">
+                                <div t-foreach="preferredChannels" t-as="ch" t-key="ch.label" class="civora-tl-chan">
+                                    <div class="civora-tl-chan-h">
+                                        <span t-esc="ch.label"/>
+                                        <b t-esc="ch.pct + '%'"/>
+                                    </div>
+                                    <CivoraProgress value="ch.pct" tone="'accent'"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== ONGLETS CONTRIBUES (biens, pipeline, GED...) ===== -->
+                <t t-elif="activeContrib">
+                    <t t-component="activeContrib.Component" contactId="contactId"/>
+                </t>
+            </div>
+        </t>
+
+        <!-- Modale d'edition (reutilise ContactDrawer, mode edit => modale centree) -->
+        <ContactDrawer t-if="state.edit.open"
+                       mode="'edit'"
+                       contactId="contactId"
+                       onClose="() => this.closeEdit()"
+                       onSaved="() => this.onEditSaved()"/>
+    </div>
+</t>
+
+</templates>

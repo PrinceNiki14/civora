@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_gestion.Buyer360">
+    <div class="civora-o360">
+
+        <div t-if="state.loading" class="civora-o360-state">
+            <i class="fa fa-circle-o-notch fa-spin"/> Chargement…
+        </div>
+
+        <div t-elif="state.error" class="civora-o360-state">
+            <i class="fa fa-exclamation-triangle"/> <span t-esc="state.error"/>
+            <button class="civora-btn civora-btn-outline" t-on-click="() => this.goBack()">
+                <i class="fa fa-arrow-left"/> Acquéreurs
+            </button>
+        </div>
+
+        <t t-else="">
+            <div class="civora-o360-topbar">
+                <button class="civora-o360-back" t-on-click="() => this.goBack()">
+                    <i class="fa fa-arrow-left"/> Acquéreurs
+                </button>
+                <button class="civora-btn civora-btn-outline" t-on-click="() => this.openContact()">
+                    <i class="fa fa-address-card-o"/> Fiche contact
+                </button>
+            </div>
+
+            <div class="civora-o360-header">
+                <CivoraAvatar name="buyer.name" size="'xl'"/>
+                <div class="civora-o360-id">
+                    <div class="civora-o360-name" t-esc="buyer.name"/>
+                    <div class="civora-o360-sub" t-esc="subtitle"/>
+                    <div class="civora-o360-tags">
+                        <CivoraBadge label="statusInfo.label" variant="statusInfo.variant"/>
+                        <CivoraBadge t-if="state.segment" label="state.segment" variant="'neutral'"/>
+                        <span t-if="buyer.city" class="civora-o360-loc"><i class="fa fa-map-marker"/> <t t-esc="buyer.city"/></span>
+                        <span t-if="buyer.civora_ai_score" class="civora-o360-score"><i class="fa fa-star"/> <t t-esc="buyer.civora_ai_score"/></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="civora-o360-kpis">
+                <CivoraStatCard label="'Budget'" value="budgetLabel()" icon="'fa fa-money'"/>
+                <CivoraStatCard label="'Biens correspondants'" value="state.matches.length + ''" icon="'fa fa-building'"/>
+                <CivoraStatCard label="'Score IA'" value="(buyer.civora_ai_score || 0) + ''" icon="'fa fa-star'"/>
+                <CivoraStatCard label="'Statut'" value="statusInfo.label" icon="'fa fa-flag'"/>
+            </div>
+
+            <div class="civora-o360-tabbar">
+                <button t-foreach="tabList" t-as="t" t-key="t.id"
+                        t-att-class="'civora-o360-tab' + (state.activeTab === t.id ? ' is-active' : '')"
+                        t-on-click="() => this.setTab(t.id)">
+                    <t t-esc="t.label"/>
+                    <span t-if="t.count" class="civora-o360-tabcount" t-esc="t.count + ''"/>
+                </button>
+            </div>
+
+            <!-- ===== VUE D'ENSEMBLE ===== -->
+            <div t-if="state.activeTab === 'overview'" class="civora-o360-grid">
+                <div class="civora-o360-card">
+                    <div class="civora-o360-card-h">Coordonnées</div>
+                    <div class="civora-o360-kv"><span>Type</span><b t-esc="buyerType"/></div>
+                    <div class="civora-o360-kv"><span>Email</span><b t-esc="orDash(buyer.email)"/></div>
+                    <div class="civora-o360-kv"><span>Téléphone</span><b t-esc="orDash(buyer.phone)"/></div>
+                    <div class="civora-o360-kv"><span>WhatsApp</span><b t-esc="orDash(buyer.civora_whatsapp)"/></div>
+                    <div class="civora-o360-kv"><span>Ville</span><b t-esc="orDash(buyer.city)"/></div>
+                </div>
+                <div class="civora-o360-card">
+                    <div class="civora-o360-card-h">Critères d'achat</div>
+                    <div class="civora-o360-kv"><span>Budget</span><b t-esc="budgetLabel()"/></div>
+                    <div class="civora-o360-kv"><span>Biens correspondants</span><b t-esc="state.matches.length"/></div>
+                    <div class="civora-o360-kv"><span>Agent dédié</span><b t-esc="agentLabel()"/></div>
+                    <div class="civora-o360-kv"><span>Source</span><b t-esc="sourceLabel()"/></div>
+                    <div class="civora-o360-kv"><span>Prochaine action</span><b t-esc="orDash(buyer.civora_next_action)"/></div>
+                </div>
+            </div>
+
+            <!-- ===== BIENS CORRESPONDANTS ===== -->
+            <t t-elif="state.activeTab === 'matches'">
+                <div class="civora-o360-matchbar">
+                    <i class="fa fa-magic"/>
+                    <span t-if="buyer.civora_budget">
+                        <b t-esc="state.matches.length"/> bien(s) à vendre dans le budget de <b t-esc="budgetLabel()"/>.
+                    </span>
+                    <span t-else="">
+                        <b t-esc="state.matches.length"/> bien(s) à vendre disponibles. Renseignez un budget pour affiner le matching.
+                    </span>
+                </div>
+
+                <div t-if="!state.matches.length" class="civora-o360-soon">
+                    <div class="civora-o360-soon-ico"><i class="fa fa-search"/></div>
+                    <div class="civora-o360-soon-t">Aucun bien correspondant</div>
+                    <p>Aucun bien à vendre disponible ne correspond à ce budget pour le moment.</p>
+                </div>
+
+                <div t-else="" class="civora-o360-biens">
+                    <div t-foreach="state.matches" t-as="b" t-key="b.id"
+                         class="civora-o360-bien" t-on-click="() => this.openProperty(b)">
+                        <div class="civora-o360-bien-thumb"
+                             t-att-class="b.image_128 ? 'civora-o360-bien-thumb has-photo' : 'civora-o360-bien-thumb'"
+                             t-attf-style="{{ b.image_128 ? 'background-image:url(/web/image/civora.property/' + b.id + '/image_128)' : '' }}">
+                            <i t-if="!b.image_128" class="fa fa-building"/>
+                        </div>
+                        <div class="civora-o360-bien-b">
+                            <div class="civora-o360-bien-n">
+                                <span t-esc="b.name"/>
+                            </div>
+                            <div class="civora-o360-bien-m">
+                                <span class="civora-o360-bien-type" t-esc="typeLabel(b)"/>
+                                <span><i class="fa fa-map-marker"/> <t t-esc="locLabel(b)"/></span>
+                                <span t-if="b.bedrooms"><i class="fa fa-bed"/> <t t-esc="b.bedrooms"/></span>
+                                <span t-if="b.surface"><i class="fa fa-arrows-alt"/> <t t-esc="surfaceLabel(b)"/></span>
+                            </div>
+                        </div>
+                        <div class="civora-o360-bien-fin">
+                            <div class="civora-o360-bien-val"><t t-esc="fmtMoney(b.price)"/> FCFA</div>
+                            <button class="civora-o360-oppbtn" t-on-click.stop="() => this.createOpportunity(b)">
+                                <i class="fa fa-filter"/> Opportunité
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </t>
+
+            <!-- ===== FINANCEMENT (a venir) ===== -->
+            <div t-elif="state.activeTab === 'financing'" class="civora-o360-soon">
+                <div class="civora-o360-soon-ico"><i class="fa fa-bank"/></div>
+                <div class="civora-o360-soon-t">Financement</div>
+                <p>Mode de financement, prix convenu, acompte et échéancier — à venir avec les modules Ventes &amp; comptabilité.</p>
+            </div>
+
+            <!-- ===== DOCUMENTS (a venir) ===== -->
+            <div t-else="" class="civora-o360-soon">
+                <div class="civora-o360-soon-ico"><i class="fa fa-folder-open-o"/></div>
+                <div class="civora-o360-soon-t">Documents</div>
+                <p>Compromis, acte de vente, pièces justificatives et reçus — à venir avec la gestion documentaire.</p>
+            </div>
+        </t>
+
+    </div>
+</t>
+
+</templates>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Ecran Contacts CIVORA (client action OWL, aucune vue Odoo) -->
+    <record id="action_civora_contacts" model="ir.actions.client">
+        <field name="name">Contacts</field>
+        <field name="tag">civora.contacts</field>
+    </record>
+
+    <!-- App / menu de tete pour que la sidebar puisse le referencer -->
+    <menuitem id="menu_civora_contacts"
+              name="Contacts CIVORA"
+              web_icon="fa fa-address-card-o,#FFFFFF,#00ab68"
+              action="action_civora_contacts"
+              sequence="5"/>
+
+</odoo>

@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Configuration FNE - Paramètres Multi-Société -->
+    <record id="res_config_settings_view_form_fne" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.fne</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="90"/>
+        <field name="inherit_id" ref="account.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Ajout section FNE dans les paramètres comptables -->
+            <xpath expr="//app[@name='account']" position="after">
+
+                <app name="fne" string="FNE - Facture Normalisée Électronique">
+
+                    <h2>Configuration FNE Côte d'Ivoire</h2>
+
+                    <!-- Indicateur société -->
+                    <div class="alert alert-info">
+                        <strong>Société active:</strong> <span class="text-primary"><field name="company_id" readonly="1"/></span>
+                        <br/>
+                        <small>Les paramètres ci-dessous sont spécifiques à cette société.</small>
+                    </div>
+
+                    <div class="row mt16 o_settings_container">
+
+                        <!-- Configuration API -->
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="fne_base_url"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="fne_base_url"/>
+                                <div class="text-muted">
+                                    URL de l'API FNE (partagée entre toutes les sociétés)
+                                </div>
+                                <field name="fne_base_url" placeholder="http://54.247.95.108/ws"/>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="fne_api_key"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="fne_api_key"/>
+                                <div class="text-muted">
+                                    Clé API spécifique à cette société
+                                </div>
+                                <field name="fne_api_key" password="True"
+                                       placeholder="Bearer Token de votre espace FNE"/>
+                            </div>
+                        </div>
+
+                        <!-- Configuration par défaut société -->
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="fne_default_establishment"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="fne_default_establishment"/>
+                                <div class="text-muted">
+                                    Nom de l'établissement par défaut pour cette société
+                                </div>
+                                <field name="fne_default_establishment"
+                                       placeholder="Ex: Siège Social Abidjan"/>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="fne_default_point_of_sale"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="fne_default_point_of_sale"/>
+                                <div class="text-muted">
+                                    Point de vente par défaut pour cette société
+                                </div>
+                                <field name="fne_default_point_of_sale"
+                                       placeholder="Ex: PDV001"/>
+                            </div>
+                        </div>
+
+                        <!-- Nouveaux champs pour les valeurs par défaut -->
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="fne_default_seller_name"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="fne_default_seller_name"/>
+                                <div class="text-muted">
+                                    Nom du vendeur par défaut
+                                </div>
+                                <field name="fne_default_seller_name"
+                                       placeholder="Ex: Commercial Principal"/>
+                            </div>
+                        </div>
+
+                        <div class="col-12 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="fne_default_commercial_message"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="fne_default_commercial_message"/>
+                                <div class="text-muted">
+                                    Message commercial par défaut pour toutes les factures
+                                </div>
+                                <field name="fne_default_commercial_message"
+                                       placeholder="Ex: Merci de votre confiance !"/>
+                            </div>
+                        </div>
+
+                        <div class="col-12 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="fne_default_footer_message"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="fne_default_footer_message"/>
+                                <div class="text-muted">
+                                    Message de pied de page par défaut
+                                </div>
+                                <field name="fne_default_footer_message"
+                                       placeholder="Ex: Conditions de paiement : 30 jours"/>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Guide d'utilisation -->
+                    <div class="row mt16">
+                        <div class="col-12">
+                            <div class="alert alert-success">
+                                <h5>📚 Guide d'utilisation Multi-Société</h5>
+                                <ol>
+                                    <li><strong>Changez de société</strong> dans le sélecteur en haut à droite</li>
+                                    <li><strong>Configurez chaque société</strong> avec sa propre clé API</li>
+                                    <li><strong>Définissez les valeurs par défaut</strong> pour éviter la ressaisie</li>
+                                    <li><strong>Les factures</strong> utiliseront automatiquement les paramètres de leur société</li>
+                                </ol>
+                                <p class="mb-0">
+                                    <strong>Support:</strong> support.fne@dgi.gouv.ci
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </app>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

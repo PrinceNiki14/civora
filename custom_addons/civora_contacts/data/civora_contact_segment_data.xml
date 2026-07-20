@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- Segments IA de depart (exemples ; enrichis par l'IA ensuite) -->
+    <record id="segment_investisseur_premium" model="civora.contact.segment">
+        <field name="company_id" eval="False"/>
+        <field name="name">Investisseur premium</field>
+        <field name="code">investisseur_premium</field>
+        <field name="color">#00ab68</field>
+        <field name="sequence">10</field>
+    </record>
+    <record id="segment_voyageur_recurrent" model="civora.contact.segment">
+        <field name="company_id" eval="False"/>
+        <field name="name">Voyageur récurrent</field>
+        <field name="code">voyageur_recurrent</field>
+        <field name="color">#25afd2</field>
+        <field name="sequence">20</field>
+    </record>
+    <record id="segment_proprietaire_vip" model="civora.contact.segment">
+        <field name="company_id" eval="False"/>
+        <field name="name">Propriétaire VIP</field>
+        <field name="code">proprietaire_vip</field>
+        <field name="color">#efa831</field>
+        <field name="sequence">30</field>
+    </record>
+    <record id="segment_lead_chaud" model="civora.contact.segment">
+        <field name="company_id" eval="False"/>
+        <field name="name">Lead chaud</field>
+        <field name="code">lead_chaud</field>
+        <field name="color">#e62c2c</field>
+        <field name="sequence">40</field>
+    </record>
+
+</odoo>

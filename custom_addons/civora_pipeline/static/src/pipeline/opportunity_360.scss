@@ -1,0 +1,178 @@
+// =====================================================================
+// CIVORA Pipeline - Fiche Opportunite 360 (civora.opportunity_360)
+// =====================================================================
+
+.civora-op360 {
+    padding: 24px 28px 40px;
+    background: $civora-bg;
+    height: 100%;
+    overflow-y: auto;
+    font-family: $civora-font;
+    color: $civora-fg;
+
+    .civora-op360-state {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 48px 0;
+        color: $civora-muted;
+        font-size: 14px;
+    }
+
+    .civora-op360-topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 18px;
+    }
+    .civora-op360-back {
+        border: 1px solid $civora-border;
+        background: $civora-card;
+        color: $civora-muted;
+        border-radius: $civora-radius-sm;
+        padding: 8px 14px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        &:hover { color: $civora-fg; border-color: $civora-muted; }
+    }
+
+    .civora-op360-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        flex-wrap: wrap;
+        background: $civora-card;
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius;
+        box-shadow: $civora-shadow-card;
+        padding: 20px 24px;
+        margin-bottom: 16px;
+    }
+    .civora-op360-title { font-family: $civora-font-display; font-weight: 800; font-size: 22px; line-height: 1.15; }
+    .civora-op360-badges { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+    .civora-op360-tx { font-size: 12px; color: $civora-muted; font-weight: 600; }
+    .civora-op360-amount { font-family: $civora-font-display; font-weight: 800; font-size: 24px; color: $civora-accent; }
+
+    // ---- Stepper ----
+    .civora-op360-stepper {
+        display: flex;
+        gap: 6px;
+        background: $civora-card;
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius;
+        box-shadow: $civora-shadow-card;
+        padding: 16px;
+        margin-bottom: 16px;
+        overflow-x: auto;
+    }
+    .civora-op360-step {
+        flex: 1;
+        min-width: 90px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        position: relative;
+        &:not(:last-child)::after {
+            content: "";
+            position: absolute;
+            top: 13px;
+            left: calc(50% + 16px);
+            right: calc(-50% + 16px);
+            height: 2px;
+            background: $civora-border;
+        }
+        &.is-done::after { background: $civora-accent; }
+    }
+    .civora-op360-step-dot {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: 2px solid $civora-border;
+        background: $civora-card;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        color: #fff;
+        z-index: 1;
+    }
+    .civora-op360-step.is-done .civora-op360-step-dot { background: $civora-accent; border-color: $civora-accent; }
+    .civora-op360-step.is-current .civora-op360-step-dot { border-color: $civora-accent; box-shadow: 0 0 0 4px rgba(0, 171, 104, .15); }
+    .civora-op360-step-lbl { font-size: 11.5px; font-weight: 600; color: $civora-muted; text-align: center; }
+    .civora-op360-step.is-current .civora-op360-step-lbl,
+    .civora-op360-step.is-done .civora-op360-step-lbl { color: $civora-fg; }
+
+    .civora-op360-kpis {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 16px;
+        margin-bottom: 16px;
+    }
+
+    .civora-op360-tabbar {
+        display: flex;
+        gap: 4px;
+        flex-wrap: wrap;
+        border-bottom: 1px solid $civora-border;
+        margin-bottom: 18px;
+    }
+    .civora-op360-tab {
+        border: 0;
+        background: transparent;
+        color: $civora-muted;
+        padding: 10px 14px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        &:hover { color: $civora-fg; }
+        &.is-active { color: $civora-accent; border-bottom-color: $civora-accent; }
+    }
+
+    .civora-op360-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+    }
+    .civora-op360-card {
+        background: $civora-card;
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius;
+        box-shadow: $civora-shadow-card;
+        padding: 18px 20px;
+    }
+    .civora-op360-card-h {
+        font-family: $civora-font-display;
+        font-weight: 700;
+        font-size: 14px;
+        margin-bottom: 12px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid $civora-border;
+    }
+    .civora-op360-kv {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 8px 0;
+        font-size: 13px;
+        span { color: $civora-muted; i { color: $civora-accent; margin-right: 6px; } }
+        b { font-weight: 600; text-align: right; }
+    }
+    .civora-op360-link { cursor: pointer; border-radius: $civora-radius-sm; &:hover { background: $civora-bg; } &:hover b { color: $civora-accent; } }
+    .civora-op360-desc { font-size: 13px; line-height: 1.5; white-space: pre-wrap; }
+    .civora-op360-muted { color: $civora-muted; font-size: 13px; }
+
+    .civora-op360-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+
+    @media (max-width: 1100px) {
+        .civora-op360-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .civora-op360-grid { grid-template-columns: 1fr; }
+    }
+}

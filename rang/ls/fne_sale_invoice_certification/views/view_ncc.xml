@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Ajout du logo FNE et bouton de téléchargement dans la vue formulaire -->
+    <record id="view_move_form_fne_logo" model="ir.ui.view">
+        <field name="name">account.move.form.fne.logo</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Ajout du bouton de téléchargement FNE dans le header -->
+            <header position="inside">
+                <!-- Bouton pour factures normales uniquement (pas les avoirs) -->
+                <button name="action_download_fne_pdf"
+                        type="object"
+                        string="📥 Télécharger Facture FNE"
+                        class="oe_highlight"
+                        invisible="move_type != 'out_invoice' or not fne_certified or not fne_qr_url"
+                        help="Télécharger la facture certifiée FNE"/>
+            </header>
+
+            <!-- Ajout du logo FNE dans le coin supérieur droit -->
+            <xpath expr="//div[@class='oe_title']" position="before">
+                <div class="float-right" style="position: absolute; top: 10px; right: 130px; z-index: 1000;"
+                     invisible="not fne_certified">
+                    <field name="fne_certified_icon" widget="html" readonly="1" nolabel="1"/>
+                </div>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

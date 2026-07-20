@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_pipeline.ContactOppsTab">
+    <div class="civora-cot">
+        <div t-if="state.loading" class="civora-cot-state">
+            <i class="fa fa-circle-o-notch fa-spin"/> Chargement…
+        </div>
+        <div t-elif="!state.opps.length" class="civora-cot-empty">
+            <div class="civora-cot-empty-ico"><i class="fa fa-filter"/></div>
+            <div class="civora-cot-empty-t">Aucune opportunité</div>
+            <p>Ce contact n'a aucune opportunité dans le pipeline.</p>
+        </div>
+        <div t-else="" class="civora-cot-list">
+            <div t-foreach="state.opps" t-as="o" t-key="o.id" class="civora-cot-item" t-on-click="() => this.open(o)">
+                <div class="civora-cot-b">
+                    <div class="civora-cot-h">
+                        <span class="civora-cot-n" t-esc="o.name"/>
+                        <CivoraBadge label="stageMeta(o).label" variant="stageMeta(o).variant"/>
+                    </div>
+                    <div class="civora-cot-m">
+                        <span t-if="o.transaction" class="civora-cot-tx" t-esc="txLabel(o)"/>
+                        <span><i class="fa fa-building"/> <t t-esc="propertyLabel(o)"/></span>
+                    </div>
+                </div>
+                <div class="civora-cot-amount" t-esc="amountLabel(o)"/>
+            </div>
+        </div>
+    </div>
+</t>
+
+</templates>

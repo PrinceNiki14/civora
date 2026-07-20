@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hr_payroll_template_manager,hr.payroll.template hr_manager,model_hr_payroll_template,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_hr_salary_rule_template_manager,hr.salary.rule_template hr_manager,model_hr_salary_rule_template,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_hr.payroll.inverse,hr.payroll.inverse hr_manager,model_hr_payroll_inverse,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_hr.payroll.inverse.line',hr.payroll.inverse.line hr_manager,model_hr_payroll_inverse_line,hr_payroll.group_hr_payroll_manager,1,1,1,1

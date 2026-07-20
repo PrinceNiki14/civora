@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+		<report 
+            string="CNPS Mensuel nouveau"
+            id="hr_cnps_report" 
+            model="hr.cnps.monthly"
+            report_type="qweb-pdf"
+            name="hr_cnps_mensuel.cnps_mensuel_report"
+            file="hr_cnps_mensuel.cnps_mensuel_report"
+        />
+
+        <report
+            string="Liste des contributeurs"
+            id="hr_cnps_report_xlsx"
+            model="hr.cnps.monthly"
+            report_type="xlsx"
+            name="hr_cnps_mensuel.cnps_mensuel_report_xlsx"
+            file="hr_cnps_mensuel.cnps_mensuel_report_xlsx"
+        />
+    
+    </data>
+</odoo>

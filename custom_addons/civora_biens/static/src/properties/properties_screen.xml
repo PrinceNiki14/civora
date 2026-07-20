@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_biens.Properties">
+    <div class="civora-biens">
+
+        <!-- En-tete -->
+        <div class="civora-biens-head">
+            <div>
+                <div class="civora-biens-title">Biens</div>
+                <div class="civora-biens-sub">Portefeuille du parc immobilier</div>
+            </div>
+            <button class="civora-btn civora-btn-accent" t-on-click="() => this.openCreate()">
+                <i class="fa fa-plus"/> Ajouter un bien
+            </button>
+        </div>
+
+        <!-- KPIs -->
+        <div class="civora-biens-kpis">
+            <CivoraStatCard label="'Biens'" value="state.stats.total + ''" icon="'fa fa-building'"/>
+            <CivoraStatCard label="'Valeur portefeuille'" value="kpiValue(state.stats.value)" icon="'fa fa-line-chart'"/>
+            <CivoraStatCard label="'Revenu mensuel'" value="kpiValue(state.stats.revenue)" icon="'fa fa-money'"/>
+            <CivoraStatCard label="'Taux d\'occupation'" value="state.stats.occupancy + ' %'" icon="'fa fa-pie-chart'"/>
+        </div>
+
+        <!-- Barre d'outils -->
+        <div class="civora-biens-toolbar">
+            <div class="civora-biens-search">
+                <i class="fa fa-search"/>
+                <input type="text" placeholder="Titre, adresse, référence…"
+                       t-att-value="state.search"
+                       t-on-input="(ev) => this.onSearchInput(ev)"/>
+            </div>
+
+            <div class="civora-biens-tabs">
+                <button t-foreach="typeFilters" t-as="f" t-key="f.id"
+                        t-att-class="'civora-biens-tab' + (state.typeFilter === f.id ? ' is-active' : '')"
+                        t-on-click="() => this.setType(f.id)"
+                        t-esc="f.label"/>
+            </div>
+
+            <select class="civora-biens-select civora-biens-sort" t-on-change="(ev) => this.setSort(ev)">
+                <option t-foreach="sorts" t-as="s" t-key="s.value"
+                        t-att-value="s.value" t-att-selected="state.sortBy === s.value"
+                        t-esc="s.label"/>
+            </select>
+
+            <button t-att-class="'civora-biens-filtersbtn' + ((state.showFilters or activeFilterCount) ? ' is-active' : '')"
+                    t-on-click="() => this.toggleFilters()">
+                <i class="fa fa-sliders"/> Filtres
+                <span t-if="activeFilterCount" class="civora-biens-fcount" t-esc="activeFilterCount + ''"/>
+            </button>
+
+            <div class="civora-biens-viewtoggle">
+                <button t-att-class="'civora-biens-vt' + (state.view === 'grid' ? ' is-active' : '')"
+                        title="Grille" t-on-click="() => this.setView('grid')">
+                    <i class="fa fa-th-large"/>
+                </button>
+                <button t-att-class="'civora-biens-vt' + (state.view === 'list' ? ' is-active' : '')"
+                        title="Liste" t-on-click="() => this.setView('list')">
+                    <i class="fa fa-list"/>
+                </button>
+                <button t-att-class="'civora-biens-vt' + (state.view === 'map' ? ' is-active' : '')"
+                        title="Carte" t-on-click="() => this.setView('map')">
+                    <i class="fa fa-map-o"/>
+                </button>
+            </div>
+        </div>
+
+        <!-- Panneau filtres avance -->
+        <div t-if="state.showFilters" class="civora-biens-filters">
+            <div class="civora-biens-ffield">
+                <label>Statut</label>
+                <select t-on-change="(ev) => this.onStatusChange(ev)">
+                    <option t-foreach="statuses" t-as="s" t-key="s.value"
+                            t-att-value="s.value" t-att-selected="state.statusFilter === s.value"
+                            t-esc="s.label"/>
+                </select>
+            </div>
+            <div class="civora-biens-ffield">
+                <label>Ville</label>
+                <select t-on-change="(ev) => this.onCityChange(ev)">
+                    <option value="toutes" t-att-selected="state.cityFilter === 'toutes'">Toutes les villes</option>
+                    <option t-foreach="cities" t-as="c" t-key="c"
+                            t-att-value="c" t-att-selected="state.cityFilter === c" t-esc="c"/>
+                </select>
+            </div>
+            <div class="civora-biens-ffield">
+                <label>Chambres min</label>
+                <input type="number" min="0" t-att-value="state.bedsMin"
+                       t-on-change="(ev) => this.onBedsChange(ev)"/>
+            </div>
+            <div class="civora-biens-ffield">
+                <label>Surface min (m²)</label>
+                <input type="number" min="0" t-att-value="state.areaMin"
+                       t-on-change="(ev) => this.onAreaChange(ev)"/>
+            </div>
+            <button class="civora-biens-freset" t-on-click="() => this.resetFilters()">
+                <i class="fa fa-times"/> Réinitialiser
+            </button>
+        </div>
+
+        <!-- Chargement -->
+        <div t-if="state.loading" class="civora-biens-state">
+            <i class="fa fa-circle-o-notch fa-spin"/> Chargement…
+        </div>
+
+        <!-- Vue carte (a venir : necessite la geolocalisation des biens) -->
+        <div t-elif="state.view === 'map'" class="civora-biens-empty">
+            <i class="fa fa-map-o"/>
+            <div class="civora-biens-empty-t">Vue carte</div>
+            <p>La cartographie des biens nécessite leur géolocalisation (latitude / longitude) — disponible dans une prochaine évolution.</p>
+        </div>
+
+        <!-- Etat vide -->
+        <div t-elif="!state.properties.length" class="civora-biens-empty">
+            <i class="fa fa-building-o"/>
+            <div class="civora-biens-empty-t">Aucun bien</div>
+            <p>Aucun bien ne correspond à ces critères.</p>
+        </div>
+
+        <!-- Vue grille -->
+        <div t-elif="state.view === 'grid'" class="civora-biens-grid">
+            <div t-foreach="state.properties" t-as="p" t-key="p.id" class="civora-bien-card"
+                 t-on-click="() => this.openProperty(p)">
+                <div class="civora-bien-thumb"
+                     t-att-class="p.image_128 ? 'civora-bien-thumb has-photo' : 'civora-bien-thumb'"
+                     t-attf-style="{{ p.image_128 ? 'background-image:url(/web/image/civora.property/' + p.id + '/image_512)' : '' }}">
+                    <i t-if="!p.image_128" class="fa fa-building"/>
+                    <button class="civora-bien-edit" title="Modifier" t-on-click.stop="() => this.openEdit(p)">
+                        <i class="fa fa-pencil"/>
+                    </button>
+                </div>
+                <div class="civora-bien-body">
+                    <div class="civora-bien-h">
+                        <div class="civora-bien-name" t-esc="p.name"/>
+                        <CivoraBadge label="statusMeta(p).label" variant="statusMeta(p).variant"/>
+                    </div>
+                    <div class="civora-bien-loc"><i class="fa fa-map-marker"/> <t t-esc="locLabel(p)"/></div>
+                    <div class="civora-bien-tags">
+                        <span class="civora-bien-type" t-esc="typeLabel(p)"/>
+                        <span t-if="p.surface" t-esc="surfaceLabel(p)"/>
+                        <span t-if="p.bedrooms" t-esc="p.bedrooms + ' ch.'"/>
+                        <span t-if="p.bathrooms" t-esc="p.bathrooms + ' sdb'"/>
+                    </div>
+                    <div class="civora-bien-foot">
+                        <div class="civora-bien-price"><t t-esc="fmtMoney(p.price)"/> FCFA</div>
+                        <div t-if="p.monthly_revenue" class="civora-bien-rev"><t t-esc="fmtMoney(p.monthly_revenue)"/> /mois</div>
+                    </div>
+                </div>
+
+                <!-- Bloc immeuble : unites affiliees -->
+                <div t-if="p.is_building" class="civora-bldg" t-on-click.stop="() => this.toggleExpand(p)">
+                    <div class="civora-bldg-h">
+                        <button class="civora-bldg-toggle" t-on-click.stop="() => this.toggleExpand(p)">
+                            <i t-att-class="'fa ' + (isExpanded(p) ? 'fa-chevron-down' : 'fa-chevron-right')"/>
+                            <i class="fa fa-building"/>
+                            <span t-esc="buildingOccupancyLabel(p)"/>
+                        </button>
+                    </div>
+
+                    <div t-if="isExpanded(p)" class="civora-bldg-units">
+                        <div t-if="!unitsOf(p).length" class="civora-bldg-empty">
+                            Aucune unité pour le moment.
+                        </div>
+                        <button t-foreach="unitsOf(p)" t-as="u" t-key="u.id"
+                                class="civora-bldg-unit" t-on-click.stop="() => this.openProperty(u)">
+                            <span class="civora-bldg-unit-n" t-esc="unitLabel(u)"/>
+                            <span t-if="u.floor" class="civora-bldg-unit-f" t-esc="'Ét. ' + u.floor"/>
+                            <CivoraBadge label="statusMeta(u).label" variant="statusMeta(u).variant"/>
+                            <span t-if="u.monthly_revenue" class="civora-bldg-unit-r" t-esc="fmtMoney(u.monthly_revenue) + '/mois'"/>
+                        </button>
+                    </div>
+
+                    <div class="civora-bldg-actions">
+                        <button class="civora-bldg-btn civora-bldg-btn-accent"
+                                t-on-click.stop="() => this.openAddUnit(p)">
+                            <i class="fa fa-plus"/> Ajouter une unité
+                        </button>
+                        <button class="civora-bldg-btn"
+                                t-on-click.stop="() => this.openDuplicate(p)">
+                            <i class="fa fa-clone"/> Dupliquer
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vue liste -->
+        <div t-else="" class="civora-biens-tablewrap">
+            <table class="civora-biens-table">
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Type</th>
+                        <th>Ville</th>
+                        <th>Statut</th>
+                        <th class="civora-num">Prix</th>
+                        <th class="civora-num">Revenu/mois</th>
+                        <th class="civora-num">Rentabilité</th>
+                        <th class="civora-actions-col"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="state.properties" t-as="p" t-key="p.id" class="civora-biens-row"
+                        t-on-click="() => this.openProperty(p)">
+                        <td>
+                            <div class="civora-biens-cell-name">
+                                <t t-esc="p.name"/>
+                                <span t-if="p.is_building" class="civora-biens-badge-bldg">
+                                    <i class="fa fa-building"/> <t t-esc="(p.unit_count || 0) + ' unité(s)'"/>
+                                </span>
+                                <span t-elif="p.parent_id" class="civora-biens-badge-unit">
+                                    <i class="fa fa-level-up fa-rotate-90"/> <t t-esc="p.parent_id[1]"/>
+                                </span>
+                            </div>
+                            <div t-if="p.ref" class="civora-biens-cell-ref" t-esc="p.ref"/>
+                        </td>
+                        <td t-esc="typeLabel(p)"/>
+                        <td t-esc="locLabel(p)"/>
+                        <td><CivoraBadge label="statusMeta(p).label" variant="statusMeta(p).variant"/></td>
+                        <td class="civora-num"><t t-esc="fmtMoney(p.price)"/> FCFA</td>
+                        <td class="civora-num"><t t-esc="p.monthly_revenue ? fmtMoney(p.monthly_revenue) + ' FCFA' : '—'"/></td>
+                        <td class="civora-num" t-esc="yieldLabel(p)"/>
+                        <td class="civora-actions-col">
+                            <button class="civora-biens-rowedit" title="Modifier" t-on-click.stop="() => this.openEdit(p)">
+                                <i class="fa fa-pencil"/>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Modale creation / edition -->
+        <PropertyDrawer t-if="state.drawer.open"
+                        mode="state.drawer.mode"
+                        propertyId="state.drawer.propertyId"
+                        onClose="() => this.closeDrawer()"
+                        onSaved="() => this.onDrawerSaved()"/>
+
+        <!-- Modale ajout d'unite -->
+        <UnitDialog t-if="state.unitDialog.open"
+                    building="state.unitDialog.building"
+                    onClose="() => this.closeAddUnit()"
+                    onSaved="() => this.onUnitSaved()"/>
+
+        <!-- Modale duplication en masse -->
+        <DuplicateUnitsDialog t-if="state.dupDialog.open"
+                              building="state.dupDialog.building"
+                              units="state.dupDialog.units"
+                              onClose="() => this.closeDuplicate()"
+                              onSaved="() => this.onDuplicateSaved()"/>
+
+    </div>
+</t>
+
+</templates>

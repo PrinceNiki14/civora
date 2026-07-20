@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <menuitem name="Rapports sociales" id="hr_payroll_rapport_ci_menu" parent="hr_payroll.menu_hr_payroll_report"/>
+        <menuitem name="Rapports fiscaux" id="hr_payroll_rapport_fiscal_menu" parent="hr_payroll.menu_hr_payroll_report" />
+    </data>
+</odoo>

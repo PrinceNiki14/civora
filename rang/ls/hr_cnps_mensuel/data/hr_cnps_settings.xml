@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+	<data noupdate="1">
+		<record id="hr_journalier_1" model="hr.cnps.setting">
+			<field name="name">Horaires, journaliers et occasionnels inférieurs ou égaux à 3231 F par jour</field>
+			<field name="sequence">1</field>
+			<field name="type">j</field>
+			<field name="amount_min" eval="0"/>
+			<field name="amount_max" eval="3231"/>
+		</record>
+		<record id="hr_journalier_2" model="hr.cnps.setting">
+			<field name="name">Horaires, journaliers et occasionnels supérieurs ou égaux à 3231 F par jour</field>
+			<field name="sequence">2</field>
+			<field name="type">j</field>
+			<field name="amount_min" eval="3231"/>
+			<field name="amount_max" eval="999999999999999"/>
+		</record>
+		<record id="menseul_1" model="hr.cnps.setting">
+			<field name="name">Mensuels inférieurs ou égaux à 75.000 F par mois</field>
+			<field name="sequence">3</field>
+			<field name="type">m</field>
+			<field name="amount_min" eval="0"/>
+			<field name="amount_max" eval="75000"/>
+		</record>
+		<record id="menseul_2" model="hr.cnps.setting">
+			<field name="name">Mensuels supérieurs à 75.000 F par mois et inférieurs ou égaux à 3 375 000 F par mois</field>
+			<field name="sequence">4</field>
+			<field name="type">m</field>
+			<field name="amount_min" eval="75000"/>
+			<field name="amount_max" eval="3375000"/>
+		</record>
+		<record id="menseul_3" model="hr.cnps.setting">
+			<field name="name">Mensuels supérieurs à 3 375 000F par mois</field>
+			<field name="sequence">5</field>
+			<field name="type">m</field>
+			<field name="amount_min" eval="3375000"/>
+			<field name="amount_max" eval="999999999999999"/>
+		</record>
+
+		<record id="cotisation_template_1" model="hr.cnps.cotisation.line.template">
+			<field name="name">Assurance Maternité</field>
+			<field name="sequence">1</field>
+			<field name="taux">0.75</field>
+		</record>
+		<record id="cotisation_template_2" model="hr.cnps.cotisation.line.template">
+			<field name="name">Prestations Familiales</field>
+			<field name="taux" eval="5"/>
+			<field name="sequence">2</field>
+		</record>
+		<record id="cotisation_template_3" model="hr.cnps.cotisation.line.template">
+			<field name="name">Accidents du Travail</field>
+			<field name="taux" eval="2"/>
+			<field name="sequence">3</field>
+		</record>
+		<record id="cotisation_template_4" model="hr.cnps.cotisation.line.template">
+			<field name="name">Régime de Retraite</field>
+			<field name="taux" eval="14"/>
+			<field name="sequence">4</field>
+		</record>
+
+	</data>
+</odoo>

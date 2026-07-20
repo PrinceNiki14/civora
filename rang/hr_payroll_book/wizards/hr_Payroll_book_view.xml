@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        <record id="hr_payroll_book_wizard_from_view" model="ir.ui.view">
+            <field name="name">hr.payroll.book.wizard.form</field>
+            <field name="model">hr.payroll.book.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Livre de paie">
+                    <group>
+                        <group>
+                            <field name="name"/>
+                        </group>
+                        <group>
+                            <field name="type_employe" widget="radio"/>
+                            <field name="nature_employe" widget="radio" />
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="date_from"/>
+                        </group>
+                        <group>
+                            <field name="date_to"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="company_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Liste des employés de la période">
+                            <field name="employee_ids" />
+                        </page>
+                        <page string="Liste des bulletins de la période">
+                            <field name="payslip_ids" />
+                        </page>
+                        <page string="Les règles salariales à afficher">
+                            <field name="rule_ids" />
+                        </page>
+                    </notebook>
+                    <footer>
+                        <button string="Imprimer" name="check_report" type="object" class="btn-primary"/>
+                        <button string="Exporter en Excel" name="export_xls" type="object" class="btn-primary"
+                            context="{'xls_export':1}" icon="fa-download"/>
+                        <button string="Cancel" class="btn-default" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_hr_payroll_book_wizard" model="ir.actions.act_window">
+            <field name="name">Livre de paie</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">hr.payroll.book.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <act_window id="action_payslip_run_book_print"
+            name="Imprimer le livre de paie lié  ce lot de paie"
+            binding_model="hr.payslip.run"
+            res_model="hr.payroll.book.wizard"
+            view_mode="form"
+            target="new"/>
+
+        <act_window id="action_payslip_employee_book_print"
+            name="Imprimer le livre de paie"
+            binding_model="hr.employee"
+            res_model="hr.payroll.book.wizard"
+            view_mode="form"
+            target="new"/>
+
+        <menuitem id="hr_payroll_book_wizard_menu" name="Livre de paie" sequence="50"
+                  parent="hr_payroll.menu_hr_payroll_report" action="action_hr_payroll_book_wizard"/>
+
+    </data>
+</odoo>

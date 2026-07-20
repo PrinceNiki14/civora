@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+<data>
+
+    <record id="act_hr_cnps_payslip_list" model="ir.actions.act_window">
+        <field name="res_model">hr.payslip</field>
+        <field name="name">Payslips</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('slip_id','=',active_id)]</field>
+    </record>
+
+    <record id="hr_cnps_monthly_from_view" model="ir.ui.view">
+        <field name="name">hr.cnps.monthly.form.view</field>
+        <field name="model">hr.cnps.monthly</field>
+        <field name="arch" type="xml">
+            <form string="">
+                <header>
+                    <button name="compute" string="Calculer" type="object" />
+                    <button name="export_xls" string="Export la liste des contributeurs" type="object" />
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="action" name="%(act_hr_cnps_payslip_list)d"
+                            icon="fa-usd">
+                            <field string="Bulletins de paie" name="slips_count" widget="statinfo"/>
+                        </button>
+                    </div>
+                    <field name="name" />
+                    <group col="4">
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                        <field name="company_id"/>
+                        <field name="type_employe" widget="radio" />
+                    </group>
+                    <notebook>
+                        <page string="Lignes">
+                            <field name="line_ids" >
+                                <tree>
+                                    <field name="name" />
+                                    <field name="salaries_number" />
+                                    <field name="regime_retraite" />
+                                    <field name="regime_autre" />
+                                </tree>
+                            </field>
+                            <group class="oe_subtotal_footer oe_right">
+                                <field name="total_salaire_brut" />
+                                <field name="total_employee" />
+                                <field name="total_assiette_cnps" />
+                                <field name="total_assiette_other" />
+                            </group>
+                        </page>
+                        <page string="Le recap employé">
+                            <field name="other_line_ids" >
+                                <tree>
+                                    <field name="employee_id" />
+                                    <field name="type" />
+                                    <field name="amount_brut" />
+                                    <field name="assiette_cnps" />
+                                    <field name="assiette_other" />
+                                    <field name="daily_basis" />
+                                    <field name="cnps_amount" />
+                                    <field name="assurance_maternite_amount" />
+                                    <field name="prestation_family_amount" />
+                                    <field name="accident_travail_amount" />
+                                    <field name="date_start" />
+                                    <field name="date_to" />
+                                    <field name="tranche_id" />
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Cotisations">
+                            <field name="cotisation_ids">
+                                <tree>
+                                    <field name="name" />
+                                    <field name="amount_submitted" />
+                                    <field name="taux" />
+                                    <field name="amount_contributed" />
+                                </tree>
+                            </field>
+                            <group class="oe_subtotal_footer oe_right">
+                                <field name="total_cotisation_contributed" />
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_cnps_monthly_tree_view" model="ir.ui.view">
+        <field name="name">hr.cnps.monthly.tree.view</field>
+        <field name="model">hr.cnps.monthly</field>
+        <field name="arch" type="xml">
+            <tree string="">
+                <field name="name"/>
+                <field name="date_from"/>
+                    <field name="date_to"/>
+                    <field name="company_id"/>
+                    <field name="total_employee" />
+                    <field name="total_assiette_cnps" />
+                    <field name="total_assiette_other" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_hr_cnps_monthly_tree_view" model="ir.actions.act_window">
+        <field name="name">CNPS Mensuel</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">hr.cnps.monthly</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('company_id', '=', allowed_company_ids[0])]</field>
+        <field name="context">{'default_company_id': allowed_company_ids[0]}</field>
+    </record>
+
+    <menuitem id="hr_cnps_monthly_menu" name="CNPS Mensuel" sequence="15" parent="hr_payroll.menu_hr_payroll_report"
+            action="action_hr_cnps_monthly_tree_view"/>
+</data>
+</odoo>

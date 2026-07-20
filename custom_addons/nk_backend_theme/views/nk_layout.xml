@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Chargement des polices CIVORA via <link> dans le <head>.
+         (On evite l'@import CSS dans un bundle SCSS : il casse la compilation.)
+         S'applique au backend ET aux pages frontend/login (web.layout). -->
+    <template id="nk_fonts_head" inherit_id="web.layout" name="CIVORA Fonts">
+        <xpath expr="//head" position="inside">
+            <link rel="preconnect" href="https://fonts.googleapis.com"/>
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
+            <link rel="stylesheet"
+                  href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap"/>
+        </xpath>
+    </template>
+
+</odoo>

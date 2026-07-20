@@ -1,0 +1,60 @@
+// Ecran "Bientot disponible" des coquilles CIVORA
+.civora_placeholder {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8fafc;
+    padding: 24px;
+
+    .civora_ph_card {
+        max-width: 460px;
+        text-align: center;
+        background: #fff;
+        border: 1px solid #e1e5ea;
+        border-radius: 18px;
+        box-shadow: 0 4px 24px rgba(16, 24, 40, .07);
+        padding: 40px 36px;
+    }
+
+    .civora_ph_icon {
+        width: 68px;
+        height: 68px;
+        margin: 0 auto 18px;
+        border-radius: 18px;
+        background: linear-gradient(135deg, #00ab68, #1ec98a);
+        color: #fff;
+        font-size: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 10px 24px rgba(0, 171, 104, .30);
+    }
+
+    .civora_ph_title {
+        font-size: 24px;
+        font-weight: 800;
+        color: #091e40;
+        margin: 0 0 10px;
+    }
+
+    .civora_ph_badge {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+        color: #00ab68;
+        background: #e6efff;
+        border-radius: 999px;
+        padding: 4px 12px;
+        margin-bottom: 16px;
+    }
+
+    .civora_ph_text {
+        color: #626a75;
+        font-size: 14px;
+        line-height: 1.55;
+        margin: 0;
+    }
+}

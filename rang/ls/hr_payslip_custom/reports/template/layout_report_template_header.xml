@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="report_template_header">
+            <div class="header">
+                <table style="width:100%;border: 1px solid #f0f0f0;">
+                    <tr style="width:100%;">
+                        <td rowspan="8" style="border-right: 1px solid #f0f0f0;">
+                            <img src="https://i.imgur.com/b0wN3sW.png" alt="ABS JOBS CENTER"/>
+                        </td>
+                        <td colspan="3" style="text-align:center;background: #f0f0f0;">
+                            <strong>BULLETIN DE PAIE</strong>
+                        </td>
+                        <td colspan="2" style="border: 1px solid #f0f0f0;">Code:<br/>Version :<br/>Date :</td>
+                    </tr>
+                    <tr style="border: 1px solid black;">
+                        <td colspan="1">Période Paie:</td>
+                        <td colspan="2">Décembre 2023</td>
+                        <td colspan="2" rowspan="2" style="border: 1px solid #f0f0f0;">Payé le :<br/>N° CNPS : 0</td>
+                    </tr>
+                    <tr>
+                        <td colspan="1" style="border: 1px solid #f0f0f0;">Date d'Entrée: 27/07/2023</td>
+                        <td colspan="2" style="border: 1px solid #f0f0f0;">Ancienneté :5 Mois et 4 Jours</td>
+                    </tr>
+                    <tr>
+                        <td colspan="1" style="border: 1px solid #f0f0f0;">Catégorie Prof :M3</td>
+                        <td colspan="2" style="border: 1px solid #f0f0f0;">Nombre de Parts:2,0</td>
+                        <td style="border: 1px solid #f0f0f0;">Compteur Congé :16,01 j</td>
+                    </tr>
+                </table>
+            </div>
+        </template>
+    </data>
+</odoo>

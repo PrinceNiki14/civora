@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="action_payslip_custom" model="ir.actions.report">
+            <field name="name">Bulletin de paie</field>
+            <field name="model">hr.payslip</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">hr_payslip_custom.report_payslip_custom</field>
+            <field name="report_file">hr_payslip_custom.report_payslip_custom</field>
+            <field name="print_report_name">'%s' % (object.name)</field>
+            <field name="binding_model_id" ref="hr_payroll.model_hr_payslip"/>
+            <field name="binding_type">report</field>
+        </record>
+    </data>
+</odoo>

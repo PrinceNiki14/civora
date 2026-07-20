@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_civora_calendar" model="ir.actions.client">
+        <field name="name">Calendrier</field>
+        <field name="tag">civora.calendar</field>
+    </record>
+    <menuitem id="menu_calendrier" name="Calendrier"
+              web_icon="fa fa-calendar,#FFFFFF,#2563eb"
+              action="action_civora_calendar" sequence="8"/>
+</odoo>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- =================================================================
+         Habillage commun des pages d'authentification
+         (connexion, inscription, reinitialisation de mot de passe)
+         On garde TOUS les liens fonctionnels Odoo :
+           - selection de base de donnees
+           - reinitialiser le mot de passe
+           - gestion des bases de donnees
+           - "Powered by Odoo" (obligatoire en licence Enterprise)
+         ================================================================= -->
+    <template id="nk_login_layout" inherit_id="web.login_layout">
+
+        <!-- 0) Decor anime : accessoires immobilier qui defilent en arriere-plan -->
+        <xpath expr="//div[contains(@t-attf-class, 'o_database_list')]" position="before">
+            <div class="nk_login_bg" aria-hidden="true">
+                <i class="fa fa-home nk_float"/>
+                <i class="fa fa-key nk_float"/>
+                <i class="fa fa-building nk_float"/>
+                <i class="fa fa-map-marker nk_float"/>
+                <i class="fa fa-bed nk_float"/>
+                <i class="fa fa-university nk_float"/>
+                <i class="fa fa-building-o nk_float"/>
+                <i class="fa fa-map nk_float"/>
+                <i class="fa fa-key nk_float"/>
+            </div>
+        </xpath>
+
+        <!-- 1) Marque (badge + nom) AU-DESSUS de la carte, facon CIVORA.
+                La carte utilise t-attf-class (classe dynamique), donc on la
+                cible via contains(@t-attf-class, ...) et non hasclass().
+                >>> Modifiez la lettre et le nom ci-dessous pour votre marque <<< -->
+        <xpath expr="//div[contains(@t-attf-class, 'o_database_list')]" position="before">
+            <div class="nk_login_brand text-center">
+                <div class="nk_login_badge">C</div>
+                <div class="nk_login_brandname">CIVORA 360°</div>
+            </div>
+        </xpath>
+
+        <!-- 2) Classe custom sur la carte pour le style (ajoutee au t-attf-class) -->
+        <xpath expr="//div[contains(@t-attf-class, 'o_database_list')]" position="attributes">
+            <attribute name="t-attf-class" add="nk_login_card" separator=" "/>
+        </xpath>
+
+        <!-- 3) On retire le logo interne de la carte (remplace par le badge au-dessus) -->
+        <xpath expr="//div[hasclass('border-bottom')][hasclass('mb-4')]" position="replace"/>
+
+    </template>
+
+    <!-- =================================================================
+         Page de connexion uniquement : titre + sous-titre
+         (n'apparait pas sur inscription / reinitialisation)
+         ================================================================= -->
+    <template id="nk_login_head" inherit_id="web.login">
+        <xpath expr="//div[@id='oe_structure_login_top']" position="before">
+            <div class="nk_login_head">
+                <h1 class="nk_login_title">Connexion</h1>
+                <div class="nk_login_sub">Connectez-vous à votre espace agence</div>
+            </div>
+        </xpath>
+    </template>
+
+</odoo>

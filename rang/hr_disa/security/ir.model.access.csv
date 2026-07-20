@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hr.disa.wizard,hr.disa.wizard,model_hr_disa_wizard,,1,1,1,1
+access_hr.disa_wizard.line,hr.disa_wizard.line,model_hr_disa_wizard_line,,1,1,1,1

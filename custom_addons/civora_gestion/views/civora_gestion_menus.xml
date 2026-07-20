@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_civora_owners" model="ir.actions.client">
+        <field name="name">Propriétaires</field>
+        <field name="tag">civora.owners</field>
+    </record>
+
+    <!-- Rattache l'ecran au menu GESTION > Proprietaires de la coquille -->
+    <menuitem id="civora_agence.menu_proprietaires" action="action_civora_owners"/>
+
+    <record id="action_civora_tenants" model="ir.actions.client">
+        <field name="name">Locataires</field>
+        <field name="tag">civora.tenants</field>
+    </record>
+
+    <menuitem id="civora_agence.menu_locataires" action="action_civora_tenants"/>
+
+    <record id="action_civora_buyers" model="ir.actions.client">
+        <field name="name">Acquéreurs</field>
+        <field name="tag">civora.buyers</field>
+    </record>
+
+    <menuitem id="civora_agence.menu_acquereurs" action="action_civora_buyers"/>
+
+</odoo>

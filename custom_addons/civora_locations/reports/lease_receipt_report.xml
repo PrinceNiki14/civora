@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_report_lease_receipt" model="ir.actions.report">
+        <field name="name">Quittance de loyer</field>
+        <field name="model">civora.lease.receipt</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">civora_locations.report_lease_receipt</field>
+        <field name="report_file">civora_locations.report_lease_receipt</field>
+        <field name="print_report_name">'Quittance - %s' % (object.name)</field>
+        <field name="binding_model_id" ref="model_civora_lease_receipt"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_lease_receipt">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-set="company" t-value="doc.company_id or env.company"/>
+
+                <div class="header" style="font-family: Arial, Helvetica, sans-serif;">
+                    <table style="width:100%; border-collapse:collapse; border-bottom:3px solid #00ab68; padding-bottom:8px;">
+                        <tr>
+                            <td style="vertical-align:middle;">
+                                <span t-if="company.logo">
+                                    <img t-att-src="image_data_uri(company.logo)" style="max-height:52px; max-width:150px;"/>
+                                </span>
+                                <span t-else="" style="font-size:20px; font-weight:bold; color:#091a36;">
+                                    <span t-field="company.name"/>
+                                </span>
+                            </td>
+                            <td style="vertical-align:middle; text-align:right; font-size:11px; color:#626a75; line-height:1.5;">
+                                <div style="font-size:14px; font-weight:bold; color:#091a36;"><span t-field="company.name"/></div>
+                                <div>
+                                    <t t-if="company.street"><span t-field="company.street"/></t>
+                                    <t t-if="company.city"> · <span t-field="company.city"/></t>
+                                </div>
+                                <div>
+                                    <t t-if="company.phone">Tél. <span t-field="company.phone"/></t>
+                                    <t t-if="company.email"> · <span t-field="company.email"/></t>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="footer" style="font-family: Arial, Helvetica, sans-serif;">
+                    <table style="width:100%; border-collapse:collapse; border-top:1px solid #e4e7ec; padding-top:6px;">
+                        <tr>
+                            <td style="font-size:10px; color:#9aa2ad;">
+                                <span t-field="company.name"/> · Quittance générée via CIVORA
+                            </td>
+                            <td style="text-align:right; font-size:10px; color:#9aa2ad;">
+                                Page <span class="page"/> / <span class="topage"/>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="article" t-att-data-oe-model="doc and 'civora.lease.receipt'" t-att-data-oe-id="doc and doc.id">
+                    <div class="page" style="font-family: Arial, Helvetica, sans-serif; color:#071123;">
+
+                        <!-- Titre + badge -->
+                        <table style="width:100%; border-collapse:collapse; margin-bottom:18px;">
+                            <tr>
+                                <td style="vertical-align:middle;">
+                                    <div style="font-size:24px; font-weight:bold; color:#091a36;">Quittance de loyer</div>
+                                    <div style="font-size:12px; color:#626a75; margin-top:3px;">
+                                        N° <span t-field="doc.name"/> &#160;·&#160; Période : <span t-field="doc.period_label"/>
+                                    </div>
+                                </td>
+                                <td style="text-align:right; vertical-align:middle;">
+                                    <span style="display:inline-block; background:#eafaf3; color:#00915a; font-weight:bold; font-size:12px; padding:6px 14px; border-radius:20px; border:1px solid #b8ecd6;">Acquittée</span>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Parties -->
+                        <table style="width:100%; border-collapse:collapse; border:1px solid #e4e7ec; margin-bottom:14px;">
+                            <tr><td style="padding:12px 16px;">
+                                <table style="width:100%; border-collapse:collapse; font-size:13px;">
+                                    <tr>
+                                        <td style="padding:5px 0; color:#626a75; width:40%;">Locataire</td>
+                                        <td style="padding:5px 0; font-weight:bold; text-align:right;"><span t-field="doc.tenant_id.name"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding:5px 0; color:#626a75;">Bien loué</td>
+                                        <td style="padding:5px 0; font-weight:bold; text-align:right;"><span t-field="doc.property_id.name"/></td>
+                                    </tr>
+                                    <tr t-if="doc.property_id.city">
+                                        <td style="padding:5px 0; color:#626a75;">Localisation</td>
+                                        <td style="padding:5px 0; font-weight:bold; text-align:right;"><span t-field="doc.property_id.city"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding:5px 0; color:#626a75;">N° de bail</td>
+                                        <td style="padding:5px 0; font-weight:bold; text-align:right;"><span t-field="doc.lease_id.name"/></td>
+                                    </tr>
+                                    <tr t-if="doc.owner_id">
+                                        <td style="padding:5px 0; color:#626a75;">Propriétaire</td>
+                                        <td style="padding:5px 0; font-weight:bold; text-align:right;"><span t-field="doc.owner_id.name"/></td>
+                                    </tr>
+                                </table>
+                            </td></tr>
+                        </table>
+
+                        <!-- Detail -->
+                        <table style="width:100%; border-collapse:collapse; border:1px solid #e4e7ec; margin-bottom:14px;">
+                            <tr><td style="padding:12px 16px;">
+                                <table style="width:100%; border-collapse:collapse; font-size:13px;">
+                                    <tr>
+                                        <td style="padding:5px 0; color:#626a75; width:40%;">Loyer</td>
+                                        <td style="padding:5px 0; font-weight:bold; text-align:right;">
+                                            <span t-field="doc.rent" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding:5px 0; color:#626a75;">Charges</td>
+                                        <td style="padding:5px 0; font-weight:bold; text-align:right;">
+                                            <span t-field="doc.charges" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td></tr>
+                        </table>
+
+                        <!-- Total -->
+                        <table style="width:100%; border-collapse:collapse; background:#091a36; margin-bottom:16px;">
+                            <tr><td style="padding:18px 20px;">
+                                <div style="font-size:12px; color:#9fb0c8;">Montant total réglé</div>
+                                <div style="font-size:28px; font-weight:bold; color:#ffffff; margin-top:2px;">
+                                    <span t-field="doc.amount_total" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                </div>
+                                <div style="font-style:italic; color:#c7d3e5; font-size:12.5px; margin-top:6px;">
+                                    Soit : <span t-field="doc.amount_words"/>
+                                </div>
+                            </td></tr>
+                        </table>
+
+                        <!-- Paiement -->
+                        <table style="width:100%; border-collapse:collapse; border:1px solid #e4e7ec; margin-bottom:18px;">
+                            <tr><td style="padding:12px 16px;">
+                                <table style="width:100%; border-collapse:collapse; font-size:13px;">
+                                    <tr t-if="doc.date_paid">
+                                        <td style="padding:5px 0; color:#626a75; width:40%;">Date de paiement</td>
+                                        <td style="padding:5px 0; font-weight:bold; text-align:right;"><span t-field="doc.date_paid"/></td>
+                                    </tr>
+                                    <tr t-if="doc.method">
+                                        <td style="padding:5px 0; color:#626a75;">Mode de paiement</td>
+                                        <td style="padding:5px 0; font-weight:bold; text-align:right;">
+                                            <span t-esc="dict(doc._fields['method'].selection).get(doc.method)"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding:5px 0; color:#626a75;">Date d'émission</td>
+                                        <td style="padding:5px 0; font-weight:bold; text-align:right;"><span t-field="doc.date_issued"/></td>
+                                    </tr>
+                                </table>
+                            </td></tr>
+                        </table>
+
+                        <!-- Mention legale -->
+                        <div style="font-size:11.5px; color:#4a5461; line-height:1.6; margin-bottom:40px;">
+                            Je soussigné(e), représentant le bailleur, reconnais avoir reçu de
+                            <b><span t-field="doc.tenant_id.name"/></b> la somme mentionnée ci-dessus, au titre du
+                            loyer et des charges pour la période de <b><span t-field="doc.period_label"/></b>, et lui
+                            en donne quittance pour solde de tout compte de ladite période, sous réserve de
+                            l'encaissement effectif des sommes versées.
+                            <t t-if="doc.note"><br/><span t-field="doc.note"/></t>
+                        </div>
+
+                        <!-- Signature -->
+                        <table style="width:100%; border-collapse:collapse;">
+                            <tr>
+                                <td style="width:50%;"></td>
+                                <td style="text-align:right; font-size:12px;">
+                                    <div style="color:#626a75;">
+                                        Fait<t t-if="company.city"> à <span t-field="company.city"/></t>, le <span t-field="doc.date_issued"/>
+                                    </div>
+                                    <div style="margin-top:40px; font-weight:bold; border-top:1px solid #cfd4da; padding-top:6px; display:inline-block;">
+                                        Le bailleur / mandataire
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+
+</odoo>

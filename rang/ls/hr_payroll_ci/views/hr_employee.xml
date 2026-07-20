@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="hr_employee_licencement_form_view">
+            <field name="name">hr.employee.form</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//header" position="inside">
+                    <button class="oe_stat_button" name="main_function" string="Calcul paramètre RH &amp; Congés" type="object" icon="fa-cogs"/>
+                </xpath>
+                <xpath expr="//group[@name='active_group']" position="after">
+                    <group string="Rupture de contrat" groups="hr.group_hr_manager" invisible="1">
+                        <field name="debut_rupture"/>
+                        <field name="debut_decompte"/>
+                        <field name="indemnite_licencement"/>
+                        <!--<field name="indemnite_fin_cdd" attrs="{'invisible': [('contract_type','!=','CDD')]}"/>-->
+                        <field name="indemnite_fin_cdd"/>
+                        <field name="indemnite_retraite"/>
+                        <field name="indemnite_deces"/>
+                        <field name="is_retraite"/>
+                        <field name="is_deces"/>
+                        <field name="prime_gratification" invisible="1"/>
+                    </group>
+                </xpath>
+                <xpath expr="//page[@name='hr_settings']" position="after">
+                    <page string="Paramètres Congés" groups="hr.group_hr_manager, base.group_user" invisible="1">
+                        <group>
+                            <group>
+                                <label for="nombre_jour_attribue"/>
+                                <div>
+                                    <field name="nombre_jour_attribue" class="oe_inline"/> Jours
+                                </div>
+                                <label for="taken_days_number"/>
+                                <div>
+                                    <field name="taken_days_number" class="oe_inline"/> Jours
+                                </div>
+                                <label for="remaining_leaves"/>
+                                <div>
+                                    <field name="remaining_leaves" class="oe_inline"/> Jours
+                                </div>
+                            </group>
+                            <group>
+                                <label for="conge_exceptionnel"/>
+                                <div>
+                                    <field name="conge_exceptionnel" class="oe_inline"/> Jours
+                                </div>
+                                <field name="conge_non_exceptionnel"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group>
+                                <field name="date_depart_conge"/>
+                                <field name="date_retour_conge"/>
+                            </group>
+                            <group>
+                                <field name="montant_moyen_mensuel"/>
+                                <field name="montant_moyen_journalier" invisible="1"/>
+                                <field name="allocation_conge"/>
+                                <field name="montant_alloue"/>
+                                <field name="ecart_conge"/>
+                                <field name="ecart_conge2" invisible="1"/>
+                                <field name="allocation_conge2" invisible="1"/>
+                                <field name="jour_conge"/>
+                                <field name="conge_paye" invisible="1"/>
+                            </group>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

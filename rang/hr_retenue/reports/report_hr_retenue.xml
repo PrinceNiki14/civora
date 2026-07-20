@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="hr_retenue.report_hr_retenue">
+        <t t-foreach="docs" t-as="o">
+            <t t-set="data_report_landscape" t-value="True"/>
+            <t t-set="full_width" t-value="True"/>
+            <t t-call="web.html_container">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                       <!-- <p><u><strong>
+                            <t t-if="o.lot_id">
+                            Lot :  <span t-field="o.lot_id.name"/>
+                            </t>
+                        </strong></u></p>-->
+                        <div class="col-12 text-center fw-bold">
+                            <t t-if="o.lot_id">
+                            Lot :  <span t-field="o.lot_id.name"/>
+                            </t>
+                         </div>
+                        <br/>
+                         <div class="col-12 text-center fw-bold">
+                            <h6 class="text-center fw-bold">Rubrique : <span t-field="o.salary_id.name"/></h6>
+                             PÉRIODE DU <span t-field="o.start_date"/> - <span t-field="o.end_date" /><br/>
+                             Imprimé le : <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d %B %Y %H:%M:%S')"/>
+                         </div>
+                        <br/>
+                        <div class="col-12">
+                            <table class="table table-bordered">
+                                <tr style="background-color:grey;">
+                                    <td class="text-center fw-bold">MATRICULE</td>
+                                    <td class="text-center fw-bold">AGENT</td>
+                                    <td class="text-center fw-bold">MONTANT RETENUE</td>
+                                </tr>
+                                <t t-set="number" t-value="0"/>
+                                <t t-foreach="o.line_ids.filtered(lambda l: l.amount != 0)" t-as="line">
+                                    <tr>
+                                        <td class="text-center fw-bold"><span t-field="line.employee_id.identification_id"/></td>
+                                        <td class="text-center fw-bold">
+                                            <span t-field="line.employee_id.name"/>
+                                            <t t-set="number" t-value="number + 1"/>
+                                        </td>
+                                        <td class="text-center fw-bold"><span t-field="line.amount" t-options='{"widget": "float", "precision": 2}'/></td>
+                                    </tr>
+                                </t>
+                                <tr>
+                                    <td class="text-center fw-bold">TOTAL</td>
+                                    <td class="text-center fw-bold"><span t-esc="number" t-options='{"widget": "float", "precision": 2}'/></td>
+                                    <td class="text-center fw-bold"><span t-esc="data['total_amount']" t-options='{"widget": "float", "precision": 2}'/></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <br/>
+                        <br/>
+                        <div class="row">
+                            <div class="col-4"/>
+                            <div class="col-8">
+                                <p class="text-center fw-bold">
+                                    <u>Cachet &amp; Signature</u>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

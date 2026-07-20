@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+		<record id="hr_employee_form_inherit" model="ir.ui.view">
+            <field name="name">hr_employee.form</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_form"/>
+            <field name="priority" eval="8"/>
+            <field name="arch" type="xml">
+				<!--<xpath expr="//div[hasclass('oe_title')]" position="replace">
+					<div class="oe_title mw-75 ps-0 pe-2">
+						<h1 class="d-flex flex-row align-items-center">
+							<div invisible="not user_id" class="me-2">
+								<widget name="hr_employee_chat" invisible="not context.get('chat_icon')"/>
+							</div>
+							<field name="name" placeholder="Employee's Name" required="True" style="font-size: min(4vw, 2.6rem);" invisible="1"/>
+							<field name="first_name" class="oe_edit_only" placeholder="Nom" required="1" default_focus="1"/>
+							<field name="last_name" class="oe_edit_only" placeholder="Prénoms" required="1"/>
+						</h1>
+						<h2>
+							<field name="job_title" placeholder="Job Position"/>
+						</h2>
+						<field name="category_ids" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}" placeholder="Tags" groups="hr.group_hr_user"/>
+					</div>
+				</xpath>-->
+				<xpath expr="//page[@name='personal_information']" position="after">
+                    <page string="Données personnelles" groups="hr.group_hr_manager">
+                        <group>
+							<group string="Situation familiale">
+								<field name="marital"/>
+								<field name="spouse_complete_name" invisible="marital not in ['married', 'cohabitant']"/>
+								<field name="spouse_birthdate" invisible="marital not in ['married', 'cohabitant']"/>
+								<field name="num_cmu_conjoint" invisible="marital not in ['married', 'cohabitant']"/>
+								<field name="children"/>
+								<field name="enfants_a_charge" readonly="1" invisible="1"/>
+								<field name="total_children" invisible="1"/>
+								<field name="part_igr"/>
+								<separator string="Information sur la CMU"/>
+								<field name="num_secu_sociale"/>
+								<field name="pay_for_children" invisible="children == 0"/>
+								<field name="pay_for_women" invisible="marital != 'married'"/>
+								<field name="cmu_part"/>
+							</group>
+							<group string="Information RH">
+								<field name="type" widget="radio" options="{'horizontal': true}"/>
+								<field name="nature_employe" widget="radio" options="{'horizontal': true}"/>
+								<field name="category_id"/>
+								<field name="identification_id"/>
+								<field name="matricule_cnps"/>
+								<field name="piece_identite_id"/>
+								<field name="num_piece"/>
+								<separator string="Période de travail"/>
+								<field name="start_date"/>
+								<field name="seniority_employee"/>
+							</group>
+						</group>
+						<group>
+							<group string="Information bancaire">
+								<field name="mode_paiement" widget="radio" options="{'horizontal': true}"/>
+								<field name="banque_id"/>
+								<field name="code_banque"/>
+								<field name="code_guichet"/>
+								<field name="num_compte_bancaire"/>
+								<field name="cle_rib"/>
+							</group>
+							<group string="Etat civil">
+								<field name="country_id" string="Pays de naissance"/>
+								<field name="place_of_birth"/>
+								<field name="birthday"/>
+								<field name="age"/>
+								<field name="gender" string="Sexe"/>
+							</group>
+						</group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

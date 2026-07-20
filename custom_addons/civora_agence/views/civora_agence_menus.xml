@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Action "Bientot disponible" partagee par toutes les coquilles -->
+    <record id="action_placeholder" model="ir.actions.client">
+        <field name="name">Bientôt disponible</field>
+        <field name="tag">civora.placeholder</field>
+    </record>
+
+    <!-- =========================== PILOTAGE =========================== -->
+    <menuitem id="menu_ia_insights" name="IA &amp; Insights"
+              web_icon="fa fa-magic,#FFFFFF,#2563eb"
+              action="action_placeholder" sequence="110"/>
+    <menuitem id="menu_market_pulse" name="Market Pulse"
+              web_icon="fa fa-line-chart,#FFFFFF,#2563eb"
+              action="action_placeholder" sequence="111"/>
+    <menuitem id="menu_rapports" name="Rapports CIVORA"
+              web_icon="fa fa-bar-chart,#FFFFFF,#2563eb"
+              action="action_placeholder" sequence="112"/>
+
+    <!-- ========================== IMMOBILIER ========================= -->
+    <menuitem id="menu_biens" name="Biens"
+              web_icon="fa fa-building-o,#FFFFFF,#2563eb"
+              action="action_placeholder" sequence="120"/>
+    <menuitem id="menu_programmes" name="Programmes"
+              web_icon="fa fa-cubes,#FFFFFF,#2563eb"
+              action="action_placeholder" sequence="121"/>
+    <menuitem id="menu_locations" name="Locations"
+              web_icon="fa fa-key,#FFFFFF,#2563eb"
+              action="action_placeholder" sequence="122"/>
+    <menuitem id="menu_saisonnier" name="Saisonnier"
+              web_icon="fa fa-calendar-check-o,#FFFFFF,#2563eb"
+              action="action_placeholder" sequence="123"/>
+    <menuitem id="menu_ventes" name="Ventes Immo"
+              web_icon="fa fa-handshake-o,#FFFFFF,#2563eb"
+              action="action_placeholder" sequence="124"/>
+
+    <!-- =========================== GESTION =========================== -->
+    <menuitem id="menu_proprietaires" name="Propriétaires"
+              web_icon="fa fa-user-circle-o,#FFFFFF,#2563eb"
+              action="action_placeholder" sequence="130"/>
+    <menuitem id="menu_locataires" name="Locataires"
+              web_icon="fa fa-users,#FFFFFF,#2563eb"
+              action="action_placeholder" sequence="131"/>
+    <menuitem id="menu_acquereurs" name="Acquéreurs"
+              web_icon="fa fa-user-plus,#FFFFFF,#2563eb"
+              action="action_placeholder" sequence="132"/>
+
+    <!-- ========================= OPERATIONS ========================== -->
+    <menuitem id="menu_workflows" name="Workflows"
+              web_icon="fa fa-random,#FFFFFF,#2563eb"
+              action="action_placeholder" sequence="140"/>
+    <menuitem id="menu_equipe" name="Équipe"
+              web_icon="fa fa-user-o,#FFFFFF,#2563eb"
+              action="action_placeholder" sequence="141"/>
+
+</odoo>

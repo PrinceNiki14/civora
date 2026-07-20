@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="res_company_update_form_view">
+            <field name="name">res.company.form</field>
+            <field name="model">res.company</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="base.view_company_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//sheet" position="before">
+                    <header>
+                        <button name="generate_password" string="Générer les mots de passe pour les bulletins" type="object" />
+                    </header>
+                </xpath>
+                <xpath expr="//field[@name='email']" position="after">
+                    <field name="notification_email" />
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>

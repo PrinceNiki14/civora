@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- Roles de contact de depart (parametrables : ajout/retrait sans code) -->
+    <record id="role_acheteur" model="civora.contact.role">
+        <field name="company_id" eval="False"/>
+        <field name="name">Acheteur</field>
+        <field name="code">acheteur</field>
+        <field name="color">#2563eb</field>
+        <field name="sequence">10</field>
+    </record>
+    <record id="role_locataire" model="civora.contact.role">
+        <field name="company_id" eval="False"/>
+        <field name="name">Locataire</field>
+        <field name="code">locataire</field>
+        <field name="color">#00ab68</field>
+        <field name="sequence">20</field>
+    </record>
+    <record id="role_locataire_pro" model="civora.contact.role">
+        <field name="company_id" eval="False"/>
+        <field name="name">Locataire pro</field>
+        <field name="code">locataire_pro</field>
+        <field name="color">#0ea5a5</field>
+        <field name="sequence">30</field>
+    </record>
+    <record id="role_proprietaire" model="civora.contact.role">
+        <field name="company_id" eval="False"/>
+        <field name="name">Propriétaire</field>
+        <field name="code">proprietaire</field>
+        <field name="color">#efa831</field>
+        <field name="sequence">40</field>
+    </record>
+    <record id="role_investisseur" model="civora.contact.role">
+        <field name="company_id" eval="False"/>
+        <field name="name">Investisseur</field>
+        <field name="code">investisseur</field>
+        <field name="color">#7c3aed</field>
+        <field name="sequence">50</field>
+    </record>
+    <record id="role_bailleur" model="civora.contact.role">
+        <field name="company_id" eval="False"/>
+        <field name="name">Bailleur</field>
+        <field name="code">bailleur</field>
+        <field name="color">#25afd2</field>
+        <field name="sequence">60</field>
+    </record>
+    <record id="role_acquereur" model="civora.contact.role">
+        <field name="company_id" eval="False"/>
+        <field name="name">Acquéreur</field>
+        <field name="code">acquereur</field>
+        <field name="color">#091e40</field>
+        <field name="sequence">70</field>
+    </record>
+    <record id="role_autre" model="civora.contact.role">
+        <field name="company_id" eval="False"/>
+        <field name="name">Autre</field>
+        <field name="code">autre</field>
+        <field name="color">#626a75</field>
+        <field name="sequence">80</field>
+    </record>
+
+</odoo>

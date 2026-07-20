@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+	<data>
+
+		<record model="ir.ui.view" id="emprunt_tree_view">
+			<field name="name">hr.emprunt.tree</field>
+			<field name="model">hr.emprunt.loaning</field>
+			<field name="arch" type="xml">
+				<list string="Liste des emprunts">
+					<field name="name"/>
+					<field name="employee_id"/>
+					<field name="type_pret_id"/>
+					<field name="montant_emprunt"/>
+					<field name="taux" invisible="1"/>
+					<field name="date_emprunt"/>
+					<field name="date_echeance" invisible="1"/>
+					<field name="company_id"/>
+					<field name="remaining_emprunt" widget="progressbar" invisible="1"/>
+					<field name="state"/>
+				</list>
+			</field>
+		</record>
+
+		<record model="ir.ui.view" id="emprunt_form_view">
+			<field name="name">hr.emprunt.form</field>
+			<field name="model">hr.emprunt.loaning</field>
+			<field name="arch" type="xml">
+				<form string="Emprunts">
+					<header>
+						<button name="action_confirmed"
+								invisible="state != 'draft'"
+								string="Confirmer" type="object" class="oe_highlight"/>
+						<button name="action_set_draft"
+								invisible="state != 'confirmed'"
+								string="Mettre en brouillon" type="object" class="oe_highlight"/>
+						<button name="action_set_cancel"
+								invisible="state != 'confirmed'"
+								string="Annuler" type="object" class="oe_highlight"/>
+						<!--<button name="echeance_print" type="object" string="Imprimer" groups="hr_emprunt.emprunt_user"/>-->
+						<field name="state" widget="statusbar"/>
+					</header>
+					<sheet>
+						<div class="oe_title">
+                            <label for="employee_id" string="Employé"/>
+                            <h1>
+                                <field name="employee_id"
+									   readonly="state != 'draft' "
+                                       placeholder="e.g. John Doe"/>
+                            </h1>
+                            <h2>
+                                <field name="name" readonly="1"/>
+                            </h2>
+                        </div>
+						<group >
+							<group>
+								<field name="type_pret_id" domain="[('company_id', '=', company_id)]"/>
+								<field name="montant_emprunt" />
+								<field name="date_emprunt"/>
+								<field name="taux" invisible="1"/>
+								<field name='total_emprunt' invisible="1"/>
+								<field name="remaining_emprunt" widget="progressbar" invisible="1"/>
+							</group>
+							<group>
+								<field name="date_debut_remboursement" />
+								<field name="option" invisible="1"/>
+								<field name="date_echeance" invisible="1"/>
+								<field name="nb_echeance"/>
+								<field name="company_id"/>
+							</group>
+						</group>
+						<notebook>
+							<page string = "Echéances">
+								<field name="echeance_ids"  colspan="4" nolabel="1">
+									<list string="Echéances">
+										<field name="name"/>
+										<field name="montant" sum="Total des échéances"/>
+										<field name="montant_paye" sum="Montant payé" invisible="1"/>
+										<field name="montant_restant" sum="Montants restants" invisible="1"/>
+										<field name="date_prevu"/>
+										<field name="date_remboursement_echeance" invisible="1"/>
+										<field name="statut_echeance" invisible="1"/>
+									</list>
+									<form string="Echeances">
+										<header>
+											<button name="action_suspendre" string="Suspendre" type="object" />
+											<field name="statut_echeance" widget="statusbar"/>
+										</header>
+										<sheet>
+											<group col="4">
+												<field name="name"/>
+												<field name="montant" sum="Total des échéances"/>
+												<field name="montant_paye" sum="Montant payé" />
+												<field name="montant_restant" sum="Montants restants"/>
+												<field name="date_prevu"/>
+												<field name="date_remboursement_echeance"/>
+											</group>
+										</sheet>
+									</form>
+								</field>
+							</page>
+							<page string = "Notes">
+								<field name="notes" nolabel="1"/>
+							</page>
+						</notebook>
+					</sheet>
+				</form>
+			</field>
+		</record>
+
+		<record model="ir.actions.act_window" id="action_emprunt_loaning_view">
+			<field name="name">Échéanciers</field>
+			<field name="domain">[('company_id', '=', allowed_company_ids[0])]</field>
+            <field name="context">{'default_company_id': allowed_company_ids[0]}</field>
+			<field name="res_model">hr.emprunt.loaning</field>
+			<field name="view_mode">list,form</field>
+			<field name="help" type="html">
+			  <p class="o_view_nocontent_smiling_face">
+				Créer une fiche d'Échéancier
+			  </p>
+			</field>
+		</record>
+
+		<!--<menuitem id="hr_emprunt_loaning_menu" name="Echéanciers de paiement" parent="id_emprunt_menu" action="action_emprunt_loaning_view"
+				  sequence="100"/>-->
+		<record id="hr_emprunt_loaning_rule_view_tree" model="ir.ui.view">
+        <field name="name">hr.emprunt_loaning.rule.tree</field>
+        <field name="model">hr.emprunt_loaning.rule</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="company_id"/>
+            </list>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="hr_emprunt_loaning_rule_form_view">
+        <field name="name">hr.emprunt_loaning.rule.form</field>
+        <field name="model">hr.emprunt_loaning.rule</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+							<field name="company_id"/>
+                        </group>
+						<group>
+                            <field name="code"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_hr_emprunt_loaning_rule" model="ir.actions.act_window">
+        <field name="name">Type d'emprunt</field>
+        <field name="type">ir.actions.act_window</field>
+		<field name="domain">[('company_id', '=', allowed_company_ids[0])]</field>
+		<field name="context">{'default_company_id': allowed_company_ids[0]}</field>
+        <field name="res_model">hr.emprunt_loaning.rule</field>
+        <field name="view_mode">list,form</field>
+    </record>
+		<menuitem
+        id="hr_emprunt_loaning_menu0"
+		name="Echéanciers"
+        parent="hr_work_entry_contract_enterprise.menu_hr_payroll_root"
+        sequence="99"/>
+			<menuitem
+			id="hr_emprunt_loaning_menu1"
+			action="action_emprunt_loaning_view"
+			parent="hr_emprunt_loaning_menu0"
+			sequence="1"/>
+			<menuitem
+				id="menu_hr_emprunt_loaning_rule"
+				name="Type d'emprunt"
+				action="action_hr_emprunt_loaning_rule"
+				parent="hr_emprunt_loaning_menu0"
+				sequence="2"
+				/>
+	</data>
+</odoo>

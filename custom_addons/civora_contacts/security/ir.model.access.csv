@@ -1,0 +1,11 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_civora_role_user,civora.contact.role user,model_civora_contact_role,base.group_user,1,0,0,0
+access_civora_role_admin,civora.contact.role admin,model_civora_contact_role,base.group_system,1,1,1,1
+access_civora_source_user,civora.contact.source user,model_civora_contact_source,base.group_user,1,0,0,0
+access_civora_source_admin,civora.contact.source admin,model_civora_contact_source,base.group_system,1,1,1,1
+access_civora_segment_user,civora.contact.segment user,model_civora_contact_segment,base.group_user,1,0,0,0
+access_civora_segment_admin,civora.contact.segment admin,model_civora_contact_segment,base.group_system,1,1,1,1
+access_civora_interaction_user,civora.interaction user,model_civora_interaction,base.group_user,1,1,1,1
+access_civora_interaction_admin,civora.interaction admin,model_civora_interaction,base.group_system,1,1,1,1
+access_civora_agent_role_user,civora.agent.role user,model_civora_agent_role,base.group_user,1,0,0,0
+access_civora_agent_role_admin,civora.agent.role admin,model_civora_agent_role,base.group_system,1,1,1,1

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_core.Drawer">
+    <div class="civora-drawer-overlay" t-on-click="() => props.onClose()"/>
+    <div t-att-class="rootClass">
+        <div class="civora-drawer-head">
+            <div class="civora-drawer-head-txt">
+                <div t-if="props.icon" class="civora-drawer-ico">
+                    <i t-attf-class="fa {{props.icon}}"/>
+                </div>
+                <div class="civora-drawer-head-labels">
+                    <div class="civora-drawer-title" t-esc="props.title"/>
+                    <div t-if="props.subtitle" class="civora-drawer-sub" t-esc="props.subtitle"/>
+                </div>
+            </div>
+            <button class="civora-drawer-close" t-on-click="() => props.onClose()">
+                <i class="fa fa-times"/>
+            </button>
+        </div>
+        <div class="civora-drawer-body">
+            <t t-slot="default"/>
+        </div>
+        <div t-if="props.slots and props.slots.footer" class="civora-drawer-foot">
+            <t t-slot="footer"/>
+        </div>
+    </div>
+</t>
+
+</templates>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_move_refund_form_fne" model="ir.ui.view">
+        <field name="name">account.move.refund.form.fne</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Ajouter les champs invisibles -->
+            <field name="partner_id" position="after">
+                <field name="fne_is_refund_eligible" invisible="1"/>
+                <field name="fne_refund_certified" invisible="1"/>
+                <field name="fne_original_invoice_id" invisible="1"/>
+                <field name="fne_original_fne_id" invisible="1"/>
+                <field name="fne_refund_items_count" invisible="1"/>
+                <field name="fne_refund_reference" invisible="1"/>
+                <field name="fne_refund_qr_url" invisible="1"/>
+            </field>
+
+            <!-- Boutons -->
+            <button name="action_post" position="after">
+                <!-- Bouton Certification Avoir -->
+                <button name="action_certify_fne_refund"
+                        type="object"
+                        string="Certifier Avoir FNE"
+                        class="btn-warning"
+                        invisible="move_type != 'out_refund' or not fne_is_refund_eligible or fne_refund_certified"
+                        confirm="Êtes-vous sûr de vouloir certifier cet avoir auprès de la FNE ? Cette action est irréversible."
+                        help="Certifier cet avoir auprès de la FNE"/>
+
+                <!-- Bouton Télécharger Avoir FNE -->
+                <button name="action_download_fne_refund_pdf"
+                        type="object"
+                        string="📥 Télécharger Avoir FNE"
+                        class="oe_highlight"
+                        invisible="move_type != 'out_refund' or not fne_refund_certified or not fne_refund_qr_url"
+                        help="Télécharger la facture d'avoir certifiée FNE"/>
+
+                <!-- Bouton Voir QR Code Avoir
+                <button name="action_view_fne_refund_qr_code"
+                        type="object"
+                        string="Voir QR Code Avoir"
+                        class="btn-secondary"
+                        invisible="move_type != 'out_refund' or not fne_refund_qr_url"
+                        help="Afficher le QR code de vérification de l'avoir FNE"/>  -->
+ 
+                <!-- Bouton Debug -->
+                <button name="debug_fne_refund_status"
+                        type="object"
+                        string="🔍 Debug Avoir"
+                        class="btn-secondary"
+                        groups="base.group_no_one"
+                        invisible="move_type != 'out_refund'"
+                        help="Debug du statut de l'avoir"/>
+            </button>
+
+            <!-- Onglet -->
+            <xpath expr="//notebook" position="inside">
+                <page string="Certification Avoir FNE" invisible="move_type != 'out_refund'">
+
+                    <group string="Informations Avoir FNE">
+                        <group>
+                            <field name="fne_is_refund_eligible" readonly="1"/>
+                            <field name="fne_refund_certified" readonly="1"/>
+                            <field name="fne_original_invoice_id" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="fne_original_fne_id" readonly="1"/>
+                            <field name="fne_refund_items_count" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <!-- Résultats certification -->
+                    <group string="Résultats Certification" invisible="not fne_refund_certified">
+                        <group>
+                            <field name="fne_refund_reference" readonly="1"/>
+                            <field name="fne_refund_qr_url" readonly="1" widget="url"/>
+                        </group>
+                        <group>
+                            <field name="fne_refund_balance_sticker" readonly="1"/>
+                            <field name="fne_refund_warning" readonly="1"/>
+                        </group>
+                    </group>
+
+                </page>
+            </xpath>
+
+            <!-- Indicateurs -->
+            <xpath expr="//div[@class='oe_title']" position="after">
+                <div class="alert alert-success" role="alert"
+                     invisible="move_type != 'out_refund' or not fne_refund_certified">
+                    <strong>✅ Avoir Certifié FNE</strong><br/>
+                    Référence: <field name="fne_refund_reference" readonly="1" class="oe_inline"/>
+                </div>
+
+                <div class="alert alert-info" role="alert"
+                     invisible="move_type != 'out_refund' or not fne_is_refund_eligible or fne_refund_certified">
+                    <strong>📋 Avoir Éligible FNE</strong><br/>
+                    <small>Articles correspondants: <field name="fne_refund_items_count" readonly="1" class="oe_inline"/></small>
+                </div>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

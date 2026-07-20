@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hr.fdfp,hr.fdfp,model_hr_fdfp,,1,1,1,1
+access_hr.fdfp.line,hr.fdfp.line,model_hr_fdfp_line,,1,1,1,1

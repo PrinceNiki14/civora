@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+		<!-- gestion des employés -->
+		<record model="ir.ui.view" id="hr_employee_inh_form_view">
+			<field name="name">hr.employee.form</field>
+			<field name="model">hr.employee</field>
+			<field name="type">form</field>
+			<field name="inherit_id" ref="hr.view_employee_form"/>
+			<field name="arch" type="xml">
+                <xpath expr="//group[@name='active_group']//field[@name='user_id']" position="after">
+                    <field name="password_payslip" password="True"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

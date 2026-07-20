@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+
+    <!--
+        Regles multi-societe CIVORA Biens.
+        - Biens : strictement rattaches a une societe (donnees du parc).
+        - Types de bien : partage possible (company_id vide = global) ou specifique.
+        Regles globales (sans groupe) : s'appliquent a tous les utilisateurs.
+    -->
+
+    <record id="civora_property_company_rule" model="ir.rule">
+        <field name="name">civora.property : multi-societe</field>
+        <field name="model_id" ref="model_civora_property"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="civora_property_type_company_rule" model="ir.rule">
+        <field name="name">civora.property.type : multi-societe</field>
+        <field name="model_id" ref="model_civora_property_type"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="civora_property_image_company_rule" model="ir.rule">
+        <field name="name">civora.property.image : multi-societe</field>
+        <field name="model_id" ref="model_civora_property_image"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="civora_visit_request_company_rule" model="ir.rule">
+        <field name="name">civora.visit.request : multi-societe</field>
+        <field name="model_id" ref="model_civora_visit_request"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+</odoo>

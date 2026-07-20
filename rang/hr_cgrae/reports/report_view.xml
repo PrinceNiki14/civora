@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        <!--<report
+            string="Livre de paie"
+            id="report_hr_payroll_wizard"
+            model="hr.payroll.book.wizard"
+            report_type="qweb-pdf"
+            name="hr_payroll_book.report_payroll_wizard"
+            file="hr_payroll_book.report_payroll_wizard"
+            print_report_name="('Livre de paie')"
+        />-->
+        <record id="paperformat_euro" model="report.paperformat">
+            <field name="name">A4</field>
+            <field name="default" eval="True" />
+            <field name="format">A4</field>
+            <field name="page_height">0</field>
+            <field name="page_width">0</field>
+            <field name="orientation">Landscape</field>
+            <field name="margin_top">0</field>
+            <field name="margin_bottom">1</field>
+            <field name="margin_left">7</field>
+            <field name="margin_right">7</field>
+            <field name="header_line" eval="False" />
+            <field name="header_spacing">19</field>
+            <field name="dpi">90</field>
+        </record>
+
+        <!--<report
+            id="report_hr_cgrae_id"
+            model="hr.cgrae"
+            string="Rapport cotisation CGRAE"
+            report_type="qweb-pdf"
+            name="hr_cgrae.report_hr_cgrae"
+            file="hr_cgrae.report_hr_cgrae"
+            <field name="paperformat_id" ref="sirh_personnel.paperformat_euro"/>
+        />-->
+        <record id="report_hr_cgrae_id" model="ir.actions.report">
+        <field name="name">Rapport cotisation CGRAE</field>
+        <field name="model">hr.cgrae</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">hr_cgrae.report_hr_cgrae</field>
+        <field name="report_file">hr_cgrae.report_hr_cgrae</field>
+        <field name="print_report_name">FRapport cotisation CGRAE</field>
+        <field name="paperformat_id" ref="hr_cgrae.paperformat_euro"/>
+        <field name="binding_model_id" ref="model_hr_cgrae"/>
+        <field name="binding_type">report</field>
+    </record>
+
+        <!--<report
+            id="report_hr_cgrae_id"
+            model="hr.cgrae"
+            string="Rapport cotisation CGRAE"
+            report_type="xlsx"
+            name="hr_payroll_book.report_cmu_xlsx"
+            file="Rapport CGRAE"
+            attachment_use="False"
+        />-->
+
+    </data>
+
+</odoo>

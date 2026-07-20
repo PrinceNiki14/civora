@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_calendar.EventDrawer">
+    <CivoraDrawer title="drawerTitle" subtitle="'Planifiez un événement'"
+                  variant="'modal'" size="'lg'" icon="'fa-calendar'"
+                  onClose="() => props.onClose(false)">
+        <div class="civora-lf">
+            <div t-if="state.loading" class="civora-lf-loading"><i class="fa fa-circle-o-notch fa-spin"/> Chargement…</div>
+            <t t-else="">
+                <div t-if="state.error" class="civora-lf-error"><i class="fa fa-exclamation-circle"/> <t t-esc="state.error"/></div>
+
+                <div class="civora-lf-section">
+                    <div class="civora-lf-title">Événement</div>
+                    <div class="civora-lf-grid">
+                        <div class="civora-fld civora-col2">
+                            <label>Titre *</label>
+                            <input type="text" t-att-value="state.form.name" t-on-input="(ev) => this.setField('name', ev)" placeholder="Visite Villa Cocody — M. Koné"/>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Type</label>
+                            <select t-on-change="(ev) => this.setField('event_type', ev)">
+                                <option t-foreach="types" t-as="t" t-key="t.value" t-att-value="t.value" t-att-selected="state.form.event_type === t.value" t-esc="t.label"/>
+                            </select>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Statut</label>
+                            <select t-on-change="(ev) => this.setField('status', ev)">
+                                <option t-foreach="statuses" t-as="s" t-key="s.value" t-att-value="s.value" t-att-selected="state.form.status === s.value" t-esc="s.label"/>
+                            </select>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Début *</label>
+                            <input type="datetime-local" t-att-value="state.form.start" t-on-input="(ev) => this.setField('start', ev)"/>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Fin</label>
+                            <input type="datetime-local" t-att-value="state.form.stop" t-on-input="(ev) => this.setField('stop', ev)"/>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Modalité</label>
+                            <select t-on-change="(ev) => this.setField('mode', ev)">
+                                <option t-foreach="modes" t-as="m" t-key="m.value" t-att-value="m.value" t-att-selected="state.form.mode === m.value" t-esc="m.label"/>
+                            </select>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Lieu</label>
+                            <input type="text" t-att-value="state.form.location" t-on-input="(ev) => this.setField('location', ev)"/>
+                        </div>
+                        <div class="civora-fld civora-col2">
+                            <label class="civora-pf-check">
+                                <input type="checkbox" t-att-checked="state.form.allday" t-on-change="(ev) => this.setCheckbox('allday', ev)"/>
+                                Journée entière
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="civora-lf-section">
+                    <div class="civora-lf-title">Liens</div>
+                    <div class="civora-lf-grid">
+                        <div class="civora-fld">
+                            <label>Agent</label>
+                            <select t-on-change="(ev) => this.setM2O('agent_id', ev)">
+                                <option value="">—</option>
+                                <option t-foreach="users" t-as="u" t-key="u.id" t-att-value="u.id" t-att-selected="state.form.agent_id === u.id" t-esc="u.name"/>
+                            </select>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Contact</label>
+                            <select t-on-change="(ev) => this.setM2O('partner_id', ev)">
+                                <option value="">—</option>
+                                <option t-foreach="partners" t-as="p" t-key="p.id" t-att-value="p.id" t-att-selected="state.form.partner_id === p.id" t-esc="p.name"/>
+                            </select>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Bien</label>
+                            <select t-on-change="(ev) => this.setM2O('property_id', ev)">
+                                <option value="">—</option>
+                                <option t-foreach="properties" t-as="pr" t-key="pr.id" t-att-value="pr.id" t-att-selected="state.form.property_id === pr.id" t-esc="pr.name"/>
+                            </select>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Opportunité</label>
+                            <select t-on-change="(ev) => this.setM2O('opportunity_id', ev)">
+                                <option value="">—</option>
+                                <option t-foreach="opportunities" t-as="o" t-key="o.id" t-att-value="o.id" t-att-selected="state.form.opportunity_id === o.id" t-esc="o.name"/>
+                            </select>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Piste</label>
+                            <select t-on-change="(ev) => this.setM2O('lead_id', ev)">
+                                <option value="">—</option>
+                                <option t-foreach="leads" t-as="l" t-key="l.id" t-att-value="l.id" t-att-selected="state.form.lead_id === l.id" t-esc="l.name"/>
+                            </select>
+                        </div>
+                        <div class="civora-fld civora-col2">
+                            <label>Notes</label>
+                            <textarea rows="2" t-att-value="state.form.notes" t-on-input="(ev) => this.setField('notes', ev)"/>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </div>
+
+        <t t-set-slot="footer">
+            <button t-if="props.eventId" class="civora-btn civora-btn-ghost" t-att-disabled="state.saving" t-on-click="() => this.remove()">
+                <i class="fa fa-trash"/> Supprimer
+            </button>
+            <button class="civora-btn civora-btn-outline" t-on-click="() => props.onClose(false)">Annuler</button>
+            <button class="civora-btn civora-btn-accent" t-att-disabled="state.saving" t-on-click="() => this.save()">
+                <i t-if="state.saving" class="fa fa-circle-o-notch fa-spin"/> Enregistrer
+            </button>
+        </t>
+    </CivoraDrawer>
+</t>
+
+</templates>

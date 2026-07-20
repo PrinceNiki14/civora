@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_core.SearchSystray">
+    <div class="civora-topbar-search" t-on-click="openSearch">
+        <i class="fa fa-search"/>
+        <span class="civora-search-ph">Rechercher biens, contacts, contrats…</span>
+        <kbd class="civora-kbd">⌘K</kbd>
+    </div>
+</t>
+
+<t t-name="civora_core.AskAISystray">
+    <button class="civora-askai" t-on-click="ask">
+        <i class="fa fa-magic"/>
+        <span>Ask CIVORA AI</span>
+    </button>
+</t>
+
+</templates>

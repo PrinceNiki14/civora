@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        <record id="paperformat_euro" model="report.paperformat">
+            <field name="name">A4</field>
+            <field name="default" eval="True" />
+            <field name="format">A4</field>
+            <field name="page_height">0</field>
+            <field name="page_width">0</field>
+            <field name="orientation">Landscape</field>
+            <field name="margin_top">0</field>
+            <field name="margin_bottom">1</field>
+            <field name="margin_left">7</field>
+            <field name="margin_right">7</field>
+            <field name="header_line" eval="False" />
+            <field name="header_spacing">19</field>
+            <field name="dpi">90</field>
+        </record>
+        <record id="report_hr_fdfp_wizard_id" model="ir.actions.report">
+            <field name="name">Rapport CNPS</field>
+            <field name="model">hr.cnps</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">hr_cnps.report_hr_cnps</field>
+            <field name="report_file">hr_cnps.report_hr_cnps</field>
+            <field name="print_report_name">Rapport CNPS</field>
+            <field name="paperformat_id" ref="hr_cnps.paperformat_euro"/>
+            <field name="binding_model_id" ref="model_hr_cnps"/>
+            <field name="binding_type">report</field>
+        </record>
+
+    </data>
+
+</odoo>

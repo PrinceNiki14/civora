@@ -1,0 +1,37 @@
+// =====================================================================
+// CIVORA Gestion - Acquereurs (reutilise .civora-owners-* de owners_screen)
+// =====================================================================
+
+.civora-owners {
+    .civora-buyers-toolbar {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+    }
+    .civora-buyers-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+    .civora-buyers-chip {
+        border: 1px solid $civora-border;
+        background: $civora-card;
+        color: $civora-muted;
+        border-radius: 999px;
+        padding: 7px 14px;
+        font-size: 12.5px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all .12s ease;
+        &:hover { border-color: $civora-muted; color: $civora-fg; }
+        &.is-active { background: $civora-accent; border-color: $civora-accent; color: #fff; }
+    }
+    .civora-buyers-match {
+        display: inline-block;
+        min-width: 26px;
+        padding: 2px 9px;
+        border-radius: 999px;
+        background: rgba(0, 171, 104, .12);
+        color: $civora-accent;
+        font-weight: 700;
+        font-size: 12.5px;
+    }
+}

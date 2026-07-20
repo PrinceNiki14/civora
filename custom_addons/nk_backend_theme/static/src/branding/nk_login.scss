@@ -1,0 +1,204 @@
+// =====================================================================
+// NK / CIVORA - Page de connexion (style CIVORA)
+// Habillage visuel. Aligne sur les tokens CIVORA (vert + navy + Inter).
+// =====================================================================
+
+$nk-accent:        #00ab68;   // vert emeraude CIVORA
+$nk-accent-dark:   #008a55;
+$nk-navy:          #091e40;
+$nk-muted:         #626a75;
+$nk-input-bg:      #eef2fb;
+$nk-page-bg:       #f8fafc;
+
+// Fond de page clair (comme image CIVORA)
+body.bg-100 {
+    background: $nk-page-bg !important;
+}
+
+// ---- Marque au-dessus de la carte -----------------------------------
+.nk_login_brand {
+    margin-bottom: 26px;
+    position: relative;   // au-dessus du decor anime
+    z-index: 1;
+
+    .nk_login_badge {
+        width: 58px;
+        height: 58px;
+        margin: 0 auto 10px;
+        border-radius: 15px;
+        background: linear-gradient(135deg, $nk-accent, $nk-accent-dark);
+        color: #fff;
+        font-size: 26px;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 8px 20px rgba(0, 171, 104, .28);
+    }
+    .nk_login_brandname {
+        font-size: 20px;
+        font-weight: 800;
+        letter-spacing: .02em;
+        color: $nk-navy;
+    }
+}
+
+// ---- La carte -------------------------------------------------------
+.nk_login_card.card {
+    max-width: 400px !important;
+    background: #fff !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 24px rgba(16, 24, 40, .08) !important;
+    position: relative;   // au-dessus du decor anime
+    z-index: 1;
+
+    .card-body {
+        padding: 28px 30px 24px;
+    }
+
+    // Titre + sous-titre
+    .nk_login_head {
+        margin-bottom: 22px;
+
+        .nk_login_title {
+            font-size: 23px;
+            font-weight: 800;
+            color: $nk-navy;
+            margin: 0 0 4px;
+        }
+        .nk_login_sub {
+            font-size: 14px;
+            color: $nk-muted;
+        }
+    }
+
+    // Champs
+    .form-label,
+    label {
+        font-weight: 600;
+        color: $nk-navy;
+        font-size: 13.5px;
+    }
+    .form-control {
+        background: $nk-input-bg;
+        border: 1px solid transparent;
+        border-radius: 10px;
+        padding: 11px 13px;
+        font-size: 14px;
+
+        &:focus {
+            background: #fff;
+            border-color: $nk-accent;
+            box-shadow: 0 0 0 3px rgba(0, 171, 104, .15);
+        }
+    }
+
+    // Bouton principal
+    .btn-primary {
+        background-color: $nk-accent;
+        border-color: $nk-accent;
+        border-radius: 10px;
+        padding: 11px;
+        font-weight: 700;
+
+        &:hover,
+        &:focus,
+        &:active {
+            background-color: $nk-accent-dark !important;
+            border-color: $nk-accent-dark !important;
+        }
+    }
+
+    // Liens (reinitialiser mdp, choisir utilisateur, cle d'acces, etc.)
+    a:not(.btn) {
+        color: $nk-accent;
+        text-decoration: none;
+        &:hover { color: $nk-accent-dark; text-decoration: underline; }
+    }
+
+    // Bouton "cle d'acces" (contour)
+    .btn-secondary,
+    .btn-outline-secondary {
+        border-radius: 10px;
+    }
+
+    // Pied de carte (gestion des bases / mention Odoo)
+    // Masque en entier -> edition Community (LGPL), retrait autorise.
+    // >>> Pour GARDER "Gestion des bases de donnees", commentez la regle
+    //     ci-dessous et decommentez le bloc alternatif juste apres.
+    .border-top {
+        display: none !important;
+    }
+
+    // -- Alternative : garder uniquement "Gestion des bases de donnees" --
+    // .border-top {
+    //     display: block !important;
+    //     a[href*="odoo.com"] { display: none !important; }   // masque la mention Odoo
+    //     a[href*="database"] { border: 0 !important; }        // enleve le separateur
+    // }
+}
+
+// =====================================================================
+// Masquage de la zone secondaire de connexion (aspect epure CIVORA)
+//   - "Vous n'avez pas de compte ?"  (inscription)
+//   - "Connexion en tant que superutilisateur"  (mode debug)
+//   - "- ou -" + "Utiliser une cle d'acces"
+// Le lien "Reinitialiser le mot de passe" reste (il est pres du champ mdp).
+// =====================================================================
+.oe_login_form a[href*="/web/signup"] { display: none !important; }
+.oe_login_buttons button[name="redirect"][value="/web/become"] { display: none !important; }
+.o_login_auth { display: none !important; }
+
+// =====================================================================
+// Decor anime : accessoires immobilier qui defilent en arriere-plan
+//   >>> Ajustez $nk-float-opacity pour rendre les icones plus/moins visibles
+// =====================================================================
+$nk-float-color: $nk-accent;
+$nk-float-opacity: .12;
+
+.nk_login_bg {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+
+    .nk_float {
+        position: absolute;
+        color: rgba(0, 171, 104, $nk-float-opacity);   // = $nk-accent transparent
+        animation: nk-drift linear infinite;
+        will-change: transform;
+    }
+
+    // Hauteur / taille / vitesse / decalage varies pour un vrai "defile"
+    .nk_float:nth-child(1) { top: 10%; font-size: 46px; animation-duration: 30s; animation-delay:   0s; }
+    .nk_float:nth-child(2) { top: 22%; font-size: 32px; animation-duration: 38s; animation-delay:  -5s; }
+    .nk_float:nth-child(3) { top: 35%; font-size: 54px; animation-duration: 26s; animation-delay:  -12s; }
+    .nk_float:nth-child(4) { top: 48%; font-size: 28px; animation-duration: 42s; animation-delay:  -3s; }
+    .nk_float:nth-child(5) { top: 60%; font-size: 40px; animation-duration: 34s; animation-delay:  -18s; }
+    .nk_float:nth-child(6) { top: 70%; font-size: 50px; animation-duration: 28s; animation-delay:  -9s; }
+    .nk_float:nth-child(7) { top: 82%; font-size: 30px; animation-duration: 40s; animation-delay:  -22s; }
+    .nk_float:nth-child(8) { top: 90%; font-size: 44px; animation-duration: 32s; animation-delay:  -15s; }
+    .nk_float:nth-child(9) { top: 16%; font-size: 36px; animation-duration: 36s; animation-delay:  -27s; }
+}
+
+@keyframes nk-drift {
+    from { transform: translateX(112vw) rotate(0deg); }
+    to   { transform: translateX(-18vw) rotate(22deg); }
+}
+
+// Accessibilite : pas d'animation si l'utilisateur la desactive
+@media (prefers-reduced-motion: reduce) {
+    .nk_login_bg .nk_float { animation: none; }
+}
+
+// ---- Polices CIVORA sur la page de connexion ----
+.oe_login_form,
+.nk_login_brand,
+.nk_login_card {
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+.nk_login_brandname,
+.nk_login_title {
+    font-family: "Plus Jakarta Sans", "Inter", sans-serif;
+}

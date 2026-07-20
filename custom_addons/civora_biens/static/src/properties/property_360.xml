@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_biens.Property360">
+    <div class="civora-p360">
+
+        <div t-if="state.loading" class="civora-p360-state">
+            <i class="fa fa-circle-o-notch fa-spin"/> Chargement…
+        </div>
+
+        <div t-elif="state.error" class="civora-p360-state">
+            <i class="fa fa-exclamation-triangle"/> <span t-esc="state.error"/>
+            <button class="civora-btn civora-btn-outline" t-on-click="() => this.goBack()">
+                <i class="fa fa-arrow-left"/> <t t-esc="backLabel"/>
+            </button>
+        </div>
+
+        <t t-else="">
+            <!-- Barre haute -->
+            <div class="civora-p360-topbar">
+                <button class="civora-p360-back" t-on-click="() => this.goBack()">
+                    <i class="fa fa-arrow-left"/> <t t-esc="backLabel"/>
+                </button>
+                <button class="civora-btn civora-btn-accent" t-on-click="() => this.openEdit()">
+                    <i class="fa fa-pencil"/> Modifier
+                </button>
+            </div>
+
+            <!-- En-tete : galerie + identite -->
+            <div class="civora-p360-header">
+                <div class="civora-p360-media">
+                    <div class="civora-p360-cover"
+                         t-att-class="mainImageSrc ? 'civora-p360-cover has-photo' : 'civora-p360-cover'"
+                         t-attf-style="{{ mainImageSrc ? 'background-image:url(' + mainImageSrc + ')' : '' }}">
+                        <i t-if="!mainImageSrc" class="fa fa-building"/>
+                    </div>
+                    <div t-if="state.images.length > 1" class="civora-p360-thumbs">
+                        <div t-foreach="state.images" t-as="img" t-key="img.id"
+                             t-att-class="'civora-p360-thumb' + (state.activeImageId === img.id ? ' is-active' : '')"
+                             t-attf-style="background-image:url({{ thumbSrc(img.id) }})"
+                             t-on-click="() => this.setImage(img.id)"/>
+                    </div>
+                </div>
+
+                <div class="civora-p360-id">
+                    <div class="civora-p360-name" t-esc="record.name || '—'"/>
+                    <div class="civora-p360-meta">
+                        <span t-if="record.ref" class="civora-p360-ref" t-esc="record.ref"/>
+                        <span><i class="fa fa-building-o"/> <t t-esc="typeLabel()"/></span>
+                        <CivoraBadge label="statusInfo.label" variant="statusInfo.variant"/>
+                    </div>
+                    <div class="civora-p360-loc"><i class="fa fa-map-marker"/> <t t-esc="locLabel()"/></div>
+
+                    <div class="civora-p360-kpis">
+                        <t t-if="isBuilding">
+                            <CivoraStatCard label="'Unités enregistrées'" value="buildingStats.total + ' / ' + buildingStats.planned" icon="'fa fa-home'"/>
+                            <CivoraStatCard label="'Unités louées'" value="buildingStats.occupied + ''" icon="'fa fa-check-circle'"/>
+                            <CivoraStatCard label="'Occupation'" value="buildingStats.occupancy + ' %'" icon="'fa fa-eye'"/>
+                            <CivoraStatCard label="'Revenu locatif cumulé'" value="kpiMoney(buildingStats.monthlyRevenue)" icon="'fa fa-money'"/>
+                        </t>
+                        <t t-else="">
+                            <CivoraStatCard label="'Prix'" value="kpiMoney(record.price)" icon="'fa fa-tag'"/>
+                            <CivoraStatCard label="'Revenu mensuel'" value="kpiMoney(record.monthly_revenue)" icon="'fa fa-money'"/>
+                            <CivoraStatCard label="'Rentabilité'" value="yieldLabel()" icon="'fa fa-line-chart'"/>
+                        </t>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Partage public -->
+            <div class="civora-p360-share">
+                <div class="civora-p360-share-l">
+                    <div class="civora-p360-share-t"><i class="fa fa-share-alt"/> Partage public</div>
+                    <div class="civora-p360-share-d">
+                        Lien à transmettre à un client — il consulte la fiche (photos + infos publiques) sans compte.
+                    </div>
+                </div>
+                <div class="civora-p360-share-r">
+                    <t t-if="!state.share.is_shared">
+                        <button class="civora-btn civora-btn-accent" t-on-click="() => this.toggleShare()">
+                            <i class="fa fa-link"/> Activer le partage
+                        </button>
+                    </t>
+                    <t t-else="">
+                        <input class="civora-p360-share-url" readonly="readonly" t-att-value="state.share.url"/>
+                        <button class="civora-btn civora-btn-accent" t-on-click="() => this.copyShareLink()">
+                            <i class="fa fa-clone"/> <t t-esc="state.share.copied ? 'Copié !' : 'Copier le lien'"/>
+                        </button>
+                        <button class="civora-btn civora-btn-outline" t-on-click="() => this.openPublic()">
+                            <i class="fa fa-external-link"/> Ouvrir
+                        </button>
+                        <button class="civora-p360-share-off" title="Désactiver le partage" t-on-click="() => this.toggleShare()">
+                            <i class="fa fa-power-off"/>
+                        </button>
+                    </t>
+                </div>
+            </div>
+
+            <!-- Onglets -->
+            <div class="civora-p360-tabs">
+                <div class="civora-p360-tabbar">
+                    <button t-foreach="tabList" t-as="t" t-key="t.id"
+                            t-att-class="'civora-p360-tab' + (state.activeTab === t.id ? ' is-active' : '')"
+                            t-on-click="() => this.setTab(t.id)">
+                        <t t-esc="t.label"/>
+                        <span t-if="t.count" class="civora-p360-tabcount" t-esc="t.count + ''"/>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Contenu -->
+            <div class="civora-p360-body">
+
+                <!-- APERCU -->
+                <div t-if="state.activeTab === 'overview'" class="civora-p360-grid">
+                    <div class="civora-p360-card">
+                        <div class="civora-p360-card-h">Caractéristiques</div>
+                        <div class="civora-p360-kv"><span>Type</span><b t-esc="typeLabel()"/></div>
+                        <div class="civora-p360-kv"><span>Transaction</span><b t-esc="transactionLabel()"/></div>
+                        <div class="civora-p360-kv"><span>Statut</span><b t-esc="statusInfo.label"/></div>
+                        <div class="civora-p360-kv"><span>Surface</span><b t-esc="numOr(record.surface, ' m²')"/></div>
+                        <div class="civora-p360-kv"><span>Pièces</span><b t-esc="numOr(record.rooms)"/></div>
+                        <div class="civora-p360-kv"><span>Chambres</span><b t-esc="numOr(record.bedrooms)"/></div>
+                        <div class="civora-p360-kv"><span>Salles de bain</span><b t-esc="numOr(record.bathrooms)"/></div>
+                        <div class="civora-p360-kv"><span>Année</span><b t-esc="numOr(record.year_built)"/></div>
+                    </div>
+
+                    <div class="civora-p360-card">
+                        <div class="civora-p360-card-h">Localisation</div>
+                        <div class="civora-p360-kv"><span>Ville</span><b t-esc="orDash(record.city)"/></div>
+                        <div class="civora-p360-kv"><span>Quartier</span><b t-esc="orDash(record.neighborhood)"/></div>
+                        <div class="civora-p360-kv"><span>Adresse</span><b t-esc="orDash(record.street)"/></div>
+                    </div>
+
+                    <div class="civora-p360-card">
+                        <div class="civora-p360-card-h">Pricing &amp; rentabilité</div>
+                        <div class="civora-p360-kv"><span>Prix</span><b t-esc="kpiMoney(record.price)"/></div>
+                        <div class="civora-p360-kv"><span>Revenu mensuel</span><b t-esc="kpiMoney(record.monthly_revenue)"/></div>
+                        <div class="civora-p360-kv"><span>Rentabilité</span><b t-esc="yieldLabel()"/></div>
+                        <div class="civora-p360-kv"><span>Mandat</span><b t-esc="mandateLabel()"/></div>
+                    </div>
+
+                    <div class="civora-p360-card">
+                        <div class="civora-p360-card-h">Propriétaire &amp; agent</div>
+                        <div class="civora-p360-kv"><span>Propriétaire</span><b t-esc="ownerLabel()"/></div>
+                        <div class="civora-p360-kv"><span>Agent référent</span><b t-esc="agentLabel()"/></div>
+                        <div class="civora-p360-kv"><span>Locataire actuel</span><b t-esc="tenantLabel()"/></div>
+                    </div>
+
+                    <div class="civora-p360-card" t-if="rentalConditions.length">
+                        <div class="civora-p360-card-h">Conditions de location</div>
+                        <div t-foreach="rentalConditions" t-as="c" t-key="c.label" class="civora-p360-kv">
+                            <span t-esc="c.label"/><b t-esc="c.value"/>
+                        </div>
+                    </div>
+
+                    <div class="civora-p360-card" t-if="saleConditions.length">
+                        <div class="civora-p360-card-h">Conditions de vente</div>
+                        <div t-foreach="saleConditions" t-as="c" t-key="c.label" class="civora-p360-kv">
+                            <span t-esc="c.label"/><b t-esc="c.value"/>
+                        </div>
+                    </div>
+
+                    <div class="civora-p360-card" t-if="record.parent_id">
+                        <div class="civora-p360-card-h">Unité d'immeuble</div>
+                        <div class="civora-p360-kv"><span>Immeuble</span><b t-esc="record.parent_id[1]"/></div>
+                        <div class="civora-p360-kv"><span>Étage</span><b t-esc="numOr(record.floor)"/></div>
+                        <div class="civora-p360-kv"><span>N° d'unité</span><b t-esc="orDash(record.unit_number)"/></div>
+                    </div>
+
+                    <div class="civora-p360-card civora-p360-card-wide" t-if="record.is_building">
+                        <div class="civora-p360-bldg-h">
+                            <div>
+                                <div class="civora-p360-card-h">
+                                    Unités affiliées — <t t-esc="buildingStats.total + ''"/> / <t t-esc="buildingStats.planned + ''"/>
+                                </div>
+                                <div class="civora-p360-bldg-sub">
+                                    <t t-esc="buildingStats.occupied + ''"/> occupée(s) ·
+                                    <t t-esc="buildingStats.available + ''"/> disponible(s) ·
+                                    <span t-esc="numOr(record.floors_count)"/> étage(s)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div t-if="!state.units.length" class="civora-p360-bldg-empty">
+                            <i class="fa fa-home"/>
+                            <div class="civora-p360-bldg-empty-t">Aucune unité enregistrée</div>
+                            <p>Ajoutez des unités depuis le Portfolio (bouton « Ajouter une unité » sur la carte de l'immeuble).</p>
+                        </div>
+
+                        <div t-else="" class="civora-p360-unitgrid">
+                            <div t-foreach="state.units" t-as="u" t-key="u.id"
+                                 class="civora-p360-unitcard" t-on-click="() => this.openUnit(u)">
+                                <div class="civora-p360-unitcard-cover"
+                                     t-att-class="u.image_128 ? 'civora-p360-unitcard-cover has-photo' : 'civora-p360-unitcard-cover'"
+                                     t-attf-style="{{ u.image_128 ? 'background-image:url(' + unitThumb(u) + ')' : '' }}">
+                                    <i t-if="!u.image_128" class="fa fa-camera"/>
+                                    <div class="civora-p360-unitcard-badges">
+                                        <span class="civora-p360-unitcard-apt" t-esc="unitAptLabel(u)"/>
+                                        <span t-if="u.floor" class="civora-p360-unitcard-floor" t-esc="'Ét. ' + u.floor"/>
+                                    </div>
+                                    <div class="civora-p360-unitcard-status">
+                                        <CivoraBadge label="unitStatus(u).label" variant="unitStatus(u).variant"/>
+                                    </div>
+                                </div>
+                                <div class="civora-p360-unitcard-body">
+                                    <div class="civora-p360-unitcard-top">
+                                        <span class="civora-p360-unitcard-name" t-esc="u.name"/>
+                                        <span class="civora-p360-unitcard-price" t-esc="unitPriceLabel(u)"/>
+                                    </div>
+                                    <div class="civora-p360-unitcard-specs">
+                                        <span t-if="u.bedrooms"><i class="fa fa-bed"/> <t t-esc="u.bedrooms + ''"/></span>
+                                        <span t-if="u.bathrooms"><i class="fa fa-bath"/> <t t-esc="u.bathrooms + ''"/></span>
+                                        <span t-if="u.surface"><i class="fa fa-arrows-alt"/> <t t-esc="unitSurface(u)"/></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="civora-p360-card civora-p360-card-wide" t-if="record.description or record.note">
+                        <div class="civora-p360-card-h">Description</div>
+                        <div t-if="record.description" class="civora-p360-notes" t-esc="record.description"/>
+                        <div t-if="record.note" class="civora-p360-notes civora-p360-internal">
+                            <i class="fa fa-lock"/> <t t-esc="record.note"/>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PHOTOS -->
+                <div t-elif="state.activeTab === 'photos'">
+                    <div t-if="!state.images.length" class="civora-p360-soon">
+                        <div class="civora-p360-soon-ico"><i class="fa fa-picture-o"/></div>
+                        <div class="civora-p360-soon-t">Aucune photo</div>
+                        <p>Ajoutez des photos via le bouton « Modifier ».</p>
+                    </div>
+                    <div t-else="" class="civora-p360-gallery">
+                        <div t-foreach="state.images" t-as="img" t-key="img.id"
+                             class="civora-p360-gitem"
+                             t-attf-style="background-image:url(/web/image/civora.property.image/{{ img.id }}/image_512)"/>
+                    </div>
+                </div>
+
+                <!-- DEMANDES DE VISITE -->
+                <div t-elif="state.activeTab === 'visits'">
+                    <div t-if="!state.requests.length" class="civora-p360-soon">
+                        <div class="civora-p360-soon-ico"><i class="fa fa-calendar-plus-o"/></div>
+                        <div class="civora-p360-soon-t">Aucune demande</div>
+                        <p>Les demandes de visite envoyées depuis la fiche publique apparaîtront ici.</p>
+                    </div>
+                    <div t-else="" class="civora-p360-reqs">
+                        <div t-foreach="state.requests" t-as="r" t-key="r.id" class="civora-p360-req">
+                            <div class="civora-p360-req-main">
+                                <div class="civora-p360-req-h">
+                                    <span class="civora-p360-req-name" t-esc="r.name"/>
+                                    <CivoraBadge label="reqState(r.state).label" variant="reqState(r.state).variant"/>
+                                </div>
+                                <div class="civora-p360-req-meta">
+                                    <span><i class="fa fa-phone"/> <t t-esc="r.phone"/></span>
+                                    <span t-if="r.email"><i class="fa fa-envelope-o"/> <t t-esc="r.email"/></span>
+                                    <span><i class="fa fa-clock-o"/> <t t-esc="reqDate(r.create_date)"/></span>
+                                </div>
+                                <div t-if="r.message" class="civora-p360-req-msg" t-esc="r.message"/>
+                            </div>
+                            <div class="civora-p360-req-actions">
+                                <div t-if="assignedLabel(r)" class="civora-p360-req-assigned">
+                                    <i class="fa fa-user-o"/> <t t-esc="assignedLabel(r)"/>
+                                    <button t-if="isMine(r)" class="civora-p360-req-release" title="Se retirer"
+                                            t-on-click="() => this.releaseRequest(r)">
+                                        <i class="fa fa-times"/>
+                                    </button>
+                                </div>
+                                <button t-else="" class="civora-btn civora-btn-accent civora-p360-req-take"
+                                        t-on-click="() => this.takeRequest(r)">
+                                    <i class="fa fa-hand-paper-o"/> Prendre en charge
+                                </button>
+                                <select class="civora-p360-req-state" t-on-change="(ev) => this.setRequestState(r, ev)">
+                                    <option t-foreach="requestStates" t-as="s" t-key="s.value"
+                                            t-att-value="s.value" t-att-selected="r.state === s.value"
+                                            t-esc="s.label"/>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ONGLETS CONTRIBUES (opportunités, etc.) -->
+                <t t-elif="activeContrib">
+                    <t t-component="activeContrib.Component" propertyId="propertyId"/>
+                </t>
+
+                <!-- PLACEHOLDERS MODULES -->
+                <div t-elif="state.activeTab === 'occupancy'" class="civora-p360-soon">
+                    <div class="civora-p360-soon-ico"><i class="fa fa-calendar-check-o"/></div>
+                    <div class="civora-p360-soon-t">Occupation</div>
+                    <p>Baux, locataires et périodes d'occupation — à venir avec les modules Locations &amp; Saisonnier.</p>
+                </div>
+                <div t-elif="state.activeTab === 'finance'" class="civora-p360-soon">
+                    <div class="civora-p360-soon-ico"><i class="fa fa-bar-chart"/></div>
+                    <div class="civora-p360-soon-t">Finance</div>
+                    <p>Loyers encaissés, reversements propriétaire et rentabilité nette — à venir avec la comptabilité.</p>
+                </div>
+                <div t-else="" class="civora-p360-soon">
+                    <div class="civora-p360-soon-ico"><i class="fa fa-folder-open-o"/></div>
+                    <div class="civora-p360-soon-t">Documents</div>
+                    <p>Mandat, titre foncier, contrats — à venir avec la gestion documentaire.</p>
+                </div>
+            </div>
+        </t>
+
+        <!-- Modale d'edition -->
+        <PropertyDrawer t-if="state.edit.open"
+                        mode="'edit'"
+                        propertyId="propertyId"
+                        onClose="() => this.closeEdit()"
+                        onSaved="() => this.onEditSaved()"/>
+    </div>
+</t>
+
+</templates>

@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_civora_property_user,civora.property user,model_civora_property,base.group_user,1,1,1,0
+access_civora_property_admin,civora.property admin,model_civora_property,base.group_system,1,1,1,1
+access_civora_property_type_user,civora.property.type user,model_civora_property_type,base.group_user,1,0,0,0
+access_civora_property_type_admin,civora.property.type admin,model_civora_property_type,base.group_system,1,1,1,1
+access_civora_property_image_user,civora.property.image user,model_civora_property_image,base.group_user,1,1,1,1
+access_civora_property_image_admin,civora.property.image admin,model_civora_property_image,base.group_system,1,1,1,1
+access_civora_visit_request_user,civora.visit.request user,model_civora_visit_request,base.group_user,1,1,1,0
+access_civora_visit_request_admin,civora.visit.request admin,model_civora_visit_request,base.group_system,1,1,1,1

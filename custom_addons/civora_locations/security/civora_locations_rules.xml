@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+
+    <!--
+        Regles multi-societe CIVORA Locations.
+        Donnees transactionnelles : rattachees strictement a la societe du bien.
+    -->
+
+    <record id="civora_lease_company_rule" model="ir.rule">
+        <field name="name">civora.lease : multi-societe</field>
+        <field name="model_id" ref="model_civora_lease"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="civora_lease_payment_company_rule" model="ir.rule">
+        <field name="name">civora.lease.payment : multi-societe</field>
+        <field name="model_id" ref="model_civora_lease_payment"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="civora_lease_receipt_company_rule" model="ir.rule">
+        <field name="name">civora.lease.receipt : multi-societe</field>
+        <field name="model_id" ref="model_civora_lease_receipt"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+</odoo>

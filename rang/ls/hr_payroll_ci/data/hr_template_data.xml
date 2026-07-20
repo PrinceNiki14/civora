@@ -1,0 +1,954 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="hr_payslip_input_type01" model="hr.payslip.input.type">
+            <field name="name">Salaire de base</field>
+            <field name="code">WAGE</field>
+        </record>
+        <record id="hr_payslip_input_type02" model="hr.payslip.input.type">
+            <field name="name">Sursalaire</field>
+            <field name="code">SURSA</field>
+        </record>
+        <record id="hr_payslip_input_type1" model="hr.payslip.input.type">
+            <field name="name">Congés Annuels</field>
+            <field name="code">CONG</field>
+        </record>
+        <record id="hr_payslip_input_type2" model="hr.payslip.input.type">
+            <field name="name">Indemnité de Logement</field>
+            <field name="code">INDML</field>
+        </record>
+        <record id="hr_payslip_input_type3" model="hr.payslip.input.type">
+            <field name="name">Prime de représentation</field>
+            <field name="code">REPR</field>
+        </record>
+        <record id="hr_payslip_input_type4" model="hr.payslip.input.type">
+            <field name="name">Prime de téléphone</field>
+            <field name="code">PHONE</field>
+        </record>
+        <record id="hr_payslip_input_type5" model="hr.payslip.input.type">
+            <field name="name">Prime de garde</field>
+            <field name="code">GARD</field>
+        </record>
+        <record id="hr_payslip_input_type6" model="hr.payslip.input.type">
+            <field name="name">Commission</field>
+            <field name="code">COMM</field>
+        </record>
+        <record id="hr_payslip_input_type7" model="hr.payslip.input.type">
+            <field name="name">Prime de précarité</field>
+            <field name="code">PRECA</field>
+        </record>
+        <record id="hr_payslip_input_type8" model="hr.payslip.input.type">
+            <field name="name">Indemnité de voiture</field>
+            <field name="code">INDVOIT</field>
+        </record>
+        <record id="hr_payslip_input_type9" model="hr.payslip.input.type">
+            <field name="name">Indemnité d'éloignement</field>
+            <field name="code">ELOIG</field>
+        </record>
+        <record id="hr_payslip_input_type10" model="hr.payslip.input.type">
+            <field name="name">Indemnité scolaire</field>
+            <field name="code">SCOLAR</field>
+        </record>
+        <record id="hr_payslip_input_type11" model="hr.payslip.input.type">
+            <field name="name">Per diem</field>
+            <field name="code">PERDIEM</field>
+        </record>
+        <record id="hr_payslip_input_type12" model="hr.payslip.input.type">
+            <field name="name">Préavis non exécuté</field>
+            <field name="code">PREANEX</field>
+        </record>
+        <record id="hr_payslip_input_type13" model="hr.payslip.input.type">
+            <field name="name">Indemnité de fin de contrat</field>
+            <field name="code">FINCONTR</field>
+        </record>
+        <record id="hr_payslip_input_type14" model="hr.payslip.input.type">
+            <field name="name">Indemnité de préavis</field>
+            <field name="code">PREAVIS</field>
+        </record>
+        <record id="hr_payslip_input_type15" model="hr.payslip.input.type">
+            <field name="name">Indemnité de licencement imposable</field>
+            <field name="code">LICIMP</field>
+        </record>
+        <record id="hr_payslip_input_type16" model="hr.payslip.input.type">
+            <field name="name">Dotation en Carburant</field>
+            <field name="code">CARBU</field>
+        </record>
+        <record id="hr_payslip_input_type17" model="hr.payslip.input.type">
+            <field name="name">Aventages en nature</field>
+            <field name="code">AVTGN</field>
+        </record>
+        <record id="hr_payslip_input_type18" model="hr.payslip.input.type">
+            <field name="name">Primes de transport imposable</field>
+            <field name="code">TRSP_IMP</field>
+        </record>
+        <record id="hr_payslip_input_type19" model="hr.payslip.input.type">
+            <field name="name">Prime d'assurances</field>
+            <field name="code">ASSUR</field>
+        </record>
+        <record id="hr_payslip_input_type20" model="hr.payslip.input.type">
+            <field name="name">Indemnité de nourriture</field>
+            <field name="code">INDMNRT</field>
+        </record>
+        <record id="hr_payslip_input_type21" model="hr.payslip.input.type">
+            <field name="name">Prime de responsabilité</field>
+            <field name="code">RESP</field>
+        </record>
+        <record id="hr_payslip_input_type22" model="hr.payslip.input.type">
+            <field name="name">Prime de fonction</field>
+            <field name="code">FONCT</field>
+        </record>
+        <record id="hr_payslip_input_type23" model="hr.payslip.input.type">
+            <field name="name">Gratification</field>
+            <field name="code">GRATIF</field>
+        </record>
+        <record id="hr_payslip_input_type24" model="hr.payslip.input.type">
+            <field name="name">Indemnité de Rupture</field>
+            <field name="code">RUPT</field>
+        </record>
+        <record id="hr_payslip_input_type25" model="hr.payslip.input.type">
+            <field name="name">Prime de rendement</field>
+            <field name="code">RENDMNT</field>
+        </record>
+        <record id="hr_payslip_input_type26" model="hr.payslip.input.type">
+            <field name="name">Indemnité Compensatrice de préavis</field>
+            <field name="code">CPREVIS</field>
+        </record>
+        <record id="hr_payslip_input_type27" model="hr.payslip.input.type">
+            <field name="name">Nombre de personnes pour CMU</field>
+            <field name="code">CMU</field>
+        </record>
+        <record id="28" model="hr.payslip.input.type">
+            <field name="name">Prime de transport</field>
+            <field name="code">TRSP</field>
+        </record>
+        <record id="hr_payslip_input_type29" model="hr.payslip.input.type">
+            <field name="name">Reprise avantage en nature</field>
+            <field name="code">RAVTGN</field>
+        </record>
+        <record id="hr_payslip_input_type30" model="hr.payslip.input.type">
+            <field name="name">Emprunts à deduire</field>
+            <field name="code">EMP</field>
+        </record>
+        <record id="hr_payslip_input_type31" model="hr.payslip.input.type">
+            <field name="name">Retenues pour absences</field>
+            <field name="code">ABS</field>
+        </record>
+        <record id="IMPAY" model="hr.salary.rule_template">
+            <field name="name">Jours de impayés</field>
+            <field name="sequence">1</field>
+            <field name="code">IMPAY</field>
+            <field name="category_id" ref="hr_payroll_ci.JRS"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = worked_days.UNPAY</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = 0.0</field>
+        </record>
+        <record id="WORK100" model="hr.salary.rule_template">
+            <field name="name">Jours travaillé</field>
+            <field name="sequence">2</field>
+            <field name="code">WORK100</field>
+            <field name="category_id" ref="hr_payroll_ci.JPAY"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = worked_days.WORK100</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = worked_days.WORK100.number_of_days</field>
+        </record>
+        <record id="TJRPAY" model="hr.salary.rule_template">
+            <field name="name">Total jours à payer</field>
+            <field name="sequence">97</field>
+            <field name="code">TJRPAY</field>
+            <field name="category_id" ref="hr_payroll_ci.JRS"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = categories.JPAY</field>
+        </record>
+        <record id="HDAYS" model="hr.salary.rule_template">
+            <field name="name">Jours de congés pris</field>
+            <field name="sequence">97</field>
+            <field name="code">HDAYS</field>
+            <field name="category_id" ref="hr_payroll_ci.JPAY"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+                if worked_days.CONG:
+                result = worked_days.CONG.number_of_days
+                else:
+                result = 0
+            </field>
+        </record>
+        <record id="TWDAYS" model="hr.salary.rule_template">
+            <field name="name">Total jours à payer</field>
+            <field name="sequence">98</field>
+            <field name="code">TWDAYS</field>
+            <field name="category_id" ref="hr_payroll_ci.JPAY"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = categories.JPAY</field>
+        </record>
+        <record id="TMDAYS" model="hr.salary.rule_template">
+            <field name="name">Total jours à payer</field>
+            <field name="sequence">98</field>
+            <field name="code">TMDAYS</field>
+            <field name="category_id" ref="hr_payroll_ci.JPAY"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = TJRPAY + HDAYS</field>
+        </record>
+        <record id="TX" model="hr.salary.rule_template">
+            <field name="name">Taux</field>
+            <field name="sequence">99</field>
+            <field name="code">TX</field>
+            <field name="category_id" ref="hr_payroll_ci.BASIC"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = worked_days.WORK100.rate</field>
+        </record>
+        <record id="BASESAL" model="hr.salary.rule_template">
+            <field name="name">Salaire de base</field>
+            <field name="sequence">100</field>
+            <field name="code">BASE</field>
+            <field name="category_id" ref="hr_payroll_ci.BASE"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">percentage</field>
+            <field name="amount_percentage_base">inputs.WAGE.amount</field>
+            <field name="amount_percentage">100.0</field>
+            <field name="quantity">worked_days.WORK100.rate</field>
+        </record>
+        <record id="SURSAL" model="hr.salary.rule_template">
+            <field name="name">Sursalaire</field>
+            <field name="sequence">101</field>
+            <field name="code">SURSA</field>
+            <field name="category_id" ref="hr_payroll_ci.SURSALAIRE"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">percentage</field>
+            <field name="amount_percentage_base">inputs.SURSA.amount</field>
+            <field name="amount_percentage">100.0</field>
+            <field name="quantity">worked_days.WORK100.rate</field>
+        </record>
+        <record id="ANC" model="hr.salary.rule_template">
+            <field name="name">Primes d'anciennété</field>
+            <field name="sequence">200</field>
+            <field name="code">PANC</field>
+            <field name="category_id" ref="hr_payroll_ci.PRIM"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = 26 > payslip.payslip_an_anciennete> 1</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = 0.01 * BASE * payslip.payslip_an_anciennete</field>
+        </record>
+        <record id="CONG" model="hr.salary.rule_template">
+            <field name="name">Congés Annuels</field>
+            <field name="sequence">200</field>
+            <field name="code">CONG</field>
+            <field name="category_id" ref="hr_payroll_ci.PRIM"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = inputs.CONG</field>
+            <field name="amount_select">percentage</field>
+            <field name="amount_percentage_base">inputs.CONG.amount</field>
+            <field name="amount_percentage">100.0</field>
+            <field name="quantity">worked_days.CONG.number_of_days</field>
+        </record>
+        <record id="LOGMT" model="hr.salary.rule_template">
+            <field name="name">Indemnité de Logement</field>
+            <field name="sequence">201</field>
+            <field name="code">INDML</field>
+            <field name="category_id" ref="hr_payroll_ci.PRIM"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = inputs.INDML</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = inputs.INDML.amount</field>
+        </record>
+        <record id="RESPO" model="hr.salary.rule_template">
+            <field name="name">Prime de responsabilité</field>
+            <field name="sequence">215</field>
+            <field name="code">RESP</field>
+            <field name="category_id" ref="hr_payroll_ci.PRIM"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = inputs.RESP</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = inputs.RESP.amount</field>
+        </record>
+        <record id="REPR" model="hr.salary.rule_template">
+            <field name="name">Prime de représentation</field>
+            <field name="sequence">203</field>
+            <field name="code">REPR</field>
+            <field name="category_id" ref="hr_payroll_ci.INDMNI"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = inputs.REPR</field>
+            <field name="amount_select">percentage</field>
+            <field name="amount_percentage_base">inputs.REPR.amount</field>
+            <field name="amount_percentage">100.0</field>
+            <field name="quantity">worked_days.WORK100.number_of_days</field>
+        </record>
+        <record id="INDMNRT" model="hr.salary.rule_template">
+            <field name="name">Indemnité de nourriture</field>
+            <field name="sequence">215</field>
+            <field name="code">INDMNRT</field>
+            <field name="category_id" ref="hr_payroll_ci.PRIM"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = inputs.INDMNRT</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = inputs.INDMNRT.amount</field>
+        </record>
+        <record id="PHONE" model="hr.salary.rule_template">
+            <field name="name">PRIME DE TELEPHONE</field>
+            <field name="sequence">203</field>
+            <field name="code">PHONE</field>
+            <field name="category_id" ref="hr_payroll_ci.PRIM"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = inputs.PHONE</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = inputs.PHONE.amount</field>
+        </record>
+        <record id="GARDE" model="hr.salary.rule_template">
+            <field name="name">Prime de garde</field>
+            <field name="sequence">203</field>
+            <field name="code">GARD</field>
+            <field name="category_id" ref="hr_payroll_ci.PRIM"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = inputs.GARD</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = inputs.GARD.amount</field>
+        </record>
+        <record id="FONCT" model="hr.salary.rule_template">
+            <field name="name">Prime de fonction</field>
+            <field name="sequence">223</field>
+            <field name="code">FONCT</field>
+            <field name="category_id" ref="hr_payroll_ci.PRIM"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = inputs.FONCT</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = inputs.FONCT.amount</field>
+        </record>
+        <record id="GRATIF" model="hr.salary.rule_template">
+            <field name="name">Gratification</field>
+            <field name="sequence">224</field>
+            <field name="code">GRATIF</field>
+            <field name="category_id" ref="hr_payroll_ci.PRIM"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = inputs.GRATIF</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = inputs.GRATIF.amount</field>
+        </record>
+        <record id="RUPT" model="hr.salary.rule_template">
+            <field name="name">Indemnité de Rupture</field>
+            <field name="sequence">226</field>
+            <field name="code">RUPT</field>
+            <field name="category_id" ref="hr_payroll_ci.PRIM"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = inputs.RUPT</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = inputs.RUPT.amount</field>
+        </record>
+        <record id="RENDMNT" model="hr.salary.rule_template">
+            <field name="name">Prime de rendement</field>
+            <field name="sequence">250</field>
+            <field name="code">RENDMNT</field>
+            <field name="category_id" ref="hr_payroll_ci.PRIM"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = inputs.RENDMNT</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = inputs.RENDMNT.amount</field>
+        </record>
+        <record id="COMM" model="hr.salary.rule_template">
+            <field name="name">COMMISSIONS</field>
+            <field name="sequence">203</field>
+            <field name="code">COMM</field>
+            <field name="category_id" ref="hr_payroll_ci.PRIM"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = inputs.COMM</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = inputs.COMM.amount</field>
+        </record>
+        <record id="PRECA" model="hr.salary.rule_template">
+            <field name="name">Prime de précarité</field>
+            <field name="sequence">203</field>
+            <field name="code">PRECA</field>
+            <field name="category_id" ref="hr_payroll_ci.PRIM"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = inputs.PRECA</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = inputs.PRECA.amount</field>
+        </record>
+        <record id="INDVOIT" model="hr.salary.rule_template">
+            <field name="name">Indemnité de voiture</field>
+            <field name="sequence">203</field>
+            <field name="code">INDVOIT</field>
+            <field name="category_id" ref="hr_payroll_ci.PRIM"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = inputs.INDVOIT</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = inputs.INDVOIT.amount</field>
+        </record>
+        <record id="ELOIG" model="hr.salary.rule_template">
+            <field name="name">Indemnité d'éloignement</field>
+            <field name="sequence">203</field>
+            <field name="code">ELOIG</field>
+            <field name="category_id" ref="hr_payroll_ci.PRIM"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = inputs.ELOIG</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = inputs.ELOIG.amount</field>
+        </record>
+        <record id="SCOLAR" model="hr.salary.rule_template">
+            <field name="name">Indemnité scolaire</field>
+            <field name="sequence">203</field>
+            <field name="code">SCOLAR</field>
+            <field name="category_id" ref="hr_payroll_ci.PRIM"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = inputs.SCOLAR</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = inputs.SCOLAR.amount</field>
+        </record>
+        <record id="PERDIEM" model="hr.salary.rule_template">
+            <field name="name">Per diem</field>
+            <field name="sequence">203</field>
+            <field name="code">PERDIEM</field>
+            <field name="category_id" ref="hr_payroll_ci.PRIM"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = inputs.PERDIEM</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = inputs.PERDIEM.amount</field>
+        </record>
+        <record id="PREANEX" model="hr.salary.rule_template">
+            <field name="name">Préavis non exécuté</field>
+            <field name="sequence">203</field>
+            <field name="code">PREANEX</field>
+            <field name="category_id" ref="hr_payroll_ci.DED"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = inputs.PREANEX</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = inputs.PREANEX.amount</field>
+        </record>
+        <record id="FINCONTR" model="hr.salary.rule_template">
+            <field name="name">Indemnité de fin de contrat</field>
+            <field name="sequence">203</field>
+            <field name="code">FINCONTR</field>
+            <field name="category_id" ref="hr_payroll_ci.PRIM"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = inputs.FINCONTR</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = inputs.FINCONTR.amount</field>
+        </record>
+        <record id="PREAVIS" model="hr.salary.rule_template">
+            <field name="name">Indemnité de préavis</field>
+            <field name="sequence">203</field>
+            <field name="code">PREAVIS</field>
+            <field name="category_id" ref="hr_payroll_ci.PRIM"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = inputs.PREAVIS</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = inputs.PREAVIS.amount</field>
+        </record>
+        <record id="LICIMP" model="hr.salary.rule_template">
+            <field name="name">Indemnité de licencement imposable</field>
+            <field name="sequence">203</field>
+            <field name="code">LICIMP</field>
+            <field name="category_id" ref="hr_payroll_ci.PRIM"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = inputs.LICIMP</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = inputs.LICIMP.amount</field>
+        </record>
+        <record id="CARB" model="hr.salary.rule_template">
+            <field name="name">Dotation en Carburant</field>
+            <field name="sequence">204</field>
+            <field name="code">CARBU</field>
+            <field name="category_id" ref="hr_payroll_ci.PRIM"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = inputs.CARBU</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = inputs.CARBU.amount</field>
+        </record>
+        <record id="AVTGN" model="hr.salary.rule_template">
+            <field name="name">Aventages en nature</field>
+            <field name="sequence">205</field>
+            <field name="code">AVTGN</field>
+            <field name="category_id" ref="hr_payroll_ci.PRIM"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = inputs.AVTGN</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = inputs.AVTGN.amount</field>
+        </record>
+        <record id="TRSPIMP" model="hr.salary.rule_template">
+            <field name="name">Primes de transport imposable</field>
+            <field name="sequence">206</field>
+            <field name="code">TRSP_IMP</field>
+            <field name="category_id" ref="hr_payroll_ci.PRIM"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = inputs.TRSP_IMP</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = inputs.TRSP_IMP.amount</field>
+        </record>
+        <record id="ASSUR" model="hr.salary.rule_template">
+            <field name="name">Prime d'assurances</field>
+            <field name="sequence">207</field>
+            <field name="code">ASSUR</field>
+            <field name="category_id" ref="hr_payroll_ci.PRIM"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = inputs.ASSUR</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = inputs.ASSUR.amount</field>
+        </record>
+        <record id="BASEH" model="hr.salary.rule_template">
+            <field name="name">Base horaire</field>
+            <field name="sequence">208</field>
+            <field name="code">BASEH</field>
+            <field name="appears_on_payslip" eval="0"/>
+            <field name="category_id" ref="hr_payroll_ci.BASIC"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+                result = (BASE + SURSA) / 173.33
+            </field>
+        </record>
+        <record id="HS15" model="hr.salary.rule_template">
+            <field name="name">HEURE SUPPL. 15%</field>
+            <field name="sequence">209</field>
+            <field name="code">HS15</field>
+            <field name="category_id" ref="hr_payroll_ci.HSUPP"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = worked_days.HS15 and worked_days.HS15>0</field>
+            <field name="amount_select">percentage</field>
+            <field name="amount_percentage_base">BASEH</field>
+            <field name="amount_percentage">115.0</field>
+            <field name="quantity">worked_days.HS15.number_of_hours</field>
+        </record>
+        <record id="HS50" model="hr.salary.rule_template">
+            <field name="name">HEURE SUPPL. 50%</field>
+            <field name="sequence">210</field>
+            <field name="code">HS50</field>
+            <field name="category_id" ref="hr_payroll_ci.HSUPP"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = worked_days.HS50 and worked_days.HS50>0</field>
+            <field name="amount_select">percentage</field>
+            <field name="amount_percentage_base">BASEH</field>
+            <field name="amount_percentage">150.0</field>
+            <field name="quantity">worked_days.HS50.number_of_hours</field>
+        </record>
+        <record id="HS75" model="hr.salary.rule_template">
+            <field name="name">HEURE SUPPL. 75%</field>
+            <field name="sequence">211</field>
+            <field name="code">HS75</field>
+            <field name="category_id" ref="hr_payroll_ci.HSUPP"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = worked_days.HS75 and worked_days.HS75>0</field>
+            <field name="amount_select">percentage</field>
+            <field name="amount_percentage_base">BASEH</field>
+            <field name="amount_percentage">175.0</field>
+            <field name="quantity">worked_days.HS75.number_of_hours</field>
+        </record>
+        <record id="HS100" model="hr.salary.rule_template">
+            <field name="name">HEURE SUPPL. 100%</field>
+            <field name="sequence">212</field>
+            <field name="code">HS100</field>
+            <field name="category_id" ref="hr_payroll_ci.HSUPP"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = worked_days.HS100 and worked_days.HS100>0</field>
+            <field name="amount_select">percentage</field>
+            <field name="amount_percentage_base">BASEH</field>
+            <field name="amount_percentage">175.0</field>
+            <field name="quantity">worked_days.HS100.number_of_hours</field>
+        </record>
+        <record id="CPREVIS" model="hr.salary.rule_template">
+            <field name="name">Indemnité Compensatrice de préavis</field>
+            <field name="sequence">299</field>
+            <field name="code">CPREVIS</field>
+            <field name="appears_on_payslip" eval="1"/>
+            <field name="category_id" ref="hr_payroll_ci.INDM"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = inputs.CPREVIS</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+                result = inputs.CPREVIS.amount
+            </field>
+        </record>
+        <record id="BRUT" model="hr.salary.rule_template">
+            <field name="name">Net Imposable</field>
+            <field name="sequence">300</field>
+            <field name="code">BRUT</field>
+            <field name="category_id" ref="hr_payroll_ci.BRUT_EMP"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+                temp = categories.BASE + categories.SURSALAIRE + categories.INDM + categories.PRIM - categories.DED +
+                categories.HSUPP + categories.CATSOC
+                result = temp
+            </field>
+        </record>
+        <!--<record id="ABAT" model="hr.salary.rule_template">
+            <field name="name">Abatement 10%</field>
+            <field name="sequence">301</field>
+            <field name="code">ABAT</field>
+            <field name="category_id" ref="hr_payroll_ci.BASIC"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = inputs.RESP or inputs.REPR</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+result = (BRUT+inputs.TRSP.amount)*0.1
+             </field>
+          </record>-->
+        <record id="BASEIMP" model="hr.salary.rule_template">
+            <field name="name">Base imposable impôt</field>
+            <field name="sequence">302</field>
+            <field name="code">BASE_IMP</field>
+            <field name="category_id" ref="hr_payroll_ci.BRUT_EMP"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+                temp = BRUT - categories.CATSOC
+                result = temp
+            </field>
+        </record>
+        <record id="BASEIMPASSUR" model="hr.salary.rule_template">
+            <field name="name">Base Imposable CNPS</field>
+            <field name="sequence">303</field>
+            <field name="code">BASE_CNPS</field>
+            <field name="category_id" ref="hr_payroll_ci.BRUT_EMP"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = BRUT
+            </field>
+        </record>
+        <record id="ITS" model="hr.salary.rule_template">
+            <field name="name">Impôt sur trait. et sal. (ITS)</field>
+            <field name="sequence">400</field>
+            <field name="code">ITS</field>
+            <field name="category_id" ref="hr_payroll_ci.RET_EMP"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">percentage</field>
+            <field name="amount_percentage_base">BASE_IMP</field>
+            <field name="amount_percentage">1.2</field>
+            <field name="quantity">1</field>
+        </record>
+        <record id="CN" model="hr.salary.rule_template">
+            <field name="name">Contribution Nationale (CN)</field>
+            <field name="sequence">401</field>
+            <field name="code">CN</field>
+            <field name="category_id" ref="hr_payroll_ci.RET_EMP"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+                temp=0
+                SNI = BASE_IMP * 0.8
+                if (SNI &lt; 50000) :
+                temp= 0
+                elif (50000 &lt; SNI and SNI &lt;= 130000 ) :
+                temp= (SNI *0.015)-750
+                elif (130000 &lt; SNI and SNI &lt;=200000) :
+                temp= (SNI *0.05)-5300
+                else:
+                temp= (SNI *0.1)-15300
+                result = temp
+            </field>
+        </record>
+        <record id="IGR" model="hr.salary.rule_template">
+            <field name="name">Impôt Général sur Revenu (IGR)</field>
+            <field name="sequence">402</field>
+            <field name="code">IGR</field>
+            <field name="category_id" ref="hr_payroll_ci.RET_EMP"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+                B = BASE_IMP
+                R = ((80/100*B) - (ITS + CN))*85/100
+                N = employee.part_igr
+                Q = R/N
+                total = 0
+                if 25000 > Q :
+                total = 0
+                elif 25000 &lt; Q and Q &lt;=45583 :
+                total = (R * 10/110) - (2273*N)
+                elif 45583 &lt; Q and Q &lt;= 81583 :
+                total = (R * 15/115) - (4076*N)
+                elif 81583 &lt; Q and Q &lt;= 126583 :
+                total = (R * 20/120) - (7031*N)
+                elif 126583 &lt; Q and Q &lt;= 220333 :
+                total = (R * 25/125) - (11250*N)
+                elif 220333 &lt; Q and Q &lt;= 389083 :
+                total = (R * 35/135) - (24306 * N)
+                elif 389083 &lt; Q and Q &lt;= 842166 :
+                total = (R * 45/145) - (44181*N)
+                else :
+                total = (R*60/160) - (98633*N)
+                result = (total - categories.CATEG_IGR)
+            </field>
+        </record>
+        <record id="CNPS" model="hr.salary.rule_template">
+            <field name="name">Retraite Générale (C.N.P.S)</field>
+            <field name="sequence">403</field>
+            <field name="code">CNPS</field>
+            <field name="category_id" ref="hr_payroll_ci.RET_EMP"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">percentage</field>
+            <field name="amount_percentage_base">min(BASE_CNPS,2700000)</field>
+            <field name="amount_percentage">6.3</field>
+            <field name="quantity">1</field>
+        </record>
+        <record id="CMU" model="hr.salary.rule_template">
+            <field name="name">Prélèvement CMU</field>
+            <field name="sequence">404</field>
+            <field name="code">CMU</field>
+            <field name="category_id" ref="hr_payroll_ci.RET_EMP"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = inputs.CMU</field>
+            <field name="amount_select">percentage</field>
+            <field name="amount_percentage_base">500</field>
+            <field name="amount_percentage">100</field>
+            <field name="quantity">inputs.CMU.amount</field>
+        </record>
+        <!--		<record id="CMU" model="hr.salary.rule_template">
+                    <field name="name">Prélèvement CMU</field>
+                    <field name="sequence">403</field>
+                    <field name="code">CMU</field>
+                    <field name="category_id" ref="hr_payroll_ci.RET_EMP"/>
+                    <field name="condition_select">python</field>
+                    <field name="condition_python">result = employee.cmu_employe2</field>
+                    <field name="amount_select">code</field>
+                    <field name="amount_python_compute">result = employee.cmu_employe2</field>
+                  </record>-->
+        <!--		<record id="CMU_P" model="hr.salary.rule_template">-->
+        <!--			<field name="name">Prélèvement CMU part patronale</field>-->
+        <!--			<field name="sequence">454</field>-->
+        <!--			<field name="code">CMU_P</field>-->
+        <!--			<field name="category_id" ref="hr_payroll_ci.IMP_EMP"/>-->
+        <!--			<field name="condition_select">python</field>-->
+        <!--			<field name="amount_select">percentage</field>-->
+        <!--			<field name="amount_percentage_base">500</field>-->
+        <!--			<field name="amount_percentage">100</field>-->
+        <!--			<field name="quantity">1</field>-->
+        <!--      	</record>-->
+        <record id="CMU_P" model="hr.salary.rule_template">
+            <field name="name">Prélèvement CMU part patronale</field>
+            <field name="sequence">454</field>
+            <field name="code">CMU_P</field>
+            <field name="category_id" ref="hr_payroll_ci.IMP_EMP"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = inputs.CMU</field>
+            <field name="amount_select">percentage</field>
+            <field name="amount_percentage_base">500</field>
+            <field name="amount_percentage">100</field>
+            <field name="quantity">inputs.CMU.amount</field>
+        </record>
+        <record id="ITSPAT" model="hr.salary.rule_template">
+            <field name="name">Impôt sur trait. et sal. (ITS) Patronale</field>
+            <field name="sequence">452</field>
+            <field name="code">ITS_P</field>
+            <field name="category_id" ref="hr_payroll_ci.IMP_EMP"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = contract.expatried is False</field>
+            <field name="amount_select">percentage</field>
+            <field name="amount_percentage_base">BASE_IMP</field>
+            <field name="amount_percentage">1.2</field>
+            <field name="quantity">1</field>
+        </record>
+        <record id="ITSPAT2" model="hr.salary.rule_template">
+            <field name="name">Impôt sur trait. et sal. (ITS) Patronale</field>
+            <field name="sequence">452</field>
+            <field name="code">ITS_P</field>
+            <field name="category_id" ref="hr_payroll_ci.IMP_EMP"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = contract.expatried is True</field>
+            <field name="amount_select">percentage</field>
+            <field name="amount_percentage_base">BASE_IMP</field>
+            <field name="amount_percentage">10.2</field>
+            <field name="quantity">1</field>
+        </record>
+        <record id="BACT_PF" model="hr.salary.rule_template">
+            <field name="name">Base accident de travail et Prestation familiale</field>
+            <field name="sequence">451</field>
+            <field name="code">BACT_PF</field>
+            <field name="category_id" ref="hr_payroll_ci.O_TOTALS"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+                if employee.type == 'm':
+                result = min(BRUT,75000)
+                else:
+                result = WORK100 * 3231
+            </field>
+        </record>
+        <record id="ACT" model="hr.salary.rule_template">
+            <field name="name">Accidents du Travail</field>
+            <field name="sequence">457</field>
+            <field name="code">ACT</field>
+            <field name="category_id" ref="hr_payroll_ci.CPATR"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">percentage</field>
+            <field name="amount_percentage_base">BACT_PF</field>
+            <field name="amount_percentage">3</field>
+            <field name="quantity">1</field>
+        </record>
+        <record id="PF" model="hr.salary.rule_template">
+            <field name="name">Prestations familiales</field>
+            <field name="sequence">456</field>
+            <field name="code">PF</field>
+            <field name="category_id" ref="hr_payroll_ci.CPATR"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">percentage</field>
+            <field name="amount_percentage_base">BACT_PF</field>
+            <field name="amount_percentage">5.75</field>
+            <field name="quantity">1</field>
+        </record>
+        <record id="TAXEAP" model="hr.salary.rule_template">
+            <field name="name">Taxe d'apprentissage</field>
+            <field name="sequence">457</field>
+            <field name="code">TAXEAP</field>
+            <field name="category_id" ref="hr_payroll_ci.IMP_EMP"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">percentage</field>
+            <field name="amount_percentage_base">BASE_IMP</field>
+            <field name="amount_percentage">0.4</field>
+            <field name="quantity">1</field>
+        </record>
+        <record id="TAXEFP" model="hr.salary.rule_template">
+            <field name="name">Taxe Formation Prof. Continue</field>
+            <field name="sequence">458</field>
+            <field name="code">TAXEFP</field>
+            <field name="category_id" ref="hr_payroll_ci.IMP_EMP"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">percentage</field>
+            <field name="amount_percentage_base">BASE_IMP</field>
+            <field name="amount_percentage">0.6</field>
+            <field name="quantity">1</field>
+        </record>
+        <record id="TAXEFP" model="hr.salary.rule_template">
+            <field name="name">Taxe Formation Prof. Continue Regul</field>
+            <field name="sequence">459</field>
+            <field name="code">TAXEFPR</field>
+            <field name="category_id" ref="hr_payroll_ci.IMP_EMP"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">percentage</field>
+            <field name="amount_percentage_base">BASE_IMP</field>
+            <field name="amount_percentage">0.6</field>
+            <field name="quantity">1</field>
+        </record>
+        <record id="TRET" model="hr.salary.rule_template">
+            <field name="name">Total Retenues</field>
+            <field name="sequence">499</field>
+            <field name="code">RET</field>
+            <field name="category_id" ref="hr_payroll_ci.RETENUES"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = categories.RET_EMP</field>
+        </record>
+        <record id="CHPAT" model="hr.salary.rule_template">
+            <field name="name">Total charges patronales</field>
+            <field name="sequence">499</field>
+            <field name="code">CHPAT</field>
+            <field name="category_id" ref="hr_payroll_ci.COMP"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = categories.IMP_EMP + categories.CPATR</field>
+        </record>
+        <record id="TRSP" model="hr.salary.rule_template">
+            <field name="name">Prime de transport</field>
+            <field name="sequence">501</field>
+            <field name="code">TRSP</field>
+            <field name="category_id" ref="hr_payroll_ci.INDMNI"/>
+            <field name="condition_select">python</field>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = inputs.TRSP</field>
+            <field name="amount_select">percentage</field>
+            <field name="amount_percentage_base">inputs.TRSP.amount</field>
+            <field name="amount_percentage">100</field>
+            <field name="quantity">worked_days.WORK100.rate</field>
+        </record>
+        <record id="RAVTGN" model="hr.salary.rule_template">
+            <field name="name">Reprise avantage en nature</field>
+            <field name="sequence">505</field>
+            <field name="code">RAVTGN</field>
+            <field name="category_id" ref="hr_payroll_ci.RETENUES"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = result = inputs.AVTGN</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = inputs.AVTGN.amount</field>
+        </record>
+        <record id="TINDNIMP" model="hr.salary.rule_template">
+            <field name="name">Total Indemnité non imposable</field>
+            <field name="sequence">599</field>
+            <field name="appears_on_payslip" eval="0"/>
+            <field name="code">TINDNIMP</field>
+            <field name="category_id" ref="hr_payroll_ci.AUTR"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = categories.INDMNI</field>
+        </record>
+        <record id="BRUTTOTAL" model="hr.salary.rule_template">
+            <field name="name">Salaire Brut Total</field>
+            <field name="sequence">600</field>
+            <field name="code">BRUT_TOTAL</field>
+            <field name="category_id" ref="hr_payroll_ci.BRUT_EMP"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+                temp = BRUT + categories.INDMNI
+                result = temp
+            </field>
+        </record>
+        <record id="NETIMP" model="hr.salary.rule_template">
+            <field name="name">Net Imposable</field>
+            <field name="sequence">601</field>
+            <field name="code">NET_IMP</field>
+            <field name="category_id" ref="hr_payroll_ci.BASIC"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = BRUT - categories.SALC</field>
+        </record>
+        <record id="NETPAY" model="hr.salary.rule_template">
+            <field name="name">Net de paie</field>
+            <field name="sequence">699</field>
+            <field name="code">NET_PAIE</field>
+            <field name="category_id" ref="hr_payroll_ci.NET_IMP"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+                temp = BRUT - RET + TINDNIMP
+                result = temp
+            </field>
+        </record>
+        <record id="EMPR" model="hr.salary.rule_template">
+            <field name="name">Emprunts à deduire</field>
+            <field name="sequence">700</field>
+            <field name="code">EMP</field>
+            <field name="category_id" ref="hr_payroll_ci.ARETE"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = inputs.EMP</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = inputs.EMP.amount</field>
+        </record>
+        <record id="ABS" model="hr.salary.rule_template">
+            <field name="name">Retenues pour absences</field>
+            <field name="sequence">701</field>
+            <field name="code">ABS</field>
+            <field name="category_id" ref="hr_payroll_ci.ARETE"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = inputs.ABS</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = inputs.ABS.amount</field>
+        </record>
+
+        <record id="NET" model="hr.salary.rule_template">
+            <field name="name">Net</field>
+            <field name="sequence" eval="800"/>
+            <field name="code">NET</field>
+            <field name="category_id" ref="hr_payroll_ci.NET_IMP"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+                temp=NET_PAIE - (categories.ARETE + categories.ASS ) + categories.AS
+                result = temp
+            </field>
+        </record>
+        <record id="CNPSPAT" model="hr.salary.rule_template">
+            <field name="name">CNPS Patronales</field>
+            <field name="sequence" eval="453"/>
+            <field name="code">CNPS_P</field>
+            <field name="category_id" ref="hr_payroll_ci.CPATR"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">percentage</field>
+            <field name="amount_percentage_base">min(BASE_CNPS,2700000)</field>
+            <field name="amount_percentage">7.7</field>
+            <field name="quantity">1</field>
+        </record>
+    </data>
+</odoo>

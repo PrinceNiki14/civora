@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- Sources d'acquisition de depart (modifiables/extensibles) -->
+    <record id="source_portail" model="civora.contact.source">
+        <field name="company_id" eval="False"/>
+        <field name="name">Portail</field>
+        <field name="code">portail</field>
+        <field name="sequence">10</field>
+    </record>
+    <record id="source_reseau" model="civora.contact.source">
+        <field name="company_id" eval="False"/>
+        <field name="name">Réseau</field>
+        <field name="code">reseau</field>
+        <field name="sequence">20</field>
+    </record>
+    <record id="source_walk_in" model="civora.contact.source">
+        <field name="company_id" eval="False"/>
+        <field name="name">Walk-in</field>
+        <field name="code">walk_in</field>
+        <field name="sequence">30</field>
+    </record>
+    <record id="source_site_web" model="civora.contact.source">
+        <field name="company_id" eval="False"/>
+        <field name="name">Site web</field>
+        <field name="code">site_web</field>
+        <field name="sequence">40</field>
+    </record>
+    <record id="source_referencement" model="civora.contact.source">
+        <field name="company_id" eval="False"/>
+        <field name="name">Référencement</field>
+        <field name="code">referencement</field>
+        <field name="sequence">50</field>
+    </record>
+    <record id="source_reseaux_sociaux" model="civora.contact.source">
+        <field name="company_id" eval="False"/>
+        <field name="name">Réseaux sociaux</field>
+        <field name="code">reseaux_sociaux</field>
+        <field name="sequence">60</field>
+    </record>
+
+</odoo>

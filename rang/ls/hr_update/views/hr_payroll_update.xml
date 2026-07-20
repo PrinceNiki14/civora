@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="hr_payroll_structure_type_view_form">
+            <field name="name">hr.payroll.structure.type.form.inherit</field>
+            <field name="model">hr.payroll.structure.type</field>
+            <field name="inherit_id" ref="hr_payroll.hr_payroll_structure_type_view_form"/>
+            <field name="arch" type="xml">
+                <field name="wage_type" position="after">
+                    <field name="company_id"/>
+                </field>
+            </field>
+        </record>
+        
+        <record model="ir.ui.view" id="hr_payroll_structure_type_view_tree">
+            <field name="name">hr.payroll.structure.type.tree.inherit</field>
+            <field name="model">hr.payroll.structure.type</field>
+            <field name="inherit_id" ref="hr_payroll.hr_payroll_structure_type_view_tree"/>
+            <field name="arch" type="xml">
+                <field name="wage_type" position="after">
+                    <field name="company_id" readonly="1"/>
+                </field>
+            </field>
+        </record>
+        
+        <record id="hr_payroll.action_hr_payroll_structure_type" model="ir.actions.act_window">
+            <field name="name">Structure Types</field>
+            <field name="res_model">hr.payroll.structure.type</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="hr_payroll.hr_payroll_structure_type_view_search"/>
+            <field name="domain">[('company_id', '=', allowed_company_ids[0])]</field>
+            <field name="context">{'default_company_id': allowed_company_ids[0],'payroll_check_country': 1}</field>
+        </record>
+
+        <record id="hr_payroll.action_view_hr_payroll_structure_list_form" model="ir.actions.act_window">
+            <field name="name">Salary Structures</field>
+            <field name="res_model">hr.payroll.structure</field>
+            <field name="view_mode">tree,kanban,form</field>
+            <field name="domain">[('company_id', '=', allowed_company_ids[0])]</field>
+            <field name="context">{'default_company_id': allowed_company_ids[0],'search_default_group_by_type_id': 1}</field>
+        </record>
+
+        <record id="hr_payroll.action_view_hr_payroll_structure_from_type" model="ir.actions.act_window">
+            <field name="name">Salary Structures</field>
+            <field name="res_model">hr.payroll.structure</field>
+            <field name="view_mode">tree,kanban,form</field>
+            <field name="domain">[('company_id', '=', allowed_company_ids[0])]</field>
+            <field name="context">{
+                'search_default_type_id': active_id,
+                'default_type_id': active_id,
+                'search_default_group_by_type_id': 1,
+            }</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Add a new salary structure
+                </p>
+            </field>
+        </record>
+        
+        <record id="hr_payroll.view_hr_payslip_by_employees" model="ir.ui.view">
+            <field name="name">hr.payslip.employees.form</field>
+            <field name="model">hr.payslip.employees</field>
+            <field name="arch" type="xml">
+                <form string="Payslips by Employees">
+                    <field name="company_id" invisible="1"/>
+                    <span nolabel="1" colspan="2">This wizard will generate payslips for all selected employee(s) based on the dates and credit note specified on Payslips Run.</span>
+                    <separator string="Salary Structure"/>
+                    <div class="o_row">
+                        <p class="text-muted w-50">Set a specific structure if you wish to make an extra payslip (eg: End of the year bonus). If you leave this field empty, a regular payslip will be generated for all the selected employees, based on their contracts configuration.</p>
+                        <field name="structure_id" nolabel="1" domain="[('company_id', '=', company_id)]"/>
+                    </div>
+                    <separator string="Department" colspan="2"/>
+                    <div class="o_row">
+                        <p class="text-muted w-50">Set a specific department if you wish to select all the employees from this department (and subdepartments) at once.</p>
+                        <field name="department_id" nolabel="1"/>
+                    </div>
+                    <separator string="Employees"/>
+                    <field name="employee_ids" nolabel="1">
+                        <tree>
+                            <field name="name"/>
+                            <field name="work_email"/>
+                            <field name="department_id"/>
+                        </tree>
+                    </field>
+                    <footer>
+                        <button string="Generate" name="compute_sheet" type="object" class="oe_highlight" data-hotkey="q"/>
+                        <button string="Cancel" class="btn btn-secondary" special="cancel" data-hotkey="z"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+        
+        <record model="ir.ui.view" id="view_hr_salary_rule_form_inherit">
+            <field name="name">hr.salary.rule.form.inherit</field>
+            <field name="model">hr.salary.rule</field>
+            <field name="inherit_id" ref="hr_payroll.hr_salary_rule_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='struct_id']" position="replace">
+                    <field name="company_id"/>
+                    <field name="struct_id" domain="[('company_id', '=', company_id)]"/>
+                </xpath>
+            </field>
+        </record>
+        
+        <record id="hr.hr_work_location_action" model="ir.actions.act_window">
+            <field name="name">Work Locations</field>
+            <field name="res_model">hr.work.location</field>
+            <field name="domain">[('company_id', '=', allowed_company_ids[0])]</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+    </data>
+</odoo>

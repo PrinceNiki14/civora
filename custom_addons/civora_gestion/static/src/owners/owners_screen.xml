@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_gestion.Owners">
+    <div class="civora-owners">
+
+        <div class="civora-owners-head">
+            <div>
+                <div class="civora-owners-title">Propriétaires</div>
+                <div class="civora-owners-sub">
+                    <t t-esc="state.stats.count"/> propriétaires · <t t-esc="state.stats.biens"/> biens gérés ·
+                    <t t-esc="state.stats.occupancy"/> % d'occupation moyenne
+                </div>
+            </div>
+        </div>
+
+        <div class="civora-owners-kpis">
+            <CivoraStatCard label="'Propriétaires'" value="state.stats.count + ''" icon="'fa fa-user-o'"/>
+            <CivoraStatCard label="'Biens sous gestion'" value="state.stats.biens + ''" icon="'fa fa-building'"/>
+            <CivoraStatCard label="'Valeur du parc'" value="kpiMoney(state.stats.value)" icon="'fa fa-line-chart'"/>
+            <CivoraStatCard label="'Revenu mensuel'" value="kpiMoney(state.stats.mrr)" icon="'fa fa-money'"/>
+        </div>
+
+        <div class="civora-owners-tabbar">
+            <button t-foreach="tabList" t-as="t" t-key="t.id"
+                    t-att-class="'civora-owners-tab' + (state.view === t.id ? ' is-active' : '')"
+                    t-on-click="() => this.setView(t.id)">
+                <t t-esc="t.label"/>
+                <span t-if="t.count" class="civora-owners-tabcount" t-esc="t.count + ''"/>
+            </button>
+        </div>
+
+        <div t-if="state.loading" class="civora-owners-state">
+            <i class="fa fa-circle-o-notch fa-spin"/> Chargement…
+        </div>
+
+        <!-- ===== LISTE ===== -->
+        <t t-elif="state.view === 'list'">
+            <div class="civora-owners-toolbar">
+                <div class="civora-owners-search">
+                    <i class="fa fa-search"/>
+                    <input type="text" placeholder="Rechercher un propriétaire…"
+                           t-att-value="state.search" t-on-input="(ev) => this.onSearchInput(ev)"/>
+                </div>
+            </div>
+
+            <div t-if="!state.owners.length" class="civora-owners-empty">
+                <i class="fa fa-user-o"/>
+                <div class="civora-owners-empty-t">Aucun propriétaire</div>
+                <p>Renseignez un propriétaire sur vos biens pour les voir agrégés ici.</p>
+            </div>
+
+            <div t-else="" class="civora-owners-tablewrap">
+                <table class="civora-owners-table">
+                    <thead>
+                        <tr>
+                            <th>Propriétaire</th>
+                            <th>Segment</th>
+                            <th class="civora-num">Biens</th>
+                            <th class="civora-num">Revenu / mois</th>
+                            <th class="civora-num">YTD</th>
+                            <th>Occupation</th>
+                            <th class="civora-num">Score</th>
+                            <th class="civora-actions-col"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="state.owners" t-as="o" t-key="o.id"
+                            class="civora-owners-row" t-on-click="() => this.openOwner(o)">
+                            <td>
+                                <div class="civora-owners-cell">
+                                    <CivoraAvatar name="o.name" size="'md'"/>
+                                    <div>
+                                        <div class="civora-owners-name" t-esc="o.name"/>
+                                        <div t-if="o.since" class="civora-owners-since">Client depuis <t t-esc="o.since"/></div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <CivoraBadge t-if="o.segment" label="o.segment" variant="'neutral'"/>
+                                <span t-else="" class="civora-owners-dash">—</span>
+                            </td>
+                            <td class="civora-num" t-esc="o.count"/>
+                            <td class="civora-num"><t t-esc="o.mrr ? fmtMoney(o.mrr) + ' FCFA' : '—'"/></td>
+                            <td class="civora-num civora-owners-dash">—</td>
+                            <td>
+                                <div class="civora-owners-occ">
+                                    <div class="civora-owners-occbar">
+                                        <CivoraProgress value="o.occupancy" tone="occTone(o.occupancy)"/>
+                                    </div>
+                                    <span class="civora-owners-occv" t-esc="o.occupancy + ' %'"/>
+                                </div>
+                            </td>
+                            <td class="civora-num">
+                                <span class="civora-owners-score"><i class="fa fa-star"/> <t t-esc="o.score || '—'"/></span>
+                            </td>
+                            <td class="civora-actions-col"><i class="fa fa-chevron-right"/></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </t>
+
+        <!-- ===== PORTEFEUILLE GLOBAL ===== -->
+        <t t-elif="state.view === 'portfolio'">
+            <div class="civora-owners-portfolio">
+                <div class="civora-owners-card">
+                    <div class="civora-owners-card-h">Répartition du parc géré</div>
+                    <div t-foreach="statusDistDef" t-as="d" t-key="d.key" class="civora-owners-dist">
+                        <div class="civora-owners-dist-top">
+                            <span t-esc="d.label"/>
+                            <b><t t-esc="distCount(d.key)"/> · <t t-esc="distPct(d.key)"/> %</b>
+                        </div>
+                        <CivoraProgress value="distPct(d.key)" tone="d.tone"/>
+                    </div>
+                </div>
+
+                <div class="civora-owners-card">
+                    <div class="civora-owners-card-h">Top propriétaires</div>
+                    <div t-if="!state.topOwners.length" class="civora-owners-dash">Aucune donnée.</div>
+                    <div t-foreach="state.topOwners" t-as="o" t-key="o.id"
+                         class="civora-owners-top" t-on-click="() => this.openOwner(o)">
+                        <CivoraAvatar name="o.name" size="'sm'"/>
+                        <div class="civora-owners-top-b">
+                            <div class="civora-owners-top-n" t-esc="o.name"/>
+                            <div class="civora-owners-top-m"><t t-esc="o.count"/> biens · <t t-esc="fmtMoney(o.value)"/> FCFA</div>
+                        </div>
+                        <div class="civora-owners-top-mrr"><t t-esc="fmtMoney(o.mrr)"/> /mois</div>
+                    </div>
+                </div>
+            </div>
+        </t>
+
+        <!-- ===== REVERSEMENTS (finance, a venir) ===== -->
+        <t t-else="">
+            <div class="civora-owners-soon">
+                <div class="civora-owners-soon-ico"><i class="fa fa-money"/></div>
+                <div class="civora-owners-soon-t">Reversements</div>
+                <p>Loyers perçus, honoraires de gestion retenus et reversements aux propriétaires — disponibles avec le module de comptabilité (OHADA/SYSCOHADA).</p>
+            </div>
+        </t>
+
+    </div>
+</t>
+
+</templates>

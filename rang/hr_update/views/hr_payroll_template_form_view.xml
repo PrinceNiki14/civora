@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="hr_payroll_structure_type_view_form">
+			<field name="name">hr.payroll.structure.type.form</field>
+			<field name="model">hr.payroll.structure.type</field>
+			<field name="type">form</field>
+			<field name="inherit_id" ref="hr_payroll.hr_payroll_structure_type_view_form"/>
+			<field name="arch" type="xml">
+                <field name="wage_type" position="after">
+                    <field name="company_id"/>
+                </field>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="hr_payroll_structure_type_view_tree">
+			<field name="name">hr.payroll.structure.type.tree</field>
+			<field name="model">hr.payroll.structure.type</field>
+			<field name="type">form</field>
+			<field name="inherit_id" ref="hr_payroll.hr_payroll_structure_type_view_tree"/>
+			<field name="arch" type="xml">
+                <field name="wage_type" position="after">
+                    <field name="company_id"/>
+                </field>
+            </field>
+        </record>
+        <record id="hr_payroll.action_hr_payroll_structure_type" model="ir.actions.act_window">
+            <field name="name">Structure Types</field>
+            <field name="res_model">hr.payroll.structure.type</field>
+            <field name="view_mode">list,form</field>
+            <field name="search_view_id" ref="hr_payroll.hr_payroll_structure_type_view_search"/>
+            <field name="domain">[('company_id', '=', allowed_company_ids[0])]</field>
+            <field name="context">{'default_company_id': allowed_company_ids[0],'payroll_check_country': 1}</field>
+        </record>
+
+        <record id="hr_payroll_template_list_view" model="ir.ui.view">
+            <field name="name">hr.payroll.template.list</field>
+            <field name="model">hr.payroll.template</field>
+            <field name="inherit_id" ref="hr_payroll_ci.hr_payroll_template_list_view"/>
+            <field name="arch" type="xml">
+                <field name="active" position="after">
+                    <field name="company_id"/>
+                </field>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="hr_payroll_template_form_view">
+			<field name="name">hr.payroll.template.form</field>
+			<field name="model">hr.payroll.template</field>
+			<field name="type">form</field>
+			<field name="inherit_id" ref="hr_payroll_ci.hr_payroll_template_form_view"/>
+			<field name="arch" type="xml">
+                <field name="active" position="after">
+                    <field name="company_id"/>
+                </field>
+            </field>
+        </record>
+<!--        <record id="hr_payroll_ci.action_hr_payroll_template_list" model="ir.actions.act_window">-->
+<!--            <field name="name">Templates structures salariales</field>-->
+<!--            <field name="res_model">hr.payroll.template</field>-->
+<!--            <field name="view_mode">tree,form</field>-->
+<!--            <field name="domain">[('company_id', '=', allowed_company_ids[0])]</field>-->
+<!--            <field name="context">{'default_company_id': allowed_company_ids[0]}</field>-->
+<!--        </record>-->
+    </data>
+</openerp>

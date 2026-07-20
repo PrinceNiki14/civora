@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="hr_employee_cmu_form" model="ir.ui.view">
+        <field name="name">hr.hr.employee.view.form</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button class="btn-secondary" name="update_igr" string="Mise à jour part IGR" type="object" icon="fa-cogs"/>
+            </xpath>
+            <xpath expr="//field[@name='emergency_contact']" position="before">
+                <separator string="Cotisation Mutuelle MUGEF-CI - CMU" invisible="company_id != 2"/>
+                <field name="cotisation_mugef_ci" invisible="company_id != 2"/>
+                <separator string="Cotisation CMU"/>
+                <field name="pay_for_children" invisible="children == 0"/>
+                <field name="pay_for_women" invisible="marital != 'married'"/>
+                <field name="cmu_part"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

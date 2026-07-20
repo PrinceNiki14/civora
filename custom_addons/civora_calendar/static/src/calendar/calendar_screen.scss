@@ -1,0 +1,326 @@
+// =====================================================================
+// CIVORA Calendrier - Ecran (civora.calendar)
+// =====================================================================
+
+.civora-cal {
+    padding: 24px 28px 40px;
+    background: $civora-bg;
+    height: 100%;
+    overflow-y: auto;
+    font-family: $civora-font;
+    color: $civora-fg;
+
+    .civora-cal-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 18px;
+    }
+    .civora-cal-title { font-family: $civora-font-display; font-weight: 800; font-size: 24px; line-height: 1.1; }
+    .civora-cal-sub { font-size: 13px; color: $civora-muted; margin-top: 2px; }
+
+    .civora-cal-kpis {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 14px;
+        margin-bottom: 18px;
+    }
+
+    // ---- Toolbar ----
+    .civora-cal-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 14px;
+    }
+    .civora-cal-views { display: inline-flex; background: $civora-primary; border-radius: $civora-radius-sm; padding: 3px; }
+    .civora-cal-vbtn {
+        border: 0; background: transparent; color: rgba(255, 255, 255, .75);
+        padding: 7px 16px; font-size: 12.5px; font-weight: 600; border-radius: $civora-radius-sm; cursor: pointer;
+        &.is-active { background: #fff; color: $civora-primary; }
+    }
+    .civora-cal-nav { display: flex; align-items: center; gap: 8px; }
+    .civora-cal-navbtn {
+        width: 34px; height: 34px; border: 1px solid $civora-border; background: $civora-card;
+        border-radius: $civora-radius-sm; cursor: pointer; color: $civora-muted;
+        &:hover { color: $civora-accent; border-color: $civora-accent; }
+    }
+    .civora-cal-today {
+        border: 1px solid $civora-border; background: $civora-card; color: $civora-fg;
+        border-radius: $civora-radius-sm; padding: 7px 14px; font-size: 13px; font-weight: 600; cursor: pointer;
+        &:hover { border-color: $civora-accent; }
+    }
+    .civora-cal-period {
+        font-family: $civora-font-display; font-weight: 700; font-size: 15px; margin-left: 8px; text-transform: capitalize;
+    }
+
+    // ---- Filtres type ----
+    .civora-cal-filters { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+    .civora-cal-fchip {
+        display: inline-flex; align-items: center; gap: 6px;
+        border: 1px solid $civora-border; background: $civora-card; color: $civora-muted;
+        border-radius: 999px; padding: 5px 12px; font-size: 12px; font-weight: 600; cursor: pointer;
+        opacity: .5;
+        &.is-on { opacity: 1; color: $civora-fg; border-color: $civora-muted; }
+    }
+    .civora-cal-fdot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+
+    .civora-cal-state { display: flex; align-items: center; gap: 10px; padding: 40px 0; color: $civora-muted; font-size: 14px; }
+
+    // ---- Mois ----
+    .civora-cal-month {
+        background: $civora-card;
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius;
+        box-shadow: $civora-shadow-card;
+        overflow: hidden;
+    }
+    .civora-cal-dow { display: grid; grid-template-columns: repeat(7, 1fr); background: $civora-bg; }
+    .civora-cal-dowh {
+        padding: 10px; text-align: center; font-size: 11.5px; font-weight: 700; text-transform: uppercase;
+        letter-spacing: .03em; color: $civora-muted; border-bottom: 1px solid $civora-border;
+    }
+    .civora-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); }
+    .civora-cal-cell {
+        min-height: 104px;
+        border-right: 1px solid $civora-border;
+        border-bottom: 1px solid $civora-border;
+        padding: 6px;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        transition: background .1s ease;
+        &:hover { background: rgba(0, 171, 104, .04); }
+        &:nth-child(7n) { border-right: 0; }
+        &.is-out { background: rgba(9, 26, 54, .02); }
+        &.is-out .civora-cal-cellnum { color: $civora-muted; opacity: .5; }
+        &.is-today { background: rgba(0, 171, 104, .06); }
+        &.is-today .civora-cal-cellnum {
+            background: $civora-accent; color: #fff; border-radius: 50%;
+            width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;
+        }
+    }
+    .civora-cal-cellnum { font-size: 12.5px; font-weight: 700; }
+    .civora-cal-cellevents { display: flex; flex-direction: column; gap: 3px; }
+    .civora-cal-chip {
+        display: flex; align-items: center; gap: 5px;
+        background: $civora-bg; border-left: 3px solid $civora-accent; border-radius: 3px;
+        padding: 2px 5px; font-size: 11px; overflow: hidden; white-space: nowrap;
+        &:hover { background: rgba(0, 171, 104, .10); }
+    }
+    .civora-cal-chip-t { font-weight: 700; color: $civora-muted; flex: 0 0 auto; }
+    .civora-cal-chip-n { overflow: hidden; text-overflow: ellipsis; }
+    .civora-cal-more { font-size: 10.5px; color: $civora-accent; font-weight: 600; padding-left: 4px; }
+
+    // ---- Bandeau IA ----
+    .civora-cal-insight {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        border-radius: $civora-radius;
+        padding: 12px 16px;
+        margin-bottom: 16px;
+        > i { font-size: 18px; margin-top: 2px; }
+        &.is-warn { background: rgba(230, 44, 44, .08); border: 1px solid rgba(230, 44, 44, .25); > i { color: $civora-danger; } }
+        &.is-tip { background: rgba(0, 171, 104, .08); border: 1px solid rgba(0, 171, 104, .22); > i { color: $civora-accent; } }
+    }
+    .civora-cal-insight-t { font-family: $civora-font-display; font-weight: 700; font-size: 13.5px; }
+    .civora-cal-insight-b { font-size: 12.5px; color: $civora-muted; margin-top: 2px; line-height: 1.45; }
+
+    // ---- Grille horaire (Jour / Semaine) ----
+    .civora-cal-hgrid {
+        background: $civora-card;
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius;
+        box-shadow: $civora-shadow-card;
+        overflow: hidden;
+    }
+    .civora-cal-hg-head {
+        display: flex;
+        border-bottom: 1px solid $civora-border;
+        background: $civora-bg;
+    }
+    .civora-cal-hg-gutter { width: 56px; flex: 0 0 56px; }
+    .civora-cal-hg-head .civora-cal-hg-daycol {
+        flex: 1;
+        text-align: center;
+        padding: 8px 4px;
+        border-left: 1px solid $civora-border;
+        &.is-today { background: rgba(0, 171, 104, .06); }
+    }
+    .civora-cal-hg-dow { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; color: $civora-muted; }
+    .civora-cal-hg-num { display: block; font-family: $civora-font-display; font-weight: 800; font-size: 17px; }
+    .civora-cal-hg-daycol.is-today .civora-cal-hg-num { color: $civora-accent; }
+    .civora-cal-hg-daylabel { font-family: $civora-font-display; font-weight: 800; font-size: 16px; text-transform: capitalize; }
+    .civora-cal-hg-allday { margin-top: 5px; display: flex; flex-direction: column; gap: 3px; padding: 0 4px; }
+    .civora-cal-hg-adchip {
+        background: $civora-bg; border-left: 3px solid $civora-accent; border-radius: 3px;
+        padding: 2px 6px; font-size: 10.5px; text-align: left; cursor: pointer;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    .civora-cal-hg-body { display: flex; max-height: 620px; overflow-y: auto; }
+    .civora-cal-hg-body .civora-cal-hg-gutter { border-right: 1px solid $civora-border; }
+    .civora-cal-hg-hour {
+        height: 56px;
+        font-size: 10.5px;
+        color: $civora-muted;
+        text-align: right;
+        padding: 2px 6px 0 0;
+        box-sizing: border-box;
+    }
+    .civora-cal-hg-col {
+        flex: 1;
+        position: relative;
+        border-left: 1px solid $civora-border;
+    }
+    .civora-cal-hg-slot {
+        height: 56px;
+        border-bottom: 1px dashed rgba(9, 26, 54, .07);
+        cursor: pointer;
+        &:hover { background: rgba(0, 171, 104, .04); }
+    }
+    .civora-cal-hg-ev {
+        position: absolute;
+        left: 3px;
+        right: 3px;
+        background: $civora-card;
+        border: 1px solid $civora-border;
+        border-left: 3px solid $civora-accent;
+        border-radius: $civora-radius-sm;
+        box-shadow: $civora-shadow-card;
+        padding: 4px 6px;
+        overflow: hidden;
+        cursor: pointer;
+        transition: box-shadow .12s ease;
+        &:hover { box-shadow: $civora-shadow-elevated; z-index: 3; }
+        &.is-conflict { outline: 2px solid rgba(230, 44, 44, .7); outline-offset: -1px; }
+    }
+    .civora-cal-hg-ev-h { display: flex; align-items: center; gap: 5px; }
+    .civora-cal-hg-ev-t { font-size: 10px; font-weight: 700; color: $civora-muted; }
+    .civora-cal-hg-ev-badge {
+        font-size: 9.5px; font-weight: 700; text-transform: uppercase; color: $civora-accent;
+        background: rgba(0, 171, 104, .12); border-radius: 3px; padding: 1px 5px;
+    }
+    .civora-cal-hg-warn { color: $civora-danger; margin-left: auto; font-size: 11px; }
+    .civora-cal-hg-ev-n { font-size: 11.5px; font-weight: 700; margin-top: 1px; line-height: 1.2; }
+    .civora-cal-hg-ev-s { font-size: 10.5px; color: $civora-muted; margin-top: 1px; }
+    .civora-cal-hg-ev-lg .civora-cal-hg-ev-n { font-size: 13px; }
+    .civora-cal-hgrid-day .civora-cal-hg-col-day { max-width: 100%; }
+
+    // ---- Liste ----
+    .civora-cal-listwrap {
+        background: $civora-card; border: 1px solid $civora-border; border-radius: $civora-radius;
+        box-shadow: $civora-shadow-card; overflow: hidden;
+    }
+    .civora-cal-empty { text-align: center; padding: 48px 24px; color: $civora-muted; > i { font-size: 28px; color: $civora-accent; opacity: .7; } p { margin: 6px 0 0; font-size: 13px; } }
+    .civora-cal-empty-t { font-family: $civora-font-display; font-weight: 700; font-size: 15px; color: $civora-fg; margin-top: 10px; }
+    .civora-cal-list { display: flex; flex-direction: column; }
+    .civora-cal-lrow {
+        display: flex; align-items: center; gap: 16px; padding: 12px 18px;
+        border-bottom: 1px solid $civora-border; cursor: pointer;
+        &:last-child { border-bottom: 0; }
+        &:hover { background: $civora-bg; }
+    }
+    .civora-cal-ldate { display: flex; align-items: center; gap: 8px; width: 130px; flex: 0 0 auto; }
+    .civora-cal-ldot { width: 10px; height: 10px; border-radius: 50%; flex: 0 0 auto; }
+    .civora-cal-ltime { font-family: $civora-font-display; font-weight: 700; font-size: 13px; }
+    .civora-cal-lhm { font-size: 12px; color: $civora-muted; }
+    .civora-cal-lmain { flex: 1; min-width: 0; }
+    .civora-cal-ln { font-weight: 600; font-size: 13.5px; }
+    .civora-cal-ls { font-size: 12px; color: $civora-muted; margin-top: 2px; }
+    .civora-cal-lright { display: flex; align-items: center; gap: 14px; flex: 0 0 auto; font-size: 12px; color: $civora-muted; }
+    .civora-cal-lagent i { margin-right: 3px; }
+
+    // ---- Planning equipe / Ressources ----
+    .civora-cal-plan {
+        background: $civora-card;
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius;
+        box-shadow: $civora-shadow-card;
+        overflow: hidden;
+    }
+    .civora-cal-plan-grid { overflow-x: auto; }
+    .civora-cal-plan-head,
+    .civora-cal-plan-row {
+        display: grid;
+        grid-template-columns: 190px repeat(7, minmax(96px, 1fr));
+        min-width: 860px;
+    }
+    .civora-cal-plan-head {
+        background: $civora-bg;
+        border-bottom: 1px solid $civora-border;
+        position: sticky;
+        top: 0;
+        z-index: 2;
+    }
+    .civora-cal-plan-corner {
+        padding: 10px 14px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        color: $civora-muted;
+    }
+    .civora-cal-plan-dh {
+        padding: 10px 6px;
+        text-align: center;
+        font-size: 12px;
+        color: $civora-muted;
+        border-left: 1px solid $civora-border;
+        b { color: $civora-fg; margin-left: 3px; }
+        &.is-today { background: rgba(0, 171, 104, .07); b { color: $civora-accent; } }
+    }
+    .civora-cal-plan-row { border-bottom: 1px solid $civora-border; &:last-child { border-bottom: 0; } }
+    .civora-cal-plan-agent {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        border-right: 1px solid $civora-border;
+        background: $civora-card;
+    }
+    .civora-cal-plan-avatar {
+        width: 30px; height: 30px; border-radius: 50%; flex: 0 0 auto;
+        color: #fff; font-weight: 800; font-size: 13px; text-transform: uppercase;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .civora-cal-plan-bico {
+        width: 30px; height: 30px; border-radius: $civora-radius-sm; flex: 0 0 auto;
+        background: rgba(0, 171, 104, .12); color: $civora-accent;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .civora-cal-plan-ag-n { font-family: $civora-font-display; font-weight: 700; font-size: 13px; line-height: 1.15; }
+    .civora-cal-plan-ag-l { font-size: 11px; color: $civora-muted; }
+    .civora-cal-plan-cell {
+        border-left: 1px solid $civora-border;
+        padding: 5px;
+        min-height: 62px;
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        cursor: pointer;
+        transition: background .1s ease;
+        &:hover { background: rgba(0, 171, 104, .04); }
+        &:hover .civora-cal-plan-add { color: $civora-accent; }
+    }
+    .civora-cal-plan-chip {
+        display: flex; align-items: center; gap: 4px;
+        background: $civora-bg; border-left: 3px solid $civora-accent; border-radius: 3px;
+        padding: 2px 5px; font-size: 10.5px; overflow: hidden; white-space: nowrap;
+        &:hover { background: rgba(0, 171, 104, .10); }
+    }
+    .civora-cal-plan-chip-t { font-weight: 700; color: $civora-muted; flex: 0 0 auto; }
+    .civora-cal-plan-chip-n { overflow: hidden; text-overflow: ellipsis; }
+    .civora-cal-plan-add { text-align: center; color: transparent; font-size: 14px; font-weight: 700; margin: auto; }
+    .civora-cal-plan-empty { padding: 30px; text-align: center; color: $civora-muted; font-size: 13px; }
+
+    @media (max-width: 1200px) {
+        .civora-cal-kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+}

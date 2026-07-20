@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_core.StatCard">
+    <div class="civora-card civora-stat">
+        <div class="civora-stat-body">
+            <div class="civora-stat-info">
+                <div class="civora-stat-label" t-esc="props.label"/>
+                <div class="civora-stat-value" t-esc="props.value"/>
+                <div t-if="props.delta" class="civora-stat-delta" t-att-class="trendClass" t-esc="props.delta"/>
+                <div t-if="props.hint" class="civora-stat-hint" t-esc="props.hint"/>
+            </div>
+            <div class="civora-stat-icon">
+                <i t-att-class="props.icon or 'fa fa-circle-o'"/>
+            </div>
+        </div>
+    </div>
+</t>
+
+<t t-name="civora_core.Insight">
+    <div class="civora-insight" t-att-data-tone="props.tone or 'accent'">
+        <div class="civora-insight-row">
+            <div class="civora-insight-spark"><i class="fa fa-magic"/></div>
+            <div class="civora-insight-main">
+                <div class="civora-insight-tag">IA · INSIGHT</div>
+                <div class="civora-insight-title" t-esc="props.title"/>
+                <p class="civora-insight-body" t-esc="props.body"/>
+                <div t-if="props.actionLabel" class="civora-insight-action">
+                    <button class="civora-btn" t-att-class="props.actionPrimary ? 'civora-btn-accent' : 'civora-btn-outline'"
+                            t-on-click="() => this.onAction()">
+                        <t t-esc="props.actionLabel"/>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</t>
+
+</templates>

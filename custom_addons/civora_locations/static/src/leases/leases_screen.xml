@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_locations.Leases">
+    <div class="civora-lsc">
+
+        <div class="civora-lsc-head">
+            <div>
+                <div class="civora-lsc-title">Gestion locative</div>
+                <div class="civora-lsc-sub">
+                    <t t-esc="state.stats.activeCount"/> baux suivis ·
+                    <t t-esc="state.stats.arrearsCount"/> retard(s) ·
+                    <t t-esc="state.stats.expiringCount"/> expiration(s) imminente(s)
+                </div>
+            </div>
+            <div class="civora-lsc-head-actions">
+                <button class="civora-btn civora-btn-accent" t-on-click="() => this.openCreateDrawer()">
+                    <i class="fa fa-plus"/> Nouveau bail
+                </button>
+            </div>
+        </div>
+
+        <div class="civora-lsc-kpis">
+            <CivoraStatCard label="'Baux actifs'" value="state.stats.activeCount + ''" icon="'fa fa-key'"/>
+            <CivoraStatCard label="'Loyers attendus / mois'" value="kpiMoney(state.stats.totalRent)" icon="'fa fa-money'"/>
+            <CivoraStatCard label="'Taux d\'encaissement'" value="state.stats.collectionRate + ' %'" icon="'fa fa-line-chart'"/>
+            <CivoraStatCard label="'Impayés cumulés'" value="kpiMoney(state.stats.arrearsAmount)" icon="'fa fa-exclamation-triangle'"/>
+        </div>
+
+        <div class="civora-lsc-tabbar">
+            <button t-foreach="tabList" t-as="t" t-key="t.id"
+                    t-att-class="'civora-lsc-tab' + (state.view === t.id ? ' is-active' : '')"
+                    t-on-click="() => this.setView(t.id)">
+                <t t-esc="t.label"/>
+                <span t-if="t.count" class="civora-lsc-tabcount" t-esc="t.count + ''"/>
+            </button>
+        </div>
+
+        <div t-if="state.loading" class="civora-lsc-state">
+            <i class="fa fa-circle-o-notch fa-spin"/> Chargement…
+        </div>
+
+        <!-- ===== BAUX ===== -->
+        <t t-elif="state.view === 'leases'">
+            <div class="civora-lsc-toolbar">
+                <div class="civora-lsc-search">
+                    <i class="fa fa-search"/>
+                    <input type="text" placeholder="Locataire, bien, n° bail…"
+                           t-att-value="state.search" t-on-input="(ev) => this.onSearchInput(ev)"/>
+                </div>
+                <div class="civora-lsc-typetoggle">
+                    <button t-att-class="'civora-lsc-typebtn' + (state.typeFilter === 'all' ? ' is-active' : '')"
+                            t-on-click="() => this.setTypeFilter('all')">Tous</button>
+                    <button t-att-class="'civora-lsc-typebtn' + (state.typeFilter === 'residentiel' ? ' is-active' : '')"
+                            t-on-click="() => this.setTypeFilter('residentiel')">Résidentiel</button>
+                    <button t-att-class="'civora-lsc-typebtn' + (state.typeFilter === 'commercial' ? ' is-active' : '')"
+                            t-on-click="() => this.setTypeFilter('commercial')">Commercial</button>
+                </div>
+            </div>
+
+            <div class="civora-lsc-statustabs">
+                <button t-foreach="statusTabs" t-as="s" t-key="s.id"
+                        t-att-class="'civora-lsc-statustab' + (state.statusFilter === s.id ? ' is-active' : '')"
+                        t-on-click="() => this.setStatusFilter(s.id)">
+                    <t t-esc="s.label"/>
+                    <span class="civora-lsc-statuscount" t-esc="s.count + ''"/>
+                </button>
+            </div>
+
+            <div t-if="!state.leases.length" class="civora-lsc-empty">
+                <i class="fa fa-key"/>
+                <div class="civora-lsc-empty-t">Aucun bail</div>
+                <p>Aucun bail ne correspond à votre recherche.</p>
+            </div>
+
+            <div t-else="" class="civora-lsc-list">
+                <div t-foreach="state.leases" t-as="l" t-key="l.id"
+                     class="civora-lsc-row" t-on-click="() => this.openLease(l)">
+                    <div class="civora-lsc-row-ico"><i class="fa fa-home"/></div>
+                    <div class="civora-lsc-row-b">
+                        <div class="civora-lsc-row-top">
+                            <span class="civora-lsc-row-n" t-esc="l.propertyName"/>
+                            <CivoraBadge label="statusMeta(l).label" variant="statusMeta(l).variant"/>
+                            <CivoraBadge label="typeLabel(l)" variant="'neutral'"/>
+                            <span class="civora-lsc-row-ref" t-esc="l.ref"/>
+                        </div>
+                        <div class="civora-lsc-row-meta">
+                            <span><i class="fa fa-user"/> <t t-esc="l.tenantName"/></span>
+                        </div>
+                        <div class="civora-lsc-row-fin">
+                            <span>Loyer : <b t-esc="kpiMoney(l.rent)"/></span>
+                            <span>Charges : <b t-esc="kpiMoney(l.charges)"/></span>
+                            <span>Dépôt : <b t-esc="kpiMoney(l.deposit)"/></span>
+                        </div>
+                        <div class="civora-lsc-row-rate">
+                            <CivoraProgress value="l.paymentRate" tone="rateTone(l.paymentRate)"/>
+                            <span t-esc="'Paiement ' + l.paymentRate + ' %'"/>
+                        </div>
+                    </div>
+                    <div class="civora-lsc-row-period">
+                        <div class="civora-lsc-row-period-l">Période</div>
+                        <div class="civora-lsc-row-period-v">
+                            <i class="fa fa-calendar"/> <t t-esc="fmtDate(l.dateStart)"/> — <t t-esc="fmtDate(l.dateEnd)"/>
+                        </div>
+                        <div class="civora-lsc-row-period-l">Jour de paiement</div>
+                        <div class="civora-lsc-row-period-v" t-esc="(l.payday || 1) + ' de chaque mois'"/>
+                    </div>
+                    <i class="fa fa-chevron-right civora-lsc-row-arrow"/>
+                </div>
+            </div>
+        </t>
+
+        <!-- ===== ENCAISSEMENTS (a venir) ===== -->
+        <div t-elif="state.view === 'payments'" class="civora-lsc-soon">
+            <div class="civora-lsc-soon-ico"><i class="fa fa-money"/></div>
+            <div class="civora-lsc-soon-t">Encaissements</div>
+            <p>Vue consolidée des paiements par canal et reversements propriétaires — à venir.</p>
+        </div>
+
+        <!-- ===== IMPAYES (a venir) ===== -->
+        <div t-elif="state.view === 'arrears'" class="civora-lsc-soon">
+            <div class="civora-lsc-soon-ico"><i class="fa fa-exclamation-triangle"/></div>
+            <div class="civora-lsc-soon-t">Impayés</div>
+            <p>Relances automatisées (email/WhatsApp) et mise en demeure — à venir.</p>
+        </div>
+
+        <!-- ===== RENOUVELLEMENTS (a venir) ===== -->
+        <div t-elif="state.view === 'renewals'" class="civora-lsc-soon">
+            <div class="civora-lsc-soon-ico"><i class="fa fa-refresh"/></div>
+            <div class="civora-lsc-soon-t">Renouvellements</div>
+            <p>Indexation IRL et proposition de renouvellement signable en ligne — à venir.</p>
+        </div>
+
+        <!-- ===== QUITTANCES (a venir) ===== -->
+        <t t-elif="state.view === 'receipts'">
+            <div t-if="!state.receipts.length" class="civora-lsc-soon">
+                <div class="civora-lsc-soon-ico"><i class="fa fa-file-text-o"/></div>
+                <div class="civora-lsc-soon-t">Aucune quittance</div>
+                <p>Les quittances générées depuis les baux apparaîtront ici. Ouvrez un bail, onglet Paiements ou Quittances, pour en générer une.</p>
+            </div>
+            <div t-if="state.receipts.length" class="civora-lsc-table-wrap">
+                <table class="civora-lsc-table">
+                    <thead>
+                        <tr>
+                            <th>N°</th>
+                            <th>Locataire</th>
+                            <th>Bien</th>
+                            <th>Période</th>
+                            <th class="civora-lsc-num">Montant</th>
+                            <th>Émise le</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="state.receipts" t-as="r" t-key="r.id">
+                            <td class="civora-lsc-cell-muted" t-esc="r.name"/>
+                            <td t-esc="r.tenant_id ? r.tenant_id[1] : '—'"/>
+                            <td t-esc="r.property_id ? r.property_id[1] : '—'"/>
+                            <td><b t-esc="r.period_label"/></td>
+                            <td class="civora-lsc-num" t-esc="kpiMoney(r.amount_total)"/>
+                            <td t-esc="fmtDate(r.date_issued)"/>
+                            <td class="civora-lsc-num">
+                                <button class="civora-btn civora-btn-outline civora-btn-sm"
+                                        t-on-click="() => this.printReceipt(r.id)" title="Télécharger le PDF">
+                                    <i class="fa fa-download"/> PDF
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </t>
+
+        <!-- ===== MAINTENANCE (a venir) ===== -->
+        <div t-else="" class="civora-lsc-soon">
+            <div class="civora-lsc-soon-ico"><i class="fa fa-wrench"/></div>
+            <div class="civora-lsc-soon-t">Maintenance</div>
+            <p>Tickets d'intervention et suivi des prestataires — à venir avec le module Tickets.</p>
+        </div>
+
+        <!-- Drawer creation / edition -->
+        <LeaseDrawer t-if="state.drawer.open"
+                     mode="state.drawer.mode"
+                     leaseId="state.drawer.leaseId"
+                     onClose="() => this.closeDrawer()"
+                     onSaved="() => this.onDrawerSaved()"/>
+
+    </div>
+</t>
+
+</templates>

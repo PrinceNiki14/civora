@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_gestion.Buyers">
+    <div class="civora-owners">
+
+        <div class="civora-owners-head">
+            <div>
+                <div class="civora-owners-title">Acquéreurs</div>
+                <div class="civora-owners-sub">
+                    <t t-esc="state.stats.count"/> acquéreurs · <t t-esc="kpiMoney(state.stats.budget)"/> de budget cumulé ·
+                    <t t-esc="state.stats.inventory"/> biens à vendre
+                </div>
+            </div>
+        </div>
+
+        <div class="civora-owners-kpis">
+            <CivoraStatCard label="'Acquéreurs actifs'" value="state.stats.count + ''" icon="'fa fa-user-plus'"/>
+            <CivoraStatCard label="'Budget cumulé'" value="kpiMoney(state.stats.budget)" icon="'fa fa-money'"/>
+            <CivoraStatCard label="'Biens à vendre'" value="state.stats.inventory + ''" icon="'fa fa-building'"/>
+            <CivoraStatCard label="'Score moyen'" value="state.stats.avgScore + ''" icon="'fa fa-star'"/>
+        </div>
+
+        <div class="civora-buyers-toolbar">
+            <div class="civora-owners-search">
+                <i class="fa fa-search"/>
+                <input type="text" placeholder="Rechercher un acquéreur…"
+                       t-att-value="state.search" t-on-input="(ev) => this.onSearchInput(ev)"/>
+            </div>
+            <div class="civora-buyers-chips">
+                <button t-foreach="statusFilters" t-as="s" t-key="s.id"
+                        t-att-class="'civora-buyers-chip' + (state.statusFilter === s.id ? ' is-active' : '')"
+                        t-on-click="() => this.setStatus(s.id)" t-esc="s.label"/>
+            </div>
+        </div>
+
+        <div t-if="state.loading" class="civora-owners-state">
+            <i class="fa fa-circle-o-notch fa-spin"/> Chargement…
+        </div>
+
+        <div t-elif="!state.buyers.length" class="civora-owners-empty">
+            <i class="fa fa-user-plus"/>
+            <div class="civora-owners-empty-t">Aucun acquéreur</div>
+            <p>Attribuez le rôle « Acheteur » à des contacts pour les retrouver ici.</p>
+        </div>
+
+        <div t-else="" class="civora-owners-tablewrap">
+            <table class="civora-owners-table">
+                <thead>
+                    <tr>
+                        <th>Acquéreur</th>
+                        <th class="civora-num">Budget</th>
+                        <th class="civora-num">Biens correspondants</th>
+                        <th class="civora-num">Score IA</th>
+                        <th>Agent</th>
+                        <th>Statut</th>
+                        <th class="civora-actions-col"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="state.buyers" t-as="b" t-key="b.id"
+                        class="civora-owners-row" t-on-click="() => this.openBuyer(b)">
+                        <td>
+                            <div class="civora-owners-cell">
+                                <CivoraAvatar name="b.name" size="'md'"/>
+                                <div>
+                                    <div class="civora-owners-name" t-esc="b.name"/>
+                                    <div t-if="b.since" class="civora-owners-since">Client depuis <t t-esc="b.since"/></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="civora-num"><t t-esc="b.budget ? fmtMoney(b.budget) + ' FCFA' : '—'"/></td>
+                        <td class="civora-num">
+                            <span class="civora-buyers-match" t-esc="matchLabel(b)"/>
+                        </td>
+                        <td class="civora-num">
+                            <span class="civora-owners-score"><i class="fa fa-star"/> <t t-esc="b.score || '—'"/></span>
+                        </td>
+                        <td t-esc="b.agent"/>
+                        <td><CivoraBadge label="statusMeta(b).label" variant="statusMeta(b).variant"/></td>
+                        <td class="civora-actions-col"><i class="fa fa-chevron-right"/></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</t>
+
+</templates>

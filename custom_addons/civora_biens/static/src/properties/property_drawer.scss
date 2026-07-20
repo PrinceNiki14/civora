@@ -1,0 +1,122 @@
+// =====================================================================
+// CIVORA Biens - Formulaire creation/edition (dans CivoraDrawer modal)
+// (reutilise les tokens de civora_core : $civora-*)
+// =====================================================================
+
+.civora-pf {
+    font-family: $civora-font;
+    color: $civora-fg;
+
+    .civora-pf-loading {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 24px 0;
+        color: $civora-muted;
+        font-size: 14px;
+    }
+    .civora-pf-error {
+        color: $civora-danger;
+        font-size: 13px;
+        margin-bottom: 14px;
+        i { margin-right: 4px; }
+    }
+
+    .civora-pf-section { margin-bottom: 20px; }
+    .civora-pf-title {
+        font-family: $civora-font-display;
+        font-weight: 700;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: .03em;
+        color: $civora-muted;
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid $civora-border;
+    }
+    .civora-pf-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px 14px;
+    }
+    .civora-pf-grid3 { grid-template-columns: repeat(3, 1fr); }
+
+    .civora-fld {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        min-width: 0;
+
+        &.civora-col2 { grid-column: 1 / -1; }
+
+        label {
+            font-size: 11.5px;
+            font-weight: 600;
+            color: $civora-muted;
+        }
+        input, select, textarea {
+            border: 1px solid $civora-border;
+            border-radius: $civora-radius-sm;
+            padding: 8px 10px;
+            font-size: 13px;
+            font-family: $civora-font;
+            color: $civora-fg;
+            background: $civora-bg;
+            outline: 0;
+            width: 100%;
+            &:focus { border-color: $civora-accent; background: $civora-card; }
+        }
+        textarea { resize: vertical; }
+        input[type="file"] {
+            padding: 6px 8px;
+            font-size: 12.5px;
+            background: $civora-card;
+        }
+    }
+    .civora-pf-check {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        color: $civora-fg;
+        cursor: pointer;
+        input { width: auto; }
+    }
+    .civora-pf-gallery {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 8px;
+    }
+    .civora-pf-thumb {
+        position: relative;
+        width: 88px;
+        height: 88px;
+        border-radius: $civora-radius-sm;
+        overflow: hidden;
+        border: 1px solid $civora-border;
+        background: $civora-bg;
+        img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    }
+    .civora-pf-thumb-del {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        width: 22px;
+        height: 22px;
+        border: 0;
+        border-radius: 6px;
+        background: rgba(7, 17, 35, .6);
+        color: #fff;
+        font-size: 11px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        &:hover { background: $civora-danger; }
+    }
+
+    @media (max-width: 640px) {
+        .civora-pf-grid, .civora-pf-grid3 { grid-template-columns: 1fr; }
+    }
+}

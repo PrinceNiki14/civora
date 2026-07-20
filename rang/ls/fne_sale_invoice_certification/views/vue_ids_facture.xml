@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- =================================================================== -->
+    <!-- VUE LIGNES DE FACTURE DANS LA FACTURE (tree embedded) -->
+    <!-- =================================================================== -->
+    <record id="view_move_form_line_fne" model="ir.ui.view">
+        <field name="name">account.move.form.line.fne</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Ajouter colonne ID FNE dans les lignes de facture -->
+            <xpath expr="//field[@name='invoice_line_ids']//field[@name='price_unit']" position="after">
+                <field name="fne_item_id" readonly="1" optional="hide" 
+                       column_invisible="parent.fne_certified == False"/>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- =================================================================== -->
+    <!-- AJOUT DANS LA VUE PRINCIPALE DE LA FACTURE -->
+    <!-- =================================================================== -->
+    <!-- <record id="view_move_form_fne_debug" model="ir.ui.view">
+        <field name="name">account.move.form.fne.debug</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+
+            
+            <xpath expr="//page[@string='Certification FNE']//group[@string='Données Techniques']" position="after">
+                <group string="Debug &amp; Utilitaires" invisible="not fne_certified">
+                    <button name="debug_fne_items_mapping"
+                            type="object"
+                            string="Debug IDs FNE"
+                            class="btn-secondary"
+                            help="Afficher les IDs FNE stockés dans les logs"/>
+                </group>
+            </xpath>
+
+        </field>
+    </record> -->
+
+</odoo>

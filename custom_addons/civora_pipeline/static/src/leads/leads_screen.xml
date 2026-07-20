@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_pipeline.Leads">
+    <div class="civora-leads">
+
+        <div class="civora-leads-head">
+            <div>
+                <div class="civora-leads-title">Pistes</div>
+                <div class="civora-leads-sub">
+                    <t t-esc="state.funnel.total"/> pistes · <t t-esc="state.stats.qualifRate"/> % de qualification
+                </div>
+            </div>
+            <div class="civora-leads-head-actions">
+                <button class="civora-btn civora-btn-outline" t-on-click="() => this.importVisits()">
+                    <i class="fa fa-download"/> Importer les visites
+                </button>
+                <button class="civora-btn civora-btn-outline" t-on-click="() => this.goPipeline()">
+                    Voir le pipeline <i class="fa fa-arrow-right"/>
+                </button>
+                <button class="civora-btn civora-btn-accent" t-on-click="() => this.openCreate()">
+                    <i class="fa fa-plus"/> Nouvelle piste
+                </button>
+            </div>
+        </div>
+
+        <div class="civora-leads-kpis">
+            <CivoraStatCard label="'Pistes entrantes (7j)'" value="state.stats.new7 + ''" icon="'fa fa-inbox'"/>
+            <CivoraStatCard label="'À qualifier'" value="state.stats.toQualify + ''" icon="'fa fa-clock-o'"/>
+            <CivoraStatCard label="'Taux qualification'" value="state.stats.qualifRate + ' %'" icon="'fa fa-check-circle'"/>
+            <CivoraStatCard label="'Score IA moyen'" value="state.stats.avgScore + ''" icon="'fa fa-star'"/>
+        </div>
+
+        <div t-if="state.hotCount" class="civora-leads-insight">
+            <i class="fa fa-magic"/>
+            <span><b t-esc="state.hotCount"/> piste(s) chaude(s) détectée(s) (score &gt; 85) — conversion immédiate recommandée.</span>
+        </div>
+
+        <div class="civora-leads-analytics">
+            <div class="civora-leads-card">
+                <div class="civora-leads-card-h">Sources des pistes</div>
+                <div t-if="!state.sources.length" class="civora-leads-muted">Aucune source.</div>
+                <div t-foreach="state.sources" t-as="s" t-key="s.label" class="civora-leads-src">
+                    <div class="civora-leads-src-top">
+                        <span t-esc="s.label"/><b><t t-esc="s.n"/> · <t t-esc="s.pct"/> %</b>
+                    </div>
+                    <CivoraProgress value="s.pct" tone="'accent'"/>
+                </div>
+            </div>
+            <div class="civora-leads-card">
+                <div class="civora-leads-card-h">Entonnoir</div>
+                <div class="civora-leads-funnel">
+                    <div class="civora-leads-fn"><span>Pistes collectées</span><b t-esc="state.funnel.total"/></div>
+                    <div class="civora-leads-fn"><span>À qualifier</span><b t-esc="state.funnel.a_qualifier"/></div>
+                    <div class="civora-leads-fn civora-leads-fn-ok"><span>Qualifiées</span><b t-esc="state.funnel.qualifie"/></div>
+                    <div class="civora-leads-fn civora-leads-fn-ko"><span>Rejetées</span><b t-esc="state.funnel.rejete"/></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="civora-leads-chips">
+            <button t-foreach="statusFilters" t-as="f" t-key="f.id"
+                    t-att-class="'civora-leads-chip' + (state.filter === f.id ? ' is-active' : '')"
+                    t-on-click="() => this.setFilter(f.id)" t-esc="f.label"/>
+        </div>
+
+        <div t-if="state.loading" class="civora-leads-state">
+            <i class="fa fa-circle-o-notch fa-spin"/> Chargement…
+        </div>
+
+        <div t-elif="!filteredLeads.length" class="civora-leads-empty">
+            <i class="fa fa-bullseye"/>
+            <div class="civora-leads-empty-t">Aucune piste</div>
+            <p>Créez une piste ou convertissez une demande de visite.</p>
+        </div>
+
+        <!-- Master-detail -->
+        <div t-else="" class="civora-leads-body">
+            <div class="civora-leads-list">
+                <div t-foreach="filteredLeads" t-as="l" t-key="l.id"
+                     t-att-class="'civora-leads-item' + (state.selectedId === l.id ? ' is-selected' : '')"
+                     t-on-click="() => this.selectLead(l)">
+                    <CivoraAvatar name="l.name" size="'md'"/>
+                    <div class="civora-leads-item-b">
+                        <div class="civora-leads-item-h">
+                            <span class="civora-leads-item-n" t-esc="l.name"/>
+                            <CivoraBadge label="statusMeta(l).label" variant="statusMeta(l).variant"/>
+                        </div>
+                        <div class="civora-leads-item-m" t-esc="contactLine(l)"/>
+                        <div class="civora-leads-item-src"><i class="fa fa-random"/> <t t-esc="sourceLabel(l)"/></div>
+                    </div>
+                    <div class="civora-leads-item-score">
+                        <div class="civora-leads-scorebar">
+                            <CivoraProgress value="l.score" tone="scoreTone(l.score)"/>
+                        </div>
+                        <span t-esc="l.score"/>
+                    </div>
+                </div>
+            </div>
+
+            <div class="civora-leads-detail">
+                <t t-if="selected">
+                    <div class="civora-leads-detail-head">
+                        <CivoraAvatar name="selected.name" size="'lg'"/>
+                        <div>
+                            <div class="civora-leads-detail-n" t-esc="selected.name"/>
+                            <div class="civora-leads-detail-badges">
+                                <CivoraBadge label="statusMeta(selected).label" variant="statusMeta(selected).variant"/>
+                                <span class="civora-leads-detail-tx" t-esc="transactionLabel(selected)"/>
+                            </div>
+                        </div>
+                        <button class="civora-leads-editbtn" t-on-click="() => this.openEdit(selected)" title="Modifier">
+                            <i class="fa fa-pencil"/>
+                        </button>
+                    </div>
+
+                    <div class="civora-leads-detail-kv"><span><i class="fa fa-money"/> Budget</span><b t-esc="budgetLabel(selected)"/></div>
+                    <div class="civora-leads-detail-kv"><span><i class="fa fa-random"/> Source</span><b t-esc="sourceLabel(selected)"/></div>
+                    <div class="civora-leads-detail-kv"><span><i class="fa fa-building"/> Bien</span><b t-esc="selected.property_id ? selected.property_id[1] : '—'"/></div>
+                    <div class="civora-leads-detail-kv"><span><i class="fa fa-user-o"/> Agent</span><b t-esc="agentLabel(selected)"/></div>
+                    <div class="civora-leads-detail-kv"><span><i class="fa fa-phone"/> Contact</span><b t-esc="selected.phone or (selected.email or '—')"/></div>
+
+                    <div class="civora-leads-ai">
+                        <div class="civora-leads-ai-h"><i class="fa fa-star"/> Score IA <t t-esc="selected.score"/>/100</div>
+                        <p t-esc="recommendation(selected.score)"/>
+                    </div>
+
+                    <div t-if="selected.description" class="civora-leads-desc" t-esc="selected.description"/>
+
+                    <div class="civora-leads-actions">
+                        <t t-if="selected.status !== 'qualifie'">
+                            <button class="civora-btn civora-btn-accent" t-on-click="() => this.qualify(selected)">
+                                <i class="fa fa-check"/> Qualifier &amp; convertir
+                            </button>
+                        </t>
+                        <t t-else="">
+                            <button class="civora-btn civora-btn-outline" t-on-click="() => this.goPipeline()">
+                                Voir dans le pipeline <i class="fa fa-arrow-right"/>
+                            </button>
+                        </t>
+                        <button t-if="selected.status !== 'rejete'" class="civora-btn civora-btn-ghost"
+                                t-on-click="() => this.reject(selected)">
+                            <i class="fa fa-times"/> Rejeter
+                        </button>
+                    </div>
+                </t>
+            </div>
+        </div>
+
+        <LeadDrawer t-if="state.drawer.open" leadId="state.drawer.leadId" onClose="(saved) => this.closeDrawer(saved)"/>
+    </div>
+</t>
+
+</templates>

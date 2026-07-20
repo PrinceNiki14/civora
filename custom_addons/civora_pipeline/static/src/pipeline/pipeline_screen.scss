@@ -1,0 +1,257 @@
+// =====================================================================
+// CIVORA Pipeline - Kanban (civora.pipeline)
+// =====================================================================
+
+.civora-pl {
+    padding: 24px 28px 40px;
+    background: $civora-bg;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    font-family: $civora-font;
+    color: $civora-fg;
+
+    .civora-pl-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 18px;
+    }
+    .civora-pl-title {
+        font-family: $civora-font-display;
+        font-weight: 800;
+        font-size: 24px;
+        line-height: 1.1;
+    }
+    .civora-pl-sub { font-size: 13px; color: $civora-muted; margin-top: 2px; }
+
+    // ---- Toolbar ----
+    .civora-pl-toolbar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+    }
+    .civora-pl-search {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: $civora-card;
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius-sm;
+        padding: 8px 12px;
+        min-width: 240px;
+        i { color: $civora-muted; }
+        input { border: 0; outline: 0; background: transparent; width: 100%; font-size: 13px; color: $civora-fg; font-family: $civora-font; }
+    }
+    .civora-pl-viewtoggle {
+        display: inline-flex;
+        background: $civora-primary;
+        border-radius: $civora-radius-sm;
+        padding: 3px;
+    }
+    .civora-pl-vbtn {
+        border: 0;
+        background: transparent;
+        color: rgba(255, 255, 255, .75);
+        padding: 6px 12px;
+        font-size: 12.5px;
+        font-weight: 600;
+        border-radius: $civora-radius-sm;
+        cursor: pointer;
+        i { margin-right: 5px; }
+        &.is-active { background: #fff; color: $civora-primary; }
+    }
+    .civora-pl-head-spacer { flex: 1; }
+
+    .civora-pl-kpis {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 12px;
+        margin-bottom: 18px;
+    }
+
+    .civora-pl-state {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 40px 0;
+        color: $civora-muted;
+        font-size: 14px;
+    }
+
+    // ---- Board ----
+    .civora-pl-board {
+        display: flex;
+        gap: 14px;
+        overflow-x: auto;
+        padding-bottom: 12px;
+        flex: 1;
+        align-items: flex-start;
+    }
+    .civora-pl-col {
+        flex: 0 0 260px;
+        width: 260px;
+        background: rgba(9, 26, 54, .035);
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius;
+        display: flex;
+        flex-direction: column;
+        max-height: 100%;
+        &.is-won { background: rgba(0, 171, 104, .07); border-color: rgba(0, 171, 104, .3); }
+        &.is-lost { background: rgba(230, 44, 44, .05); border-color: rgba(230, 44, 44, .25); }
+    }
+    .civora-pl-colh {
+        padding: 12px 14px;
+        border-bottom: 1px solid $civora-border;
+    }
+    .civora-pl-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: $civora-accent;
+        display: inline-block;
+    }
+    .civora-pl-col.is-won .civora-pl-dot { background: $civora-success; }
+    .civora-pl-col.is-lost .civora-pl-dot { background: $civora-danger; }
+    .civora-pl-colname {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-family: $civora-font-display;
+        font-weight: 700;
+        font-size: 13.5px;
+    }
+    .civora-pl-colcount {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 20px;
+        height: 20px;
+        padding: 0 6px;
+        border-radius: 999px;
+        background: $civora-card;
+        border: 1px solid $civora-border;
+        font-size: 11px;
+        font-weight: 700;
+        color: $civora-muted;
+    }
+    .civora-pl-coltotal { font-size: 11.5px; color: $civora-accent; font-weight: 600; margin-top: 3px; }
+
+    .civora-pl-cards {
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        overflow-y: auto;
+        min-height: 60px;
+    }
+    .civora-pl-card {
+        background: $civora-card;
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius-sm;
+        box-shadow: $civora-shadow-card;
+        padding: 12px;
+        cursor: pointer;
+        transition: box-shadow .12s ease, transform .12s ease, border-color .12s ease;
+        &:hover { box-shadow: $civora-shadow-elevated; border-color: $civora-accent; transform: translateY(-1px); }
+        &:active { cursor: grabbing; }
+    }
+    .civora-pl-card-h {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+    }
+    .civora-pl-card-n { font-weight: 700; font-size: 13px; }
+    .civora-pl-card-tx {
+        font-size: 10.5px;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: $civora-accent;
+        background: rgba(0, 171, 104, .12);
+        border-radius: 4px;
+        padding: 2px 6px;
+        &.tx-location, &.tx-saisonnier { color: $civora-info; background: rgba(37, 175, 210, .14); }
+    }
+
+    // ---- Liste ----
+    .civora-pl-listwrap {
+        background: $civora-card;
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius;
+        box-shadow: $civora-shadow-card;
+        overflow: hidden;
+    }
+    .civora-pl-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+        th {
+            text-align: left;
+            padding: 12px 16px;
+            background: $civora-bg;
+            color: $civora-muted;
+            font-weight: 600;
+            font-size: 11.5px;
+            text-transform: uppercase;
+            letter-spacing: .03em;
+            border-bottom: 1px solid $civora-border;
+        }
+        td { padding: 12px 16px; border-bottom: 1px solid $civora-border; vertical-align: middle; }
+        tr:last-child td { border-bottom: 0; }
+        .civora-num { text-align: right; white-space: nowrap; }
+        tbody tr.civora-pl-row { cursor: pointer; &:hover { background: $civora-bg; } }
+    }
+    .civora-pl-row-n { font-weight: 700; }
+    .civora-pl-row-sub { font-size: 11.5px; color: $civora-muted; margin-top: 2px; }
+    .civora-pl-listempty { text-align: center; color: $civora-muted; padding: 30px !important; }
+    .civora-pl-card-prop {
+        font-size: 12px;
+        color: $civora-muted;
+        margin-top: 5px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        i { color: $civora-accent; margin-right: 4px; }
+    }
+    .civora-pl-card-amount {
+        font-family: $civora-font-display;
+        font-weight: 800;
+        font-size: 15px;
+        margin-top: 8px;
+    }
+    .civora-pl-card-foot {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 8px;
+        font-size: 11.5px;
+        color: $civora-muted;
+    }
+    .civora-pl-card-agent i { margin-right: 3px; }
+    .civora-pl-card-score {
+        font-weight: 700;
+        i { margin-right: 2px; }
+        &.s-success { color: $civora-success; }
+        &.s-warning { color: $civora-warning; }
+        &.s-danger { color: $civora-danger; }
+    }
+    .civora-pl-card-days {
+        margin-top: 6px;
+        font-size: 11px;
+        color: $civora-muted;
+        i { margin-right: 3px; }
+    }
+    .civora-pl-empty {
+        text-align: center;
+        padding: 18px;
+        font-size: 12px;
+        color: $civora-muted;
+        border: 1px dashed $civora-border;
+        border-radius: $civora-radius-sm;
+    }
+}

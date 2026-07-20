@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="hr_leave_manager_extension_allocation" model="ir.ui.view">
+            <field name="name">hr.leave.form</field>
+            <field name="model">hr.leave</field>
+            <field name="inherit_id" ref="hr_holidays.hr_leave_view_form_manager"/>
+            <field name="mode">primary</field>
+            <field name="priority">16</field>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="code_conge" invisible="1" readonly="0"/>
+                    <field name="first_holiday" widget="radio" invisible="code_conge != 'CONG'" readonly="state == 'validate'"/>
+                    <field name="date_retour_conge_pre" invisible="first_holiday == 'yes' or code_conge != 'CONG'" readonly="state == 'validate'"/>
+                    <field name="date_retour_conge" invisible="code_conge != 'CONG'" required="code_conge == 'CONG'" readonly="state == 'validate'"/>
+                    <label for="nombre_mois_smj" invisible="first_holiday == 'no' or code_conge != 'CONG'"  readonly="state == 'validate'"/>
+                    <div class="o_row" invisible="first_holiday == 'no' or code_conge != 'CONG'" readonly="state == 'validate'">
+                        <field name="nombre_mois_smj" readonly="state == 'validate'"/><span>Mois</span>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+        <record id="hr_leave_manager_extension" model="ir.ui.view">
+            <field name="name">hr.leave.form</field>
+            <field name="model">hr.leave</field>
+            <field name="inherit_id" ref="hr_holidays_extension.hr_leave_manager_extension"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='payroll_date']" position="replace">
+                    <field name="payroll_date" invisible="code_conge != 'CONG'" required="code_conge == 'CONG'" readonly="state == 'validate'"/>
+                </xpath>
+                <xpath expr="//field[@name='payroll_date']" position="after">
+                    <separator string="Information de paie" invisible="code_conge != 'CONG'"/>
+                    <field name="smj" readonly="1" force_save="1" invisible="code_conge != 'CONG'"/>
+                    <field name="allocation_conge" readonly="1" force_save="1" invisible="code_conge != 'CONG'"/>
+                </xpath>
+            </field>
+        </record>
+        <record id="hr_leave_view_form" model="ir.ui.view">
+            <field name="name">hr.leave.form</field>
+            <field name="model">hr.leave</field>
+            <field name="inherit_id" ref="hr_holidays.hr_leave_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="replace">
+                    <field name="name" readonly="state == 'validate'" widget="text" placeholder="Add a description..."/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

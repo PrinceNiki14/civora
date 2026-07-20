@@ -1,0 +1,18 @@
+[options]
+admin_passwd = change_moi
+db_host = localhost
+db_port = 5432
+db_user = odoo19
+db_password = change_moi
+addons_path = /chemin/vers/odoo19/custom_addons,/chemin/vers/odoo19/odoo/addons
+logfile = /var/log/odoo19/odoo19.log
+log_level = info
+workers = 2
+proxy_mode = True
+http_enable = True
+http_interface = 0.0.0.0
+http_port = 8069
+gevent_port = 8072
+websocket_keep_alive_timeout = 3600
+websocket_rate_limit_burst = 10
+websocket_rate_limit_delay = 0.2

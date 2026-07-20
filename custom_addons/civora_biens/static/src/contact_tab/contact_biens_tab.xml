@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_biens.ContactBiensTab">
+    <div class="civora-cbt">
+        <div t-if="state.loading" class="civora-cbt-state">
+            <i class="fa fa-circle-o-notch fa-spin"/> Chargement…
+        </div>
+
+        <div t-elif="!state.biens.length" class="civora-cbt-empty">
+            <div class="civora-cbt-empty-ico"><i class="fa fa-home"/></div>
+            <div class="civora-cbt-empty-t">Aucun bien</div>
+            <p>Ce contact n'est propriétaire d'aucun bien pour l'instant.</p>
+        </div>
+
+        <div t-else="" class="civora-cbt-list">
+            <div t-foreach="state.biens" t-as="p" t-key="p.id"
+                 class="civora-cbt-item" t-on-click="() => this.openProperty(p)">
+                <div class="civora-cbt-thumb"
+                     t-att-class="p.image_128 ? 'civora-cbt-thumb has-photo' : 'civora-cbt-thumb'"
+                     t-attf-style="{{ p.image_128 ? 'background-image:url(/web/image/civora.property/' + p.id + '/image_128)' : '' }}">
+                    <i t-if="!p.image_128" class="fa fa-building"/>
+                </div>
+                <div class="civora-cbt-body">
+                    <div class="civora-cbt-h">
+                        <span class="civora-cbt-name" t-esc="p.name"/>
+                        <CivoraBadge label="statusMeta(p).label" variant="statusMeta(p).variant"/>
+                    </div>
+                    <div class="civora-cbt-meta">
+                        <span class="civora-cbt-type" t-esc="typeLabel(p)"/>
+                        <span><i class="fa fa-map-marker"/> <t t-esc="locLabel(p)"/></span>
+                    </div>
+                </div>
+                <div class="civora-cbt-price">
+                    <div class="civora-cbt-p"><t t-esc="fmtMoney(p.price)"/> FCFA</div>
+                    <div t-if="p.monthly_revenue" class="civora-cbt-r"><t t-esc="fmtMoney(p.monthly_revenue)"/> /mois</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</t>
+
+</templates>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<!--
+    Enrichit le template de la fiche Bien 360 (civora_biens) pour y ajouter,
+    sur un immeuble, la StatCard "Taux de recouvrement" issue des paiements
+    reels des baux (civora.lease.payment), juste apres le revenu locatif.
+    Herite via t-inherit (mecanisme OWL) sans toucher le module civora_biens.
+-->
+<t t-inherit="civora_biens.Property360" t-inherit-mode="extension">
+    <xpath expr="//t[@t-if='isBuilding']/CivoraStatCard[last()]" position="after">
+        <CivoraStatCard label="'Taux de recouvrement'"
+                        value="(buildingStats.collectionRate || 0) + ' %'"
+                        icon="'fa fa-check-square-o'"/>
+    </xpath>
+</t>
+
+</templates>

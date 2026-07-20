@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="hr_cotisation_emp.report_cotisation_emp">
+        <t t-foreach="docs" t-as="o">
+            <t t-set="data_report_landscape" t-value="True"/>
+            <t t-set="full_width" t-value="True"/>
+            <t t-call="web.html_container">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div class="text-center fw-bold">
+                            <h1 class="text-center fw-bold text-uppercase">RÉSUMÉ DES COTISATIONS <span t-field="o.salary_id.name"/></h1>
+                             PÉRIODE DU <span t-field="o.start_date"/> - <span t-field="o.end_date" />
+                         </div>
+                        <div class="col-12">
+                            <table class="table table-bordered">
+                                <tr>
+                                    <td class="text-center fw-bold">MATRICULE</td>
+                                    <td class="text-center fw-bold">AGENT</td>
+                                    <td class="text-center fw-bold">PART ENPLOYE</td>
+                                    <td class="text-center fw-bold">PART ENPLOYEUR</td>
+                                </tr>
+                                <t t-foreach="o.line_ids" t-as="line">
+                                    <tr>
+                                        <td class="text-center fw-bold"><span t-field="line.employee_id.identification_id"/></td>
+                                        <td class="text-center fw-bold"><span t-field="line.employee_id.name"/></td>
+                                        <td class="text-center fw-bold"><span t-esc="line.cotisation_employe" t-options='{"widget": "float", "precision": 2}'/></td>
+                                        <td class="text-center fw-bold"><span t-esc="line.cotisation_employeur" t-options='{"widget": "float", "precision": 2}'/></td>
+                                    </tr>
+                                </t>
+                                <tr style="background-color:grey;">
+                                    <td class="text-center fw-bold" colspan="2">TOTAL</td>
+                                    <td class="text-center"><span t-esc="data['total_cotisation_employe']" t-options='{"widget": "float", "precision": 2}'/></td>
+                                    <td class="text-center"><span t-esc="data['total_cotisation_employeur']" t-options='{"widget": "float", "precision": 2}'/></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

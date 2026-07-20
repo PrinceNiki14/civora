@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_civora_lease_user,civora.lease user,model_civora_lease,base.group_user,1,1,1,0
+access_civora_lease_admin,civora.lease admin,model_civora_lease,base.group_system,1,1,1,1
+access_civora_lease_payment_user,civora.lease.payment user,model_civora_lease_payment,base.group_user,1,1,1,0
+access_civora_lease_payment_admin,civora.lease.payment admin,model_civora_lease_payment,base.group_system,1,1,1,1
+access_civora_lease_receipt_user,civora.lease.receipt user,model_civora_lease_receipt,base.group_user,1,1,1,0
+access_civora_lease_receipt_admin,civora.lease.receipt admin,model_civora_lease_receipt,base.group_system,1,1,1,1

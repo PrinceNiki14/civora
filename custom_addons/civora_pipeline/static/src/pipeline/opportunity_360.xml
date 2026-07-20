@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_pipeline.Opportunity360">
+    <div class="civora-op360">
+
+        <div t-if="state.loading" class="civora-op360-state">
+            <i class="fa fa-circle-o-notch fa-spin"/> Chargement…
+        </div>
+
+        <div t-elif="state.error" class="civora-op360-state">
+            <i class="fa fa-exclamation-triangle"/> <span t-esc="state.error"/>
+            <button class="civora-btn civora-btn-outline" t-on-click="() => this.goBack()">
+                <i class="fa fa-arrow-left"/> <t t-esc="backLabel"/>
+            </button>
+        </div>
+
+        <t t-else="">
+            <div class="civora-op360-topbar">
+                <button class="civora-op360-back" t-on-click="() => this.goBack()">
+                    <i class="fa fa-arrow-left"/> <t t-esc="backLabel"/>
+                </button>
+                <button class="civora-btn civora-btn-outline" t-on-click="() => this.openEdit()">
+                    <i class="fa fa-pencil"/> Modifier
+                </button>
+            </div>
+
+            <div class="civora-op360-header">
+                <div class="civora-op360-hmain">
+                    <div class="civora-op360-title" t-esc="opp.name"/>
+                    <div class="civora-op360-badges">
+                        <CivoraBadge label="stageInfo.label" variant="stageInfo.variant"/>
+                        <span t-if="opp.transaction" class="civora-op360-tx" t-esc="txLabel()"/>
+                    </div>
+                </div>
+                <div class="civora-op360-amount" t-esc="amountLabel()"/>
+            </div>
+
+            <!-- Stepper d'etapes -->
+            <div class="civora-op360-stepper">
+                <div t-foreach="progressStages" t-as="s" t-key="s.id"
+                     t-att-class="'civora-op360-step is-' + stageState(s)"
+                     t-on-click="() => this.setStage(s)">
+                    <div class="civora-op360-step-dot"><i t-if="stageState(s) === 'done'" class="fa fa-check"/></div>
+                    <div class="civora-op360-step-lbl" t-esc="s.name"/>
+                </div>
+            </div>
+
+            <div class="civora-op360-kpis">
+                <CivoraStatCard label="'Montant estimé'" value="amountLabel()" icon="'fa fa-money'"/>
+                <CivoraStatCard label="'Probabilité'" value="(opp.probability || 0) + ' %'" icon="'fa fa-percent'"/>
+                <CivoraStatCard label="'Score IA'" value="(opp.score || 0) + ''" icon="'fa fa-star'"/>
+                <CivoraStatCard label="'Ancienneté'" value="daysOld() + ' j'" icon="'fa fa-clock-o'"/>
+            </div>
+
+            <div class="civora-op360-tabbar">
+                <button t-foreach="tabList" t-as="t" t-key="t.id"
+                        t-att-class="'civora-op360-tab' + (state.activeTab === t.id ? ' is-active' : '')"
+                        t-on-click="() => this.setTab(t.id)" t-esc="t.label"/>
+            </div>
+
+            <t t-if="state.activeTab === 'details'">
+                <div class="civora-op360-grid">
+                    <div class="civora-op360-card">
+                        <div class="civora-op360-card-h">Détails</div>
+                        <div class="civora-op360-kv civora-op360-link" t-on-click="() => this.openContact()">
+                            <span><i class="fa fa-user-o"/> Contact</span>
+                            <b t-esc="partnerLabel()"/>
+                        </div>
+                        <div class="civora-op360-kv civora-op360-link" t-on-click="() => this.openProperty()">
+                            <span><i class="fa fa-building"/> Bien</span>
+                            <b t-esc="propertyLabel()"/>
+                        </div>
+                        <div class="civora-op360-kv"><span><i class="fa fa-exchange"/> Transaction</span><b t-esc="txLabel()"/></div>
+                        <div class="civora-op360-kv"><span><i class="fa fa-user"/> Agent</span><b t-esc="agentLabel()"/></div>
+                        <div class="civora-op360-kv"><span><i class="fa fa-calendar"/> Clôture prévue</span><b t-esc="orDash(opp.date_close)"/></div>
+                        <div t-if="opp.lead_id" class="civora-op360-kv"><span><i class="fa fa-bullseye"/> Piste d'origine</span><b t-esc="opp.lead_id[1]"/></div>
+                    </div>
+
+                    <div class="civora-op360-card">
+                        <div class="civora-op360-card-h">Description</div>
+                        <div t-if="opp.description" class="civora-op360-desc" t-esc="opp.description"/>
+                        <div t-else="" class="civora-op360-muted">Aucune description.</div>
+                    </div>
+                </div>
+
+                <div t-if="!isClosed" class="civora-op360-actions">
+                    <button class="civora-btn civora-btn-accent" t-on-click="() => this.advanceStage()">
+                        Avancer l'étape <i class="fa fa-arrow-right"/>
+                    </button>
+                    <button class="civora-btn civora-btn-ghost" t-on-click="() => this.markLost()">
+                        <i class="fa fa-times"/> Marquer perdue
+                    </button>
+                </div>
+            </t>
+
+            <t t-elif="activeContrib">
+                <t t-component="activeContrib.Component" opportunityId="opportunityId"/>
+            </t>
+
+            <OpportunityDrawer t-if="state.drawerOpen" opportunityId="opportunityId"
+                               onClose="(saved) => this.closeDrawer(saved)"/>
+        </t>
+
+    </div>
+</t>
+
+</templates>

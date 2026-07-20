@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<template id="cnps_mensuel_report">
+    <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="o">
+			<t t-call="web.internal_layout">
+				<div class="page">
+					 <div class="text-center">
+						 <p><h4>APPEL DE COTISATION MENSUEL</h4></p>
+					 </div>
+					<br/>
+					<div class="act_as_table data_table" >
+						<div class="act_as_row labels">PERIODE</div>
+					</div>
+					<div class="act_as_table data_table" >
+						<div class="act_as_row labels">
+							<div class="act_as_cell act_as_libelle text-left" >DU <span t-field="o.date_from" /> </div>
+							<div class="act_as_cell act_as_libelle text-left" >AU <span t-field="o.date_to" /> </div>
+						</div>
+					</div>
+					<br/>
+					<br/>
+					<div>
+						 <div class="act_as_table data_table" >
+							 <div class="act_as_row labels"><div class="act_as_cell act_as_libelle" style="width: 75%;">
+                                 TOTAL SALAIRES BRUTS PAYES AU COURS DE LA PERIODE</div>
+								<div class="act_as_cell amount"><span t-field="o.total_salaire_brut" /></div>
+							 </div>
+						 </div>
+                         <br/>
+                         <div class="act_as_table data_table" >
+							 <div class="act_as_row labels">
+                                 SALAIRES BRUTS SOUMIS A COTISATIONS
+							 </div>
+						 </div>
+						 <div class="act_as_table data_table" >
+							 <div class="act_as_row labels">
+								 <div class="act_as_cell act_as_libelle" style="width: 40%;">CATEGORIE DE SALAIRES </div>
+								 <div class="act_as_cell act_as_libelle" style="width: 10%;">NOMBRE DE
+SALARIES</div>
+                                 <div class="act_as_cell act_as_libelle" style="width: 25%;">REGIME DE RETRAITE
+Plafond = 1.647.315 F par mois </div>
+								 <div class="act_as_cell act_as_libelle" style="width: 25%;">REGIME DES ASSURANCES
+MATERNITE, DES PRESTATIONS
+FAMILIALES ET DES ACCIDENTS DU
+TRAVAIL
+Plafond = 3231 F par jour ou 70.000 par
+moi</div>
+							 </div>
+                             <t t-foreach="o.line_ids" t-as="line">
+								 <div class="act_as_row labels">
+									 <div class="act_as_cell" style="text-align: left;"><span t-field="line.name" /></div>
+									 <div class="act_as_cell amount"><span t-field="line.salaries_number" /></div>
+									 <div class="act_as_cell amount"><span t-field="line.regime_retraite" /></div>
+									 <div class="act_as_cell amount"><span t-field="line.regime_autre" /></div>
+								 </div>
+							 </t>
+							 <div class="act_as_row labels">
+									 <div class="act_as_cell ">TOTAL</div>
+									 <div class="act_as_cell amount"><span t-field="o.total_employee" /></div>
+									 <div class="act_as_cell amount"><span t-field="o.total_assiette_cnps" /></div>
+									 <div class="act_as_cell amount"><span t-field="o.total_assiette_other" /></div>
+								 </div>
+
+						 </div>
+						 <br/>
+						 <div class="act_as_table data_table" >
+							 <div class="act_as_row labels">
+								DECOMPTE DES COTISATIONS DUES
+							 </div>
+						 </div>
+						 <br/>
+						 <div class="act_as_table data_table" >
+							 <div class="act_as_row labels">
+								 <div class="act_as_cell act_as_libelle ">Rubriques</div>
+								 <div class="act_as_cell act_as_libelle ">SALAIRES SOUMIS A
+COTISATIONS</div>
+								 <div class="act_as_cell act_as_libelle ">TAUX</div>
+								 <div class="act_as_cell act_as_libelle ">MONTANTS (Francs CFA)</div>
+							 </div>
+							 <t t-foreach="o.cotisation_ids" t-as="line">
+								 <div class="act_as_row labels">
+									 <div class="act_as_cell" style="text-align: left;"><span t-field="line.name" /></div>
+									 <div class="act_as_cell amount"><span t-field="line.amount_submitted" /></div>
+									 <div class="act_as_cell amount"><span t-field="line.taux" /></div>
+									 <div class="act_as_cell amount"><span t-field="line.amount_contributed"/></div>
+								 </div>
+							 </t>
+						 </div>
+						 <br/>
+						 <div class="act_as_table data_table" >
+							 <div class="act_as_row labels">
+								<div class="act_as_cell act_as_libelle" style="width: 75%;">MONTANT TOTAL A PAYER (FDFP)</div>
+								<div class="act_as_cell amount"><span t-field="o.total_cotisation_contributed" /></div>
+							 </div>
+						 </div>
+
+					 </div>
+				 </div>
+			</t>
+		</t>
+	</t>
+</template>
+</odoo>

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_biens.UnitDialog">
+    <CivoraDrawer title="'Ajouter une unité affiliée'"
+                  subtitle="'Immeuble : ' + props.building.name + ' · propriétaire et localisation hérités'"
+                  variant="'modal'"
+                  size="'lg'"
+                  icon="'fa-plus'"
+                  onClose="() => props.onClose()">
+
+        <div class="civora-pf">
+            <div t-if="state.error" class="civora-pf-error">
+                <i class="fa fa-exclamation-circle"/> <t t-esc="state.error"/>
+            </div>
+
+            <div class="civora-pf-section">
+                <div class="civora-pf-title">Identification de l'unité</div>
+                <div class="civora-pf-grid">
+                    <div class="civora-fld">
+                        <label>N° d'unité *</label>
+                        <input type="text" t-att-value="state.form.unit_number"
+                               t-on-input="(ev) => this.setField('unit_number', ev)"
+                               placeholder="101, A2, RDC-1…"/>
+                    </div>
+                    <div class="civora-fld">
+                        <label>Étage</label>
+                        <input type="number" t-att-value="state.form.floor"
+                               t-on-input="(ev) => this.setNumber('floor', ev)"/>
+                    </div>
+                </div>
+            </div>
+
+            <div class="civora-pf-section">
+                <div class="civora-pf-title">Caractéristiques</div>
+                <div class="civora-pf-grid civora-pf-grid3">
+                    <div class="civora-fld">
+                        <label>Chambres</label>
+                        <input type="number" min="0" t-att-value="state.form.bedrooms"
+                               t-on-input="(ev) => this.setNumber('bedrooms', ev)"/>
+                    </div>
+                    <div class="civora-fld">
+                        <label>Salles de bain</label>
+                        <input type="number" min="0" t-att-value="state.form.bathrooms"
+                               t-on-input="(ev) => this.setNumber('bathrooms', ev)"/>
+                    </div>
+                    <div class="civora-fld">
+                        <label>Surface (m²)</label>
+                        <input type="number" min="0" t-att-value="state.form.surface"
+                               t-on-input="(ev) => this.setNumber('surface', ev)"/>
+                    </div>
+                </div>
+            </div>
+
+            <div class="civora-pf-section">
+                <div class="civora-pf-title">Commercialisation</div>
+                <div class="civora-pf-grid civora-pf-grid3">
+                    <div class="civora-fld">
+                        <label>Transaction</label>
+                        <select t-on-change="(ev) => this.setField('transaction', ev)">
+                            <option t-foreach="transactions" t-as="t" t-key="t.value"
+                                    t-att-value="t.value" t-att-selected="state.form.transaction === t.value"
+                                    t-esc="t.label"/>
+                        </select>
+                    </div>
+                    <div class="civora-fld">
+                        <label>Prix (FCFA)</label>
+                        <input type="number" min="0" step="1000" t-att-value="state.form.price"
+                               t-on-input="(ev) => this.setNumber('price', ev)"/>
+                    </div>
+                    <div class="civora-fld">
+                        <label>Loyer / mois (FCFA)</label>
+                        <input type="number" min="0" step="1000" t-att-value="state.form.monthly_revenue"
+                               t-on-input="(ev) => this.setNumber('monthly_revenue', ev)"/>
+                    </div>
+                    <div class="civora-fld civora-col2">
+                        <label>Description</label>
+                        <textarea rows="2" t-att-value="state.form.description"
+                                  t-on-input="(ev) => this.setField('description', ev)"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <t t-set-slot="footer">
+            <button class="civora-btn civora-btn-outline" t-on-click="() => props.onClose()">Annuler</button>
+            <button class="civora-btn civora-btn-accent" t-att-disabled="state.saving" t-on-click="save">
+                <t t-esc="state.saving ? 'Création…' : 'Créer l\'unité'"/>
+            </button>
+        </t>
+    </CivoraDrawer>
+</t>
+
+</templates>

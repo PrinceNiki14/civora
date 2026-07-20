@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_pipeline.LeadDrawer">
+    <CivoraDrawer title="drawerTitle"
+                  subtitle="'Renseignez la piste et son potentiel'"
+                  variant="'modal'"
+                  size="'lg'"
+                  icon="'fa-bullseye'"
+                  onClose="() => props.onClose(false)">
+
+        <div class="civora-lf">
+            <div t-if="state.loading" class="civora-lf-loading">
+                <i class="fa fa-circle-o-notch fa-spin"/> Chargement…
+            </div>
+
+            <t t-else="">
+                <div t-if="state.error" class="civora-lf-error">
+                    <i class="fa fa-exclamation-circle"/> <t t-esc="state.error"/>
+                </div>
+
+                <div class="civora-lf-section">
+                    <div class="civora-lf-title">Identité</div>
+                    <div class="civora-lf-grid">
+                        <div class="civora-fld civora-col2">
+                            <label>Titre *</label>
+                            <input type="text" t-att-value="state.form.name"
+                                   t-on-input="(ev) => this.setField('name', ev)" placeholder="Villa Cocody — M. Koné"/>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Contact existant</label>
+                            <select t-on-change="(ev) => this.setM2O('partner_id', ev)">
+                                <option value="">—</option>
+                                <option t-foreach="partners" t-as="p" t-key="p.id"
+                                        t-att-value="p.id" t-att-selected="state.form.partner_id === p.id"
+                                        t-esc="p.name"/>
+                            </select>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Nom (si nouveau)</label>
+                            <input type="text" t-att-value="state.form.contact_name"
+                                   t-on-input="(ev) => this.setField('contact_name', ev)"/>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Email</label>
+                            <input type="email" t-att-value="state.form.email"
+                                   t-on-input="(ev) => this.setField('email', ev)"/>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Téléphone</label>
+                            <input type="text" t-att-value="state.form.phone"
+                                   t-on-input="(ev) => this.setField('phone', ev)"/>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="civora-lf-section">
+                    <div class="civora-lf-title">Qualification</div>
+                    <div class="civora-lf-grid">
+                        <div class="civora-fld">
+                            <label>Statut</label>
+                            <select t-on-change="(ev) => this.setField('status', ev)">
+                                <option t-foreach="statuses" t-as="s" t-key="s.value"
+                                        t-att-value="s.value" t-att-selected="state.form.status === s.value"
+                                        t-esc="s.label"/>
+                            </select>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Source</label>
+                            <select t-on-change="(ev) => this.setM2O('source_id', ev)">
+                                <option value="">—</option>
+                                <option t-foreach="sources" t-as="s" t-key="s.id"
+                                        t-att-value="s.id" t-att-selected="state.form.source_id === s.id"
+                                        t-esc="s.name"/>
+                            </select>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Score IA</label>
+                            <input type="number" min="0" max="100" t-att-value="state.form.score"
+                                   t-on-input="(ev) => this.setNumber('score', ev)"/>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Agent</label>
+                            <select t-on-change="(ev) => this.setM2O('agent_id', ev)">
+                                <option value="">—</option>
+                                <option t-foreach="users" t-as="u" t-key="u.id"
+                                        t-att-value="u.id" t-att-selected="state.form.agent_id === u.id"
+                                        t-esc="u.name"/>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="civora-lf-section">
+                    <div class="civora-lf-title">Recherche &amp; budget</div>
+                    <div class="civora-lf-grid">
+                        <div class="civora-fld">
+                            <label>Transaction</label>
+                            <select t-on-change="(ev) => this.setField('transaction', ev)">
+                                <option t-foreach="transactions" t-as="tr" t-key="tr.value"
+                                        t-att-value="tr.value" t-att-selected="state.form.transaction === tr.value"
+                                        t-esc="tr.label"/>
+                            </select>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Bien d'intérêt</label>
+                            <select t-on-change="(ev) => this.setM2O('property_id', ev)">
+                                <option value="">—</option>
+                                <option t-foreach="properties" t-as="pr" t-key="pr.id"
+                                        t-att-value="pr.id" t-att-selected="state.form.property_id === pr.id"
+                                        t-esc="pr.name"/>
+                            </select>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Budget min (FCFA)</label>
+                            <input type="number" min="0" t-att-value="state.form.budget_min"
+                                   t-on-input="(ev) => this.setNumber('budget_min', ev)"/>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Budget max (FCFA)</label>
+                            <input type="number" min="0" t-att-value="state.form.budget_max"
+                                   t-on-input="(ev) => this.setNumber('budget_max', ev)"/>
+                        </div>
+                        <div class="civora-fld civora-col2">
+                            <label>Description</label>
+                            <textarea rows="3" t-att-value="state.form.description"
+                                      t-on-input="(ev) => this.setField('description', ev)"/>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </div>
+
+        <t t-set-slot="footer">
+            <button class="civora-btn civora-btn-outline" t-on-click="() => props.onClose(false)">Annuler</button>
+            <button class="civora-btn civora-btn-accent" t-att-disabled="state.saving" t-on-click="() => this.save()">
+                <i t-if="state.saving" class="fa fa-circle-o-notch fa-spin"/> Enregistrer
+            </button>
+        </t>
+    </CivoraDrawer>
+</t>
+
+</templates>

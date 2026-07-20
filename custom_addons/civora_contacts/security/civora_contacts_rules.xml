@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+
+    <!--
+        Regles multi-societe CIVORA Contacts.
+        - Interactions : strictement rattachees a une societe (donnees
+          transactionnelles) -> l'utilisateur ne voit que les societes autorisees.
+        - Modeles parametrables (role / source / segment) : partage possible
+          (company_id vide = visible par toutes les societes) OU specifique.
+        Regles globales (sans groupe) : s'appliquent a tous les utilisateurs.
+        La table res.partner conserve la regle multi-societe native d'Odoo.
+    -->
+
+    <record id="civora_interaction_company_rule" model="ir.rule">
+        <field name="name">civora.interaction : multi-societe</field>
+        <field name="model_id" ref="model_civora_interaction"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="civora_contact_role_company_rule" model="ir.rule">
+        <field name="name">civora.contact.role : multi-societe</field>
+        <field name="model_id" ref="model_civora_contact_role"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="civora_contact_source_company_rule" model="ir.rule">
+        <field name="name">civora.contact.source : multi-societe</field>
+        <field name="model_id" ref="model_civora_contact_source"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="civora_contact_segment_company_rule" model="ir.rule">
+        <field name="name">civora.contact.segment : multi-societe</field>
+        <field name="model_id" ref="model_civora_contact_segment"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="civora_agent_role_company_rule" model="ir.rule">
+        <field name="name">civora.agent.role : multi-societe</field>
+        <field name="model_id" ref="model_civora_agent_role"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <!--
+        Cloisonnement strict des CONTACTS CIVORA sur res.partner.
+        "Contact CIVORA" = flag civora_is_contact OU au moins un role CIVORA
+        (acheteur, proprietaire, locataire...). Ainsi les acquereurs geres via
+        civora_gestion sont egalement cloisonnes, meme si le flag n'a pas ete pose.
+        - Un partenaire non-CIVORA (fournisseur, utilisateur, societe...) n'est
+          jamais filtre -> comportement natif d'Odoo preserve ;
+        - Un contact CIVORA n'est visible que depuis sa societe.
+        Globale (sans groupe) : s'applique a tous les utilisateurs.
+    -->
+    <record id="civora_partner_company_rule" model="ir.rule">
+        <field name="name">res.partner (contacts CIVORA) : cloisonnement société</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="domain_force">['|', '&amp;', ('civora_is_contact', '=', False), ('civora_role_ids', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="global" eval="True"/>
+    </record>
+
+</odoo>

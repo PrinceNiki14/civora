@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="hr_fdfp.report_hr_fdfp">
+        <t t-foreach="docs" t-as="o">
+            <t t-set="data_report_landscape" t-value="True"/>
+            <t t-set="full_width" t-value="True"/>
+            <t t-call="web.html_container">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                         <div class="col-12 text-center fw-bold">
+                            <h6 class="text-center fw-bold">COTISATION FDFP</h6>
+                             PÉRIODE DU <span t-field="o.start_date"/> - <span t-field="o.end_date" />
+                         </div>
+                        <br/>
+                        <div class="col-12">
+                            <table class="table table-bordered">
+                                <tr>
+                                    <td class="text-center fw-bold">RUBRIQUE</td>
+                                    <td class="text-center fw-bold">TOTAL SALAIRE BRUT</td>
+                                    <td class="text-center fw-bold">TAUX (%)</td>
+                                    <td class="text-center fw-bold">MONTANT NET A PAYER</td>
+                                </tr>
+                                <t t-if="o.company_id.id == 2">
+                                    <tr>
+                                        <td class="text-center fw-bold">TAXE D'APPRENTISSAGE</td>
+                                        <td class="text-center fw-bold" rowspan="2"><span t-esc="data['BASE']" t-options='{"widget": "float", "precision": 0}'/></td>
+                                        <td class="text-center fw-bold">0,4</td>
+                                        <td class="text-center fw-bold"><span t-esc="data['TAXEAP']" t-options='{"widget": "float", "precision": 0}'/></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center fw-bold">TAXE DE LA FORMATION PROFESSIONNELLE CONTINUE </td>
+                                        <!--<td class="text-center fw-bold"></td>-->
+                                        <td class="text-center fw-bold">0,6</td>
+                                        <td class="text-center fw-bold"><span t-esc="data['TAXEFPC']" t-options='{"widget": "float", "precision": 0}'/></td>
+                                    </tr>
+                                </t>
+                                <t t-else="">
+                                    <tr>
+                                        <td class="text-center fw-bold">TAXE D'APPRENTISSAGE</td>
+                                        <td class="text-center fw-bold" rowspan="3"><span t-esc="data['BASE']" t-options='{"widget": "float", "precision": 0}'/></td>
+                                        <td class="text-center fw-bold">0,4</td>
+                                        <td class="text-center fw-bold"><span t-esc="data['TAXEAP']" t-options='{"widget": "float", "precision": 0}'/></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center fw-bold">TAXE DE LA FORMATION PROFESSIONNELLE CONTINUE </td>
+                                        <td class="text-center fw-bold">0,6</td>
+                                        <td class="text-center fw-bold"><span t-esc="data['TAXEFPC']" t-options='{"widget": "float", "precision": 0}'/></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center fw-bold">TAXE DE LA FORMATION PROFESSIONNELLE CONTINUE REGUL</td>
+                                        <td class="text-center fw-bold">0,6</td>
+                                        <td class="text-center fw-bold"><span t-esc="data['TAXEFPR']" t-options='{"widget": "float", "precision": 0}'/></td>
+                                    </tr>
+                                </t>
+                            </table>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_gestion.Tenants">
+    <div class="civora-owners">
+
+        <div class="civora-owners-head">
+            <div>
+                <div class="civora-owners-title">Locataires</div>
+                <div class="civora-owners-sub">
+                    <t t-esc="state.stats.count"/> locataires actifs · <t t-esc="kpiMoney(state.stats.mrr)"/> de loyers mensuels
+                </div>
+            </div>
+        </div>
+
+        <div class="civora-owners-kpis">
+            <CivoraStatCard label="'Locataires actifs'" value="state.stats.count + ''" icon="'fa fa-users'"/>
+            <CivoraStatCard label="'MRR loyers'" value="kpiMoney(state.stats.mrr)" icon="'fa fa-money'"/>
+            <CivoraStatCard label="'En retard'" value="'—'" icon="'fa fa-exclamation-circle'"/>
+            <CivoraStatCard label="'Baux à renouveler'" value="'—'" icon="'fa fa-key'"/>
+        </div>
+
+        <div class="civora-owners-tabbar">
+            <button t-foreach="tabList" t-as="t" t-key="t.id"
+                    t-att-class="'civora-owners-tab' + (state.view === t.id ? ' is-active' : '')"
+                    t-on-click="() => this.setView(t.id)">
+                <t t-esc="t.label"/>
+                <span t-if="t.count" class="civora-owners-tabcount" t-esc="t.count + ''"/>
+            </button>
+        </div>
+
+        <div t-if="state.loading" class="civora-owners-state">
+            <i class="fa fa-circle-o-notch fa-spin"/> Chargement…
+        </div>
+
+        <!-- ===== LISTE ===== -->
+        <t t-elif="state.view === 'list'">
+            <div class="civora-owners-toolbar">
+                <div class="civora-owners-search">
+                    <i class="fa fa-search"/>
+                    <input type="text" placeholder="Rechercher un locataire…"
+                           t-att-value="state.search" t-on-input="(ev) => this.onSearchInput(ev)"/>
+                </div>
+            </div>
+
+            <div t-if="!state.tenants.length" class="civora-owners-empty">
+                <i class="fa fa-users"/>
+                <div class="civora-owners-empty-t">Aucun locataire</div>
+                <p>Renseignez un « Locataire actuel » sur vos biens pour les voir apparaître ici.</p>
+            </div>
+
+            <div t-else="" class="civora-owners-tablewrap">
+                <table class="civora-owners-table">
+                    <thead>
+                        <tr>
+                            <th>Locataire</th>
+                            <th>Bien</th>
+                            <th class="civora-num">Loyer / mois</th>
+                            <th class="civora-num">Score IA</th>
+                            <th>Statut</th>
+                            <th>Fin bail</th>
+                            <th class="civora-actions-col"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="state.tenants" t-as="t" t-key="t.id"
+                            class="civora-owners-row" t-on-click="() => this.openTenant(t)">
+                            <td>
+                                <div class="civora-owners-cell">
+                                    <CivoraAvatar name="t.name" size="'md'"/>
+                                    <div>
+                                        <div class="civora-owners-name" t-esc="t.name"/>
+                                        <div class="civora-owners-since"><t t-esc="t.type"/><t t-if="t.since"> · depuis <t t-esc="t.since"/></t></div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td t-esc="t.bienLabel"/>
+                            <td class="civora-num"><t t-esc="t.mrr ? fmtMoney(t.mrr) + ' FCFA' : '—'"/></td>
+                            <td class="civora-num">
+                                <span class="civora-owners-score"><i class="fa fa-star"/> <t t-esc="t.score || '—'"/></span>
+                            </td>
+                            <td><CivoraBadge label="'Actif'" variant="'success'"/></td>
+                            <td class="civora-owners-dash">—</td>
+                            <td class="civora-actions-col"><i class="fa fa-chevron-right"/></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </t>
+
+        <!-- ===== BAUX (a venir) ===== -->
+        <t t-elif="state.view === 'leases'">
+            <div class="civora-owners-soon">
+                <div class="civora-owners-soon-ico"><i class="fa fa-file-text-o"/></div>
+                <div class="civora-owners-soon-t">Baux</div>
+                <p>Contrats de bail (période, révision de loyer, renouvellement, caution) — à venir avec le module Locations.</p>
+            </div>
+        </t>
+
+        <!-- ===== ENCAISSEMENTS (a venir) ===== -->
+        <t t-else="">
+            <div class="civora-owners-soon">
+                <div class="civora-owners-soon-ico"><i class="fa fa-money"/></div>
+                <div class="civora-owners-soon-t">Encaissements</div>
+                <p>Quittances, paiements de loyers et suivi des retards — à venir avec le module de comptabilité.</p>
+            </div>
+        </t>
+
+    </div>
+</t>
+
+</templates>

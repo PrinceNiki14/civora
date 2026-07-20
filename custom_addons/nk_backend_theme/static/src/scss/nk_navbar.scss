@@ -1,0 +1,98 @@
+// =====================================================================
+// NK / CIVORA - Rehabillage de la barre du haut (navbar + recherche)
+// Tout en CSS : robuste aux migrations, ne casse pas le composant OWL.
+// =====================================================================
+
+$nk-nav-bg:      #ffffff;
+$nk-nav-border:  #e1e5ea;
+$nk-nav-text:    #0f1b2a;
+$nk-nav-muted:   #626a75;
+$nk-accent:      #00ab68;
+
+// ---------------------------------------------------------------------
+// La navbar
+// ---------------------------------------------------------------------
+.o_main_navbar {
+    background-color: $nk-nav-bg !important;
+    color: $nk-nav-text;
+    border-bottom: 1px solid $nk-nav-border;
+    box-shadow: 0 1px 3px rgba(16, 24, 40, .04);
+
+    // Masquer la grille d'apps (9 points) et l'icone d'app coloree :
+    // la sidebar assure deja toute la navigation. (desktop uniquement ;
+    // le burger mobile "fa-bars" n'est pas concerne.)
+    .o_menu_toggle_icon,
+    .o_menu_brand_icon {
+        display: none !important;
+    }
+
+    // Reduire l'espace laisse par l'icone masquee
+    .o_menu_toggle {
+        min-width: auto !important;
+        padding-left: 10px !important;
+        padding-right: 4px !important;
+    }
+
+    // Nom de l'app courante -> libelle propre facon titre
+    .o_menu_brand {
+        color: $nk-nav-text !important;
+        font-weight: 700;
+        font-size: 15px;
+        margin-left: 0 !important;
+        padding-left: 6px !important;
+    }
+
+    // Entrees du menu (Commandes, A facturer, Analyse...)
+    .o_menu_sections {
+        .o_nav_entry,
+        button {
+            color: $nk-nav-muted;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: background-color .12s ease, color .12s ease;
+
+            &:hover,
+            &:focus {
+                color: $nk-accent;
+                background-color: rgba(0, 171, 104, .07);
+            }
+        }
+
+        // Menu deroulant ouvert -> accent
+        .o-dropdown.show > button,
+        .show > button {
+            color: $nk-accent;
+            background-color: rgba(0, 171, 104, .07);
+        }
+    }
+
+    // Systray (droite) : icones plus douces
+    .o_menu_systray {
+        color: $nk-nav-muted;
+
+        button,
+        .dropdown-toggle,
+        .o_nav_entry {
+            color: $nk-nav-muted;
+        }
+    }
+}
+
+// ---------------------------------------------------------------------
+// Barre de recherche (control panel) facon pilule CIVORA
+// ---------------------------------------------------------------------
+.o_control_panel {
+    .o_searchview {
+        border-radius: 999px !important;
+        background-color: #f8fafc;
+        border: 1px solid transparent;
+        padding-left: 8px;
+        transition: background-color .12s ease, border-color .12s ease, box-shadow .12s ease;
+
+        &:focus-within {
+            background-color: #fff;
+            border-color: $nk-accent;
+            box-shadow: 0 0 0 3px rgba(0, 171, 104, .12);
+        }
+    }
+}

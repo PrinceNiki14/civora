@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record model="ir.ui.view" id="mail_payslip_wizard_form_view">
+        <field name="name">mail.payslip.wizard.form</field>
+        <field name="model">mail.payslip.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Send via mail">
+                <div><span>Make sure that each employee have work email address in their details because mail will be sent on that address only.</span></div>
+                <field name="payslip_ids"/>
+                <footer>
+                    <button name="send_via_mail" type="object"
+                        string="Send via mail" class="oe_highlight"/>
+                    or
+                    <button special="cancel" string="Cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <act_window id="action_mail_payslip_wizard"
+        name="Send via mail"
+        binding_model="hr.payslip"
+        res_model="mail.payslip.wizard"
+        view_mode="form"
+        target="new"/>
+
+    <record id="action_mail_payslip_send" model="ir.actions.server">
+        <field name="name">Envoyer le bulletin par mail</field>
+        <field name="model_id" ref="hr_payroll.model_hr_payslip"/>
+        <field name="binding_model_id" ref="hr_payroll.model_hr_payslip"/>
+        <field name="binding_view_types">list,form</field>
+        <field name="state">code</field>
+        <field name="code">action = records.action_mail_payslip_send()</field>
+    </record>
+
+</odoo>

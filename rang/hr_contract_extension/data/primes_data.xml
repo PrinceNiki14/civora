@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+    	<record model="hr.payroll.prime" id="prime_transport">
+             <field name="name">Prime de transport</field>
+             <field name="code">TRSP</field>
+             <field name="description">la prime versée pour le transport de l'employé</field>
+         </record>
+        <record model="hr.payroll.prime" id="prime_cmu">
+             <field name="name">Nombre de personnes pour CMU</field>
+             <field name="code">CMU</field>
+             <field name="description">la CMU versée pour l'employé</field>
+         </record>
+         <record model="hr.payroll.prime" id="indemite_logement">
+             <field name="name">Indemnité de logement</field>
+             <field name="code">INDML</field>
+             <field name="description">Indemnité versée pour le logement de l'employé</field>
+         </record>
+         <record model="hr.payroll.prime" id="prime_assurance">
+             <field name="name">Prime d'assurance</field>
+             <field name="code">ASSUR</field>
+             <field name="description">la prime versée pour le transport de l'employé</field>
+         </record>
+         <record model="hr.payroll.prime" id="prime_fonction">
+             <field name="name">Prime de fonction</field>
+             <field name="code">FONCT</field>
+             <field name="description">la prime versée pour le transport de l'employé</field>
+         </record>
+         <record model="hr.payroll.prime" id="prime_responsabilite">
+             <field name="name">Prime de responsabilité</field>
+             <field name="code">PRES</field>
+             <field name="description">la prime versé pour le transport de l'employé</field>
+         </record>
+         <record model="hr.payroll.prime" id="prime_caburant">
+             <field name="name">Prime de caburant</field>
+             <field name="code">CARBU</field>
+             <field name="description">la prime versée pour le transport de l'employé</field>
+         </record>
+         <record model="hr.payroll.prime" id="prime_gratification">
+             <field name="name">Gratification</field>
+             <field name="code">GRATIF</field>
+             <field name="description">la prime versée pour le transport de l'employé</field>
+         </record>
+         <record model="hr.payroll.prime" id="avantage_nature">
+             <field name="name">Avantage en nature</field>
+             <field name="code">AVTGN</field>
+             <field name="description">la prime versée pour le transport de l'employé</field>
+         </record>
+
+        <record model="hr.convention" id="convention_inter_collective">
+             <field name="name">Convention collective interprofessionnelle</field>
+        </record>
+        <record model="hr.convention" id="convention_secteur_batiment">
+             <field name="name">Secteur Bâtiment Travaux Publics et Activités Connexes</field>
+        </record>
+        <record model="hr.secteur.activite" id="activite_commerce_negoce">
+             <field name="name">Commerce et Négoce</field>
+             <field name="hr_convention_id" ref="hr_contract_extension.convention_inter_collective"/>
+        </record>
+        <record model="hr.secteur.activite" id="activite_batiement">
+             <field name="name">Bâtiment, Travaux Publics et Activités Connexes</field>
+             <field name="hr_convention_id" ref="hr_contract_extension.convention_inter_collective"/>
+        </record>
+        <record model="hr.secteur.activite" id="activite_btp">
+             <field name="name">BTP</field>
+             <field name="hr_convention_id" ref="hr_contract_extension.convention_inter_collective"/>
+        </record>
+        <record model="hr.secteur.activite" id="activite_secteur_agricole">
+             <field name="name">Secteur agricole</field>
+             <field name="hr_convention_id" ref="hr_contract_extension.convention_inter_collective"/>
+        </record>
+        <record model="hr.secteur.activite" id="activite_commerce_sav">
+             <field name="name">Commercialisation,Installation et SAV</field>
+             <field name="hr_convention_id" ref="hr_contract_extension.convention_inter_collective"/>
+        </record>
+        <record model="hr.secteur.activite" id="activite_secteur_industriel">
+             <field name="name">Secteur Industriel</field>
+             <field name="hr_convention_id" ref="hr_contract_extension.convention_inter_collective"/>
+        </record>
+        <record model="hr.secteur.activite" id="activite_multimedia">
+             <field name="name">Secteur Multimedia</field>
+             <field name="hr_convention_id" ref="hr_contract_extension.convention_inter_collective"/>
+        </record>
+        <record model="hr.secteur.activite" id="activite_secteur_petrolier">
+             <field name="name">Secteur Pétrolier</field>
+             <field name="hr_convention_id" ref="hr_contract_extension.convention_inter_collective"/>
+        </record>
+        <record model="hr.secteur.activite" id="activite_secteur_agricole">
+             <field name="name">Secteur agricole</field>
+             <field name="hr_convention_id" ref="hr_contract_extension.convention_inter_collective"/>
+        </record>
+        <record model="hr.secteur.activite" id="activite_service_prestation">
+             <field name="name">Service et Prestation</field>
+             <field name="hr_convention_id" ref="hr_contract_extension.convention_inter_collective"/>
+        </record>
+        <record model="hr.secteur.activite" id="activite_public">
+             <field name="name">Public</field>
+             <field name="hr_convention_id" ref="hr_contract_extension.convention_inter_collective"/>
+        </record>
+        <record model="hr.secteur.activite" id="activite_agro_industrie'">
+             <field name="name">agro-industrie</field>
+             <field name="hr_convention_id" ref="hr_contract_extension.convention_inter_collective"/>
+        </record>
+    </data>
+</openerp>

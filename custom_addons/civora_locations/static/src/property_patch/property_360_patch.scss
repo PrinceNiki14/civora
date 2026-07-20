@@ -1,0 +1,13 @@
+// =====================================================================
+// CIVORA Locations - Ajustement de la grille KPIs de la fiche immeuble
+// pour absorber la StatCard supplementaire "Taux de recouvrement".
+// (surcharge ciblee, ne modifie pas civora_biens)
+// =====================================================================
+
+.civora-p360 {
+    .civora-p360-kpis {
+        // S'adapte au nombre de cartes (4 ou 5 selon immeuble/bien simple)
+        // en gardant des cartes lisibles.
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+}

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_agence.Placeholder">
+    <div class="civora_placeholder">
+        <div class="civora_ph_card">
+            <div class="civora_ph_icon"><i class="fa fa-rocket"/></div>
+            <h1 class="civora_ph_title"><t t-esc="moduleName"/></h1>
+            <div class="civora_ph_badge">Bientôt disponible</div>
+            <p class="civora_ph_text">
+                Ce module fait partie de la suite CIVORA 360° et sera bientôt
+                mis en service. Il apparaît déjà ici pour préfigurer l'organisation
+                de votre espace.
+            </p>
+        </div>
+    </div>
+</t>
+
+</templates>

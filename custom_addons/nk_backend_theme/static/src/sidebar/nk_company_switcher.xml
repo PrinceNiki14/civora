@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="nk_backend_theme.CompanySwitcher">
+    <div class="nk_csw" t-ref="root" t-if="canShow">
+
+        <!-- Panneau deroulant (au-dessus du bouton) -->
+        <div t-if="state.open" class="nk_csw_panel">
+            <div class="nk_csw_panel_head">
+                <span>Sociétés</span>
+                <button class="nk_csw_all" t-on-click="(ev) => this.selectAll(ev)"
+                        title="Tout activer">Tout</button>
+            </div>
+            <div class="nk_csw_list">
+                <div t-foreach="companies" t-as="co" t-key="co.id"
+                     class="nk_csw_row"
+                     t-att-class="{ nk_cur: isCurrent(co.id) }"
+                     t-on-click="() => this.switchTo(co.id)">
+
+                    <!-- Case multi-societe -->
+                    <span class="nk_csw_check"
+                          t-att-class="{ nk_on: isActive(co.id) }"
+                          t-on-click="(ev) => this.toggleCompany(co.id, ev)">
+                        <i t-if="isActive(co.id)" class="fa fa-check"/>
+                    </span>
+
+                    <!-- Logo / initiale -->
+                    <span class="nk_csw_logo">
+                        <img t-att-src="logoUrl(co.id)" t-att-alt="co.name"
+                             t-on-error.stop="(ev) => ev.target.classList.add('nk_hide')"/>
+                        <span class="nk_csw_logo_fb" t-esc="initialOf(co.name)"/>
+                    </span>
+
+                    <span class="nk_csw_name text-truncate" t-esc="co.name"/>
+                    <i t-if="isCurrent(co.id)" class="fa fa-circle nk_csw_dot"/>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bouton : societe active -->
+        <div class="nk_csw_btn" t-on-click="() => this.toggle()">
+            <span class="nk_csw_logo nk_csw_logo_lg">
+                <img t-att-src="logoUrl(currentCompanyId)" t-att-alt="currentName"
+                     t-on-error.stop="(ev) => ev.target.classList.add('nk_hide')"/>
+                <span class="nk_csw_logo_fb" t-esc="currentInitial"/>
+            </span>
+            <div class="nk_csw_btn_txt">
+                <div class="nk_csw_btn_label">Société</div>
+                <div class="nk_csw_btn_name text-truncate" t-esc="currentName"/>
+            </div>
+            <i t-if="hasMultiple" class="fa fa-angle-up nk_csw_caret" t-att-class="{ nk_flip: state.open }"/>
+        </div>
+
+    </div>
+</t>
+
+</templates>

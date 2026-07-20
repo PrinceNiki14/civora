@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="hr_payslip_ci_form_view">
+            <field name="name">hr.payslip.form</field>
+            <field name="model">hr.payslip</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="hr_payroll.view_hr_payslip_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//header/button[@name='compute_sheet']" position="after">
+                    <button string="Calcul inverse" name="%(action_hr_payroll_calcul_inverse_form_view)s" type="action"
+                            invisible="state not in ('draft', 'verify')" class="oe_highlight" />
+                </xpath>
+                <xpath expr="//header/button[@name='action_payslip_cancel']" position="after">
+                    <button string="Mettre au brouillon" name="get_back" type="object" groups="base.admin"
+                            invisible="state not in ('confirm', 'verify', 'done')" class="oe_highlight" />
+                </xpath>
+                <xpath expr="//field[@name='payslip_run_id']" position="after">
+                    <label for="payslip_an_anciennete" string="Ancienneté"/>
+                    <div>
+                        <field name="payslip_an_anciennete" class="oe_inline"/>Ans-<field name="payslip_mois_anciennete" class="oe_inline"/>Mois
+                    </div>
+                </xpath>
+                <!--<field name='name' position="after">
+                    <label for="payslip_an_anciennete" string="Ancienneté"/>
+                    <div>
+                        <field name="payslip_an_anciennete" class="oe_inline"/>Ans-<field name="payslip_mois_anciennete" class="oe_inline"/>Mois
+                    </div>
+                </field>-->
+                <xpath expr="//field[@name='worked_days_line_ids']/list/field[@name='number_of_hours']" position="after">
+                    <field name="rate" />
+                </xpath>
+                <xpath expr="//field[@name='worked_days_line_ids']/list/field[@name='amount']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='worked_days_line_ids']/list/field[@name='work_entry_type_id']" position="attributes">
+                    <attribute name="readonly">0</attribute>
+                </xpath>
+                <xpath expr="//field[@name='worked_days_line_ids']/list/field[@name='number_of_days']" position="attributes">
+                    <attribute name="readonly">0</attribute>
+                </xpath>
+                <xpath expr="//field[@name='worked_days_line_ids']/list/field[@name='number_of_hours']" position="attributes">
+                    <attribute name="readonly">0</attribute>
+                </xpath>
+                <xpath expr="//field[@name='worked_days_line_ids']/list/field[@name='amount']" position="attributes">
+                    <attribute name="column_invisible">1</attribute>
+                </xpath>
+                <xpath expr="//notebook/page[@name='account_info']" position="inside">
+                    <group>
+                        <group string="Elements de base">
+                            <field name="brut" />
+                            <field name="brut_total" />
+                        </group>
+                        <group string="Cumuls antérieurs">
+                            <field name="cumul_brut" />
+                            <field name="cumul_cn" />
+                            <field name="cumul_its" />
+                            <field name="cumul_igr" />
+                            <field name="fisc_days" />
+                        </group>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

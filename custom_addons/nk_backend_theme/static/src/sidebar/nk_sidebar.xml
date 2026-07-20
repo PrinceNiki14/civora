@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="nk_backend_theme.Sidebar">
+    <div class="nk_sb_wrap">
+
+        <!-- Bouton burger (visible uniquement en mobile via CSS) -->
+        <button class="nk_sb_burger" t-on-click="() => this.toggleMobile()" aria-label="Menu">
+            <i class="fa fa-bars"/>
+        </button>
+
+        <!-- Fond semi-transparent (backdrop) qui referme le volet -->
+        <div class="nk_sb_backdrop" t-att-class="{ 'is-open': state.mobileOpen }"
+             t-on-click="() => this.closeMobile()"/>
+
+        <div class="nk_sidebar" t-att-class="{ 'is-open': state.mobileOpen }">
+
+        <!-- Marque / retour accueil -->
+        <div class="nk_sb_brand" t-on-click="() => this.goHome()">
+            <div t-if="brand.logoUrl" class="nk_sb_logo_img">
+                <img t-att-src="brand.logoUrl" t-att-alt="brand.name"/>
+            </div>
+            <div t-else="" class="nk_sb_logo" t-esc="brand.initials"/>
+            <div class="nk_sb_brand_txt">
+                <div class="nk_sb_name" t-esc="brand.name"/>
+                <div class="nk_sb_tag" t-esc="brand.tagline"/>
+            </div>
+        </div>
+
+        <!-- Sections -->
+        <div class="nk_sb_scroll">
+            <t t-foreach="renderSections" t-as="section" t-key="section.label">
+                <div class="nk_sb_section" t-esc="section.label"/>
+                <div class="nk_sb_nav">
+                    <a t-foreach="section.items" t-as="item" t-key="item.key"
+                       class="nk_sb_item"
+                       t-att-class="{ nk_active: item.active }"
+                       t-att-title="item.label"
+                       t-on-click.prevent="() => this.openItem(item)">
+
+                        <!-- Icone monochrome (entrees mappees) -->
+                        <span t-if="!item.app" class="nk_sb_ic">
+                            <i t-att-class="item.icon"/>
+                        </span>
+                        <!-- Icone d'app coloree (section AUTRES) -->
+                        <t t-else="">
+                            <img t-if="item.app.webIconData" class="nk_sb_ic_img"
+                                 t-attf-src="{{item.app.webIconData}}" t-att-alt="item.label"/>
+                            <span t-else="" class="nk_sb_ic_img nk_sb_ic_fallback"
+                                  t-attf-style="background-color: {{item.app.webIcon and item.app.webIcon.backgroundColor}};">
+                                <i t-att-class="item.app.webIcon and item.app.webIcon.iconClass"
+                                   t-attf-style="color: {{item.app.webIcon and item.app.webIcon.color}};"/>
+                            </span>
+                        </t>
+
+                        <span class="nk_sb_label text-truncate" t-esc="item.label"/>
+                    </a>
+                </div>
+            </t>
+        </div>
+
+        <!-- Selecteur de societe (multi-societe) -->
+        <NkCompanySwitcher/>
+
+        <!-- Utilisateur + deconnexion -->
+        <div class="nk_sb_user" t-on-click="() => this.logout()">
+            <span class="nk_sb_user_ic"><i class="fa fa-sign-out"/></span>
+            <div class="nk_sb_user_txt">
+                <div class="nk_sb_user_name" t-esc="userName"/>
+                <div class="nk_sb_user_sub">Se déconnecter</div>
+            </div>
+        </div>
+
+        </div><!-- /.nk_sidebar -->
+
+    </div><!-- /.nk_sb_wrap -->
+</t>
+
+</templates>

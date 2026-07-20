@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_civora_leads" model="ir.actions.client">
+        <field name="name">Pistes</field>
+        <field name="tag">civora.leads</field>
+    </record>
+
+    <menuitem id="menu_pistes" name="Pistes"
+              web_icon="fa fa-bullseye,#FFFFFF,#2563eb"
+              action="action_civora_leads" sequence="6"/>
+
+    <record id="action_civora_pipeline" model="ir.actions.client">
+        <field name="name">Pipeline</field>
+        <field name="tag">civora.pipeline</field>
+    </record>
+
+    <menuitem id="menu_pipeline" name="Pipeline"
+              web_icon="fa fa-filter,#FFFFFF,#2563eb"
+              action="action_civora_pipeline" sequence="7"/>
+
+</odoo>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+<data>
+
+    <menuitem id="menu_hr_cnps_configuration" name="Configurations CNPS" parent="hr_work_entry_contract_enterprise.menu_hr_payroll_configuration" sequence="100"/>
+    
+    <record id="hr_cnps_settings_from_view" model="ir.ui.view">
+        <field name="name">hr.cnps.setting.form.view</field>
+        <field name="model">hr.cnps.setting</field>
+        <field name="arch" type="xml">
+            <form string="">
+                <group col="4">
+                    <field name="name"/>
+                    <field name="type"/>
+                    <field name="sequence"/>
+                    <field name="amount_min" />
+                    <field name="amount_max" />
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_cnps_settings_tree_view" model="ir.ui.view">
+        <field name="name">hr.cnps.setting.tree.view</field>
+        <field name="model">hr.cnps.setting</field>
+        <field name="arch" type="xml">
+            <tree string="">
+                <field name="name"/>
+                <field name="type"/>
+                <field name="sequence"/>
+                <field name="amount_min" />
+                <field name="amount_max" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_hr_cnps_setting_tree_view" model="ir.actions.act_window">
+        <field name="name">Paramètres CNPS</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">hr.cnps.setting</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="hr_cnps_settings_tree_view"/>
+    </record>
+
+    <menuitem id="hr_cnps_settings_menu" name="Les tranches CNPS" parent="menu_hr_cnps_configuration"
+            action="action_hr_cnps_setting_tree_view" groups="hr_payroll.group_hr_payroll_manager" sequence="10"/>
+
+    <record id="hr_cnps_cotisation_line_template_from_view" model="ir.ui.view">
+        <field name="name">hr.cnps.cotisation.line.template.form.view</field>
+        <field name="model">hr.cnps.cotisation.line.template</field>
+        <field name="arch" type="xml">
+            <form string="">
+                <group col="4">
+                    <field name="name"/>
+                    <field name="type"/>
+                    <field name="account_id"/>
+                    <field name="taux"/>
+                    <field name="sequence"/>
+                    <field name="active"/>
+                    <field name="company_id"/>
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_cnps_cotisation_line_template_tree_view" model="ir.ui.view">
+        <field name="name">hr.cnps.cotisation.line.template.tree.view</field>
+        <field name="model">hr.cnps.cotisation.line.template</field>
+        <field name="arch" type="xml">
+            <tree string="">
+                <field name="name"/>
+                <field name="taux"/>
+                <field name="type" />
+                <field name="account_id" />
+                <field name="company_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_hr_cnps_cotisation_line_template_tree_view" model="ir.actions.act_window">
+        <field name="name">Templates de cotisations</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">hr.cnps.cotisation.line.template</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="hr_cnps_cotisation_template_menu" name="Les templates de cotisations" parent="menu_hr_cnps_configuration"
+            action="action_hr_cnps_cotisation_line_template_tree_view" groups="hr_payroll.group_hr_payroll_manager" sequence="20"/>
+</data>
+</odoo>

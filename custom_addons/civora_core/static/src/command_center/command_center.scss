@@ -1,0 +1,214 @@
+// =====================================================================
+// CIVORA CORE - Command Center (layout de l'ecran)
+// =====================================================================
+
+.civora-cc {
+    height: 100%;
+    overflow: auto;
+    background: $civora-bg;
+    font-family: $civora-font;
+    color: $civora-fg;
+
+    .civora-cc-inner {
+        max-width: 1360px;
+        margin: 0 auto;
+        padding: 28px 28px 48px;
+    }
+
+    // -- Header --------------------------------------------------------
+    .civora-cc-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+    .civora-cc-title {
+        font-family: $civora-font-display;
+        font-size: 28px;
+        font-weight: 800;
+        margin: 0;
+        letter-spacing: -.4px;
+        color: $civora-fg;
+    }
+    .civora-cc-subtitle {
+        color: $civora-muted;
+        font-size: 14px;
+        margin-top: 4px;
+    }
+    .civora-cc-actions { display: flex; gap: 10px; flex: 0 0 auto; }
+
+    // -- Grilles -------------------------------------------------------
+    .civora-grid { display: grid; gap: 16px; }
+    .civora-grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .civora-grid-4 { grid-template-columns: repeat(4, 1fr); }
+    .civora-col-2 { grid-column: span 2; }
+    .civora-mb { margin-bottom: 24px; }
+
+    @media (max-width: 1100px) {
+        .civora-grid-4 { grid-template-columns: repeat(2, 1fr); }
+        .civora-grid-3 { grid-template-columns: 1fr; }
+        .civora-col-2 { grid-column: auto; }
+    }
+
+    // -- Bloc carte generique ------------------------------------------
+    .civora-pad { padding: 20px; }
+    .civora-card-head {
+        display: flex; align-items: center; justify-content: space-between;
+        margin-bottom: 16px;
+    }
+    .civora-card-title {
+        font-family: $civora-font-display;
+        font-weight: 700;
+        font-size: 15px;
+        color: $civora-fg;
+    }
+
+    // Badge
+    .civora-badge {
+        display: inline-flex; align-items: center;
+        border-radius: 999px;
+        padding: 2px 10px;
+        font-size: 11px;
+        font-weight: 600;
+        &.civora-badge-accent { background: rgba(0, 171, 104, .10); color: $civora-accent; }
+    }
+
+    // "en direct"
+    .civora-live {
+        display: inline-flex; align-items: center; gap: 6px;
+        font-size: 11px; color: $civora-success;
+    }
+    .civora-live-dot {
+        width: 6px; height: 6px; border-radius: 50%;
+        background: $civora-success;
+        animation: civora-pulse 1.4s ease-in-out infinite;
+    }
+    @keyframes civora-pulse { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
+
+    // -- Pipeline ------------------------------------------------------
+    .civora-pipe { display: flex; flex-direction: column; gap: 14px; }
+    .civora-pipe-top {
+        display: flex; align-items: center; justify-content: space-between;
+        font-size: 12.5px; margin-bottom: 6px;
+    }
+    .civora-pipe-stage { font-weight: 600; color: $civora-fg; }
+    .civora-pipe-count { color: $civora-muted; }
+    .civora-pipe-track {
+        height: 8px; border-radius: 999px;
+        background: rgba(9, 30, 64, .07);
+        overflow: hidden;
+    }
+    .civora-pipe-fill {
+        height: 100%; border-radius: 999px;
+        background: linear-gradient(90deg, $civora-accent, $civora-success);
+    }
+
+    // -- Feed d'activite -----------------------------------------------
+    .civora-feed { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+    .civora-feed-item { display: flex; gap: 12px; }
+    .civora-dot {
+        width: 8px; height: 8px; border-radius: 50%;
+        margin-top: 5px; flex: 0 0 auto;
+        &.civora-dot-accent  { background: $civora-accent; }
+        &.civora-dot-info    { background: $civora-info; }
+        &.civora-dot-warning { background: $civora-warning; }
+        &.civora-dot-muted   { background: $civora-muted; }
+        &.civora-dot-primary { background: $civora-primary; }
+        &.civora-dot-success { background: $civora-success; }
+    }
+    .civora-feed-main { flex: 1; min-width: 0; }
+    .civora-feed-title { font-size: 13.5px; font-weight: 600; color: $civora-fg; }
+    .civora-feed-desc {
+        font-size: 12px; color: $civora-muted;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .civora-feed-time { font-size: 11px; color: $civora-muted; margin-top: 1px; }
+
+
+    // -- Graphes -------------------------------------------------------
+    .civora-card-sub {
+        font-size: 12px;
+        color: $civora-muted;
+        margin-top: 2px;
+    }
+    .civora-chart-wrap {
+        position: relative;
+        height: 260px;
+    }
+    .civora-chart-donut { height: 190px; }
+
+    // Legende inline (revenus)
+    .civora-legend-inline {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        font-size: 11.5px;
+        color: $civora-muted;
+        span { display: inline-flex; align-items: center; gap: 6px; }
+    }
+    .civora-lg-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+    .civora-lg-dash {
+        width: 14px; height: 0; display: inline-block;
+        border-top: 2px dashed #25afd2;
+    }
+
+    // Legende du donut
+    .civora-donut-legend {
+        margin-top: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .civora-donut-leg-row {
+        display: flex; align-items: center; justify-content: space-between;
+        font-size: 13px;
+    }
+    .civora-donut-leg-name {
+        display: inline-flex; align-items: center; gap: 8px;
+        color: $civora-muted;
+    }
+    .civora-donut-leg-val { font-weight: 700; color: $civora-fg; }
+
+    // -- Cash flow (pied) ----------------------------------------------
+    .civora-chart-cash { height: 200px; }
+    .civora-cash-foot {
+        display: flex; gap: 40px; margin-top: 16px;
+    }
+    .civora-foot-label { font-size: 12px; color: $civora-muted; }
+    .civora-foot-value {
+        font-family: $civora-font-display; font-weight: 800; font-size: 17px; color: $civora-fg;
+        margin-top: 2px;
+        &.civora-pos { color: $civora-success; }
+    }
+
+    // -- Cartes mini (impayes / saisonnier) ----------------------------
+    .civora-mini-head {
+        display: inline-flex; align-items: center; gap: 7px;
+        font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em;
+        &.civora-warn { color: $civora-warning; }
+        &.civora-acc  { color: $civora-accent; }
+        &.civora-muted { color: $civora-muted; }
+    }
+    .civora-muted-i { color: $civora-muted; }
+    .civora-mini-value {
+        font-family: $civora-font-display; font-weight: 800; font-size: 30px; color: $civora-fg;
+        margin-top: 8px; line-height: 1.1;
+    }
+    .civora-mini-sub { font-size: 13px; color: $civora-muted; margin-top: 4px; }
+    .civora-mt { margin-top: 16px; }
+
+    // -- Top agents ----------------------------------------------------
+    .civora-agents { display: flex; flex-direction: column; gap: 12px; }
+    .civora-agent-row { display: flex; align-items: center; justify-content: space-between; }
+    .civora-agent-id { display: flex; align-items: center; gap: 10px; }
+    .civora-agent-av {
+        width: 32px; height: 32px; border-radius: 50%;
+        background: linear-gradient(135deg, $civora-primary, #1b3a6b);
+        color: #fff; font-size: 11px; font-weight: 700;
+        display: flex; align-items: center; justify-content: center;
+        flex: 0 0 auto;
+    }
+    .civora-agent-name { font-size: 13.5px; font-weight: 600; color: $civora-fg; }
+    .civora-badge-neutral { background: rgba(9, 30, 64, .06); color: $civora-muted; }
+}

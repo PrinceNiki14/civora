@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="hr_payroll_prime_tree_view">
+            <field name="name">hr.payroll.prime.tree</field>
+            <field name="model">hr.payroll.prime</field>
+            <field name="arch" type="xml">
+                <tree string="Primes">
+                    <field name="name"/>
+                    <field name="code" />
+                </tree>
+            </field>
+        </record>
+        
+        <record model="ir.ui.view" id="hr_payroll_prime_form_view">
+            <field name="name">hr.payroll.prime.form</field>
+            <field name="model">hr.payroll.prime</field>
+            <field name="arch" type="xml">
+                <form string="Primes">
+                    <field name="active" invisible="1"/>
+                    <sheet>
+                        <widget name="web_ribbon" title="Archivé" bg_color="text-bg-danger" invisible="active"/>
+                        <group>    
+                            <group>
+                                <field name="name"/>
+                            </group>
+                            <group>
+                                <field name="code" />
+                            </group>
+                        </group>
+                        <field name="description" placeholder="Description de la prime" />
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        
+        <record model="ir.actions.act_window" id="action_hr_payroll_prime_tree_view">
+            <field name="name">Primes</field>
+            <field name="res_model">hr.payroll.prime</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        
+        <menuitem id="hr_payroll_prime_menu" name="Primes" parent="hr_contract_extension_menu_id" sequence="1" action="action_hr_payroll_prime_tree_view"/>
+        
+        <record id="hr_contract_ext_view_form" model="ir.ui.view">
+            <field name="name">hr.contract.view.form.inherit</field>
+            <field name="model">hr.contract</field>
+            <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
+            <field name="arch" type="xml">
+                <!-- Ajouter le champ expatrié après employee_id -->
+                <xpath expr="//field[@name='employee_id']" position="after">
+                    <field name="expatried"/>
+                </xpath>
+                
+                <!-- Ajouter l'ancienneté après le groupe top_info_right -->
+                <xpath expr="//group[@name='top_info_right']" position="after">
+                    <div class="col-12">
+                        <separator string="Ancienneté"/>
+                        <table class="table table-condensed table-borderless" width="100%">
+                            <tr>
+                                <td><field name="an_anciennete" class="oe_inline"/> ans <field name="mois_anciennete" class="oe_inline"/> mois</td>
+                            </tr>
+                        </table>
+                    </div>
+                </xpath>
+                
+                <!-- SOLUTION 1 : Ajouter après le champ wage (salaire) -->
+                <xpath expr="//field[@name='wage']" position="after">
+                    <field name="hr_convention_id"/>
+                    <field name="hr_secteur_id"/>
+                    <field name="categorie_salariale_id"/>
+                    <field name="sursalaire"/>
+                </xpath>
+                
+                <!-- SOLUTION 2 : Ajouter la section primes après le notebook -->
+                <xpath expr="//notebook" position="after">
+                    <group>
+                        <separator string="Primes &amp; avantages" colspan="2"/>
+                        <field name="hr_payroll_prime_ids" string="Primes &amp; avantages" nolabel="1" colspan="2">
+                            <tree string="Les primes" editable="top">
+                                <field name="prime_id" string="Libellé"/>
+                                <field name="montant_prime"/>
+                            </tree>
+                        </field>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

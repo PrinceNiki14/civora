@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<template id="report_ordre_virement_document">
+<!--	<t t-call="web.html_container">-->
+		 <!--<t t-foreach="docs" t-as="o">-->
+			 <t t-call="hr_payroll_book.external_layout">
+				 <div class="header">
+					<div class="row">
+						<div class="col-4">
+							<img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)"
+								 style="height: 80px; width: 200px; padding-top: 5px;" class="float-left" alt="Logo"/>
+						</div>
+						<div class="col-4 text-center align-middle">
+							<h2 style="text-align: center;"><span t-field="o.company_id.name"/></h2>
+						</div>
+						<div class="col-4"/>
+					</div>
+					 <div class="row">
+						<div class="col-4">
+							<p>Période   :     <strong>du      <span t-field="o.date_from"/>     au <span t-field="o.date_to"/></strong></p>
+						</div>
+					</div>
+				</div>
+				 <div class="page">
+					 <div class="oe_structure"/>
+					<div class="row">
+						<div class="col-8"/>
+						<div class="col-4">Abidjan le, <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d %B %Y')"/></div>
+					</div>
+					 <p>
+						 REF :  _______________/SONAPIE/DG/DAF
+					 </p>
+					 <p>
+						 <!--<u>Objet</u> :     Ordre de virement pour accessoire de salaire du mois de   <span t-esc="time.strftime('%B %Y',time.strptime(str(o.date_from),'%Y-%m-%d'))"/>-->
+						 <u>Objet</u> :     <span t-field="o.name"/>
+					 </p>
+					 <br/>
+					 <p t-if="o.attention_de" class="text-center"><u>A l'attention de <span t-field="o.attention_de"/></u></p>
+					 <br/>
+					 <p t-if="o.company_id.compte_entreprise">
+						 Par le débit de notre compte N°  <strong><span t-field="o.company_id.compte_entreprise"/></strong>  intitulé  <strong><span t-field="o.company_id.name"/></strong> dans vos livres,
+						 veuillez créditer les comptes suivants:
+					 </p>
+					<table class="table table-bordered">
+						<tr style="background-color:#eab676;">
+							<td style="border:1px solid black;" class="text-center" rowspan="2">N°</td>
+							<td style="border:1px solid black;" class="text-center" rowspan="2">Bénéficiare</td>
+							<td style="border:1px solid black;" class="text-center" rowspan="2">Banque</td>
+							<td style="border:1px solid black;" class="text-center" colspan="4">N°de compte</td>
+							<td style="border:1px solid black;" class="text-center" rowspan="2">Net à Payer</td>
+						</tr>
+						<tr style="background-color:#eab676;">
+							<td style="border:1px solid black;" class="text-center">Code Banque</td>
+							<td style="border:1px solid black;" class="text-center">Code guichet</td>
+							<td style="border:1px solid black;" class="text-center">Compte</td>
+							<td style="border:1px solid black;" class="text-center">Clé RIB</td>
+						</tr>
+						<t t-set="number" t-value="0"/>
+						<t t-set="total_amount" t-value="0"/>
+						<t t-if="o.type_virement == 'salaire'">
+							<t t-foreach="o.salaire_ids" t-as="line">
+								<tr>
+									<td class="text-center" style="border:1px solid black;" height="10">
+										<!--<span t-field="line.employee_id.identification_id"/>-->
+										<t t-set="number" t-value="number + 1"/>
+										<span t-esc="number"/>
+									</td>
+									<td style="border:1px solid black;"><span t-field="line.employee_id.name"/></td>
+									<td style="border:1px solid black;" class="text-center"><span t-field="line.employee_id.banque_id.name"/></td>
+									<td style="border:1px solid black;" class="text-center"><span t-field="line.employee_id.code_banque"/></td>
+									<td style="border:1px solid black;" class="text-center"><span t-field="line.employee_id.code_guichet"/></td>
+									<td style="border:1px solid black;" class="text-center"><span t-field="line.employee_id.cle_rib"/></td>
+									<td style="border:1px solid black;" class="text-center"><span t-field="line.employee_id.num_compte_bancaire"/></td>
+									<td style="border:1px solid black;" class="text-center">
+										<span t-field="line.net_paie"/>
+										<t t-set="total_amount" t-value="total_amount + line.net_paie"/>
+									</td>
+								</tr>
+							</t>
+							<tr>
+								<td class="text-center" style="border:1px solid black;" colspan="7">Total</td>
+								<td class="text-center" style="border:1px solid black;"><span t-esc="total_amount" t-options='{"widget": "float", "precision": 0}'/></td>
+							</tr>
+						</t>
+						<t t-if="o.type_virement == 'accessoire'">
+							<t t-foreach="o.accessoire_ids" t-as="line">
+								<tr>
+									<td class="text-center" style="border:1px solid black;" height="10">
+										<!--<span t-field="line.employee_id.identification_id"/>-->
+										<t t-set="number" t-value="number + 1"/>
+										<span t-esc="number"/>
+									</td>
+									<td style="border:1px solid black;"><span t-field="line.salary_rule_id.name"/></td>
+									<td style="border:1px solid black;" class="text-center"><span t-field="line.salary_rule_id.banque_id.name"/></td>
+									<td style="border:1px solid black;" class="text-center"><span t-field="line.salary_rule_id.code_banque"/></td>
+									<td style="border:1px solid black;" class="text-center"><span t-field="line.salary_rule_id.code_guichet"/></td>
+									<td style="border:1px solid black;" class="text-center"><span t-field="line.salary_rule_id.cle_rib"/></td>
+									<td style="border:1px solid black;" class="text-center"><span t-field="line.salary_rule_id.num_compte_bancaire"/></td>
+									<td style="border:1px solid black;" class="text-center">
+										<span t-field="line.net_paie"/>
+										<t t-set="total_amount" t-value="total_amount + line.net_paie"/>
+									</td>
+								</tr>
+							</t>
+							<tr>
+								<td class="text-center" style="border:1px solid black;" colspan="7">Total</td>
+								<td class="text-center" style="border:1px solid black;"><span t-esc="total_amount" t-options='{"widget": "float", "precision": 0}'/></td>
+							</tr>
+						</t>
+					</table>
+					 <br/>
+					 <p>
+						<!-- Soit un montant total de à débiter de : <span t-esc="o.currency_id.with_context(lang='fr').amount_to_text(total_amount)"/>-->
+						 Soit un montant total de à débiter de : <strong><span t-esc="o._get_amount_to_letter(total_amount)"/>   francs CFA</strong>
+					 </p>
+					 <br/>
+					 <p>
+						 Veuillez recevoir nos salutations distinguées.
+					 </p>
+				 </div>
+			 </t>
+		<!--</t>-->
+	<!--</t>-->
+</template>
+
+<template id="report_ordre_virement">
+	<t t-set="data_report_landscape" t-value="True"/>
+	<t t-set="full_width" t-value="True"/>
+    <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="o">
+            <t t-call="hr_payroll_book.report_ordre_virement_document" t-lang="o.env.lang"/>
+        </t>
+    </t>
+</template>
+</odoo>

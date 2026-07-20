@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_pipeline.Pipeline">
+    <div class="civora-pl">
+
+        <div class="civora-pl-head">
+            <div>
+                <div class="civora-pl-title">Pipeline commercial</div>
+                <div class="civora-pl-sub">
+                    <t t-esc="state.stats.count"/> opportunités · Flux gauche → droite · Glisser-déposer pour faire avancer
+                </div>
+            </div>
+        </div>
+
+        <div class="civora-pl-toolbar">
+            <div class="civora-pl-search">
+                <i class="fa fa-search"/>
+                <input type="text" placeholder="Rechercher…" t-att-value="state.search"
+                       t-on-input="(ev) => this.onSearchInput(ev)"/>
+            </div>
+            <div class="civora-pl-viewtoggle">
+                <button t-att-class="'civora-pl-vbtn' + (state.view === 'kanban' ? ' is-active' : '')"
+                        t-on-click="() => this.setView('kanban')"><i class="fa fa-th-large"/> Kanban</button>
+                <button t-att-class="'civora-pl-vbtn' + (state.view === 'list' ? ' is-active' : '')"
+                        t-on-click="() => this.setView('list')"><i class="fa fa-list"/> Liste</button>
+            </div>
+            <button class="civora-btn civora-btn-outline" t-on-click="() => this.goLeads()">
+                <i class="fa fa-bullseye"/> Pistes
+            </button>
+            <button class="civora-btn civora-btn-accent" t-on-click="() => this.openCreate()">
+                <i class="fa fa-plus"/> Nouvelle opportunité
+            </button>
+        </div>
+
+        <div class="civora-pl-kpis">
+            <CivoraStatCard label="'Opportunités'" value="state.stats.count + ''" icon="'fa fa-filter'" hint="state.stats.hot + ' chaudes (score ≥ 80)'"/>
+            <CivoraStatCard label="'Ventes'" value="kpiMoney(state.stats.ventes)" icon="'fa fa-handshake-o'" hint="'pipeline'"/>
+            <CivoraStatCard label="'Locations'" value="kpiMoney(state.stats.locations)" icon="'fa fa-key'" hint="'/ mois'"/>
+            <CivoraStatCard label="'Taux transfo.'" value="state.stats.transfo + ' %'" icon="'fa fa-line-chart'" hint="state.stats.won + ' gagnées'"/>
+            <CivoraStatCard label="'Score moyen'" value="state.stats.avgScore + ''" icon="'fa fa-star'" hint="'qualité du pipeline'"/>
+            <CivoraStatCard label="'Ancienneté moy.'" value="state.stats.avgDays + ' j'" icon="'fa fa-clock-o'" hint="'cycle commercial'"/>
+        </div>
+
+        <div t-if="state.loading" class="civora-pl-state">
+            <i class="fa fa-circle-o-notch fa-spin"/> Chargement…
+        </div>
+
+        <!-- ===== KANBAN ===== -->
+        <div t-elif="state.view === 'kanban'" class="civora-pl-board">
+            <div t-foreach="state.columns" t-as="col" t-key="col.stage.id"
+                 t-att-class="colClass(col)"
+                 t-on-dragover="(ev) => this.onDragOver(ev)"
+                 t-on-drop="() => this.onDrop(col)">
+                <div class="civora-pl-colh">
+                    <div class="civora-pl-colname">
+                        <span class="civora-pl-dot"/>
+                        <span t-esc="col.stage.name"/>
+                        <span class="civora-pl-colcount" t-esc="col.cards.length"/>
+                    </div>
+                    <div class="civora-pl-coltotal" t-esc="fmtMoney(col.total) + ' FCFA'"/>
+                </div>
+
+                <div class="civora-pl-cards">
+                    <div t-foreach="col.cards" t-as="o" t-key="o.id"
+                         class="civora-pl-card" draggable="true"
+                         t-on-dragstart="() => this.onDragStart(o)"
+                         t-on-click="() => this.openOpp(o)">
+                        <div class="civora-pl-card-h">
+                            <span class="civora-pl-card-n" t-esc="partnerLabel(o)"/>
+                            <span t-if="o.transaction" t-att-class="'civora-pl-card-tx tx-' + o.transaction" t-esc="txLabel(o)"/>
+                        </div>
+                        <div class="civora-pl-card-prop" t-esc="propertyLabel(o)"/>
+                        <div class="civora-pl-card-amount" t-esc="amountLabel(o)"/>
+                        <div class="civora-pl-card-foot">
+                            <span class="civora-pl-card-days"><i class="fa fa-clock-o"/> <t t-esc="daysOld(o)"/>j</span>
+                            <span class="civora-pl-card-agent"><i class="fa fa-user-o"/> <t t-esc="agentLabel(o)"/></span>
+                            <span t-att-class="'civora-pl-card-score s-' + scoreTone(o.score)">
+                                <i class="fa fa-star"/> <t t-esc="o.score"/>
+                            </span>
+                        </div>
+                    </div>
+                    <div t-if="!col.cards.length" class="civora-pl-empty">Déposez ici</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== LISTE ===== -->
+        <div t-else="" class="civora-pl-listwrap">
+            <table class="civora-pl-table">
+                <thead>
+                    <tr>
+                        <th>Opportunité</th>
+                        <th>Bien</th>
+                        <th>Étape</th>
+                        <th class="civora-num">Montant</th>
+                        <th class="civora-num">Score</th>
+                        <th>Agent</th>
+                        <th class="civora-num">Ancienneté</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="state.list" t-as="o" t-key="o.id" class="civora-pl-row" t-on-click="() => this.openOpp(o)">
+                        <td>
+                            <div class="civora-pl-row-n" t-esc="partnerLabel(o)"/>
+                            <div class="civora-pl-row-sub" t-esc="o.name"/>
+                        </td>
+                        <td t-esc="propertyLabel(o)"/>
+                        <td><CivoraBadge label="stageLabel(o)" variant="'info'"/></td>
+                        <td class="civora-num" t-esc="amountLabel(o)"/>
+                        <td class="civora-num">
+                            <span t-att-class="'civora-pl-card-score s-' + scoreTone(o.score)"><i class="fa fa-star"/> <t t-esc="o.score"/></span>
+                        </td>
+                        <td t-esc="agentLabel(o)"/>
+                        <td class="civora-num"><t t-esc="daysOld(o)"/> j</td>
+                    </tr>
+                    <tr t-if="!state.list.length"><td colspan="7" class="civora-pl-listempty">Aucune opportunité.</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <OpportunityDrawer t-if="state.drawerOpen" onClose="(saved) => this.closeDrawer(saved)"/>
+    </div>
+</t>
+
+</templates>

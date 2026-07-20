@@ -1,0 +1,261 @@
+// =====================================================================
+// CIVORA Gestion - Ecran Proprietaires (client action civora.owners)
+// =====================================================================
+
+.civora-owners {
+    padding: 24px 28px 40px;
+    background: $civora-bg;
+    height: 100%;
+    overflow-y: auto;
+    font-family: $civora-font;
+    color: $civora-fg;
+
+    .civora-owners-head { margin-bottom: 18px; }
+    .civora-owners-title {
+        font-family: $civora-font-display;
+        font-weight: 800;
+        font-size: 24px;
+        line-height: 1.1;
+    }
+    .civora-owners-sub {
+        font-size: 13px;
+        color: $civora-muted;
+        margin-top: 2px;
+    }
+
+    .civora-owners-kpis {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 16px;
+        margin-bottom: 18px;
+    }
+
+    .civora-owners-toolbar { margin-bottom: 16px; }
+    .civora-owners-search {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: $civora-card;
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius-sm;
+        padding: 8px 12px;
+        max-width: 360px;
+        i { color: $civora-muted; }
+        input {
+            border: 0;
+            outline: 0;
+            background: transparent;
+            width: 100%;
+            font-size: 13px;
+            color: $civora-fg;
+            font-family: $civora-font;
+        }
+    }
+
+    .civora-owners-state {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 40px 0;
+        color: $civora-muted;
+        font-size: 14px;
+    }
+    .civora-owners-empty {
+        text-align: center;
+        padding: 56px 24px;
+        background: $civora-card;
+        border: 1px dashed $civora-border;
+        border-radius: $civora-radius;
+        color: $civora-muted;
+        > i { font-size: 30px; color: $civora-accent; opacity: .7; }
+        p { margin: 6px 0 0; font-size: 13px; }
+    }
+    .civora-owners-empty-t {
+        font-family: $civora-font-display;
+        font-weight: 700;
+        font-size: 15px;
+        color: $civora-fg;
+        margin-top: 10px;
+    }
+
+    .civora-owners-tablewrap {
+        background: $civora-card;
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius;
+        box-shadow: $civora-shadow-card;
+        overflow: hidden;
+    }
+    .civora-owners-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+        th {
+            text-align: left;
+            padding: 12px 16px;
+            background: $civora-bg;
+            color: $civora-muted;
+            font-weight: 600;
+            font-size: 11.5px;
+            text-transform: uppercase;
+            letter-spacing: .03em;
+            border-bottom: 1px solid $civora-border;
+        }
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid $civora-border;
+            color: $civora-fg;
+            vertical-align: middle;
+        }
+        tr:last-child td { border-bottom: 0; }
+        tbody tr.civora-owners-row { cursor: pointer; }
+        tbody tr:hover { background: $civora-bg; }
+        .civora-num { text-align: right; white-space: nowrap; }
+        .civora-actions-col { width: 40px; text-align: center; color: $civora-muted; }
+    }
+    .civora-owners-cell {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .civora-owners-name { font-weight: 600; }
+    .civora-owners-since { font-size: 11.5px; color: $civora-muted; margin-top: 1px; }
+    .civora-owners-dash { color: $civora-muted; }
+
+    // ---- Onglets ----
+    .civora-owners-tabbar {
+        display: flex;
+        gap: 4px;
+        flex-wrap: wrap;
+        border-bottom: 1px solid $civora-border;
+        margin-bottom: 18px;
+    }
+    .civora-owners-tab {
+        border: 0;
+        background: transparent;
+        color: $civora-muted;
+        padding: 10px 14px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        &:hover { color: $civora-fg; }
+        &.is-active { color: $civora-accent; border-bottom-color: $civora-accent; }
+    }
+    .civora-owners-tabcount {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 18px;
+        height: 18px;
+        padding: 0 5px;
+        border-radius: 999px;
+        background: rgba(0, 171, 104, .14);
+        color: $civora-accent;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    // ---- Occupation / score ----
+    .civora-owners-occ {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 130px;
+    }
+    .civora-owners-occbar { flex: 1; max-width: 90px; }
+    .civora-owners-occv { font-size: 12px; font-weight: 600; color: $civora-muted; }
+    .civora-owners-score {
+        font-weight: 700;
+        font-size: 12.5px;
+        i { color: $civora-warning; margin-right: 3px; }
+    }
+
+    // ---- Portefeuille global ----
+    .civora-owners-portfolio {
+        display: grid;
+        grid-template-columns: 1.4fr 1fr;
+        gap: 16px;
+    }
+    .civora-owners-card {
+        background: $civora-card;
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius;
+        box-shadow: $civora-shadow-card;
+        padding: 18px 20px;
+    }
+    .civora-owners-card-h {
+        font-family: $civora-font-display;
+        font-weight: 700;
+        font-size: 14px;
+        margin-bottom: 14px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid $civora-border;
+    }
+    .civora-owners-dist { margin-bottom: 14px; }
+    .civora-owners-dist-top {
+        display: flex;
+        justify-content: space-between;
+        font-size: 13px;
+        margin-bottom: 6px;
+        b { font-family: $civora-font-display; }
+    }
+    .civora-owners-top {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 0;
+        border-bottom: 1px solid $civora-border;
+        cursor: pointer;
+        &:last-child { border-bottom: 0; }
+        &:hover .civora-owners-top-n { color: $civora-accent; }
+    }
+    .civora-owners-top-b { flex: 1; min-width: 0; }
+    .civora-owners-top-n { font-weight: 600; font-size: 13px; }
+    .civora-owners-top-m { font-size: 11.5px; color: $civora-muted; margin-top: 1px; }
+    .civora-owners-top-mrr { font-weight: 700; font-size: 12.5px; color: $civora-accent; white-space: nowrap; }
+
+    // ---- Placeholder ----
+    .civora-owners-soon {
+        text-align: center;
+        padding: 56px 24px;
+        background: $civora-card;
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius;
+        box-shadow: $civora-shadow-card;
+    }
+    .civora-owners-soon-ico {
+        width: 60px;
+        height: 60px;
+        margin: 0 auto 14px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 171, 104, .12);
+        color: $civora-accent;
+        font-size: 24px;
+    }
+    .civora-owners-soon-t {
+        font-family: $civora-font-display;
+        font-weight: 800;
+        font-size: 17px;
+    }
+    .civora-owners-soon p {
+        margin: 8px auto 0;
+        max-width: 460px;
+        font-size: 13px;
+        color: $civora-muted;
+        line-height: 1.5;
+    }
+
+    @media (max-width: 1100px) {
+        .civora-owners-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .civora-owners-portfolio { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
+        .civora-owners-kpis { grid-template-columns: 1fr; }
+    }
+}

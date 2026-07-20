@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_employee_form" model="ir.ui.view">
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('oe_title')]" position="replace">
+                <div class="oe_title mw-75 ps-0 pe-2">
+                    <h1 class="d-flex flex-row align-items-center">
+                        <div invisible="not user_id" class="me-2">
+                            <widget name="hr_employee_chat" invisible="not context.get('chat_icon')"/>
+                        </div>
+                        <field name="name" placeholder="Employee's Name" required="0" style="font-size: min(4vw, 2.6rem);" invisible="1"/>
+                        <separator string="Nom" style="margin-right:20px;"/>
+                        <field name="firstname" class="oe_edit_only" placeholder="Nom" required="1" default_focus="1"  style="font-size: min(1vw, 2.6rem);"/>
+                        <separator string="Prénom" style="margin-right:20px;"/>
+                        <field name="lastname" class="oe_edit_only" placeholder="Prénoms" required="1"  style="font-size: min(1vw, 2.6rem);"/>
+                    </h1>
+                    <h2>
+                        <field name="job_title" placeholder="Job Position"/>
+                    </h2>
+                    <field name="category_ids" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}" placeholder="Tags" groups="hr.group_hr_user"/>
+                </div>
+            </xpath>
+            <xpath expr="//field[@name='name']" position="attributes">
+                <attribute name="readonly">1</attribute>
+                <attribute name="no_label">1</attribute>
+                <attribute name="required">0</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

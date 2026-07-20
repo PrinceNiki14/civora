@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hr_cnps_setting_payroll_manager,hr.cnps.setting payroll_manager,model_hr_cnps_setting,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_hr_cnps_monthly_payroll_manager,hr.cnps.monthly payroll_manager,model_hr_cnps_monthly,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_hr_cnps_monthly_line_payroll_manager,hr.cnps.monthly.line payroll_manager,model_hr_cnps_monthly_line,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_hr_cnps_monthly_category_line_payroll_manager,hr.cnps.monthly.category_line payroll_manager,model_hr_cnps_monthly_category_line,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_hr_cnps_cotisation_line_template_payroll_manager,hr.cnps.cotisation.line.template payroll_manager,model_hr_cnps_cotisation_line_template,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_hr_cnps_cotisation_line_payroll_manager,hr.cnps.cotisation.line payroll_manager,model_hr_cnps_cotisation_line,hr_payroll.group_hr_payroll_manager,1,1,1,1

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+<t t-name="civora_calendar.AgendaTab">
+    <div class="civora-agt">
+        <div class="civora-agt-head">
+            <div class="civora-agt-count"><t t-esc="state.events.length"/> événement(s)</div>
+            <button class="civora-btn civora-btn-accent civora-agt-plan" t-on-click="() => this.plan()">
+                <i class="fa fa-plus"/> Planifier
+            </button>
+        </div>
+
+        <div t-if="state.loading" class="civora-agt-state"><i class="fa fa-circle-o-notch fa-spin"/> Chargement…</div>
+        <div t-elif="!state.events.length" class="civora-agt-empty">
+            <div class="civora-agt-empty-ico"><i class="fa fa-calendar-o"/></div>
+            <div class="civora-agt-empty-t">Aucun événement</div>
+            <p>Planifiez une visite, un RDV ou une signature.</p>
+        </div>
+        <div t-else="" class="civora-agt-list">
+            <div t-foreach="state.events" t-as="e" t-key="e.id" class="civora-agt-row" t-on-click="() => this.openEvent(e)">
+                <span class="civora-agt-dot" t-attf-style="background:{{ typeMeta(e).color }}"/>
+                <div class="civora-agt-main">
+                    <div class="civora-agt-n" t-esc="e.name"/>
+                    <div class="civora-agt-m"><t t-esc="typeMeta(e).label"/> · <t t-esc="dateLabel(e)"/><t t-if="agentLabel(e)"> · <t t-esc="agentLabel(e)"/></t></div>
+                </div>
+                <CivoraBadge label="statusMeta(e).label" variant="statusMeta(e).variant"/>
+            </div>
+        </div>
+
+        <EventDrawer t-if="state.drawer.open" eventId="state.drawer.eventId"
+                     defaultDate="todayKey()" prefill="prefill" onClose="(saved) => this.closeDrawer(saved)"/>
+    </div>
+</t>
+</templates>

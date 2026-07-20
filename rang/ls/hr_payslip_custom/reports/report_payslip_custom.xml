@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <template id="report_payslip_custom">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="hr_payslip_custom.payslip_layout">
+                        <div style="border: 5px solid #f0f0f0 !important;padding:10px;border-top:0px !important;">
+                            <table width="100%" style="border:none;">
+                                <br/><br/><br/>
+                                <td style="width:40%;margin-bottom:5px;">
+                                    <br/><br/>
+                                    <div style="border: 1px solid #f0f0f0;border-top: none;">
+                                        <h4 style="background: #f0f0f0;font-size:15px;">
+                                            <strong><span t-out="o.company_id.name"/></strong>
+                                        </h4>
+                                        <p>
+                                            <table width="100%" style="font-size:15px;border:none;">
+                                                <tr>
+                                                    <td><strong>Registre de Commerce:</strong></td>
+                                                    <td><strong><span t-out="o.company_id.regist_com"/></strong></td>
+                                                </tr>
+                                            </table>
+                                            <table width="100%" style="border:none;">
+                                                <tr>
+                                                    <td><strong>Compte Contribuable:</strong></td>
+                                                    <td><strong><span t-out="o.company_id.compte_contri"/></strong></td>
+                                                </tr>
+                                            </table>
+                                            <table width="100%" style="border:none;">
+                                                <tr>
+                                                    <td><strong>N° CNPS Employeur:</strong></td>
+                                                    <td><strong><span t-out="o.company_id.numero_cnps"/></strong></td>
+                                                </tr>
+                                            </table>
+                                        </p>
+                                    </div>
+                                </td>
+                                <td style="width:40%;border-radius: 15px;">
+                                    <div style="background: #f0f0f0;border-radius: 15px;margin-top:-1px;column-width: 80px;font-size:15px;">
+                                        <div style="margin-left:20px;">
+                                            <t t-if="o.employee_id.gender == 'male'">
+                                                <strong>Monsieur<br/></strong>
+                                            </t>
+                                            <t t-elif="o.employee_id.gender == 'female'">
+                                                <t t-if="o.employee_id.marital == 'married'">
+                                                    <strong>Madame<br/></strong>
+                                                </t>
+                                                <t t-else="">
+                                                    <strong>Mademoiselle<br/></strong>
+                                                </t>
+                                            </t>
+                                            <strong><span t-out="o.employee_id.name"/></strong>
+                                            <p>
+                                                <strong>
+                                                    <span t-out="dict(o.employee_id._fields['marital'].selection).get(o.employee_id.marital)"/>
+                                                    <t t-if="o.employee_id.children > 0">
+                                                        Avec <span t-out="o.employee_id.children"/> Enfant(s)
+                                                    </t>
+                                                    Tel: <span t-out="o.employee_id.phone"/><br/>
+                                                    <t t-if="o.employee_id.job_id">
+                                                        <span t-out="o.employee_id.job_id.name"/>
+                                                    </t>
+                                                </strong>
+                                                <br/>
+                                                <div style="text-align:center;">
+                                                    <t t-if="o.employee_id.work_location_id">
+                                                        <span t-out="o.employee_id.work_location_id.name"/>
+                                                    </t>
+                                                </div>
+                                                <br/>
+                                                <table width="100%" style="border:none;">
+                                                    <tr>
+                                                        <td>Matricule:</td>
+                                                        <td><strong><span t-out="o.employee_id.identification_id"/></strong></td>
+                                                        <td>IDSalaire:</td>
+                                                        <td><strong><span t-out="o.number"/></strong></td>
+                                                    </tr>
+                                                </table>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </td>
+                            </table>
+                            <br/>
+                            <table style="border: 1px solid #f0f0f0;width:100%;">
+                                <tr>
+                                    <td>Paiement en Espèces
+                                        <t t-if="o.employee_id.mode_paiement == 'espece'">
+                                            <input type="checkbox" checked="checked"/>
+                                        </t>
+                                        <t t-else=""><input type="checkbox"/></t>
+                                    </td>
+                                    <td/>
+                                    <td>Paiement Par Virement
+                                        <t t-if="o.employee_id.mode_paiement == 'virement'">
+                                            <input type="checkbox" checked="checked"/>
+                                        </t>
+                                        <t t-else=""><input type="checkbox"/></t>
+                                    </td>
+                                    <td/>
+                                    <td>Paiement Par Chèque
+                                        <t t-if="o.employee_id.mode_paiement == 'cheque'">
+                                            <input type="checkbox" checked="checked"/>
+                                        </t>
+                                        <t t-else=""><input type="checkbox"/></t>
+                                    </td>
+                                    <td/>
+                                    <td>Autre Mode de Paiement<input type="checkbox"/></td>
+                                    <td/>
+                                </tr>
+                            </table>
+                            <p/>
+                            <table width="100%" style="border:none;">
+                                <thead>
+                                    <tr>
+                                        <th style="width:50%;background: #f0f0f0;text-align:left;">LIBEL</th>
+                                        <th style="border: 1px solid #f0f0f0;width:10%;background: #f0f0f0;">Jours/Heures<br/>Travaillés</th>
+                                        <th style="width:10%;background: #f0f0f0;text-align:center;">Base</th>
+                                        <th style="width:10%;background: #f0f0f0;text-align:center;">Taux</th>
+                                        <th style="width:30%;background: #f0f0f0;">MONTANT EN FCFA</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="o.get_gross_data()" t-as="line">
+                                        <t t-if="line['code'] != 'INDMNI'">
+                                            <tr>
+                                                <td style="border: 1px solid #f0f0f0;"><span t-out="line['name']"/></td>
+                                                <td style="border: 1px solid #f0f0f0;text-align:center;">
+                                                    <t t-if="line['code'] in ['BASE', 'SURSA', 'TRSP', 'GRATIF', 'RENDMNT', 'PHONE']">
+                                                        <span t-out="'{0:,.0f}'.format(int(o.get_value_by_code('WORK100'))).replace(',', ' ')"/>
+                                                    </t>
+                                                    <t t-if="line['code'] in ['HS15', 'HS50', 'HS75', 'HS100']">
+                                                        <span t-out="'{0:,.0f}'.format(int(line['quantity'])).replace(',', ' ')"/>
+                                                    </t>
+                                                    <t t-if="line['code'] == 'PANC'">
+                                                        <span t-out="o.payslip_an_anciennete"/>
+                                                    </t>
+                                                </td>
+                                                <td style="border: 1px solid #f0f0f0;text-align:center;"><span t-out="line['amount']"/></td>
+                                                <td style="border: 1px solid #f0f0f0;text-align:center;">
+                                                    <t t-if="line.get('quantity') is not None">
+                                                        <span t-out="'{:.2f}'.format(line['quantity'])"/>
+                                                    </t>
+                                                </td>
+                                                <td style="border: 1px solid #f0f0f0; text-align:right;"><span t-out="line['total']"/></td>
+                                            </tr>
+                                        </t>
+                                    </t>
+                                </tbody>
+                            </table>
+                            <table style="border:none;">
+                                <thead>
+                                    <br/>
+                                    <tr>
+                                        <th style="background: #f0f0f0;width:10%; border-radius: 50px 10px 10px 50px;border-left: 2px solid white;">Total Brut</th>
+                                        <th style="background: #f0f0f0;width:10%;border-right: 2px solid white;">
+                                            <span t-out="'{0:,.0f}'.format(int(o.get_value_by_code('BRUT_TOTAL'))).replace(',', ' ')"/>
+                                        </th>
+                                        <th/>
+                                        <th style="background: #f0f0f0;width:15%;border: 2px solid white">Base Sociale</th>
+                                        <th style="background: #f0f0f0;width:11%;border-right: 2px solid white;">
+                                            <span t-out="'{0:,.0f}'.format(int(o.get_value_by_code('BRUT'))).replace(',', ' ')"/>
+                                        </th>
+                                        <th/>
+                                        <th style="background: #f0f0f0;width:20%;border-radius: 10px 50px 50px 10px;border:2px solid white;">Total Imposable</th>
+                                        <th width="9%" style="background: #f0f0f0;">
+                                            <span t-out="'{0:,.0f}'.format(int(o.get_value_by_code('WORK100'))).replace(',', ' ')"/>
+                                        </th>
+                                        <th style="background: #f0f0f0;width:26%;text-align:70px;border-radius: 100px;border: 2px solid white">
+                                            <span t-out="'{0:,.0f}'.format(int(o.get_value_by_code('BRUT'))).replace(',', ' ')"/>
+                                        </th>
+                                    </tr>
+                                </thead>
+                            </table>
+                            <table width="100%" style="border: 1px solid #f0f0f0;">
+                                <tbody>
+                                    <tr>
+                                        <td rowspan="5" style="width:35%;border: 1px solid #f0f0f0;">
+                                            <table width="100%" style="border: 1px solid #f0f0f0;">
+                                                <thead>
+                                                    <tr>
+                                                        <th colspan="5" style="background: #f0f0f0; text-align:center;">Détail Part Patronale</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td style="height:15px; border:1px solid #f0f0f0;width:23%;padding:3px;">
+                                                            <t t-if="o.get_value_by_code('CN') > 0.0">IS</t>
+                                                            <t t-else="">ITS</t>
+                                                        </td>
+                                                        <td style="height:15px;border:1px solid #f0f0f0;width:23%;padding:3px;">
+                                                            <strong><span t-out="'{0:,.0f}'.format(int(o.get_value_by_code('ITS_P'))).replace(',', ' ')"/></strong>
+                                                        </td>
+                                                        <td width="3%"/>
+                                                        <td style="height:15px;border:1px solid #f0f0f0;width:23%;padding:3px;">CNPS</td>
+                                                        <td style="height:15px;border:1px solid #f0f0f0;width:23%;padding:3px;">
+                                                            <strong><span t-out="'{0:,.0f}'.format(int(o.get_value_by_code('CNPS_P'))).replace(',', ' ')"/></strong>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="height:15px;border:1px solid #f0f0f0;padding:3px;">FDFP.TA</td>
+                                                        <td style="height:15px;border:1px solid #f0f0f0;padding:3px;">
+                                                            <strong><span t-out="'{0:,.0f}'.format(int(o.get_value_by_code('TAXEAP'))).replace(',', ' ')"/></strong>
+                                                        </td>
+                                                        <td/>
+                                                        <td style="height:15px;border:1px solid #f0f0f0;padding:3px;">AT</td>
+                                                        <td style="height:15px;border:1px solid #f0f0f0;padding:3px;">
+                                                            <strong><span t-out="'{0:,.0f}'.format(int(o.get_value_by_code('ACT'))).replace(',', ' ')"/></strong>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="height:15px;border:1px solid #f0f0f0;padding:3px;">FDFP.FPC</td>
+                                                        <td style="height:15px;border:1px solid #f0f0f0;padding:3px;">
+                                                            <strong><span t-out="'{0:,.0f}'.format(int(o.get_value_by_code('TAXEFPR'))).replace(',', ' ')"/></strong>
+                                                        </td>
+                                                        <td/>
+                                                        <td style="height:15px;border:1px solid #f0f0f0;padding:3px;">PF-AM</td>
+                                                        <td style="height:15px;border:1px solid #f0f0f0;padding:3px;">
+                                                            <strong><span t-out="'{0:,.0f}'.format(int(o.get_value_by_code('PF'))).replace(',', ' ')"/></strong>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                        <td rowspan="5" style="text-align:center;width:24%;"><strong>Impôts Part Salariée</strong></td>
+                                        <td style="padding:3px;border: 1px solid #f0f0f0;border-bottom:none;border-top:none;border-left:none;">CNPS</td>
+                                        <td style="padding:3px;"><strong><span t-out="o.get_value_by_code('CNPS','rate')"/> %</strong></td>
+                                        <td style="text-align:right;padding:3px;width:20%;border: 1px solid #f0f0f0;border-bottom:none;">
+                                            <span t-out="'{0:,.0f}'.format(int(o.get_value_by_code('CNPS'))).replace(',', ' ')"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding:3px;border: 1px solid #f0f0f0;border-bottom:none;border-top:none;border-left:none;">
+                                            <t t-if="o.get_value_by_code('CN') > 0.0">IS</t>
+                                            <t t-else="">ITS</t>
+                                        </td>
+                                        <td style="padding:3px;">
+                                            <t t-if="o.get_value_by_code('CN') > 0.0">
+                                                <strong><span t-out="o.get_value_by_code('ITS','rate')"/> %</strong>
+                                            </t>
+                                        </td>
+                                        <td style="text-align:right;padding:3px;border: 1px solid #f0f0f0;border-bottom:none;border-top:none;">
+                                            <span t-out="'{0:,.0f}'.format(int(o.get_value_by_code('ITS'))).replace(',', ' ')"/>
+                                        </td>
+                                    </tr>
+                                    <t t-if="o.get_value_by_code('CN') > 0.0">
+                                        <tr>
+                                            <td style="padding:3px;border: 1px solid #f0f0f0;border-bottom:none;border-top:none;border-left:none;">CN</td>
+                                            <td/>
+                                            <td style="text-align:right;padding:3px;border: 1px solid #f0f0f0;border-bottom:none;border-top:none;">
+                                                <span t-out="'{0:,.0f}'.format(int(o.get_value_by_code('CN'))).replace(',', ' ')"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                    <t t-else=""><tr/></t>
+                                    <t t-if="o.get_value_by_code('IGR') > 0.0">
+                                        <tr>
+                                            <td style="padding:3px;border: 1px solid #f0f0f0;border-bottom:none;border-top:none;border-left:none;">IGR</td>
+                                            <td/>
+                                            <td style="text-align:right;padding:3px;border: 1px solid #f0f0f0;border-bottom:none;border-top:none;">
+                                                <span t-out="'{0:,.0f}'.format(int(o.get_value_by_code('IGR'))).replace(',', ' ')"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                    <t t-else=""><tr/></t>
+                                    <tr>
+                                        <td style="padding:3px;border: 1px solid #f0f0f0;border-bottom:none;border-top:none;border-left:none;">CMU</td>
+                                        <td/>
+                                        <td style="text-align:right;padding:3px;border: 1px solid #f0f0f0;border-bottom:none;border-top:none;">
+                                            <span t-out="'{0:,.0f}'.format(int(o.get_value_by_code('CMU'))).replace(',', ' ')"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3" style="background: #f0f0f0;text-align:right;">
+                                            <strong>TOTAL RETENUES FISCALES SOCIALES</strong>
+                                        </td>
+                                        <td/>
+                                        <td colspan="1" style="background: #f0f0f0;text-align:right;width:25%;">
+                                            <t t-set="tax_and_social_withholding" t-value="o.get_value_by_code('CNPS')+o.get_value_by_code('ITS')+o.get_value_by_code('CMU')"/>
+                                            <strong><span t-out="'{0:,.0f}'.format(int(tax_and_social_withholding)).replace(',', ' ')"/></strong>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td rowspan="3" colspan="2"/>
+                                        <td colspan="2" style="border: 1px solid #f0f0f0;height:20px"><strong>SALAIRE NET</strong></td>
+                                        <td colspan="2" style="border: 1px solid #f0f0f0;text-align:right;">
+                                            <t t-if="o.get_value_by_code('NET_PAIE') != 0">
+                                                <strong><span t-out="'{0:,.0f}'.format(int(o.get_value_by_code('NET_PAIE'))).replace(',', ' ')"/></strong>
+                                            </t>
+                                            <t t-else="">0</t>
+                                        </td>
+                                    </tr>
+                                    <t t-foreach="o.line_ids.filtered(lambda line: line.category_id.code == 'ARETE')" t-as="line">
+                                        <tr>
+                                            <td colspan="2" style="border: 1px solid #f0f0f0;height:20px;font-size:11.2px;">
+                                                <span t-out="line.name"/>
+                                            </td>
+                                            <td colspan="2" style="border: 1px solid #f0f0f0;text-align:right;">
+                                                <span t-out="o.format_number(line.total)"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                    <tr>
+                                        <td colspan="2" style="border: 1px solid #f0f0f0;height:20px;font-size:11.2px;">Total Retenue sur Salaire</td>
+                                        <td colspan="2" style="border: 1px solid #f0f0f0;text-align:right;">
+                                            <span t-out="o.format_number(o.get_cumul_by_category_code('ARETE'))"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" style="border: 1px solid #f0f0f0;height:20px"><strong>NET A PAYER</strong></td>
+                                        <td colspan="2" style="background: #f0f0f0;border: 1px solid #f0f0f0;text-align:right;">
+                                            <strong><span t-out="'{0:,.0f}'.format(int(o.get_value_by_code('NET'))).replace(',', ' ')"/></strong>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <br/>
+                            <div style="text-decoration: underline;">Signature du Salarié</div>
+                            Précédée de la Mention "Bon Pour Acquit"
+                            <br/><br/><br/><br/>
+                        </div>
+                        <table width="100%" style="border: 5px solid #f0f0f0 !important;padding:10px;border-top:0px !important;">
+                            <thead>
+                                <tr>
+                                    <th style="background: #f0f0f0;width:30%;font-size:15px;">Cumul Salaire Brut Imposable <span t-out="o.date_from.year"/></th>
+                                    <th style="background: #f0f0f0;width:30%;font-size:15px;">Cumul Retenues Fiscales <span t-out="o.date_from.year"/></th>
+                                    <th style="background: #f0f0f0;width:20%;font-size:15px">Cumul Retenue Sociale <span t-out="o.date_from.year"/></th>
+                                    <th style="background: #f0f0f0;width:20;font-size:15px;">Cumul Salaire Net <span t-out="o.date_from.year"/></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="border: 1px solid #f0f0f0; text-align: center;">
+                                        <strong><span t-out="'{0:,.0f}'.format(int(o.cumul_brute)).replace(',', ' ')"/></strong>
+                                    </td>
+                                    <td style="border: 1px solid #f0f0f0; text-align: center;">
+                                        <strong><span t-out="'{0:,.0f}'.format(int(o.cumul_retenue_fiscal)).replace(',', ' ')"/></strong>
+                                    </td>
+                                    <td style="border: 1px solid #f0f0f0; text-align: center;">
+                                        <strong><span t-out="'{0:,.0f}'.format(int(o.cumul_cnps)).replace(',', ' ')"/></strong>
+                                    </td>
+                                    <td style="border: 1px solid #f0f0f0; text-align: center;">
+                                        <strong><span t-out="'{0:,.0f}'.format(int(o.cumul_net)).replace(',', ' ')"/></strong>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <br/>
+                        <div class="row" style="font-family:DejaVu Serif;font-size:19px;margin-top:30px;">
+                            <div class="col-4" style="font-family:DejaVu Serif;text-align: center; display: flex; justify-content: center; align-items: center; flex-direction: column;">
+                                <br/>
+                                <t t-if="o.employee_id.qr_code">
+                                    <img t-att-src="'data:image/png;base64,' + o.employee_id.qr_code.decode('utf-8')" style="width:120px;height:120px; margin: auto !important;"/>
+                                </t>
+                            </div>
+                            <div class="col-4"/>
+                            <div class="col-4" style="font-family:DejaVu Serif;text-align: center; display: flex; justify-content: center; align-items: center; flex-direction: column;">
+                                <t t-if="o.company_id and o.company_id.stamp">
+                                    <t t-if="o.state in ['done', 'paid']">
+                                        <img t-att-src="'data:image/png;base64,' + o.company_id.stamp.decode('utf-8')" style="width:300px;height:128px; margin: auto !important;"/>
+                                        <br/>
+                                    </t>
+                                </t>
+                                <t t-else=""><br/><br/><br/><br/><br/><br/></t>
+                                <t t-if="o.company_id and o.company_id.signatory_id">
+                                    <t t-if="o.state in ['done', 'paid']">
+                                        <strong style="font-size:15px;"><span t-out="o.company_id.signatory_id.name"/></strong>
+                                    </t>
+                                </t>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:200px;font-family:DejaVu Serif;font-size:19px;">
+                            <div class="col-4" style="font-family:DejaVu Serif;">
+                                <t t-if="manager" t-foreach="manager" t-as="p">
+                                    <h3 style="margin-left:55px;text-align:left;">
+                                        <strong><span t-esc="p.get('manager', '')" style="font-family:DejaVu Serif;border-bottom: 1px solid black;"/></strong>
+                                    </h3>
+                                </t>
+                            </div>
+                            <div class="col-4"/>
+                            <div class="col-4" style="font-family:DejaVu Serif;">
+                                <t t-if="manager" t-foreach="manager" t-as="p">
+                                    <h3 style="text-align:left;">
+                                        <strong><span t-esc="p.get('dg', '')" style="font-family:DejaVu Serif;border-bottom: 1px solid black;"/></strong>
+                                    </h3>
+                                </t>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_biens.PropertyDrawer">
+    <CivoraDrawer title="drawerTitle"
+                  subtitle="drawerSubtitle"
+                  variant="'modal'"
+                  size="'lg'"
+                  icon="'fa-building'"
+                  onClose="() => props.onClose()">
+
+        <div class="civora-pf">
+            <div t-if="state.loading" class="civora-pf-loading">
+                <i class="fa fa-circle-o-notch fa-spin"/> Chargement…
+            </div>
+
+            <t t-else="">
+                <div t-if="state.error" class="civora-pf-error">
+                    <i class="fa fa-exclamation-circle"/> <t t-esc="state.error"/>
+                </div>
+
+                <!-- Identité -->
+                <div class="civora-pf-section">
+                    <div class="civora-pf-title">Identité</div>
+                    <div class="civora-pf-grid">
+                        <div class="civora-fld civora-col2">
+                            <label>Nom du bien *</label>
+                            <input type="text" t-att-value="state.form.name"
+                                   t-on-input="(ev) => this.setField('name', ev)"
+                                   placeholder="Villa Cocody 5P"/>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Référence</label>
+                            <input type="text" t-att-value="state.form.ref"
+                                   t-on-input="(ev) => this.setField('ref', ev)"
+                                   placeholder="BIEN-001"/>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Type</label>
+                            <select t-on-change="(ev) => this.setM2O('property_type_id', ev)">
+                                <option value="">—</option>
+                                <option t-foreach="types" t-as="t" t-key="t.id"
+                                        t-att-value="t.id" t-att-selected="state.form.property_type_id === t.id"
+                                        t-esc="t.name"/>
+                            </select>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Statut</label>
+                            <select t-on-change="(ev) => this.setField('status', ev)">
+                                <option t-foreach="statuses" t-as="s" t-key="s.value"
+                                        t-att-value="s.value" t-att-selected="state.form.status === s.value"
+                                        t-esc="s.label"/>
+                            </select>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Transaction</label>
+                            <select t-on-change="(ev) => this.setField('transaction', ev)">
+                                <option t-foreach="transactions" t-as="tr" t-key="tr.value"
+                                        t-att-value="tr.value" t-att-selected="state.form.transaction === tr.value"
+                                        t-esc="tr.label"/>
+                            </select>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Mandat</label>
+                            <select t-on-change="(ev) => this.setField('mandate_type', ev)">
+                                <option t-foreach="mandates" t-as="md" t-key="md.value"
+                                        t-att-value="md.value" t-att-selected="state.form.mandate_type === md.value"
+                                        t-esc="md.label"/>
+                            </select>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Propriétaire</label>
+                            <select t-on-change="(ev) => this.setM2O('owner_id', ev)">
+                                <option value="">—</option>
+                                <option t-foreach="owners" t-as="o" t-key="o.id"
+                                        t-att-value="o.id" t-att-selected="state.form.owner_id === o.id"
+                                        t-esc="o.name"/>
+                            </select>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Agent référent</label>
+                            <select t-on-change="(ev) => this.setM2O('agent_id', ev)">
+                                <option value="">—</option>
+                                <option t-foreach="users" t-as="u" t-key="u.id"
+                                        t-att-value="u.id" t-att-selected="state.form.agent_id === u.id"
+                                        t-esc="u.name"/>
+                            </select>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Locataire actuel</label>
+                            <select t-on-change="(ev) => this.setM2O('tenant_id', ev)">
+                                <option value="">—</option>
+                                <option t-foreach="owners" t-as="o" t-key="o.id"
+                                        t-att-value="o.id" t-att-selected="state.form.tenant_id === o.id"
+                                        t-esc="o.name"/>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Localisation -->
+                <div class="civora-pf-section">
+                    <div class="civora-pf-title">Localisation</div>
+                    <div class="civora-pf-grid">
+                        <div class="civora-fld">
+                            <label>Ville</label>
+                            <input type="text" t-att-value="state.form.city"
+                                   t-on-input="(ev) => this.setField('city', ev)" placeholder="Abidjan"/>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Quartier</label>
+                            <input type="text" t-att-value="state.form.neighborhood"
+                                   t-on-input="(ev) => this.setField('neighborhood', ev)" placeholder="Cocody, Riviera"/>
+                        </div>
+                        <div class="civora-fld civora-col2">
+                            <label>Adresse</label>
+                            <input type="text" t-att-value="state.form.street"
+                                   t-on-input="(ev) => this.setField('street', ev)"/>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Latitude</label>
+                            <input type="number" step="0.0000001" t-att-value="state.form.latitude"
+                                   t-on-input="(ev) => this.setNumber('latitude', ev)" placeholder="5.3599"/>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Longitude</label>
+                            <input type="number" step="0.0000001" t-att-value="state.form.longitude"
+                                   t-on-input="(ev) => this.setNumber('longitude', ev)" placeholder="-4.0083"/>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Caractéristiques -->
+                <div class="civora-pf-section">
+                    <div class="civora-pf-title">Caractéristiques</div>
+                    <div class="civora-pf-grid civora-pf-grid3">
+                        <div class="civora-fld">
+                            <label>Surface (m²)</label>
+                            <input type="number" min="0" t-att-value="state.form.surface"
+                                   t-on-input="(ev) => this.setNumber('surface', ev)"/>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Pièces</label>
+                            <input type="number" min="0" t-att-value="state.form.rooms"
+                                   t-on-input="(ev) => this.setNumber('rooms', ev)"/>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Chambres</label>
+                            <input type="number" min="0" t-att-value="state.form.bedrooms"
+                                   t-on-input="(ev) => this.setNumber('bedrooms', ev)"/>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Salles de bain</label>
+                            <input type="number" min="0" t-att-value="state.form.bathrooms"
+                                   t-on-input="(ev) => this.setNumber('bathrooms', ev)"/>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Année de construction</label>
+                            <input type="number" min="0" t-att-value="state.form.year_built"
+                                   t-on-input="(ev) => this.setNumber('year_built', ev)" placeholder="2020"/>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pricing -->
+                <div class="civora-pf-section">
+                    <div class="civora-pf-title">Pricing</div>
+                    <div class="civora-pf-grid">
+                        <div class="civora-fld">
+                            <label>Prix (FCFA)</label>
+                            <input type="number" min="0" t-att-value="state.form.price"
+                                   t-on-input="(ev) => this.setNumber('price', ev)" placeholder="180000000"/>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Revenu mensuel (FCFA)</label>
+                            <input type="number" min="0" t-att-value="state.form.monthly_revenue"
+                                   t-on-input="(ev) => this.setNumber('monthly_revenue', ev)" placeholder="450000"/>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Conditions de location -->
+                <div class="civora-pf-section" t-if="transactionIsRental">
+                    <div class="civora-pf-title">Conditions de location</div>
+                    <div class="civora-pf-grid">
+                        <div class="civora-fld">
+                            <label>Caution</label>
+                            <input type="text" t-att-value="state.form.rental_deposit"
+                                   t-on-input="(ev) => this.setField('rental_deposit', ev)" placeholder="2 mois de loyer"/>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Avance</label>
+                            <input type="text" t-att-value="state.form.rental_advance"
+                                   t-on-input="(ev) => this.setField('rental_advance', ev)" placeholder="2 mois d'avance"/>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Charges</label>
+                            <input type="text" t-att-value="state.form.rental_charges"
+                                   t-on-input="(ev) => this.setField('rental_charges', ev)" placeholder="Eau, gardiennage…"/>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Durée minimale</label>
+                            <input type="text" t-att-value="state.form.rental_min_stay"
+                                   t-on-input="(ev) => this.setField('rental_min_stay', ev)" placeholder="12 mois"/>
+                        </div>
+                        <div class="civora-fld civora-col2">
+                            <label>Frais d'agence</label>
+                            <input type="text" t-att-value="state.form.rental_agency_fees"
+                                   t-on-input="(ev) => this.setField('rental_agency_fees', ev)" placeholder="1 mois de loyer"/>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Conditions de vente -->
+                <div class="civora-pf-section" t-if="transactionIsSale">
+                    <div class="civora-pf-title">Conditions de vente</div>
+                    <div class="civora-pf-grid">
+                        <div class="civora-fld">
+                            <label>Négociation</label>
+                            <input type="text" t-att-value="state.form.sale_negotiable"
+                                   t-on-input="(ev) => this.setField('sale_negotiable', ev)" placeholder="Négociable sous conditions"/>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Paiement</label>
+                            <input type="text" t-att-value="state.form.sale_payment"
+                                   t-on-input="(ev) => this.setField('sale_payment', ev)" placeholder="Comptant ou 3 tranches"/>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Notaire</label>
+                            <input type="text" t-att-value="state.form.sale_notary"
+                                   t-on-input="(ev) => this.setField('sale_notary', ev)" placeholder="Frais acquéreur (≈ 7%)"/>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Remise des clés</label>
+                            <input type="text" t-att-value="state.form.sale_handover"
+                                   t-on-input="(ev) => this.setField('sale_handover', ev)" placeholder="Sous 30 jours après signature"/>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Immeuble & unités -->
+                <div class="civora-pf-section">
+                    <div class="civora-pf-title">Immeuble &amp; unités</div>
+                    <label class="civora-pf-check">
+                        <input type="checkbox" t-att-checked="state.form.is_building"
+                               t-on-change="(ev) => this.setCheckbox('is_building', ev)"/>
+                        Ce bien est un immeuble (composé d'unités)
+                    </label>
+                    <div class="civora-pf-grid" style="margin-top:10px;">
+                        <t t-if="state.form.is_building">
+                            <div class="civora-fld">
+                                <label>Nombre d'étages</label>
+                                <input type="number" min="0" t-att-value="state.form.floors_count"
+                                       t-on-input="(ev) => this.setNumber('floors_count', ev)"/>
+                            </div>
+                            <div class="civora-fld">
+                                <label>Nombre d'unités prévues</label>
+                                <input type="number" min="0" t-att-value="state.form.total_units"
+                                       t-on-input="(ev) => this.setNumber('total_units', ev)"/>
+                            </div>
+                        </t>
+                        <t t-else="">
+                            <div class="civora-fld">
+                                <label>Rattaché à l'immeuble</label>
+                                <select t-on-change="(ev) => this.setM2O('parent_id', ev)">
+                                    <option value="">— (bien indépendant)</option>
+                                    <t t-foreach="buildings" t-as="b" t-key="b.id">
+                                        <option t-if="b.id !== props.propertyId" t-att-value="b.id"
+                                                t-att-selected="state.form.parent_id === b.id" t-esc="b.name"/>
+                                    </t>
+                                </select>
+                            </div>
+                            <div class="civora-fld">
+                                <label>Étage</label>
+                                <input type="number" t-att-value="state.form.floor"
+                                       t-on-input="(ev) => this.setNumber('floor', ev)"/>
+                            </div>
+                            <div class="civora-fld">
+                                <label>N° d'unité</label>
+                                <input type="text" t-att-value="state.form.unit_number"
+                                       t-on-input="(ev) => this.setField('unit_number', ev)" placeholder="101, A2, RDC-1…"/>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+
+                <!-- Photos & description -->
+                <div class="civora-pf-section">
+                    <div class="civora-pf-title">Photos &amp; description</div>
+                    <div class="civora-pf-grid">
+                        <div class="civora-fld civora-col2">
+                            <label>Photos (la 1ʳᵉ sert de couverture)</label>
+                            <input type="file" accept="image/*" multiple="multiple" t-on-change="(ev) => this.onGalleryAdd(ev)"/>
+                            <div t-if="galleryDisplay.length" class="civora-pf-gallery">
+                                <div t-foreach="galleryDisplay" t-as="g" t-key="g.key" class="civora-pf-thumb">
+                                    <img t-att-src="g.src" alt="photo"/>
+                                    <button class="civora-pf-thumb-del" title="Retirer"
+                                            t-on-click="() => this.removeImage(g)">
+                                        <i class="fa fa-times"/>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="civora-fld civora-col2">
+                            <label>Description</label>
+                            <textarea rows="3" t-att-value="state.form.description"
+                                      t-on-input="(ev) => this.setField('description', ev)"
+                                      placeholder="Atouts, environnement, prestations…"/>
+                        </div>
+                        <div class="civora-fld civora-col2">
+                            <label>Notes internes</label>
+                            <textarea rows="2" t-att-value="state.form.note"
+                                      t-on-input="(ev) => this.setField('note', ev)"/>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </div>
+
+        <t t-set-slot="footer">
+            <button class="civora-btn civora-btn-outline" t-on-click="() => props.onClose()">Annuler</button>
+            <button class="civora-btn civora-btn-accent" t-att-disabled="state.saving" t-on-click="save">
+                <t t-esc="state.saving ? 'Enregistrement…' : 'Enregistrer'"/>
+            </button>
+        </t>
+    </CivoraDrawer>
+</t>
+
+</templates>

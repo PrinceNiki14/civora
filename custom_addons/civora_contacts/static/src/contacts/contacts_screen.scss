@@ -1,0 +1,148 @@
+// =====================================================================
+// CIVORA Contacts - ecran Annuaire
+// (reutilise les tokens de civora_core : $civora-*)
+// =====================================================================
+
+.civora-contacts {
+    height: 100%;
+    overflow: auto;
+    background: $civora-bg;
+    font-family: $civora-font;
+    color: $civora-fg;
+
+    .civora-contacts-inner {
+        max-width: 1360px;
+        margin: 0 auto;
+        padding: 28px 28px 48px;
+    }
+
+    // Barre segments + recherche
+    .civora-ct-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin: 20px 0 16px;
+        flex-wrap: wrap;
+    }
+    .civora-ct-segments { display: flex; gap: 8px; flex-wrap: wrap; }
+    .civora-pill {
+        border: 1px solid $civora-border;
+        background: $civora-card;
+        border-radius: 999px;
+        padding: 6px 14px;
+        font-size: 12.5px;
+        font-weight: 600;
+        color: $civora-muted;
+        cursor: pointer;
+        transition: all .12s ease;
+
+        &:hover { color: $civora-fg; border-color: $civora-muted; }
+        &.civora-pill-active {
+            background: $civora-accent;
+            border-color: $civora-accent;
+            color: #fff;
+        }
+    }
+    .civora-ct-search {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: $civora-card;
+        border: 1px solid $civora-border;
+        border-radius: 10px;
+        padding: 0 12px;
+        height: 38px;
+        min-width: 260px;
+
+        i { color: $civora-muted; font-size: 13px; }
+        input {
+            border: 0; outline: 0; background: transparent;
+            font-size: 13.5px; width: 100%; color: $civora-fg;
+        }
+    }
+
+    // Tableau
+    .civora-ct-table-wrap { padding: 0; overflow: hidden; }
+    .civora-ct-table {
+        width: 100%;
+        border-collapse: collapse;
+
+        thead th {
+            text-align: left;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            color: $civora-muted;
+            padding: 14px 20px;
+            border-bottom: 1px solid $civora-border;
+            background: #fbfcfe;
+        }
+        tbody td {
+            padding: 12px 20px;
+            border-bottom: 1px solid #eef1f6;
+            font-size: 13.5px;
+            vertical-align: middle;
+        }
+        tbody tr:last-child td { border-bottom: 0; }
+    }
+    .civora-ct-row {
+        cursor: pointer;
+        transition: background .12s ease;
+        &:hover td { background: rgba(0, 171, 104, .035); }
+    }
+    .civora-ct-contact { display: flex; align-items: center; gap: 12px; min-width: 0; }
+    .civora-ct-contact-txt { min-width: 0; }
+    .civora-ct-name { font-weight: 600; color: $civora-fg; }
+    .civora-ct-sub { font-size: 12px; color: $civora-muted; }
+    .civora-ct-muted { color: $civora-muted; }
+
+    .civora-ct-score { display: flex; align-items: center; gap: 10px; min-width: 120px; }
+    .civora-ct-score-num { font-size: 12.5px; font-weight: 700; color: $civora-fg; }
+
+    .civora-ct-empty {
+        text-align: center;
+        color: $civora-muted;
+        padding: 32px;
+        font-size: 14px;
+    }
+
+    // Placeholder autres onglets
+    .civora-ct-placeholder {
+        margin-top: 20px;
+        text-align: center;
+        padding: 48px 24px;
+    }
+    .civora-ct-ph-icon {
+        width: 60px; height: 60px; margin: 0 auto 14px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, $civora-accent, $civora-success);
+        color: #fff; font-size: 24px;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .civora-ct-ph-title { font-family: $civora-font-display; font-weight: 800; font-size: 18px; color: $civora-fg; }
+    .civora-ct-ph-text { font-size: 13.5px; color: $civora-muted; margin-top: 6px; }
+}
+
+// Primitives de layout reutilisees (header + grille), au cas ou elles sont
+// scopees ailleurs. Definies ici pour rendre l'ecran autonome.
+.civora-contacts {
+    .civora-cc-header {
+        display: flex; align-items: flex-start; justify-content: space-between;
+        gap: 16px; margin-bottom: 24px;
+    }
+    .civora-cc-title {
+        font-family: $civora-font-display; font-size: 28px; font-weight: 800;
+        margin: 0; letter-spacing: -.4px; color: $civora-fg;
+    }
+    .civora-cc-subtitle { color: $civora-muted; font-size: 14px; margin-top: 4px; }
+    .civora-cc-actions { display: flex; gap: 10px; flex: 0 0 auto; }
+    .civora-grid { display: grid; gap: 16px; }
+    .civora-grid-4 { grid-template-columns: repeat(4, 1fr); }
+    .civora-mb { margin-bottom: 24px; }
+
+    @media (max-width: 1100px) {
+        .civora-grid-4 { grid-template-columns: repeat(2, 1fr); }
+    }
+}

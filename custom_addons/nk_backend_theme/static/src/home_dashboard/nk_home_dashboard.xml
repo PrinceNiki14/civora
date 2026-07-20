@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="nk_backend_theme.HomeDashboard">
+    <div class="nk_dashboard h-100 overflow-auto">
+        <div class="nk_dashboard_inner">
+
+            <!-- En-tete -->
+            <div class="nk_dash_header">
+                <div>
+                    <h1 class="nk_dash_title">Command Center</h1>
+                    <div class="nk_dash_subtitle">
+                        <t t-esc="companyName"/>
+                        <t t-if="companyName"> &#183; </t>
+                        <t t-esc="subtitle"/>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KPI -->
+            <div t-if="state.loading" class="nk_dash_loading">
+                <i class="fa fa-circle-o-notch fa-spin me-2"/> Chargement des indicateurs...
+            </div>
+
+            <div t-elif="state.kpis.length" class="nk_kpi_grid">
+                <div t-foreach="state.kpis" t-as="kpi" t-key="kpi.id"
+                     class="nk_kpi_card" t-att-data-accent="kpi.accent">
+                    <div class="nk_kpi_top">
+                        <span class="nk_kpi_label" t-esc="kpi.label"/>
+                        <span class="nk_kpi_icon">
+                            <i class="fa" t-att-class="kpi.icon"/>
+                        </span>
+                    </div>
+                    <div class="nk_kpi_value" t-esc="kpi.value"/>
+                    <div t-if="kpi.sub" class="nk_kpi_sub" t-esc="kpi.sub"/>
+                </div>
+            </div>
+
+            <div t-else="" class="nk_dash_empty">
+                Aucun indicateur disponible pour le moment.
+            </div>
+
+        </div>
+    </div>
+</t>
+
+</templates>

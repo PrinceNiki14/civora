@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Template principal pour facture FNE style CIA -->
+    <template id="report_invoice_document_fne_cia">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <div class="page">
+
+                    <!-- CSS Styles intégrés -->
+                    <style>
+                        .fne-header-box {
+                            border-radius: 10px;
+                            padding: 15px;
+                            margin-bottom: 20px;
+                            border: 1px solid #e0e0e0;
+                        }
+
+                        .fne-table {
+                            border-collapse: collapse;
+                            width: 100%;
+                            font-size: 12px;
+                        }
+
+                        .fne-table th, .fne-table td {
+                            border: 1px solid #000;
+                            padding: 8px;
+                        }
+
+                        .fne-table th {
+                            background-color: #f8f9fa;
+                            font-weight: bold;
+                        }
+
+                        .fne-qr-section {
+                            text-align: center;
+                            margin: 20px 0;
+                        }
+
+                        .fne-logo-badge {
+                            background: #FF6600;
+                            color: white;
+                            padding: 10px 20px;
+                            border-radius: 5px;
+                            font-size: 12px;
+                            font-weight: bold;
+                            text-align: center;
+                            margin-top: 15px;
+                            text-transform: uppercase;
+                        }
+
+                        .fne-footer {
+                            font-size: 10px;
+                            text-align: center;
+                            border-top: 1px solid #ccc;
+                            padding-top: 15px;
+                            margin-top: 30px;
+                        }
+
+                        .company-info-line {
+                            margin-bottom: 8px;
+                            font-size: 13px;
+                        }
+
+                        .client-section {
+                            background-color: #f8f9fa;
+                            padding: 15px;
+                            border-radius: 8px;
+                            margin-top: 15px;
+                        }
+
+                        .logo-container {
+                            text-align: center;
+                            margin-bottom: 25px;
+                        }
+
+                        .fne-certification-section {
+                            text-align: center;
+                            margin: 25px 0;
+                            padding: 15px;
+                        }
+
+                        .fne-logos-row {
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            gap: 15px;
+                            margin-bottom: 15px;
+                        }
+
+                        .fne-banner-container {
+                            flex: 1;
+                            text-align: center;
+                        }
+
+                        .fne-qr-container {
+                            flex: 1;
+                            text-align: center;
+                        }
+
+                        .qr-code-container {
+                            text-align: center;
+                        }
+
+                        .banner-image {
+                            max-width: 160px;
+                            height: auto;
+                        }
+                    </style>
+
+                    <!-- En-tête principal -->
+                    <div class="row">
+                        <!-- Colonne gauche - Informations entreprise -->
+                        <div class="col-7">
+                            <!-- Informations entreprise -->
+                            <div class="fne-header-box">
+                                <h4 style="margin-bottom: 15px; color: #FF6600;">
+                                    <strong t-field="o.company_id.name"/>
+                                </h4>
+                                <div class="company-info-line">
+                                    <strong>NCC :</strong>
+                                    <span t-field="o.company_id.vat" t-if="o.company_id.vat"/>
+                                </div>
+                                <div class="company-info-line">
+                                    <strong>Régime d'imposition :</strong> RNI
+                                </div>
+                                <div class="company-info-line">
+                                    <strong>Centre des impôts :</strong> 822 Recette des Grandes Entreprises
+                                </div>
+                                <div class="company-info-line">
+                                    <strong>RCCM :</strong>
+                                    <span t-field="o.company_id.company_registry" t-if="o.company_id.company_registry"/>
+                                </div>
+                            </div>
+
+                            <!-- Références bancaires et informations détaillées -->
+                            <div style="margin-bottom: 15px;">
+                                <h5 style="color: #FF6600; margin-bottom: 10px;">
+                                    <strong>Références bancaires :</strong>
+                                </h5>
+                                <div class="company-info-line">
+                                    <strong>Établissement :</strong>
+                                    <span t-field="o.company_id.name"/>
+                                </div>
+                                <div class="company-info-line">
+                                    <strong>Adresse :</strong>
+                                    <span t-field="o.company_id.partner_id.street"/>
+                                    <span t-field="o.company_id.partner_id.city"/>
+                                </div>
+                                <div class="company-info-line">
+                                    <strong>N° Tel :</strong>
+                                    <span t-field="o.company_id.phone" t-if="o.company_id.phone"/>
+                                </div>
+                                <div class="company-info-line">
+                                    <strong>Mail :</strong>
+                                    <span t-field="o.company_id.email" t-if="o.company_id.email"/>
+                                </div>
+                            </div>
+
+                            <!-- Informations de vente -->
+                            <div style="margin-bottom: 15px;">
+                                <h5 style="color: #FF6600; margin-bottom: 10px;">
+                                    <strong>Informations de vente :</strong>
+                                </h5>
+                                <div class="company-info-line">
+                                    <strong>Nom du vendeur :</strong>
+                                    <span t-field="o.fne_seller_name" t-if="o.fne_seller_name"/>
+                                </div>
+                                <div class="company-info-line">
+                                    <strong>Nom de PDV :</strong>
+                                    <span t-field="o.fne_point_of_sale" t-if="o.fne_point_of_sale"/>
+                                </div>
+                                <div class="company-info-line">
+                                    <strong>Date et heure :</strong>
+                                    <span t-field="o.invoice_date"/>
+                                    <span t-field="o.create_date"
+                                          t-options="{'widget': 'datetime', 'format': 'HH:mm:ss'}"/>
+                                </div>
+                                <div class="company-info-line">
+                                    <strong>Mode de paiement :</strong>
+                                    <span t-field="o.fne_payment_method"/>
+                                </div>
+                            </div>
+
+                            <!-- Messages personnalisés -->
+                            <div t-if="o.fne_commercial_message" style="margin-top: 20px; padding: 10px; background-color: #fff3cd; border-radius: 5px;">
+                                <strong>Message commercial :</strong><br/>
+                                <span t-field="o.fne_commercial_message"/>
+                            </div>
+                        </div>
+
+                        <!-- Colonne droite - Logo société, Logo FNE + QR Code -->
+                        <div class="col-5">
+                            <!-- 1. Logo de la société (en haut) -->
+                            <div class="logo-container">
+                                <img t-if="o.company_id.logo"
+                                     t-att-src="image_data_uri(o.company_id.logo)"
+                                     style="max-height: 100px; max-width: 200px;"/>
+                            </div>
+
+                            <!-- 2. Section certification FNE (Logo FNE + QR Code côte à côte) -->
+                            <div t-if="o.fne_certified" class="fne-certification-section">
+                                <div class="fne-logos-row">
+                                    <!-- Logo FNE (Banner) à gauche -->
+                                    <div class="fne-banner-container">
+                                        <img alt="FNE Banner"
+                                             t-att-src="image_data_uri(o.get_banner_image())"
+                                             style="max-width: 160px; height: 130px;"/>
+                                    </div>
+
+                                    <!-- QR Code à droite -->
+                                    <div class="fne-qr-container">
+                                        <img t-att-src="image_data_uri(o.fne_qr_code_image)"
+                                             style="width: 120px; height: 120px;"/>
+                                    </div>
+                                </div>
+
+                                <!-- Badge certifié FNE centré -->
+                                <div class="fne-logo-badge">
+                                    Certifié FNE
+                                </div>
+                            </div>
+
+                            <!-- 3. Informations Client (en bas à droite) -->
+                            <div class="client-section">
+                                <h5 style="color: #FF6600; margin-bottom: 15px;">
+                                    <strong>Client</strong>
+                                </h5>
+                                <div class="company-info-line">
+                                    <strong>Nom :</strong>
+                                    <span t-field="o.partner_id.name"/>
+                                </div>
+                                <div class="company-info-line">
+                                    <strong>Adresse :</strong>
+                                    <span t-field="o.partner_id.email" t-if="o.partner_id.email"/>
+                                </div>
+                                <div t-if="o.partner_id.ncc" class="company-info-line">
+                                    <strong>NCC :</strong>
+                                    <span t-field="o.partner_id.ncc"/>
+                                </div>
+                                <div class="company-info-line">
+                                    <strong>Régime d'imposition :</strong> RNI
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section Tableau des articles -->
+                    <div class="row" style="margin-top: 30px;">
+                        <div class="col-12">
+                            <h5 style="color: #FF6600; margin-bottom: 15px;">
+                                <strong>Détail des articles</strong>
+                            </h5>
+                            <table class="fne-table">
+                                <thead>
+                                    <tr>
+                                        <th>Désignation</th>
+                                        <th>Quantité</th>
+                                        <th>Prix unitaire</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="o.invoice_line_ids" t-as="line">
+                                        <tr>
+                                            <td><span t-field="line.name"/></td>
+                                            <td class="text-right"><span t-field="line.quantity"/></td>
+                                            <td class="text-right"><span t-field="line.price_unit"/></td>
+                                            <td class="text-right"><span t-field="line.price_subtotal"/></td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Section Totaux -->
+                    <div class="row" style="margin-top: 20px;">
+                        <div class="col-6"></div>
+                        <div class="col-6">
+                            <table class="fne-table">
+                                <tr>
+                                    <td><strong>Sous-total</strong></td>
+                                    <td class="text-right"><span t-field="o.amount_untaxed"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>TVA</strong></td>
+                                    <td class="text-right"><span t-field="o.amount_tax"/></td>
+                                </tr>
+                                <tr style="background-color: #FF6600; color: white;">
+                                    <td><strong>TOTAL</strong></td>
+                                    <td class="text-right"><strong t-field="o.amount_total"/></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Footer FNE -->
+                    <div class="fne-footer">
+                        <p>Ce document est certifié par la Facture Numérique Électronique (FNE)</p>
+                        <p>Vérifiez l'authenticité en scannant le QR Code ci-dessus</p>
+                    </div>
+
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <!-- Action de rapport -->
+    <record id="action_report_invoice_fne_cia" model="ir.actions.report">
+        <field name="name">Facture FNE (Style CIA)</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">fne_sale_invoice_certification.report_invoice_document_fne_cia</field>
+        <field name="report_file">fne_sale_invoice_certification.report_invoice_document_fne_cia</field>
+        <field name="print_report_name">'Facture FNE - %s' % (object.name)</field>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="binding_type">report</field>
+    </record>
+
+</odoo>

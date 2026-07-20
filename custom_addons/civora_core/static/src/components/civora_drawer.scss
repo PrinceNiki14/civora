@@ -1,0 +1,125 @@
+// =====================================================================
+// CIVORA CORE - Drawer / Modale (conteneur unifie)
+//   .civora-drawer--drawer : panneau lateral droit (defaut, etape 1.3)
+//   .civora-drawer--modal  : modale centree (etape 1.3-bis-a)
+// =====================================================================
+
+.civora-drawer-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(7, 17, 35, .45);
+    z-index: 1050;
+    animation: civora-fade .15s ease;
+}
+
+// ---- Tronc commun (head / body / foot) ------------------------------
+.civora-drawer {
+    position: fixed;
+    z-index: 1051;
+    display: flex;
+    flex-direction: column;
+    background: $civora-bg;
+
+    .civora-drawer-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 18px 24px;
+        background: $civora-card;
+        border-bottom: 1px solid $civora-border;
+    }
+    .civora-drawer-head-txt {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
+    }
+    .civora-drawer-ico {
+        flex: 0 0 auto;
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 171, 104, .14);   // accent 15%
+        color: $civora-accent;
+        font-size: 15px;
+    }
+    .civora-drawer-head-labels { min-width: 0; }
+    .civora-drawer-title {
+        font-family: $civora-font-display;
+        font-weight: 800;
+        font-size: 18px;
+        line-height: 1.2;
+        color: $civora-fg;
+    }
+    .civora-drawer-sub {
+        font-size: 12.5px;
+        color: $civora-muted;
+        margin-top: 2px;
+    }
+    .civora-drawer-close {
+        border: 0;
+        background: transparent;
+        color: $civora-muted;
+        font-size: 18px;
+        cursor: pointer;
+        padding: 4px 8px;
+        border-radius: 8px;
+        &:hover { background: $civora-bg; color: $civora-fg; }
+    }
+
+    .civora-drawer-body {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        padding: 20px 24px;
+    }
+    .civora-drawer-foot {
+        padding: 16px 24px;
+        background: $civora-card;
+        border-top: 1px solid $civora-border;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+}
+
+// ---- Variante : panneau lateral droit (defaut) ----------------------
+.civora-drawer--drawer {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 560px;
+    max-width: 92vw;
+    box-shadow: -8px 0 32px rgba(7, 17, 35, .18);
+    animation: civora-slide-in .2s ease;
+}
+
+// ---- Variante : modale centree --------------------------------------
+.civora-drawer--modal {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: calc(100% - 32px);         // marge laterale sur petits ecrans
+    max-height: 90vh;
+    border: 1px solid $civora-border;
+    border-radius: $civora-radius;
+    overflow: hidden;                 // clip des coins arrondis (head/foot)
+    box-shadow: $civora-shadow-elevated;
+    animation: civora-pop .18s ease;
+
+    &.civora-drawer--sm { max-width: 480px; }
+    &.civora-drawer--md { max-width: 640px; }
+    &.civora-drawer--lg { max-width: 768px; }  // ~ max-w-3xl du front
+    &.civora-drawer--xl { max-width: 960px; }
+}
+
+@keyframes civora-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes civora-slide-in { from { transform: translateX(100%); } to { transform: translateX(0); } }
+@keyframes civora-pop {
+    from { opacity: 0; transform: translate(-50%, -48%) scale(.98); }
+    to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+
+    <record id="civora_lead_company_rule" model="ir.rule">
+        <field name="name">civora.lead : multi-societe</field>
+        <field name="model_id" ref="model_civora_lead"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="civora_opportunity_company_rule" model="ir.rule">
+        <field name="name">civora.opportunity : multi-societe</field>
+        <field name="model_id" ref="model_civora_opportunity"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="civora_pipeline_stage_company_rule" model="ir.rule">
+        <field name="name">civora.pipeline.stage : multi-societe</field>
+        <field name="model_id" ref="model_civora_pipeline_stage"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+</odoo>

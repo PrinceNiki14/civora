@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Ecran Locations CIVORA (client action OWL, aucune vue Odoo) -->
+    <record id="action_civora_leases" model="ir.actions.client">
+        <field name="name">Locations</field>
+        <field name="tag">civora.leases</field>
+    </record>
+
+    <!-- Rattache l'ecran au menu existant IMMOBILIER > Locations de la coquille
+         (au lieu de creer une app separee qui atterrit dans "Autres"). -->
+    <menuitem id="civora_agence.menu_locations" action="action_civora_leases"/>
+
+</odoo>

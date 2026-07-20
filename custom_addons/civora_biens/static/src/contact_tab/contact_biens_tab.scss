@@ -1,0 +1,105 @@
+// =====================================================================
+// CIVORA Biens - Onglet "Biens liés" dans la fiche contact 360
+// =====================================================================
+
+.civora-cbt {
+    font-family: $civora-font;
+    color: $civora-fg;
+
+    .civora-cbt-state {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 30px 0;
+        color: $civora-muted;
+        font-size: 14px;
+    }
+
+    .civora-cbt-empty {
+        text-align: center;
+        padding: 48px 24px;
+        background: $civora-card;
+        border: 1px dashed $civora-border;
+        border-radius: $civora-radius;
+        color: $civora-muted;
+    }
+    .civora-cbt-empty-ico {
+        width: 54px;
+        height: 54px;
+        margin: 0 auto 12px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 171, 104, .12);
+        color: $civora-accent;
+        font-size: 22px;
+    }
+    .civora-cbt-empty-t {
+        font-family: $civora-font-display;
+        font-weight: 700;
+        font-size: 15px;
+        color: $civora-fg;
+    }
+    .civora-cbt-empty p { margin: 6px 0 0; font-size: 13px; }
+
+    .civora-cbt-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .civora-cbt-item {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        background: $civora-card;
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius;
+        box-shadow: $civora-shadow-card;
+        padding: 12px 14px;
+        cursor: pointer;
+        transition: border-color .12s ease, box-shadow .12s ease, transform .12s ease;
+        &:hover { border-color: $civora-accent; box-shadow: $civora-shadow-elevated; transform: translateY(-1px); }
+    }
+    .civora-cbt-thumb {
+        flex: 0 0 auto;
+        width: 64px;
+        height: 64px;
+        border-radius: $civora-radius-sm;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, rgba(9, 26, 54, .06), rgba(0, 171, 104, .10));
+        color: $civora-accent;
+        font-size: 22px;
+        &.has-photo { background-size: cover; background-position: center; }
+    }
+    .civora-cbt-body { flex: 1; min-width: 0; }
+    .civora-cbt-h {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .civora-cbt-name {
+        font-family: $civora-font-display;
+        font-weight: 700;
+        font-size: 14px;
+    }
+    .civora-cbt-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin-top: 5px;
+        font-size: 12.5px;
+        color: $civora-muted;
+        i { margin-right: 3px; color: $civora-accent; }
+    }
+    .civora-cbt-type { font-weight: 600; color: $civora-fg; }
+    .civora-cbt-price { text-align: right; flex: 0 0 auto; }
+    .civora-cbt-p {
+        font-family: $civora-font-display;
+        font-weight: 800;
+        font-size: 15px;
+    }
+    .civora-cbt-r { font-size: 12px; color: $civora-accent; font-weight: 600; margin-top: 2px; }
+}

@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_contacts.Drawer">
+    <CivoraDrawer title="drawerTitle"
+                  subtitle="drawerSubtitle"
+                  variant="state.mode === 'view' ? 'drawer' : 'modal'"
+                  size="'lg'"
+                  icon="state.mode === 'view' ? '' : 'fa-user-o'"
+                  onClose="props.onClose">
+
+        <!-- Chargement -->
+        <div t-if="state.loading" class="civora-dr-loading">
+            <i class="fa fa-circle-o-notch fa-spin"/> Chargement…
+        </div>
+
+        <!-- ============ VUE 360 (lecture) ============ -->
+        <t t-elif="state.mode === 'view'">
+            <div class="civora-dr-360">
+                <div class="civora-dr-hero">
+                    <CivoraAvatar name="state.record.name" size="'lg'"/>
+                    <div class="civora-dr-hero-txt">
+                        <div class="civora-dr-hero-name" t-esc="state.record.name"/>
+                        <div class="civora-dr-hero-sub">
+                            <t t-esc="state.record.company_name or '—'"/>
+                            <t t-if="state.record.civora_source_id"> · <t t-esc="state.record.civora_source_id[1]"/></t>
+                        </div>
+                        <div class="civora-dr-hero-badges">
+                            <CivoraBadge t-if="state.record.civora_status"
+                                         label="statusLabel(state.record.civora_status)"
+                                         variant="statusVariant(state.record.civora_status)"/>
+                            <CivoraBadge t-foreach="selectedRoles" t-as="r" t-key="r.id"
+                                         label="r.name" variant="'neutral'"/>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="civora-dr-scoreblock">
+                    <div class="civora-dr-score-head">
+                        <span>Score IA</span>
+                        <span class="civora-dr-score-num" t-esc="state.record.civora_ai_score"/>
+                    </div>
+                    <CivoraProgress value="state.record.civora_ai_score" tone="scoreTone(state.record.civora_ai_score)"/>
+                </div>
+
+                <div class="civora-dr-section">
+                    <div class="civora-dr-sec-title">Coordonnées</div>
+                    <div class="civora-dr-kv"><span>Email</span><b t-esc="state.record.email or '—'"/></div>
+                    <div class="civora-dr-kv"><span>Téléphone</span><b t-esc="state.record.phone or '—'"/></div>
+                    <div class="civora-dr-kv"><span>WhatsApp</span><b t-esc="state.record.civora_whatsapp or '—'"/></div>
+                    <div class="civora-dr-kv"><span>Ville</span><b t-esc="state.record.city or '—'"/></div>
+                    <div class="civora-dr-kv"><span>Quartier</span><b t-esc="state.record.civora_neighborhood or '—'"/></div>
+                </div>
+
+                <div class="civora-dr-section">
+                    <div class="civora-dr-sec-title">Qualification</div>
+                    <div class="civora-dr-kv"><span>Agent</span><b t-esc="state.record.civora_agent_id and state.record.civora_agent_id[1] or '—'"/></div>
+                    <div class="civora-dr-kv" t-if="companies.length > 1"><span>Société</span><b t-esc="state.record.company_id and state.record.company_id[1] or '—'"/></div>
+                    <div class="civora-dr-kv"><span>Budget</span><b t-esc="state.record.civora_budget or 0"/></div>
+                    <div class="civora-dr-kv"><span>Prochaine action</span><b t-esc="state.record.civora_next_action or '—'"/></div>
+                </div>
+
+                <div class="civora-dr-section">
+                    <div class="civora-dr-sec-title">Consentements RGPD</div>
+                    <div class="civora-dr-kv"><span>Email</span><b t-esc="consentLabel(state.record.civora_consent_email)"/></div>
+                    <div class="civora-dr-kv"><span>SMS</span><b t-esc="consentLabel(state.record.civora_consent_sms)"/></div>
+                    <div class="civora-dr-kv"><span>WhatsApp</span><b t-esc="consentLabel(state.record.civora_consent_whatsapp)"/></div>
+                </div>
+
+                <div t-if="state.record.comment" class="civora-dr-section">
+                    <div class="civora-dr-sec-title">Notes</div>
+                    <div class="civora-dr-notes" t-esc="state.record.comment"/>
+                </div>
+            </div>
+        </t>
+
+        <!-- ============ FORMULAIRE (création / édition) ============ -->
+        <t t-else="">
+            <div t-if="state.error" class="civora-dr-error">
+                <i class="fa fa-exclamation-circle"/> <t t-esc="state.error"/>
+            </div>
+
+            <div class="civora-dr-section">
+                <div class="civora-dr-sec-title">Identité</div>
+                <div class="civora-dr-grid">
+                    <div class="civora-fld civora-col2">
+                        <label>Nom complet *</label>
+                        <input type="text" t-att-value="state.form.name"
+                               t-on-input="(ev) => this.setField('name', ev)" placeholder="Mme Aïcha Koné"/>
+                    </div>
+                    <div class="civora-fld">
+                        <label>Société</label>
+                        <input type="text" t-att-value="state.form.company_name"
+                               t-on-input="(ev) => this.setField('company_name', ev)" placeholder="Touré Holdings"/>
+                    </div>
+                    <div class="civora-fld">
+                        <label>Agent référent</label>
+                        <select t-on-change="(ev) => this.setM2O('civora_agent_id', ev)">
+                            <option value="">—</option>
+                            <option t-foreach="users" t-as="u" t-key="u.id" t-att-value="u.id"
+                                    t-att-selected="state.form.civora_agent_id === u.id" t-esc="u.name"/>
+                        </select>
+                    </div>
+                    <div class="civora-fld" t-if="companies.length > 1">
+                        <label>Société <span style="color:#00ab68;">·</span> cloisonnement</label>
+                        <select t-on-change="(ev) => this.setM2O('company_id', ev)">
+                            <option t-foreach="companies" t-as="co" t-key="co.id" t-att-value="co.id"
+                                    t-att-selected="state.form.company_id === co.id" t-esc="co.name"/>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="civora-dr-section">
+                <div class="civora-dr-sec-title">Rôles</div>
+                <div class="civora-roles">
+                    <label t-foreach="roles" t-as="r" t-key="r.id" class="civora-role-chk">
+                        <input type="checkbox" t-att-checked="isRoleChecked(r.id)"
+                               t-on-change="() => this.toggleRole(r.id)"/>
+                        <span t-esc="r.name"/>
+                    </label>
+                </div>
+                <div class="civora-fld" style="margin-top:12px;">
+                    <label>Rôle principal</label>
+                    <select t-on-change="(ev) => this.setM2O('civora_primary_role_id', ev)">
+                        <option value="">—</option>
+                        <option t-foreach="selectedRoles" t-as="r" t-key="r.id" t-att-value="r.id"
+                                t-att-selected="state.form.civora_primary_role_id === r.id" t-esc="r.name"/>
+                    </select>
+                </div>
+            </div>
+
+            <div class="civora-dr-section">
+                <div class="civora-dr-sec-title">Coordonnées</div>
+                <div class="civora-dr-grid">
+                    <div class="civora-fld">
+                        <label>Email</label>
+                        <input type="email" t-att-value="state.form.email"
+                               t-on-input="(ev) => this.setField('email', ev)" placeholder="nom@example.com"/>
+                    </div>
+                    <div class="civora-fld">
+                        <label>Téléphone</label>
+                        <input type="text" t-att-value="state.form.phone"
+                               t-on-input="(ev) => this.setField('phone', ev)" placeholder="+225 07 12 34 56 78"/>
+                    </div>
+                    <div class="civora-fld">
+                        <label>WhatsApp</label>
+                        <input type="text" t-att-value="state.form.civora_whatsapp"
+                               t-on-input="(ev) => this.setField('civora_whatsapp', ev)" placeholder="+225 …"/>
+                    </div>
+                    <div class="civora-fld">
+                        <label>Ville</label>
+                        <input type="text" t-att-value="state.form.city"
+                               t-on-input="(ev) => this.setField('city', ev)" placeholder="Abidjan"/>
+                    </div>
+                    <div class="civora-fld">
+                        <label>Quartier / zone</label>
+                        <input type="text" t-att-value="state.form.civora_neighborhood"
+                               t-on-input="(ev) => this.setField('civora_neighborhood', ev)" placeholder="Cocody, Riviera 2"/>
+                    </div>
+                    <div class="civora-fld">
+                        <label>Adresse</label>
+                        <input type="text" t-att-value="state.form.street"
+                               t-on-input="(ev) => this.setField('street', ev)" placeholder="Rue / Lot / Immeuble"/>
+                    </div>
+                </div>
+            </div>
+
+            <div class="civora-dr-section">
+                <div class="civora-dr-sec-title">Qualification CRM</div>
+                <div class="civora-dr-grid">
+                    <div class="civora-fld">
+                        <label>Source</label>
+                        <select t-on-change="(ev) => this.setM2O('civora_source_id', ev)">
+                            <option value="">—</option>
+                            <option t-foreach="sources" t-as="s" t-key="s.id" t-att-value="s.id"
+                                    t-att-selected="state.form.civora_source_id === s.id" t-esc="s.name"/>
+                        </select>
+                    </div>
+                    <div class="civora-fld">
+                        <label>Statut</label>
+                        <select t-on-change="(ev) => this.setField('civora_status', ev)">
+                            <option value="">—</option>
+                            <option t-foreach="statuses" t-as="st" t-key="st.value" t-att-value="st.value"
+                                    t-att-selected="state.form.civora_status === st.value" t-esc="st.label"/>
+                        </select>
+                    </div>
+                    <div class="civora-fld">
+                        <label>Score IA (0–100)</label>
+                        <input type="number" min="0" max="100" t-att-value="state.form.civora_ai_score"
+                               t-on-input="(ev) => this.setNumber('civora_ai_score', ev)"/>
+                    </div>
+                    <div class="civora-fld">
+                        <label>Budget (FCFA)</label>
+                        <input type="number" min="0" t-att-value="state.form.civora_budget"
+                               t-on-input="(ev) => this.setNumber('civora_budget', ev)" placeholder="0"/>
+                    </div>
+                    <div class="civora-fld civora-col2">
+                        <label>Prochaine action</label>
+                        <input type="text" t-att-value="state.form.civora_next_action"
+                               t-on-input="(ev) => this.setField('civora_next_action', ev)"
+                               placeholder="Visite 28/11 · Relance · Signature…"/>
+                    </div>
+                </div>
+            </div>
+
+            <div class="civora-dr-section">
+                <div class="civora-dr-sec-title">Consentements RGPD</div>
+                <div class="civora-dr-grid">
+                    <div class="civora-fld">
+                        <label>Email</label>
+                        <select t-on-change="(ev) => this.setField('civora_consent_email', ev)">
+                            <option t-foreach="consents" t-as="c" t-key="c.value" t-att-value="c.value"
+                                    t-att-selected="state.form.civora_consent_email === c.value" t-esc="c.label"/>
+                        </select>
+                    </div>
+                    <div class="civora-fld">
+                        <label>SMS</label>
+                        <select t-on-change="(ev) => this.setField('civora_consent_sms', ev)">
+                            <option t-foreach="consents" t-as="c" t-key="c.value" t-att-value="c.value"
+                                    t-att-selected="state.form.civora_consent_sms === c.value" t-esc="c.label"/>
+                        </select>
+                    </div>
+                    <div class="civora-fld">
+                        <label>WhatsApp</label>
+                        <select t-on-change="(ev) => this.setField('civora_consent_whatsapp', ev)">
+                            <option t-foreach="consents" t-as="c" t-key="c.value" t-att-value="c.value"
+                                    t-att-selected="state.form.civora_consent_whatsapp === c.value" t-esc="c.label"/>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="civora-dr-section">
+                <div class="civora-dr-sec-title">Notes</div>
+                <textarea rows="3" t-att-value="state.form.comment"
+                          t-on-input="(ev) => this.setField('comment', ev)"
+                          placeholder="Notes internes…"/>
+            </div>
+        </t>
+
+        <!-- ============ PIED : actions ============ -->
+        <t t-set-slot="footer">
+            <t t-if="state.mode === 'view'">
+                <button class="civora-btn civora-btn-outline" t-on-click="() => props.onClose()">Fermer</button>
+                <button class="civora-btn civora-btn-accent" t-on-click="switchToEdit">
+                    <i class="fa fa-pencil"/> Modifier
+                </button>
+            </t>
+            <t t-else="">
+                <button class="civora-btn civora-btn-outline" t-on-click="() => props.onClose()">Annuler</button>
+                <button class="civora-btn civora-btn-accent" t-att-disabled="state.saving" t-on-click="save">
+                    <i t-if="state.saving" class="fa fa-circle-o-notch fa-spin"/>
+                    <t t-else="">Enregistrer</t>
+                </button>
+            </t>
+        </t>
+
+    </CivoraDrawer>
+</t>
+
+</templates>

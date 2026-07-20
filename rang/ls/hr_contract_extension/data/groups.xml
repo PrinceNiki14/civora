@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="1">
+        <record model="ir.module.category" id="module_hr_prime">
+            <field name="name">Gestion des primes</field>
+            <field name="description">Module de gestion des primes</field>
+            <field name="sequence">2</field>
+        </record>
+        <record id="gestionnaire_prime" model="res.groups">
+            <field name="name">Gestionnaire des primes</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="category_id" ref="module_hr_prime"/>
+        </record>
+    </data>
+</odoo>

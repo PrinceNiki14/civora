@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="hr_cmu.report_hr_cmu">
+        <t t-foreach="docs" t-as="o">
+            <t t-set="data_report_landscape" t-value="True"/>
+            <t t-set="full_width" t-value="True"/>
+            <t t-call="web.html_container">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                         <div class="col-12 text-center fw-bold">
+                            <h6 class="text-center fw-bold">RETENUE CMU <span t-field="o.lot_id.name"/></h6>
+                             PÉRIODE DU <span t-field="o.start_date"/> - <span t-field="o.end_date" />
+                         </div>
+                        <div class="col-12">
+                            <table class="table table-bordered">
+                                <tr style="background-color:grey;">
+                                    <td class="text-center fw-bold">MATRICULE</td>
+                                    <td class="text-center fw-bold">AGENT</td>
+                                    <td class="text-center fw-bold">PART ENPLOYE</td>
+                                    <td class="text-center fw-bold">PART ENPLOYEUR</td>
+                                </tr>
+                                <t t-foreach="o.line_ids.filtered(lambda x: x.cmu_employe !=0 )" t-as="line">
+                                    <tr>
+                                        <td class="text-center fw-bold"><span t-field="line.employee_id.identification_id"/></td>
+                                        <td class="text-center fw-bold"><span t-field="line.employee_id.name"/></td>
+                                        <td class="text-center fw-bold"><span t-esc="line.cmu_employe" t-options='{"widget": "float", "precision": 0}'/></td>
+                                        <td class="text-center fw-bold"><span t-esc="line.cmu_employeur" t-options='{"widget": "float", "precision": 0}'/></td>
+                                    </tr>
+                                </t>
+                                <tr>
+                                    <td class="text-center fw-bold" colspan="2">TOTAL</td>
+                                    <td class="text-center"><span t-esc="data['total_cmu_employe']"/></td>
+                                    <td class="text-center"><span t-esc="data['total_cmu_employeur']"/></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

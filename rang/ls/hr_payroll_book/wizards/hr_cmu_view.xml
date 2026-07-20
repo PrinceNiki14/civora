@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        <record id="hr_cmu_wizard_from_view" model="ir.ui.view">
+            <field name="name">hr.cmu.wizard.form</field>
+            <field name="model">hr.cmu.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Rapport CMU">
+                    <group>
+                        <group>
+                            <field name="start_date"/>
+                        </group>
+                        <group>
+                            <field name="end_date"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="company_id"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button string="Exporter en Excel" name="export_xls" type="object" class="btn-primary" icon="fa-download"/>
+                        <button string="Annuler" class="btn-default" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_hr_cmu_wizard" model="ir.actions.act_window">
+            <field name="name">Rapport de cotisation de la CMU</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">hr.cmu.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem id="hr_cmu_book_wizard_menu"
+                  name="Rapport CMU"
+                  sequence="5"
+                  parent="hr_payroll.menu_hr_payroll_report"
+                  action="action_hr_cmu_wizard"/>
+
+    </data>
+</odoo>

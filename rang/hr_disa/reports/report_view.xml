@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="report_disa_xlsx_id" model="ir.actions.report">
+            <field name="name">Rapport DISA</field>
+            <field name="model">hr.disa.wizard</field>
+            <field name="report_type">xlsx</field>
+            <field name="report_name">hr_disa.report_disa_xlsx</field>
+            <field name="report_file">hr_disa.report_disa_xlsx</field>
+            <field name="print_report_name">Rapport DISA</field>
+            <field name="binding_model_id" ref="model_hr_disa_wizard"/>
+            <field name="binding_type">report</field>
+        </record>
+        <!--<report
+            id="report_cmu_xlsx_id"
+            model="hr.cmu.wizard"
+            string="Rapport cotisation CMU"
+            report_type="xlsx"
+            name="hr_payroll_book.report_disa_xlsx"
+            file="Rapport CMU"
+            attachment_use="False"
+        />-->
+    </data>
+
+</odoo>

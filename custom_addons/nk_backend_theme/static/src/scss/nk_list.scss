@@ -1,0 +1,61 @@
+// =====================================================================
+// NK / CIVORA - Rehabillage des listes / tableaux
+// Cible les variables CSS et classes de la vue liste Odoo 19.
+// =====================================================================
+
+$nk-accent:      #00ab68;
+$nk-head-bg:     #fbfcfe;
+$nk-head-text:   #626a75;
+$nk-border:      #eef1f6;
+$nk-border-strong: #e1e5ea;
+
+.o_list_renderer {
+    // En-tete plus doux
+    --ListRenderer-thead-bg-color: #{$nk-head-bg};
+    --ListRenderer-thead-border-end-color: transparent;
+
+    .o_list_table {
+
+        // -------- En-tetes : petites majuscules discretes ----------
+        thead th {
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: .04em;
+            font-weight: 700;
+            color: $nk-head-text;
+            border-bottom: 1px solid $nk-border-strong !important;
+        }
+
+        // -------- Lignes : plus aerees, separateurs discrets --------
+        tbody > tr.o_data_row > td {
+            padding-top: 11px;
+            padding-bottom: 11px;
+            border-color: $nk-border;
+        }
+    }
+}
+
+// Survol et selection (specificite via .o_list_view)
+.o_list_view {
+    .o_data_row:hover > .o_data_cell {
+        background-color: rgba(0, 171, 104, .045);
+    }
+
+    // Ligne cochee / selectionnee
+    .o_data_row.o_data_row_selected > .o_data_cell {
+        background-color: rgba(0, 171, 104, .07);
+    }
+
+    // Case a cocher de selection -> accent (herite deja des variables,
+    // on renforce le contraste sur fond bleu clair)
+    .o_data_row.o_data_row_selected .o_list_record_selector .o-checkbox input:checked {
+        border-color: $nk-accent;
+        background-color: $nk-accent;
+    }
+
+    // En-tete de groupe (listes groupees) : fond tres leger
+    .o_group_header {
+        background-color: #f8fafc !important;
+        font-weight: 700;
+    }
+}

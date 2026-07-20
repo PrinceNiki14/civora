@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_contacts.Screen">
+    <div class="civora-contacts">
+        <div class="civora-contacts-inner">
+
+            <!-- Header -->
+            <div class="civora-cc-header">
+                <div>
+                    <h1 class="civora-cc-title">Contacts</h1>
+                    <div class="civora-cc-subtitle">Base CRM unifiée · rôles, scoring IA, sources</div>
+                </div>
+                <div class="civora-cc-actions">
+                    <button class="civora-btn civora-btn-outline"><i class="fa fa-download"/> Importer</button>
+                    <button class="civora-btn civora-btn-accent" t-on-click="openCreate"><i class="fa fa-plus"/> Nouveau contact</button>
+                </div>
+            </div>
+
+            <!-- StatCards -->
+            <div class="civora-grid civora-grid-4 civora-mb">
+                <CivoraStatCard label="'Total contacts'" value="state.stats.total + ''" icon="'fa fa-address-book-o'"/>
+                <CivoraStatCard label="'Leads chauds'" value="state.stats.chaud + ''" icon="'fa fa-fire'"/>
+                <CivoraStatCard label="'VIP'" value="state.stats.vip + ''" icon="'fa fa-star'"/>
+                <CivoraStatCard label="'Score moyen'" value="state.stats.avg + ''" icon="'fa fa-users'"/>
+            </div>
+
+            <!-- Onglets -->
+            <CivoraTabs tabs="tabs" active="state.activeTab" onChange="(id) => this.setTab(id)"/>
+
+            <!-- Contenu : Annuaire -->
+            <t t-if="state.activeTab === 'directory'">
+                <!-- Barre : segments + recherche -->
+                <div class="civora-ct-toolbar">
+                    <div class="civora-ct-segments">
+                        <button t-foreach="segments" t-as="seg" t-key="seg.id"
+                                class="civora-pill"
+                                t-att-class="{ 'civora-pill-active': state.segment === seg.id }"
+                                t-on-click="() => this.setSegment(seg.id)"
+                                t-esc="seg.label"/>
+                    </div>
+                    <div class="civora-ct-search">
+                        <i class="fa fa-search"/>
+                        <input type="text" placeholder="Rechercher un contact…"
+                               t-att-value="state.search" t-on-input="(ev) => this.onSearchInput(ev)"/>
+                    </div>
+                </div>
+
+                <!-- Tableau annuaire -->
+                <div class="civora-card civora-ct-table-wrap">
+                    <div t-if="state.loading" class="civora-ct-empty">
+                        <i class="fa fa-circle-o-notch fa-spin me-2"/> Chargement…
+                    </div>
+                    <table t-else="" class="civora-ct-table">
+                        <thead>
+                            <tr>
+                                <th>Contact</th>
+                                <th>Rôle</th>
+                                <th>Score IA</th>
+                                <th>Statut</th>
+                                <th>Agent</th>
+                                <th>Prochaine action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-if="!state.contacts.length">
+                                <td colspan="6" class="civora-ct-empty">Aucun contact trouvé.</td>
+                            </tr>
+                            <tr t-foreach="state.contacts" t-as="c" t-key="c.id"
+                                class="civora-ct-row" t-on-click="() => this.openContact(c)">
+                                <td>
+                                    <div class="civora-ct-contact">
+                                        <CivoraAvatar name="c.name" size="'md'"/>
+                                        <div class="civora-ct-contact-txt">
+                                            <div class="civora-ct-name text-truncate" t-esc="c.name"/>
+                                            <div class="civora-ct-sub text-truncate">
+                                                <t t-esc="company(c)"/> · <t t-esc="sourceName(c)"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><CivoraBadge label="roleLabel(c)" variant="'neutral'"/></td>
+                                <td>
+                                    <div class="civora-ct-score">
+                                        <CivoraProgress value="c.civora_ai_score" tone="scoreTone(c.civora_ai_score)"/>
+                                        <span class="civora-ct-score-num" t-esc="c.civora_ai_score"/>
+                                    </div>
+                                </td>
+                                <td><CivoraBadge label="statusLabel(c)" variant="statusVariant(c)"/></td>
+                                <td class="civora-ct-muted" t-esc="agentName(c)"/>
+                                <td class="civora-ct-muted" t-esc="c.civora_next_action or '—'"/>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+
+            <!-- Autres onglets : placeholder -->
+            <t t-else="">
+                <div class="civora-card civora-ct-placeholder">
+                    <div class="civora-ct-ph-icon"><i class="fa fa-rocket"/></div>
+                    <div class="civora-ct-ph-title">Bientôt disponible</div>
+                    <div class="civora-ct-ph-text">Cet onglet sera développé dans une prochaine étape.</div>
+                </div>
+            </t>
+
+            <!-- Drawer : fiche 360 / creation / edition -->
+            <ContactDrawer t-if="state.drawer.open"
+                           mode="state.drawer.mode"
+                           contactId="state.drawer.contactId"
+                           onClose="() => this.closeDrawer()"
+                           onSaved="() => this.onDrawerSaved()"/>
+
+        </div>
+    </div>
+</t>
+
+</templates>

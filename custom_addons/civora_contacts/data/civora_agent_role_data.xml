@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- Fonctions d'agent de depart (parametrables ; socle commun global) -->
+    <record id="agent_role_agent_immobilier" model="civora.agent.role">
+        <field name="company_id" eval="False"/>
+        <field name="name">Agent immobilier</field>
+        <field name="code">agent_immobilier</field>
+        <field name="color">#091e40</field>
+        <field name="sequence">10</field>
+    </record>
+    <record id="agent_role_negociateur" model="civora.agent.role">
+        <field name="company_id" eval="False"/>
+        <field name="name">Négociateur</field>
+        <field name="code">negociateur</field>
+        <field name="color">#00ab68</field>
+        <field name="sequence">20</field>
+    </record>
+    <record id="agent_role_gestionnaire" model="civora.agent.role">
+        <field name="company_id" eval="False"/>
+        <field name="name">Gestionnaire</field>
+        <field name="code">gestionnaire</field>
+        <field name="color">#25afd2</field>
+        <field name="sequence">30</field>
+    </record>
+    <record id="agent_role_conseiller" model="civora.agent.role">
+        <field name="company_id" eval="False"/>
+        <field name="name">Conseiller</field>
+        <field name="code">conseiller</field>
+        <field name="color">#9260da</field>
+        <field name="sequence">40</field>
+    </record>
+
+</odoo>

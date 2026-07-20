@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hr_payroll_book_wizard,hr.payroll.book.wizard all,model_hr_payroll_book_wizard,,1,1,1,1
+access_hr_cmu_wizard,hr.cmu.wizard,model_hr_cmu_wizard,,1,1,1,1
+access_hr_cmu_wizard_line,hr.cmu_wizard.line,model_hr_cmu_wizard_line,,1,1,1,1

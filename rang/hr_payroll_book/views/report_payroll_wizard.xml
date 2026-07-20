@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+		<template id="report_payroll_wizard">
+			<t t-call="web.html_container">
+				 <t t-foreach="docs" t-as="o">
+					 <t t-set="o" t-value="o.with_context({'lang':user.lang})"/>
+					 <div class="article">
+					 	<div class="page">
+							<style type="text/css">
+								body, table, td, span, div {
+									font-family: Arial;
+								}
+
+								td{
+									vertical-align: middle;
+								}
+
+								th{
+									background-color: slategray;
+								}
+
+								table {
+									border-style: solid;
+									border-width: 1px;
+								}
+
+								td{
+									font-size: 12px;
+								}
+
+								.act_as_table {
+									display: table !important;
+									border-bottom: 1px;
+								}
+								.act_as_row  {
+									display: table-row !important;
+									page-break-inside: avoid;
+								}
+								.act_as_cell {
+									display: table-cell !important;
+									page-break-inside: avoid;
+								}
+								.act_as_thead {
+									display: table-header-group !important;
+								}
+								.act_as_tbody {
+									display: table-row-group !important;
+								}
+								.list_table, .data_table, .totals_table{
+									width: 100% !important;
+									table-layout: fixed !important;
+								}
+								.act_as_row.labels {
+									background-color:#F0F0F0 !important;
+								}
+								.list_table, .data_table, .totals_table, .list_table .act_as_row {
+									border-left:0px;
+									border-right:0px;
+									text-align:left;
+									font-size:10px;
+									padding-right:3px;
+									padding-left:3px;
+									padding-top:2px;
+									padding-bottom:2px;
+									border-collapse:collapse;
+								}
+								.totals_table {
+									font-weight: bold;
+									text-align: center;
+								}
+								.list_table .act_as_row.labels, .list_table .act_as_row.initial_balance, .list_table .act_as_row.lines {
+									border-color:grey !important;
+									border-bottom:1px solid lightGrey !important;
+								}
+								.data_table .act_as_cell{
+									border: 1px solid lightGrey;
+									text-align: center;
+								}
+								.data_table .act_as_cell, .list_table .act_as_cell, .totals_table .act_as_cell {
+									word-wrap: break-word;
+								}
+								.data_table .act_as_row.labels, .totals_table .act_as_row.labels {
+									font-weight: bold;
+								}
+
+								.act_table_libelle, .act_table_row_label{
+									width: 28%;
+									padding: 5px 5px 5px 0px;
+								}
+
+								.act_table_cell{
+									font-size: xx-small;
+									width: 9%;
+									padding-left: 5px;
+									transform-origin:50% 50%;
+									transform: rotate(90deg);
+								}
+
+								.act_table_row_label{
+									border-bottom: none;
+									border-top: none;
+									padding: 2px 5px 2px 0px;
+								}
+
+								.act_table_row_data{
+									width: 9%;
+									padding-left: 5px;
+									padding-right: 5px;
+									text-align: right;
+									border-bottom: none;
+									border-top: none;
+								}
+
+								.act_table_sum{
+									background-color: slategray;
+									font-weight: bold;
+								}
+
+								.act_as_libelle{
+									width: 25%;
+								}
+
+								.act_as_cell.amount {
+									word-wrap:normal;
+									text-align:right;
+									padding-right: 2px;
+								}
+
+								.act_as_cell.line_cell{
+									padding-top: 2px;
+									padding-left: 2px;
+									text-align: left;
+								}
+
+								.act_as_cell.act_as_back {
+									background-color: gray !important;
+								}
+							</style>
+							<div class="header">
+								<div class="act_as_table data_table" style="padding-top: 10px;">
+									<div class="pull-left">
+										<img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)"
+											 style="height: 80px; width: 200px; padding-top: 5px;" class="float-left" alt="Logo"/>
+									</div>
+									<div class="pull-center">
+										<p class="p_center" ><h6 style="text-align: center;">
+											LIVRE DE PAIE <span t-field="o.company_id.name"/>
+											<t t-if="o.company_id.id == 2">
+												<span t-field="o.lot_id.name"/>
+											</t>
+										</h6></p>
+										<p class="p_center" style="text-align: center;">PÉRIODE DU <span t-esc="data['date_from']"/> AU <span t-esc="data['date_to']" /></p>
+									</div>
+								</div>
+							</div>
+							<div>
+								<t t-foreach="data['pages']" t-as="page">
+									<br/>
+									 <div class="act_as_table data_table" >
+										 <div class="act_as_row labels">
+											 <div class="act_as_cell act_as_libelle act_as_description">RUBRIQUES</div>
+											 <t t-foreach="page" t-as="emp">
+												 <div class="act_as_cell"><span t-esc="emp['name']" /></div>
+											 </t>
+										 </div>
+										 <div class="act_as_row">
+											 <div class="act_as_cell line_cell">MATRICULE</div>
+											 <t t-foreach="page" t-as="emp">
+												 <div class="act_as_cell amount"><span t-esc="emp['identification_id']" /></div>
+											 </t>
+										 </div>
+										 <t t-foreach="data['codes']" t-as="code">
+											 <div class="act_as_row">
+												 <t t-if="code in ('BRUT', 'RET', 'BRUT_TOTAL', 'TINDNIMP', 'CHPAT','CTOTAL', 'NET', 'O_TOTALS')">
+													 <div class="act_as_cell act_as_back">
+														 <span t-esc="data['rules'][code]" />
+													 </div>
+													 <t t-foreach="page" t-as="emp">
+														 <div class="act_as_cell act_as_back amount">
+															 <span t-esc="emp[code]" />
+														 </div>
+													 </t>
+												 </t>
+												 <t t-if="code not in ('BRUT', 'RET', 'BRUT_TOTAL', 'TINDNIMP', 'CHPAT','CTOTAL', 'NET', 'O_TOTALS')">
+													 <div class="act_as_cell line_cell">
+														 <span t-esc="data['rules'][code]" />
+													 </div>
+													 <t t-foreach="page" t-as="emp">
+														 <div class="act_as_cell amount">
+															 <span t-esc="emp[code]" />
+														 </div>
+													 </t>
+												 </t>
+										 	</div>
+										 </t>
+									 </div>
+									 <p style="page-break-before:always;"> </p>
+							 	</t>
+								<div class="act_as_table data_table" >
+									<div class="act_as_row labels">
+										<div class="act_as_cell act_as_libelle">RUBRIQUES</div>
+										<div class="act_as_cell act_as_libelle">TOTAL</div>
+									</div>
+									<t t-foreach="data['codes']" t-as="code">
+										 <div class="act_as_row">
+											 <t t-if="code in ('BRUT', 'RET', 'BRUT_TOTAL', 'TINDNIMP', 'CHPAT','CTOTAL', 'NET', 'O_TOTALS')">
+												 <div class="act_as_cell act_as_back text-start">
+													 <t t-if="code == 'BRUT'">
+														 BRUT IMPOSABLE
+													 </t>
+													 <t t-if="code == 'RET'">
+														 RETENUES EMPLOYÉS
+													 </t>
+													 <t t-if="code == 'O_TOTALS'">
+														 AUTRES RETENUES
+													 </t>
+													  <t t-if="code == 'BRUT_TOTAL'">
+														 SALAIRE BRUT
+													 </t>
+													 <t t-if="code == 'TINDNIMP'">
+														 INDEMNITE NON IMPOSABLE
+													 </t>
+													 <t t-if="code == 'CHPAT'">
+														 CHARGES PATRONALES
+													 </t>
+													 <t t-if="code == 'NET'">
+														 NET A PAYER
+													 </t>
+												 </div>
+												 <div class="act_as_cell act_as_back amount">
+													 <span t-esc="data['total'][code]" />
+												 </div>
+											 </t>
+											 <t t-if="code not in ('BRUT', 'RET', 'BRUT_TOTAL', 'TINDNIMP', 'CHPAT','CTOTAL', 'NET', 'O_TOTALS')">
+												 <div class="act_as_cell line_cell">
+													 <span t-esc="data['rules'][code]" />
+												 </div>
+												 <div class="act_as_cell amount">
+													 <span t-esc="data['total'][code]" />
+												 </div>
+											 </t>
+										</div>
+									 </t>
+								</div>
+							 </div>
+						</div>
+					 </div>
+				</t>
+			</t>
+		</template>
+	</data>
+</odoo>

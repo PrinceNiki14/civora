@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_gestion.Owner360">
+    <div class="civora-o360">
+
+        <div t-if="state.loading" class="civora-o360-state">
+            <i class="fa fa-circle-o-notch fa-spin"/> Chargement…
+        </div>
+
+        <div t-elif="state.error" class="civora-o360-state">
+            <i class="fa fa-exclamation-triangle"/> <span t-esc="state.error"/>
+            <button class="civora-btn civora-btn-outline" t-on-click="() => this.goBack()">
+                <i class="fa fa-arrow-left"/> Propriétaires
+            </button>
+        </div>
+
+        <t t-else="">
+            <div class="civora-o360-topbar">
+                <button class="civora-o360-back" t-on-click="() => this.goBack()">
+                    <i class="fa fa-arrow-left"/> Propriétaires
+                </button>
+                <button class="civora-btn civora-btn-outline" t-on-click="() => this.openContact()">
+                    <i class="fa fa-address-card-o"/> Fiche contact
+                </button>
+            </div>
+
+            <!-- En-tete -->
+            <div class="civora-o360-header">
+                <CivoraAvatar name="owner.name" size="'xl'"/>
+                <div class="civora-o360-id">
+                    <div class="civora-o360-name" t-esc="owner.name"/>
+                    <div class="civora-o360-sub" t-esc="subtitle"/>
+                    <div class="civora-o360-tags">
+                        <CivoraBadge t-if="state.segment" label="state.segment" variant="'neutral'"/>
+                        <span t-if="owner.city" class="civora-o360-loc"><i class="fa fa-map-marker"/> <t t-esc="owner.city"/></span>
+                        <span t-if="owner.civora_ai_score" class="civora-o360-score"><i class="fa fa-star"/> <t t-esc="owner.civora_ai_score"/></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KPIs -->
+            <div class="civora-o360-kpis">
+                <CivoraStatCard label="'Patrimoine géré'" value="kpiMoney(state.stats.value)" icon="'fa fa-building'"/>
+                <CivoraStatCard label="'Revenu mensuel'" value="kpiMoney(state.stats.mrr)" icon="'fa fa-money'"/>
+                <CivoraStatCard label="'Rentabilité'" value="yieldLabel()" icon="'fa fa-percent'"/>
+                <CivoraStatCard label="'Occupation'" value="state.stats.occupancy + ' %'" icon="'fa fa-line-chart'"/>
+            </div>
+
+            <!-- Onglets -->
+            <div class="civora-o360-tabbar">
+                <button t-foreach="tabList" t-as="t" t-key="t.id"
+                        t-att-class="'civora-o360-tab' + (state.activeTab === t.id ? ' is-active' : '')"
+                        t-on-click="() => this.setTab(t.id)">
+                    <t t-esc="t.label"/>
+                    <span t-if="t.count" class="civora-o360-tabcount" t-esc="t.count + ''"/>
+                </button>
+            </div>
+
+            <!-- ===== VUE D'ENSEMBLE ===== -->
+            <div t-if="state.activeTab === 'overview'" class="civora-o360-grid">
+                <div class="civora-o360-card">
+                    <div class="civora-o360-card-h">Coordonnées</div>
+                    <div class="civora-o360-kv"><span>Email</span><b t-esc="orDash(owner.email)"/></div>
+                    <div class="civora-o360-kv"><span>Téléphone</span><b t-esc="orDash(owner.phone)"/></div>
+                    <div class="civora-o360-kv"><span>WhatsApp</span><b t-esc="orDash(owner.civora_whatsapp)"/></div>
+                    <div class="civora-o360-kv"><span>Ville</span><b t-esc="orDash(owner.city)"/></div>
+                </div>
+                <div class="civora-o360-card">
+                    <div class="civora-o360-card-h">Synthèse patrimoine</div>
+                    <div class="civora-o360-kv"><span>Biens en mandat</span><b t-esc="state.stats.count"/></div>
+                    <div class="civora-o360-kv"><span>Loués</span><b t-esc="state.stats.loue"/></div>
+                    <div class="civora-o360-kv"><span>Saisonniers</span><b t-esc="state.stats.saisonnier"/></div>
+                    <div class="civora-o360-kv"><span>Disponibles</span><b t-esc="state.stats.dispo"/></div>
+                    <div class="civora-o360-kv"><span>Valeur estimée</span><b t-esc="kpiMoney(state.stats.value)"/></div>
+                </div>
+            </div>
+
+            <!-- ===== BIENS EN MANDAT ===== -->
+            <t t-elif="state.activeTab === 'biens'">
+                <div class="civora-o360-kpis civora-o360-kpis-sub">
+                    <CivoraStatCard label="'Biens en mandat'" value="state.stats.count + ''" icon="'fa fa-building'"/>
+                    <CivoraStatCard label="'Loués'" value="state.stats.loue + ''" icon="'fa fa-key'"/>
+                    <CivoraStatCard label="'Saisonniers'" value="state.stats.saisonnier + ''" icon="'fa fa-calendar'"/>
+                    <CivoraStatCard label="'Valeur estimée'" value="kpiMoney(state.stats.value)" icon="'fa fa-money'"/>
+                </div>
+
+                <div t-if="!state.biens.length" class="civora-o360-soon">
+                    <div class="civora-o360-soon-ico"><i class="fa fa-building-o"/></div>
+                    <div class="civora-o360-soon-t">Aucun bien</div>
+                    <p>Ce propriétaire n'a aucun bien rattaché.</p>
+                </div>
+
+                <div t-else="" class="civora-o360-biens">
+                    <div t-foreach="state.biens" t-as="b" t-key="b.id"
+                         class="civora-o360-bien" t-on-click="() => this.openProperty(b)">
+                        <div class="civora-o360-bien-thumb"
+                             t-att-class="b.image_128 ? 'civora-o360-bien-thumb has-photo' : 'civora-o360-bien-thumb'"
+                             t-attf-style="{{ b.image_128 ? 'background-image:url(/web/image/civora.property/' + b.id + '/image_128)' : '' }}">
+                            <i t-if="!b.image_128" class="fa fa-building"/>
+                        </div>
+                        <div class="civora-o360-bien-b">
+                            <div class="civora-o360-bien-n">
+                                <span t-esc="b.name"/>
+                                <CivoraBadge label="statusMeta(b).label" variant="statusMeta(b).variant"/>
+                            </div>
+                            <div class="civora-o360-bien-m">
+                                <span class="civora-o360-bien-type" t-esc="typeLabel(b)"/>
+                                <span><i class="fa fa-map-marker"/> <t t-esc="locLabel(b)"/></span>
+                            </div>
+                        </div>
+                        <div class="civora-o360-bien-fin">
+                            <div class="civora-o360-bien-val"><t t-esc="fmtMoney(b.price)"/> FCFA</div>
+                            <div t-if="b.monthly_revenue" class="civora-o360-bien-rent"><t t-esc="fmtMoney(b.monthly_revenue)"/> /mois</div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+
+            <!-- ===== REVERSEMENTS (a venir) ===== -->
+            <div t-elif="state.activeTab === 'finance'" class="civora-o360-soon">
+                <div class="civora-o360-soon-ico"><i class="fa fa-money"/></div>
+                <div class="civora-o360-soon-t">Reversements</div>
+                <p>Revenu perçu, commissions d'agence, charges et versements au propriétaire — disponibles avec le module de comptabilité (OHADA/SYSCOHADA).</p>
+            </div>
+
+            <!-- ===== DOCUMENTS (a venir) ===== -->
+            <div t-else="" class="civora-o360-soon">
+                <div class="civora-o360-soon-ico"><i class="fa fa-folder-open-o"/></div>
+                <div class="civora-o360-soon-t">Documents</div>
+                <p>Mandats de gestion, pièces d'identité, RIB, reportings et documents fiscaux — à venir avec la gestion documentaire.</p>
+            </div>
+        </t>
+
+    </div>
+</t>
+
+</templates>

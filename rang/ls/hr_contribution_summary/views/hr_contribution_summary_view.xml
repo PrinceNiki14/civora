@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="hr_contribution_summary_view" model="ir.ui.view">
+            <field name="name">hr.contribution.company.form</field>
+            <field name="model">hr.contribution.company</field>
+            <field name="arch" type="xml">
+                <form string="Résumé des cotisations">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name" />
+                                <field name="type" />
+                                <field name="plafond" />
+                                <field name="company_id" />
+                            </group>
+                            <group>
+                                <field name="employee_rule_ids" widget="many2many_tags" />
+                                <field name="employer_rule_ids" widget="many2many_tags" />
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="hr_contribution_summary_tree_view" model="ir.ui.view">
+            <field name="name">hr.contribution.company.tree</field>
+            <field name="model">hr.contribution.company</field>
+            <field name="arch" type="xml">
+                <tree string="Résumé des cotisations">
+                    <field name="name" />
+                    <field name="type" />
+                    <field name="plafond" />
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_hr_contribution_summary_tree_view" model="ir.actions.act_window">
+            <field name="name">Résumé des cotisations</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">hr.contribution.company</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <!-- Menu principal sans parent - sera dans le menu Apps -->
+        <menuitem id="menu_hr_contribution_summary_root" 
+                  name="Contribution Summary" 
+                  sequence="100"/>
+        
+        <!-- Sous-menu Configuration -->
+        <menuitem id="menu_hr_contribution_summary_id" 
+                  action="action_hr_contribution_summary_tree_view" 
+                  parent="menu_hr_contribution_summary_root" 
+                  sequence="1"/>
+    </data>
+</odoo>

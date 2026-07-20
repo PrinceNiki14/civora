@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        <report
+            string="Livre de paie"
+            id="report_hr_payroll_wizard"
+            model="hr.payroll.book.wizard"
+            report_type="qweb-pdf"
+            name="hr_payroll_book.report_payroll_wizard"
+            file="hr_payroll_book.report_payroll_wizard"
+            print_report_name="('Livre de paie')"
+        />
+
+        <report
+            id="report_hr_payroll_book_wizard_xlx"
+            model="hr.payroll.book.wizard"
+            string="Livre de paie Excell"
+            report_type="xlsx"
+            name="hr_payroll_book.report_payroll_wizard_xlsx"
+            file="report_payroll_wizard_xlsx"
+            attachment_use="False"
+        />
+
+        <report
+            id="report_cmu_xlsx_id"
+            model="hr.cmu.wizard"
+            string="Rapport cotisation CMU"
+            report_type="xlsx"
+            name="hr_payroll_book.report_cmu_xlsx"
+            file="Rapport CMU"
+            attachment_use="False"
+        />
+
+    </data>
+
+</odoo>

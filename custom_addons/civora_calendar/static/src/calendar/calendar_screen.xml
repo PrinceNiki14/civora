@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_calendar.Calendar">
+    <div class="civora-cal">
+
+        <div class="civora-cal-head">
+            <div>
+                <div class="civora-cal-title">Calendrier</div>
+                <div class="civora-cal-sub">Visites, RDV, signatures, relances — vue partagée, reliée au pipeline &amp; aux pistes</div>
+            </div>
+            <button class="civora-btn civora-btn-accent" t-on-click="() => this.openCreate(false)">
+                <i class="fa fa-plus"/> Nouvel événement
+            </button>
+        </div>
+
+        <div class="civora-cal-kpis">
+            <CivoraStatCard label="'Évènements'" value="stats.total + ''" icon="'fa fa-calendar'"/>
+            <CivoraStatCard label="'Visites'" value="stats.visites + ''" icon="'fa fa-building'"/>
+            <CivoraStatCard label="'Signatures'" value="stats.signatures + ''" icon="'fa fa-pencil-square-o'"/>
+            <CivoraStatCard label="'Relances'" value="stats.relances + ''" icon="'fa fa-phone'"/>
+            <CivoraStatCard label="'À confirmer'" value="stats.aConfirmer + ''" icon="'fa fa-exclamation-circle'"/>
+        </div>
+
+        <div class="civora-cal-toolbar">
+            <div class="civora-cal-views">
+                <button t-att-class="'civora-cal-vbtn' + (state.view === 'mois' ? ' is-active' : '')" t-on-click="() => this.setView('mois')">Mois</button>
+                <button t-att-class="'civora-cal-vbtn' + (state.view === 'semaine' ? ' is-active' : '')" t-on-click="() => this.setView('semaine')">Semaine</button>
+                <button t-att-class="'civora-cal-vbtn' + (state.view === 'jour' ? ' is-active' : '')" t-on-click="() => this.setView('jour')">Jour</button>
+                <button t-att-class="'civora-cal-vbtn' + (state.view === 'planning' ? ' is-active' : '')" t-on-click="() => this.setView('planning')">Planning</button>
+                <button t-att-class="'civora-cal-vbtn' + (state.view === 'ressources' ? ' is-active' : '')" t-on-click="() => this.setView('ressources')">Biens</button>
+                <button t-att-class="'civora-cal-vbtn' + (state.view === 'liste' ? ' is-active' : '')" t-on-click="() => this.setView('liste')">Liste</button>
+            </div>
+            <div class="civora-cal-nav">
+                <button class="civora-cal-navbtn" t-on-click="() => this.prev()"><i class="fa fa-chevron-left"/></button>
+                <button class="civora-cal-today" t-on-click="() => this.today()">Aujourd'hui</button>
+                <button class="civora-cal-navbtn" t-on-click="() => this.next()"><i class="fa fa-chevron-right"/></button>
+                <span class="civora-cal-period" t-esc="periodLabel"/>
+            </div>
+        </div>
+
+        <div class="civora-cal-filters">
+            <button t-foreach="typeList" t-as="t" t-key="t.id"
+                    t-att-class="'civora-cal-fchip' + (typeActive(t.id) ? ' is-on' : '')"
+                    t-on-click="() => this.toggleType(t.id)">
+                <span class="civora-cal-fdot" t-attf-style="background:{{ t.color }}"/>
+                <t t-esc="t.label"/>
+            </button>
+        </div>
+
+        <div t-if="insight" t-att-class="'civora-cal-insight ' + (insight.tone === 'warn' ? 'is-warn' : 'is-tip')">
+            <i t-att-class="insight.tone === 'warn' ? 'fa fa-exclamation-triangle' : 'fa fa-magic'"/>
+            <div>
+                <div class="civora-cal-insight-t" t-esc="insight.title"/>
+                <div class="civora-cal-insight-b" t-esc="insight.body"/>
+            </div>
+        </div>
+
+        <div t-if="state.loading" class="civora-cal-state"><i class="fa fa-circle-o-notch fa-spin"/> Chargement…</div>
+
+        <!-- ===== MOIS ===== -->
+        <div t-elif="state.view === 'mois'" class="civora-cal-month">
+            <div class="civora-cal-dow">
+                <div t-foreach="dowHeaders" t-as="d" t-key="d" class="civora-cal-dowh" t-esc="d"/>
+            </div>
+            <div class="civora-cal-grid">
+                <t t-foreach="monthWeeks" t-as="week" t-key="week_index">
+                    <div t-foreach="week" t-as="day" t-key="day.key"
+                         t-att-class="'civora-cal-cell' + (day.inMonth ? '' : ' is-out') + (day.today ? ' is-today' : '')"
+                         t-on-click="() => this.openCreate(day.key)">
+                        <div class="civora-cal-cellnum" t-esc="day.num"/>
+                        <div class="civora-cal-cellevents">
+                            <div t-foreach="day.events.slice(0, 3)" t-as="e" t-key="e.id"
+                                 class="civora-cal-chip" t-attf-style="border-left-color:{{ typeMeta(e).color }}"
+                                 t-on-click.stop="() => this.openEvent(e)">
+                                <span class="civora-cal-chip-t" t-esc="timeLabel(e)"/>
+                                <span class="civora-cal-chip-n" t-esc="e.name"/>
+                            </div>
+                            <div t-if="day.events.length > 3" class="civora-cal-more" t-esc="'+' + (day.events.length - 3) + ' autres'"/>
+                        </div>
+                    </div>
+                </t>
+            </div>
+        </div>
+
+        <!-- ===== SEMAINE (grille horaire) ===== -->
+        <div t-elif="state.view === 'semaine'" class="civora-cal-hgrid">
+            <div class="civora-cal-hg-head">
+                <div class="civora-cal-hg-gutter"></div>
+                <div t-foreach="weekDays" t-as="day" t-key="day.key" t-att-class="'civora-cal-hg-daycol' + (day.today ? ' is-today' : '')">
+                    <span class="civora-cal-hg-dow" t-esc="day.dow"/>
+                    <span class="civora-cal-hg-num" t-esc="day.num"/>
+                    <div t-if="alldayOn(day.key).length" class="civora-cal-hg-allday">
+                        <div t-foreach="alldayOn(day.key)" t-as="e" t-key="e.id" class="civora-cal-hg-adchip"
+                             t-attf-style="border-left-color:{{ typeMeta(e).color }}" t-on-click="() => this.openEvent(e)" t-esc="e.name"/>
+                    </div>
+                </div>
+            </div>
+            <div class="civora-cal-hg-body">
+                <div class="civora-cal-hg-gutter">
+                    <div t-foreach="hours" t-as="h" t-key="h" class="civora-cal-hg-hour" t-esc="hourLabel(h)"/>
+                </div>
+                <div t-foreach="weekDays" t-as="day" t-key="day.key" class="civora-cal-hg-col" t-attf-style="height:{{ gridHeight }}px">
+                    <div t-foreach="hours" t-as="h" t-key="h" class="civora-cal-hg-slot" t-on-click="() => this.openCreateAt(day.key, h)"/>
+                    <div t-foreach="gridEventsOn(day.key)" t-as="e" t-key="e.id"
+                         t-att-class="'civora-cal-hg-ev' + (isConflict(e) ? ' is-conflict' : '')"
+                         t-attf-style="top:{{ eventTop(e) }}px;height:{{ eventHeight(e) }}px;border-left-color:{{ typeMeta(e).color }}"
+                         t-on-click="() => this.openEvent(e)">
+                        <div class="civora-cal-hg-ev-h">
+                            <span class="civora-cal-hg-ev-t" t-esc="timeLabel(e)"/>
+                            <i t-if="isConflict(e)" class="fa fa-exclamation-circle civora-cal-hg-warn"/>
+                        </div>
+                        <div class="civora-cal-hg-ev-n" t-esc="e.name"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== JOUR (grille horaire) ===== -->
+        <div t-elif="state.view === 'jour'" class="civora-cal-hgrid civora-cal-hgrid-day">
+            <div class="civora-cal-hg-head">
+                <div class="civora-cal-hg-gutter"></div>
+                <div class="civora-cal-hg-daycol is-today">
+                    <span class="civora-cal-hg-daylabel" t-esc="dayDate"/>
+                    <div t-if="alldayOn(state.anchorKey).length" class="civora-cal-hg-allday">
+                        <div t-foreach="alldayOn(state.anchorKey)" t-as="e" t-key="e.id" class="civora-cal-hg-adchip"
+                             t-attf-style="border-left-color:{{ typeMeta(e).color }}" t-on-click="() => this.openEvent(e)" t-esc="e.name"/>
+                    </div>
+                </div>
+            </div>
+            <div class="civora-cal-hg-body">
+                <div class="civora-cal-hg-gutter">
+                    <div t-foreach="hours" t-as="h" t-key="h" class="civora-cal-hg-hour" t-esc="hourLabel(h)"/>
+                </div>
+                <div class="civora-cal-hg-col civora-cal-hg-col-day" t-attf-style="height:{{ gridHeight }}px">
+                    <div t-foreach="hours" t-as="h" t-key="h" class="civora-cal-hg-slot" t-on-click="() => this.openCreateAt(state.anchorKey, h)"/>
+                    <div t-foreach="gridEventsOn(state.anchorKey)" t-as="e" t-key="e.id"
+                         t-att-class="'civora-cal-hg-ev civora-cal-hg-ev-lg' + (isConflict(e) ? ' is-conflict' : '')"
+                         t-attf-style="top:{{ eventTop(e) }}px;height:{{ eventHeight(e) }}px;border-left-color:{{ typeMeta(e).color }}"
+                         t-on-click="() => this.openEvent(e)">
+                        <div class="civora-cal-hg-ev-h">
+                            <span class="civora-cal-hg-ev-t" t-esc="timeLabel(e)"/>
+                            <span class="civora-cal-hg-ev-badge" t-esc="typeMeta(e).label"/>
+                            <i t-if="isConflict(e)" class="fa fa-exclamation-circle civora-cal-hg-warn"/>
+                        </div>
+                        <div class="civora-cal-hg-ev-n" t-esc="e.name"/>
+                        <div t-if="subLabel(e)" class="civora-cal-hg-ev-s" t-esc="subLabel(e)"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== PLANNING ÉQUIPE (agents x jours) ===== -->
+        <div t-elif="state.view === 'planning'" class="civora-cal-plan">
+            <div class="civora-cal-plan-grid">
+                <div class="civora-cal-plan-head">
+                    <div class="civora-cal-plan-corner">Équipe</div>
+                    <div t-foreach="weekDays" t-as="day" t-key="day.key" t-att-class="'civora-cal-plan-dh' + (day.today ? ' is-today' : '')">
+                        <span t-esc="day.dow"/> <b t-esc="day.num"/>
+                    </div>
+                </div>
+                <div t-if="!planningRows.length" class="civora-cal-plan-empty">Aucun agent trouvé.</div>
+                <div t-foreach="planningRows" t-as="row" t-key="row.agent.id" class="civora-cal-plan-row">
+                    <div class="civora-cal-plan-agent">
+                        <span class="civora-cal-plan-avatar" t-attf-style="background:{{ row.agent.color }}" t-esc="row.agent.name.slice(0,1)"/>
+                        <div class="civora-cal-plan-ag-b">
+                            <div class="civora-cal-plan-ag-n" t-esc="row.agent.name"/>
+                            <div class="civora-cal-plan-ag-l" t-esc="row.load + ' év.'"/>
+                        </div>
+                    </div>
+                    <div t-foreach="row.days" t-as="d" t-key="d.key" class="civora-cal-plan-cell" t-on-click="() => this.planCreate(d.key, row.agent.id)">
+                        <div t-foreach="d.events" t-as="e" t-key="e.id" class="civora-cal-plan-chip"
+                             t-attf-style="border-left-color:{{ typeMeta(e).color }}" t-on-click.stop="() => this.openEvent(e)">
+                            <span class="civora-cal-plan-chip-t" t-esc="timeLabel(e)"/>
+                            <span class="civora-cal-plan-chip-n" t-esc="e.name"/>
+                        </div>
+                        <span t-if="!d.events.length" class="civora-cal-plan-add">+</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== RESSOURCES / BIENS (biens x jours) ===== -->
+        <div t-elif="state.view === 'ressources'" class="civora-cal-plan">
+            <div t-if="!ressourceRows.length" class="civora-cal-empty">
+                <i class="fa fa-building"/>
+                <div class="civora-cal-empty-t">Aucun bien planifié cette semaine</div>
+                <p>Les biens apparaissent ici dès qu'un événement leur est rattaché.</p>
+            </div>
+            <div t-else="" class="civora-cal-plan-grid">
+                <div class="civora-cal-plan-head">
+                    <div class="civora-cal-plan-corner">Biens</div>
+                    <div t-foreach="weekDays" t-as="day" t-key="day.key" t-att-class="'civora-cal-plan-dh' + (day.today ? ' is-today' : '')">
+                        <span t-esc="day.dow"/> <b t-esc="day.num"/>
+                    </div>
+                </div>
+                <div t-foreach="ressourceRows" t-as="row" t-key="row.id" class="civora-cal-plan-row">
+                    <div class="civora-cal-plan-agent">
+                        <span class="civora-cal-plan-bico"><i class="fa fa-building"/></span>
+                        <div class="civora-cal-plan-ag-b">
+                            <div class="civora-cal-plan-ag-n" t-esc="row.name"/>
+                        </div>
+                    </div>
+                    <div t-foreach="row.days" t-as="d" t-key="d.key" class="civora-cal-plan-cell" t-on-click="() => this.resCreate(d.key, row.id)">
+                        <div t-foreach="d.events" t-as="e" t-key="e.id" class="civora-cal-plan-chip"
+                             t-attf-style="border-left-color:{{ typeMeta(e).color }}" t-on-click.stop="() => this.openEvent(e)">
+                            <span class="civora-cal-plan-chip-t" t-esc="timeLabel(e)"/>
+                            <span class="civora-cal-plan-chip-n" t-esc="e.name"/>
+                        </div>
+                        <span t-if="!d.events.length" class="civora-cal-plan-add">+</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== LISTE ===== -->
+        <div t-else="" class="civora-cal-listwrap">
+            <div t-if="!listEvents.length" class="civora-cal-empty">
+                <i class="fa fa-calendar-o"/>
+                <div class="civora-cal-empty-t">Aucun événement</div>
+                <p>Planifiez une visite, un RDV ou une signature.</p>
+            </div>
+            <div t-else="" class="civora-cal-list">
+                <div t-foreach="listEvents" t-as="e" t-key="e.id" class="civora-cal-lrow" t-on-click="() => this.openEvent(e)">
+                    <div class="civora-cal-ldate">
+                        <span class="civora-cal-ldot" t-attf-style="background:{{ typeMeta(e).color }}"/>
+                        <span class="civora-cal-ltime" t-esc="(e.start or '').slice(8,10) + '/' + (e.start or '').slice(5,7)"/>
+                        <span class="civora-cal-lhm" t-esc="timeLabel(e)"/>
+                    </div>
+                    <div class="civora-cal-lmain">
+                        <div class="civora-cal-ln" t-esc="e.name"/>
+                        <div class="civora-cal-ls"><t t-esc="typeMeta(e).label"/><t t-if="subLabel(e)"> · <t t-esc="subLabel(e)"/></t></div>
+                    </div>
+                    <div class="civora-cal-lright">
+                        <span class="civora-cal-lstatus" t-esc="statusLabel(e)"/>
+                        <span t-if="agentLabel(e)" class="civora-cal-lagent"><i class="fa fa-user-o"/> <t t-esc="agentLabel(e)"/></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <EventDrawer t-if="state.drawer.open" eventId="state.drawer.eventId"
+                     defaultDate="state.drawer.defaultDate" defaultStart="state.drawer.defaultStart"
+                     prefill="state.drawer.prefill" onClose="(saved) => this.closeDrawer(saved)"/>
+    </div>
+</t>
+
+</templates>

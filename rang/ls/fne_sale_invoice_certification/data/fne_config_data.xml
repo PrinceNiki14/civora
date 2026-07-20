@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Paramètres de configuration par défaut -->
+        <record id="fne_default_base_url" model="ir.config_parameter">
+            <field name="key">fne.base_url</field>
+            <field name="value">http://54.247.95.108/ws</field>
+        </record>
+
+        <!-- Éviter la duplication - utiliser forcecreate="0" -->
+        <function model="ir.config_parameter" name="set_param">
+            <value>fne.default_template</value>
+            <value>B2C</value>
+        </function>
+
+        <!-- Séquence pour les références FNE (optionnel) -->
+        <record id="seq_fne_reference" model="ir.sequence">
+            <field name="name">Référence FNE</field>
+            <field name="code">fne.reference</field>
+            <field name="prefix">FNE</field>
+            <field name="padding">8</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+    </data>
+</odoo>

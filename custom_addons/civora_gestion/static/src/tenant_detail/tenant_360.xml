@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_gestion.Tenant360">
+    <div class="civora-o360">
+
+        <div t-if="state.loading" class="civora-o360-state">
+            <i class="fa fa-circle-o-notch fa-spin"/> Chargement…
+        </div>
+
+        <div t-elif="state.error" class="civora-o360-state">
+            <i class="fa fa-exclamation-triangle"/> <span t-esc="state.error"/>
+            <button class="civora-btn civora-btn-outline" t-on-click="() => this.goBack()">
+                <i class="fa fa-arrow-left"/> Locataires
+            </button>
+        </div>
+
+        <t t-else="">
+            <div class="civora-o360-topbar">
+                <button class="civora-o360-back" t-on-click="() => this.goBack()">
+                    <i class="fa fa-arrow-left"/> Locataires
+                </button>
+                <button class="civora-btn civora-btn-outline" t-on-click="() => this.openContact()">
+                    <i class="fa fa-address-card-o"/> Fiche contact
+                </button>
+            </div>
+
+            <div class="civora-o360-header">
+                <CivoraAvatar name="tenant.name" size="'xl'"/>
+                <div class="civora-o360-id">
+                    <div class="civora-o360-name" t-esc="tenant.name"/>
+                    <div class="civora-o360-sub" t-esc="subtitle"/>
+                    <div class="civora-o360-tags">
+                        <CivoraBadge t-if="state.segment" label="state.segment" variant="'neutral'"/>
+                        <span t-if="tenant.city" class="civora-o360-loc"><i class="fa fa-map-marker"/> <t t-esc="tenant.city"/></span>
+                        <span t-if="tenant.civora_ai_score" class="civora-o360-score"><i class="fa fa-star"/> <t t-esc="tenant.civora_ai_score"/></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="civora-o360-kpis">
+                <CivoraStatCard label="'Loyer mensuel'" value="kpiMoney(state.stats.mrr)" icon="'fa fa-money'"/>
+                <CivoraStatCard label="'Biens loués'" value="state.stats.count + ''" icon="'fa fa-key'"/>
+                <CivoraStatCard label="'Statut'" value="'Actif'" icon="'fa fa-check-circle'"/>
+                <CivoraStatCard label="'Solde'" value="'—'" icon="'fa fa-balance-scale'"/>
+            </div>
+
+            <div class="civora-o360-tabbar">
+                <button t-foreach="tabList" t-as="t" t-key="t.id"
+                        t-att-class="'civora-o360-tab' + (state.activeTab === t.id ? ' is-active' : '')"
+                        t-on-click="() => this.setTab(t.id)">
+                    <t t-esc="t.label"/>
+                    <span t-if="t.count" class="civora-o360-tabcount" t-esc="t.count + ''"/>
+                </button>
+            </div>
+
+            <!-- ===== VUE D'ENSEMBLE ===== -->
+            <div t-if="state.activeTab === 'overview'" class="civora-o360-grid">
+                <div class="civora-o360-card">
+                    <div class="civora-o360-card-h">Coordonnées</div>
+                    <div class="civora-o360-kv"><span>Type</span><b t-esc="tenantType"/></div>
+                    <div class="civora-o360-kv"><span>Email</span><b t-esc="orDash(tenant.email)"/></div>
+                    <div class="civora-o360-kv"><span>Téléphone</span><b t-esc="orDash(tenant.phone)"/></div>
+                    <div class="civora-o360-kv"><span>WhatsApp</span><b t-esc="orDash(tenant.civora_whatsapp)"/></div>
+                    <div class="civora-o360-kv"><span>Ville</span><b t-esc="orDash(tenant.city)"/></div>
+                </div>
+                <div class="civora-o360-card">
+                    <div class="civora-o360-card-h">Location en cours</div>
+                    <div class="civora-o360-kv"><span>Biens loués</span><b t-esc="state.stats.count"/></div>
+                    <div class="civora-o360-kv"><span>Loyer mensuel total</span><b t-esc="kpiMoney(state.stats.mrr)"/></div>
+                    <div class="civora-o360-kv"><span>Caution</span><b class="civora-o360-muted">— (module Locations)</b></div>
+                    <div class="civora-o360-kv"><span>Fin de bail</span><b class="civora-o360-muted">— (module Locations)</b></div>
+                </div>
+            </div>
+
+            <!-- ===== BIENS LOUES ===== -->
+            <t t-elif="state.activeTab === 'biens'">
+                <div t-if="!state.biens.length" class="civora-o360-soon">
+                    <div class="civora-o360-soon-ico"><i class="fa fa-building-o"/></div>
+                    <div class="civora-o360-soon-t">Aucun bien loué</div>
+                    <p>Ce locataire n'occupe aucun bien enregistré.</p>
+                </div>
+                <div t-else="" class="civora-o360-biens">
+                    <div t-foreach="state.biens" t-as="b" t-key="b.id"
+                         class="civora-o360-bien" t-on-click="() => this.openProperty(b)">
+                        <div class="civora-o360-bien-thumb"
+                             t-att-class="b.image_128 ? 'civora-o360-bien-thumb has-photo' : 'civora-o360-bien-thumb'"
+                             t-attf-style="{{ b.image_128 ? 'background-image:url(/web/image/civora.property/' + b.id + '/image_128)' : '' }}">
+                            <i t-if="!b.image_128" class="fa fa-building"/>
+                        </div>
+                        <div class="civora-o360-bien-b">
+                            <div class="civora-o360-bien-n">
+                                <span t-esc="b.name"/>
+                                <CivoraBadge label="statusMeta(b).label" variant="statusMeta(b).variant"/>
+                            </div>
+                            <div class="civora-o360-bien-m">
+                                <span class="civora-o360-bien-type" t-esc="typeLabel(b)"/>
+                                <span><i class="fa fa-map-marker"/> <t t-esc="locLabel(b)"/></span>
+                                <span><i class="fa fa-user-o"/> <t t-esc="ownerLabel(b)"/></span>
+                            </div>
+                        </div>
+                        <div class="civora-o360-bien-fin">
+                            <div t-if="b.monthly_revenue" class="civora-o360-bien-val"><t t-esc="fmtMoney(b.monthly_revenue)"/> FCFA</div>
+                            <div class="civora-o360-bien-rent">/mois</div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+
+            <!-- ===== BAIL (a venir) ===== -->
+            <t t-elif="state.activeTab === 'lease'">
+                <div t-if="!state.leases.length" class="civora-o360-soon">
+                    <div class="civora-o360-soon-ico"><i class="fa fa-file-text-o"/></div>
+                    <div class="civora-o360-soon-t">Aucun bail</div>
+                    <p>Ce locataire n'a pas encore de bail rattaché. Créez-en un depuis l'écran Locations.</p>
+                </div>
+                <div t-else="" class="civora-o360-biens">
+                    <div t-foreach="state.leases" t-as="l" t-key="l.id"
+                         class="civora-o360-bien" t-on-click="() => this.openLease(l)">
+                        <div class="civora-o360-bien-thumb"><i class="fa fa-key"/></div>
+                        <div class="civora-o360-bien-b">
+                            <div class="civora-o360-bien-n">
+                                <span t-esc="l.property_id ? l.property_id[1] : '—'"/>
+                                <CivoraBadge label="leaseStatusMeta(l).label" variant="leaseStatusMeta(l).variant"/>
+                            </div>
+                            <div class="civora-o360-bien-m">
+                                <span class="civora-o360-bien-type" t-esc="l.name"/>
+                                <span><i class="fa fa-calendar"/> <t t-esc="fmtDate(l.date_start)"/> — <t t-esc="fmtDate(l.date_end)"/></span>
+                            </div>
+                        </div>
+                        <div class="civora-o360-bien-fin">
+                            <div class="civora-o360-bien-val"><t t-esc="fmtMoney(l.total_monthly)"/> FCFA</div>
+                            <div class="civora-o360-bien-rent"><t t-esc="l.payment_rate || 0"/> % encaissé</div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+
+            <!-- ===== PAIEMENTS (a venir) ===== -->
+            <div t-else="" class="civora-o360-soon">
+                <div class="civora-o360-soon-ico"><i class="fa fa-money"/></div>
+                <div class="civora-o360-soon-t">Paiements</div>
+                <p>Quittances, historique des loyers et suivi des impayés — à venir avec le module de comptabilité.</p>
+            </div>
+        </t>
+
+    </div>
+</t>
+
+</templates>

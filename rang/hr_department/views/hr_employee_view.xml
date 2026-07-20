@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+		<!-- gestion des employés -->
+		<record model="ir.ui.view" id="hr_employee_inh_form_view">
+			<field name="name">hr.employee.form</field>
+			<field name="model">hr.employee</field>
+			<field name="type">form</field>
+			<field name="inherit_id" ref="hr.view_employee_form"/>
+			<field name="arch" type="xml">
+				<xpath expr="//field[@name='department_id']" position="replace">
+					<field name="direction_generale_id" string="Direction Générale"/>
+					<field name="direction_id" string="Direction"/>
+					<field name="department_id" string="Département"/>
+					<field name="service_id" string="Service"/>
+					<field name="cellule_id" string="Cellule"/>
+				</xpath>
+			</field>
+		</record>
+    </data>
+</odoo>

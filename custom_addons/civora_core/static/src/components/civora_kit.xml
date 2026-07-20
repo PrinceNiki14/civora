@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_core.Badge">
+    <span class="civora-badge2" t-attf-class="civora-badge-{{variant}}">
+        <t t-if="props.label" t-esc="props.label"/>
+        <t t-else="" t-slot="default"/>
+    </span>
+</t>
+
+<t t-name="civora_core.Avatar">
+    <img t-if="props.src" class="civora-av" t-att-class="sizeClass"
+         t-att-src="props.src" t-att-alt="props.name"/>
+    <div t-else="" class="civora-av civora-av-txt"
+         t-att-class="sizeClass + ' ' + gradientClass" t-esc="initials"/>
+</t>
+
+<t t-name="civora_core.Tabs">
+    <div class="civora-tabs">
+        <button t-foreach="props.tabs" t-as="tab" t-key="tab.id"
+                class="civora-tab"
+                t-att-class="{ 'civora-tab-active': tab.id === props.active }"
+                t-on-click="() => props.onChange(tab.id)">
+            <span t-esc="tab.label"/>
+            <span t-if="tab.count !== undefined" class="civora-tab-count"
+                  t-att-class="{ 'civora-tab-count-active': tab.id === props.active }"
+                  t-esc="tab.count"/>
+        </button>
+    </div>
+</t>
+
+<t t-name="civora_core.Progress">
+    <div class="civora-pg-track">
+        <div class="civora-pg-fill" t-att-class="toneClass" t-attf-style="width: {{width}}%;"/>
+    </div>
+</t>
+
+</templates>

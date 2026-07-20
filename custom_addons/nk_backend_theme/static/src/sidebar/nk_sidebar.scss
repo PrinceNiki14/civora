@@ -1,0 +1,422 @@
+// =====================================================================
+// NK / CIVORA - Sidebar gauche permanente, organisee en sections
+// =====================================================================
+
+:root {
+    --nk-sb-w: 260px;
+}
+
+$nk-sb-bg:        #091a36;   // bleu profond CIVORA
+$nk-sb-bg-2:      #172846;   // survol / actif (fond)
+$nk-sb-text:      #c9d4e8;
+$nk-sb-muted:     #626a75;
+$nk-sb-accent:    #00ab68;   // bleu CIVORA
+$nk-sb-accent-2:  #1ec98a;
+
+// ---------------------------------------------------------------------
+// Decalage du contenu a droite de la sidebar
+// ---------------------------------------------------------------------
+.o_web_client {
+    padding-left: var(--nk-sb-w);
+}
+
+// ---------------------------------------------------------------------
+// Sidebar : 3 zones (marque / sections defilables / utilisateur)
+// ---------------------------------------------------------------------
+.nk_sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: var(--nk-sb-w);
+    background: $nk-sb-bg;
+    color: $nk-sb-text;
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+
+    // -- Marque --------------------------------------------------------
+    .nk_sb_brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 16px;
+        cursor: pointer;
+        border-bottom: 1px solid rgba(255, 255, 255, .07);
+        flex: 0 0 auto;
+
+        .nk_sb_logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 11px;
+            background: linear-gradient(135deg, $nk-sb-accent, $nk-sb-accent-2);
+            color: #fff;
+            font-weight: 800;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 auto;
+        }
+        .nk_sb_logo_img {
+            width: 40px;
+            height: 40px;
+            border-radius: 11px;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 auto;
+            overflow: hidden;
+            padding: 5px;
+            img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        }
+        .nk_sb_name { font-size: 15px; font-weight: 800; color: #fff; line-height: 1.1; font-family: "Plus Jakarta Sans", "Inter", sans-serif; }
+        .nk_sb_tag  { font-size: 11px; color: $nk-sb-muted; margin-top: 2px; }
+    }
+
+    // -- Zone defilable des sections -----------------------------------
+    .nk_sb_scroll {
+        flex: 1 1 auto;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding: 8px 10px 12px;
+
+        &::-webkit-scrollbar { width: 8px; }
+        &::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, .10);
+            border-radius: 8px;
+        }
+    }
+
+    .nk_sb_section {
+        font-size: 10.5px;
+        font-weight: 700;
+        letter-spacing: .09em;
+        text-transform: uppercase;
+        color: $nk-sb-muted;
+        padding: 14px 10px 6px;
+    }
+
+    .nk_sb_nav {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+    }
+
+    .nk_sb_item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 8px 10px;
+        border-radius: 9px;
+        color: $nk-sb-text;
+        text-decoration: none;
+        cursor: pointer;
+        position: relative;
+        transition: background .12s ease, color .12s ease;
+
+        &:hover {
+            background: $nk-sb-bg-2;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        &.nk_active {
+            background: $nk-sb-bg-2;
+            color: #fff;
+            font-weight: 600;
+
+            .nk_sb_ic { color: $nk-sb-accent-2; }
+
+            &::before {
+                content: "";
+                position: absolute;
+                left: 0;
+                top: 7px;
+                bottom: 7px;
+                width: 3px;
+                border-radius: 0 3px 3px 0;
+                background: $nk-sb-accent-2;
+            }
+        }
+
+        // Icone monochrome (entrees mappees)
+        .nk_sb_ic {
+            width: 22px;
+            text-align: center;
+            font-size: 15px;
+            color: $nk-sb-text;
+            flex: 0 0 auto;
+        }
+
+        // Icone d'app coloree (section AUTRES)
+        .nk_sb_ic_img {
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
+            object-fit: cover;
+            flex: 0 0 auto;
+        }
+        .nk_sb_ic_fallback {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .nk_sb_label { font-size: 13.5px; min-width: 0; }
+    }
+
+    // -- Utilisateur + deconnexion (bas) -------------------------------
+    .nk_sb_user {
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 8px 12px 14px;
+        padding: 10px 12px;
+        border-radius: 11px;
+        background: $nk-sb-bg-2;
+        cursor: pointer;
+        transition: background .12s ease;
+
+        &:hover { background: lighten($nk-sb-bg-2, 6%); }
+
+        .nk_sb_user_ic {
+            width: 34px;
+            height: 34px;
+            border-radius: 9px;
+            background: rgba(255, 255, 255, .10);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            flex: 0 0 auto;
+        }
+        .nk_sb_user_name { font-size: 13.5px; font-weight: 700; color: #fff; line-height: 1.15; }
+        .nk_sb_user_sub  { font-size: 11.5px; color: $nk-sb-muted; margin-top: 1px; }
+    }
+
+    // -- Selecteur de societe (au-dessus de l'utilisateur) -------------
+    .nk_csw {
+        position: relative;
+        flex: 0 0 auto;
+        margin: 0 12px 6px;
+
+        .nk_csw_btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 11px;
+            border-radius: 11px;
+            background: $nk-sb-bg-2;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, .06);
+            transition: background .12s ease, border-color .12s ease;
+
+            &:hover { background: lighten($nk-sb-bg-2, 5%); border-color: rgba(0, 171, 104, .35); }
+        }
+        .nk_csw_btn_txt { flex: 1; min-width: 0; }
+        .nk_csw_btn_label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            color: $nk-sb-muted;
+            font-weight: 700;
+        }
+        .nk_csw_btn_name { font-size: 13px; font-weight: 700; color: #fff; line-height: 1.2; }
+        .nk_csw_caret {
+            color: $nk-sb-muted;
+            transition: transform .18s ease;
+            &.nk_flip { transform: rotate(180deg); }
+        }
+
+        // Logo / initiale
+        .nk_csw_logo {
+            position: relative;
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            overflow: hidden;
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, $nk-sb-accent, $nk-sb-accent-2);
+
+            &.nk_csw_logo_lg { width: 34px; height: 34px; border-radius: 9px; }
+
+            img {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                background: #fff;
+                &.nk_hide { display: none; }
+            }
+            .nk_csw_logo_fb {
+                color: #fff;
+                font-weight: 800;
+                font-size: 13px;
+            }
+        }
+
+        // Panneau deroulant
+        .nk_csw_panel {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: calc(100% + 6px);
+            background: #0c2039;
+            border: 1px solid rgba(255, 255, 255, .10);
+            border-radius: 12px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, .45);
+            padding: 8px;
+            z-index: 1200;
+            animation: nk_csw_in .14s ease;
+        }
+        .nk_csw_panel_head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 4px 8px 8px;
+            font-size: 10.5px;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            color: $nk-sb-muted;
+            font-weight: 700;
+            border-bottom: 1px solid rgba(255, 255, 255, .07);
+            margin-bottom: 6px;
+        }
+        .nk_csw_all {
+            border: 0;
+            background: rgba(0, 171, 104, .14);
+            color: $nk-sb-accent-2;
+            font-size: 10.5px;
+            font-weight: 700;
+            padding: 3px 9px;
+            border-radius: 999px;
+            cursor: pointer;
+            &:hover { background: rgba(0, 171, 104, .24); }
+        }
+        .nk_csw_list {
+            max-height: 320px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .nk_csw_row {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 7px 8px;
+            border-radius: 9px;
+            cursor: pointer;
+            transition: background .1s ease;
+
+            &:hover { background: rgba(255, 255, 255, .06); }
+            &.nk_cur { background: rgba(0, 171, 104, .12); }
+        }
+        .nk_csw_check {
+            width: 18px;
+            height: 18px;
+            border-radius: 6px;
+            border: 1.5px solid rgba(255, 255, 255, .25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 auto;
+            font-size: 10px;
+            color: #fff;
+            transition: background .1s ease, border-color .1s ease;
+
+            &.nk_on { background: $nk-sb-accent; border-color: $nk-sb-accent; }
+            &:hover { border-color: $nk-sb-accent-2; }
+        }
+        .nk_csw_name {
+            flex: 1;
+            min-width: 0;
+            font-size: 13px;
+            font-weight: 600;
+            color: $nk-sb-text;
+        }
+        .nk_csw_row.nk_cur .nk_csw_name { color: #fff; }
+        .nk_csw_dot { font-size: 7px; color: $nk-sb-accent-2; flex: 0 0 auto; }
+    }
+
+    @keyframes nk_csw_in {
+        from { opacity: 0; transform: translateY(6px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+}
+
+// ---------------------------------------------------------------------
+// Burger + backdrop : masques sur desktop, actifs en mobile
+// ---------------------------------------------------------------------
+.nk_sb_burger {
+    display: none;
+    position: fixed;
+    top: 9px;
+    left: 10px;
+    z-index: 1105;
+    width: 40px;
+    height: 40px;
+    border: 0;
+    border-radius: 11px;
+    background: $nk-sb-accent;
+    color: #fff;
+    font-size: 17px;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, .25);
+    align-items: center;
+    justify-content: center;
+
+    &:active { filter: brightness(.95); }
+}
+
+.nk_sb_backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 1098;
+    background: rgba(4, 12, 26, .55);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s ease;
+}
+
+// ---------------------------------------------------------------------
+// Mobile : sidebar en volet coulissant (off-canvas)
+// ---------------------------------------------------------------------
+@media (max-width: 767.98px) {
+    :root { --nk-sb-w: 0px; }
+    .o_web_client { padding-left: 0; }
+
+    .nk_sb_burger { display: flex; }
+
+    // Masque le bouton burger natif d'Odoo (on utilise le notre, CIVORA).
+    .o_main_navbar .o_menu_toggle,
+    .o_main_navbar .o_mobile_menu_toggle { display: none !important; }
+
+    .nk_sidebar {
+        display: flex;
+        transform: translateX(-100%);
+        transition: transform .26s cubic-bezier(.4, 0, .2, 1);
+        z-index: 1100;
+        box-shadow: 0 0 40px rgba(0, 0, 0, .4);
+        width: 84vw;
+        max-width: 320px;
+
+        &.is-open { transform: translateX(0); }
+    }
+
+    .nk_sb_backdrop.is-open {
+        display: block;
+        opacity: 1;
+        pointer-events: auto;
+    }
+}

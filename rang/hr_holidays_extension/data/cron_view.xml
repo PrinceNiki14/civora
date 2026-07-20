@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data noupdate="1">
+        <record id="ir_cron_hoolidays_auto" model="ir.cron">
+            <field name="name">HR Holidays: Attribution automatique des congés</field>
+            <field name="model_id" ref="model_hr_employee"/>
+            <field name="type">ir.actions.server</field>
+             <field name="state">code</field>
+            <field name="nextcall" eval="(DateTime.now() + relativedelta(months=1)).strftime('%Y-%m-01')"/>
+            <field name="code">model.compute_holidays_auto()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">months</field>
+            <field name="active" eval="False"/>
+        </record>
+        <!--<record id="ir_cron_auto_post_draft_entry" model="ir.cron">
+            <field name="name">Account: Post draft entries with auto_post enabled and accounting date up to today</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="nextcall" eval="(DateTime.now().replace(hour=2, minute=0) + timedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S')" />
+            <field name="model_id" ref="model_account_move"/>
+            <field name="code">model._autopost_draft_entries()</field>
+            <field name="state">code</field>
+        </record>-->
+    </data>
+
+</odoo>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <template id="payslip_mail_template">
+            Bonjour <t t-esc="name"/>,
+            <br/><br/>Veuillez trouver en pièce jointe votre bulletin de salaire du mois der <t t-esc="month_year"/>.<br/><br/>
+            Cordialement,<br/>
+            <t t-esc="user_name"/>.
+            <br/><br/><br/>
+            <font style="font-size: 9px;">
+            ** Votre mot de passe est vos initiales suivi de votre année de naissance.<br/>
+            Exemple : Votre nom est Employé Modèle et votre année de naissance est 2020, alors votre mot de passe est EM2020.<br/>
+            </font>
+
+        </template>
+
+        <template id="password_notification">
+            Hello,
+            <br/><br/>
+            Votre mot de passe pour ouvrir les bulletins est : <strong><t t-esc="password" /></strong>.<br/><br/>
+            <font style="font-size: 12px;">
+            ** Veuillez le garder précieusement et supprimer le message pour plus de sécurité.<br/>
+            Cordialement.
+            </font>
+        </template>
+
+
+        
+    </data>
+</odoo>

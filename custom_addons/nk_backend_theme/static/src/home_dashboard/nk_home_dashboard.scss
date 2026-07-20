@@ -1,0 +1,185 @@
+// =====================================================================
+// NK SERVICE - Command Center (ecran d'accueil backend)
+// Look inspire de CIVORA : fond clair, accent vert, cards arrondies.
+// Les variables ci-dessous permettent d'ajuster rapidement l'identite.
+// =====================================================================
+
+$nk-bg:            #f8fafc;
+$nk-card-bg:       #ffffff;
+$nk-border:        #e1e5ea;
+$nk-text:          #1f2733;
+$nk-text-muted:    #626a75;
+
+$nk-green:         #00ab68;
+$nk-green-soft:    #e0f5ec;
+$nk-blue:          #2563eb;
+$nk-blue-soft:     #e6efff;
+$nk-red:           #e62c2c;
+$nk-red-soft:      #fdecec;
+$nk-violet:        #7c3aed;
+$nk-violet-soft:   #f0e9ff;
+
+$nk-radius:        14px;
+$nk-shadow:        0 1px 2px rgba(16, 24, 40, .04), 0 4px 16px rgba(16, 24, 40, .05);
+
+.nk_dashboard {
+    background: $nk-bg;
+    color: $nk-text;
+
+    .nk_dashboard_inner {
+        max-width: 1320px;
+        margin: 0 auto;
+        padding: 32px 28px 48px;
+    }
+
+    // ---- En-tete -----------------------------------------------------
+    .nk_dash_header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        margin-bottom: 24px;
+    }
+    .nk_dash_title {
+        font-size: 28px;
+        font-weight: 700;
+        margin: 0;
+        letter-spacing: -.4px;
+    }
+    .nk_dash_subtitle {
+        color: $nk-text-muted;
+        font-size: 14px;
+        margin-top: 4px;
+    }
+
+    // ---- Etats -------------------------------------------------------
+    .nk_dash_loading,
+    .nk_dash_empty {
+        color: $nk-text-muted;
+        padding: 24px 4px;
+        font-size: 14px;
+    }
+
+    // ---- Grille KPI --------------------------------------------------
+    .nk_kpi_grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 16px;
+        margin-bottom: 36px;
+    }
+
+    .nk_kpi_card {
+        background: $nk-card-bg;
+        border: 1px solid $nk-border;
+        border-radius: $nk-radius;
+        box-shadow: $nk-shadow;
+        padding: 18px 20px;
+        transition: transform .12s ease, box-shadow .12s ease;
+
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 6px rgba(16, 24, 40, .06), 0 10px 24px rgba(16, 24, 40, .08);
+        }
+
+        .nk_kpi_top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        .nk_kpi_label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            color: $nk-text-muted;
+        }
+        .nk_kpi_icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 9px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            background: $nk-green-soft;
+            color: $nk-green;
+        }
+        .nk_kpi_value {
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: -.5px;
+            line-height: 1.1;
+        }
+        .nk_kpi_sub {
+            margin-top: 6px;
+            font-size: 12px;
+            color: $nk-text-muted;
+        }
+
+        // Accents par type de KPI
+        &[data-accent="green"]  .nk_kpi_icon { background: $nk-green-soft;  color: $nk-green;  }
+        &[data-accent="blue"]   .nk_kpi_icon { background: $nk-blue-soft;   color: $nk-blue;   }
+        &[data-accent="red"]    .nk_kpi_icon { background: $nk-red-soft;    color: $nk-red;    }
+        &[data-accent="violet"] .nk_kpi_icon { background: $nk-violet-soft; color: $nk-violet; }
+    }
+
+    // ---- Section applications ---------------------------------------
+    .nk_apps_section {
+        margin-top: 8px;
+    }
+    .nk_apps_title {
+        font-size: 13px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        color: $nk-text-muted;
+        margin-bottom: 16px;
+    }
+    .nk_apps_grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+        gap: 12px;
+    }
+    .nk_app_item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 14px 8px;
+        border-radius: 12px;
+        color: $nk-text;
+        text-decoration: none;
+        transition: background .12s ease;
+
+        &:hover {
+            background: #fff;
+            box-shadow: $nk-shadow;
+            color: $nk-text;
+            text-decoration: none;
+        }
+
+        .nk_app_icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
+            object-fit: cover;
+            margin-bottom: 8px;
+        }
+        .nk_app_icon_fallback {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+        .nk_app_name {
+            font-size: 12.5px;
+            font-weight: 500;
+            max-width: 100%;
+        }
+    }
+}
+
+// Fond du body quand le dashboard est affiche (surcharge du fond enterprise)
+.o_home_menu_background .nk_dashboard {
+    min-height: 100%;
+}

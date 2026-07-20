@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_biens.DuplicateUnitsDialog">
+    <CivoraDrawer title="'Duplication en masse'"
+                  subtitle="'Immeuble : ' + props.building.name"
+                  variant="'modal'"
+                  size="'lg'"
+                  icon="'fa-clone'"
+                  onClose="() => props.onClose()">
+
+        <div class="civora-pf">
+            <div t-if="state.error" class="civora-pf-error">
+                <i class="fa fa-exclamation-circle"/> <t t-esc="state.error"/>
+            </div>
+
+            <div t-if="!props.units.length" class="civora-dup-warn">
+                <i class="fa fa-info-circle"/>
+                Créez d'abord <b>une unité modèle</b> via « Ajouter une unité ».
+                Vous pourrez ensuite la dupliquer ici.
+            </div>
+
+            <t t-else="">
+                <div class="civora-pf-section">
+                    <div class="civora-pf-title">Unité modèle</div>
+                    <div class="civora-pf-grid">
+                        <div class="civora-fld civora-col2">
+                            <label>Dupliquer à partir de</label>
+                            <select t-on-change="(ev) => this.setTemplate(ev)">
+                                <option t-foreach="props.units" t-as="u" t-key="u.id"
+                                        t-att-value="u.id" t-att-selected="state.templateId === u.id"
+                                        t-esc="unitOption(u)"/>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="civora-pf-section">
+                    <div class="civora-pf-title">Génération</div>
+                    <div class="civora-pf-grid civora-pf-grid3">
+                        <div class="civora-fld">
+                            <label>Nombre d'unités</label>
+                            <input type="number" min="1" max="100" t-att-value="state.count"
+                                   t-on-input="(ev) => this.setNumber('count', ev)"/>
+                        </div>
+                        <div class="civora-fld">
+                            <label>N° de départ</label>
+                            <input type="number" t-att-value="state.startNumber"
+                                   t-on-input="(ev) => this.setNumber('startNumber', ev)"/>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Incrément</label>
+                            <input type="number" min="1" t-att-value="state.increment"
+                                   t-on-input="(ev) => this.setNumber('increment', ev)"/>
+                        </div>
+                        <div class="civora-fld civora-col2">
+                            <label class="civora-pf-check">
+                                <input type="checkbox" t-att-checked="state.perFloor"
+                                       t-on-change="(ev) => this.setPerFloor(ev)"/>
+                                Déduire l'étage du numéro (ex. 201 → étage 2)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div t-if="preview.length" class="civora-dup-preview">
+                    <span class="civora-dup-preview-l">Aperçu :</span>
+                    <span t-foreach="preview" t-as="n" t-key="n" class="civora-dup-chip" t-esc="'Apt ' + n"/>
+                    <span t-if="state.count > 6" class="civora-dup-more" t-esc="'+' + (state.count - 6)"/>
+                </div>
+            </t>
+        </div>
+
+        <t t-set-slot="footer">
+            <button class="civora-btn civora-btn-outline" t-on-click="() => props.onClose()">Annuler</button>
+            <button t-if="props.units.length" class="civora-btn civora-btn-accent"
+                    t-att-disabled="state.saving" t-on-click="save">
+                <t t-esc="state.saving ? 'Génération…' : 'Générer les unités'"/>
+            </button>
+        </t>
+    </CivoraDrawer>
+</t>
+
+</templates>
