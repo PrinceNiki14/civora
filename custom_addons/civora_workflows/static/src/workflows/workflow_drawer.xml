@@ -1,34 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
 <t t-name="civora_workflows.WorkflowDrawer">
-    <CivoraDrawer title="'Nouveau workflow'" icon="'fa-random'" onClose="props.onClose">
+    <CivoraDrawer title="drawerTitle" icon="'fa-random'" onClose="props.onClose">
         <t t-set-slot="default">
             <div class="civora-drawer-form">
-                <!-- Modele -->
-                <div class="civora-form-section">
-                    <h3>Modele</h3>
-                    <div class="civora-form-row">
-                        <div class="civora-form-group" style="flex:1">
-                            <label>A partir d'un modele</label>
-                            <select t-on-change="onTemplateChange" class="civora-input">
-                                <option value="">-- Sans modele --</option>
-                                <t t-foreach="templates.list" t-as="t" t-key="t.id">
-                                    <option t-att-value="t.id"><t t-esc="t.name"/> (<t t-esc="t.step_count"/> etapes)</option>
-                                </t>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Informations -->
                 <div class="civora-form-section">
                     <h3>Informations</h3>
                     <div class="civora-form-row">
                         <div class="civora-form-group" style="flex:1">
-                            <label>Titre *</label>
-                            <input type="text" class="civora-input" t-att-value="form.title"
-                                   t-on-input="(ev) => this.form.title = ev.target.value"
-                                   placeholder="Ex: Vente Villa Cocody..."/>
+                            <label>Nom *</label>
+                            <input type="text" class="civora-input" t-att-value="form.name"
+                                   t-on-input="(ev) => this.form.name = ev.target.value"
+                                   placeholder="Ex: Relance impayes J+5..."/>
                         </div>
                     </div>
                     <div class="civora-form-row">
@@ -43,39 +26,43 @@
                             </select>
                         </div>
                         <div class="civora-form-group">
-                            <label>Priorite</label>
-                            <select class="civora-input" t-att-value="form.priority"
-                                    t-on-change="(ev) => this.form.priority = ev.target.value">
-                                <option value="normal">Normal</option>
-                                <option value="urgent">Urgent</option>
-                                <option value="critique">Critique</option>
+                            <label>Type de declencheur</label>
+                            <select class="civora-input" t-att-value="form.trigger_type"
+                                    t-on-change="(ev) => this.form.trigger_type = ev.target.value">
+                                <option value="event">Evenement</option>
+                                <option value="schedule">Planifie</option>
+                                <option value="condition">Condition IA</option>
+                                <option value="manual">Manuel</option>
                             </select>
                         </div>
                     </div>
                     <div class="civora-form-row">
-                        <div class="civora-form-group">
-                            <label>Echeance</label>
-                            <input type="date" class="civora-input" t-att-value="form.deadline"
-                                   t-on-input="(ev) => this.form.deadline = ev.target.value"/>
+                        <div class="civora-form-group" style="flex:1">
+                            <label>Declencheur</label>
+                            <input type="text" class="civora-input" t-att-value="form.trigger_description"
+                                   t-on-input="(ev) => this.form.trigger_description = ev.target.value"
+                                   placeholder="Ex: Loyer non percu, Bail signe..."/>
                         </div>
                     </div>
                 </div>
 
-                <!-- Notes -->
                 <div class="civora-form-section">
-                    <h3>Notes</h3>
+                    <h3>Description</h3>
                     <div class="civora-form-row">
                         <div class="civora-form-group" style="flex:1">
-                            <textarea class="civora-input" rows="3" t-att-value="form.notes"
-                                      t-on-input="(ev) => this.form.notes = ev.target.value"
-                                      placeholder="Contexte, instructions..."/>
+                            <textarea class="civora-input" rows="3" t-att-value="form.description"
+                                      t-on-input="(ev) => this.form.description = ev.target.value"
+                                      placeholder="Description du workflow..."/>
                         </div>
                     </div>
                 </div>
             </div>
         </t>
         <t t-set-slot="footer">
-            <button class="civora-btn civora-btn-accent" t-on-click="save">Creer le workflow</button>
+            <button class="civora-btn civora-btn-accent" t-on-click="save">
+                <t t-if="isEdit">Enregistrer</t>
+                <t t-else="">Creer l'automatisation</t>
+            </button>
         </t>
     </CivoraDrawer>
 </t>

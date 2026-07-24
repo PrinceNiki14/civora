@@ -2,90 +2,296 @@
     padding: 1.5rem 2rem;
     min-height: 100vh;
     background: $civora-bg;
-}
 
-.civora-title-cell {
-    font-weight: 600;
-    color: $civora-fg;
-}
-
-.civora-muted-cell {
-    color: $civora-muted;
-    font-size: 0.85rem;
-}
-
-.civora-cat-badge {
-    display: inline-block;
-    padding: 0.2rem 0.6rem;
-    border-radius: 999px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-
-    &.civora-cat-accent {
-        background: rgba($civora-accent, 0.12);
-        color: $civora-accent;
+    .civora-kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.75rem;
     }
-    &.civora-cat-info {
-        background: rgba($civora-info, 0.12);
-        color: $civora-info;
-    }
-    &.civora-cat-primary {
-        background: rgba($civora-primary, 0.12);
-        color: $civora-primary;
-    }
-    &.civora-cat-violet {
-        background: rgba($civora-violet, 0.12);
-        color: $civora-violet;
+
+    @media (max-width: 1100px) {
+        .civora-kpi-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
     }
 }
 
-.civora-priority-badge {
-    display: inline-block;
-    padding: 0.2rem 0.5rem;
-    border-radius: $civora-radius-sm;
-    font-size: 0.75rem;
-    font-weight: 600;
-
-    &.civora-priority-muted {
-        background: rgba($civora-muted, 0.1);
-        color: $civora-muted;
-    }
-    &.civora-priority-warning {
-        background: rgba($civora-warning, 0.12);
-        color: darken($civora-warning, 10%);
-    }
-    &.civora-priority-danger {
-        background: rgba($civora-danger, 0.12);
-        color: $civora-danger;
-    }
+// ── Middle row: IA Insight + Top Automation ──────────────────────────
+.civora-wf-middle {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: 1.25rem;
+    margin-bottom: 1.75rem;
 }
 
-.civora-progress-cell {
+.civora-wf-top-card {
+    background: $civora-card;
+    border: 1px solid $civora-border;
+    border-radius: $civora-radius;
+    padding: 1.5rem;
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.civora-wf-top-label {
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: $civora-muted;
+    margin-bottom: 0.5rem;
+}
+
+.civora-wf-top-name {
+    font-family: $civora-font-display;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: $civora-fg;
+    margin-bottom: 0.35rem;
+}
+
+.civora-wf-top-stats {
+    font-size: 0.82rem;
+    color: $civora-muted;
+    margin-bottom: 1rem;
+}
+
+// ── Section title ────────────────────────────────────────────────────
+.civora-wf-section {
+    margin-bottom: 1.75rem;
+}
+
+.civora-wf-section-title {
+    font-family: $civora-font-display;
+    font-size: 1rem;
+    font-weight: 700;
+    color: $civora-fg;
+    margin: 0 0 1rem 0;
+}
+
+// ── Automation card list ─────────────────────────────────────────────
+.civora-wf-list {
+    display: flex;
+    flex-direction: column;
     gap: 0.5rem;
 }
 
-.civora-progress-bar-mini {
-    flex: 1;
-    height: 6px;
-    background: $civora-border;
-    border-radius: 3px;
-    overflow: hidden;
-    min-width: 60px;
+.civora-wf-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: $civora-card;
+    border: 1px solid $civora-border;
+    border-radius: $civora-radius;
+    padding: 0.9rem 1.25rem;
+    transition: box-shadow 0.15s ease;
 
-    .civora-progress-fill {
-        height: 100%;
-        background: $civora-accent;
-        border-radius: 3px;
-        transition: width 0.3s ease;
+    &:hover {
+        box-shadow: $civora-shadow-card;
     }
 }
 
-.civora-progress-text {
-    font-size: 0.75rem;
+.civora-wf-card-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba($civora-muted, 0.08);
+    color: $civora-muted;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.civora-wf-card-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.civora-wf-card-title {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: $civora-fg;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.civora-wf-card-meta {
+    font-size: 0.78rem;
+    color: $civora-muted;
+    margin-top: 2px;
+}
+
+.civora-wf-card-right {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    flex-shrink: 0;
+}
+
+.civora-wf-card-stats {
+    font-size: 0.82rem;
     color: $civora-muted;
     white-space: nowrap;
+}
+
+.civora-wf-badge {
+    display: inline-block;
+    padding: 0.2rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    white-space: nowrap;
+
+    &.civora-wf-badge-active {
+        background: rgba($civora-accent, 0.12);
+        color: $civora-accent;
+    }
+    &.civora-wf-badge-pause {
+        background: rgba($civora-warning, 0.12);
+        color: darken($civora-warning, 10%);
+    }
+}
+
+.civora-wf-card-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.civora-wf-icon-btn {
+    width: 30px;
+    height: 30px;
+    border: 1px solid $civora-border;
+    border-radius: 8px;
+    background: $civora-card;
+    color: $civora-muted;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.15s;
+
+    &:hover {
+        background: $civora-bg;
+        color: $civora-fg;
+    }
+
+    &.civora-wf-icon-danger:hover {
+        color: $civora-danger;
+        border-color: rgba($civora-danger, 0.3);
+    }
+}
+
+.civora-wf-edit-link {
+    background: none;
+    border: none;
+    color: $civora-muted;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
+    transition: all 0.15s;
+    white-space: nowrap;
+
+    &:hover {
+        color: $civora-accent;
+        background: rgba($civora-accent, 0.06);
+    }
+}
+
+.civora-wf-empty {
+    text-align: center;
+    padding: 3rem;
+    color: $civora-muted;
+    font-size: 0.9rem;
+    background: $civora-card;
+    border: 1px solid $civora-border;
+    border-radius: $civora-radius;
+}
+
+// ── Workflow builder preview ─────────────────────────────────────────
+.civora-wf-builder {
+    background: $civora-card;
+    border: 1px solid $civora-border;
+    border-radius: $civora-radius;
+    padding: 1.5rem;
+}
+
+.civora-wf-builder-header {
+    margin-bottom: 1.25rem;
+
+    h3 {
+        font-family: $civora-font-display;
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: $civora-fg;
+        margin: 0 0 0.25rem 0;
+    }
+
+    span {
+        font-size: 0.78rem;
+        color: $civora-muted;
+    }
+}
+
+.civora-wf-builder-pipeline {
+    display: flex;
+    align-items: center;
+    overflow-x: auto;
+    padding: 0.5rem 0;
+}
+
+.civora-wf-builder-node {
+    background: $civora-bg;
+    border: 1px solid $civora-border;
+    border-radius: $civora-radius;
+    padding: 1.1rem 1.5rem;
+    min-width: 145px;
+    text-align: center;
+    flex-shrink: 0;
+
+    &.civora-wf-node-accent {
+        border-color: rgba($civora-accent, 0.4);
+        background: rgba($civora-accent, 0.04);
+
+        .civora-wf-node-icon {
+            color: $civora-accent;
+        }
+    }
+}
+
+.civora-wf-node-icon {
+    font-size: 1.3rem;
+    color: $civora-muted;
+    margin-bottom: 0.5rem;
+}
+
+.civora-wf-node-label {
+    font-size: 9px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: $civora-muted;
+    margin-bottom: 0.3rem;
+}
+
+.civora-wf-node-name {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: $civora-fg;
+    white-space: nowrap;
+}
+
+.civora-wf-builder-arrow {
+    padding: 0 0.85rem;
+    color: $civora-border;
+    font-size: 1.1rem;
+    flex-shrink: 0;
 }

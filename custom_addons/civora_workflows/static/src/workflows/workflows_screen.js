@@ -5,117 +5,78 @@ import { useService } from "@web/core/utils/hooks";
 import { CivoraStatCard } from "@civora_core/components/civora_stat_card";
 import { WorkflowDrawer } from "./workflow_drawer";
 
-const STATE_LABELS = {
-    brouillon: "Brouillon",
-    en_cours: "En cours",
-    en_pause: "En pause",
-    termine: "Termine",
-    annule: "Annule",
-};
-
-const CATEGORY_LABELS = {
-    vente: "Vente",
-    location: "Location",
-    gestion: "Gestion",
-    administratif: "Admin",
-};
-
-const PRIORITY_LABELS = {
-    normal: "Normal",
-    urgent: "Urgent",
-    critique: "Critique",
-};
-
 class CivoraWorkflowsScreen extends Component {
     static template = "civora_workflows.WorkflowsScreen";
     static components = { CivoraStatCard, WorkflowDrawer };
+    static props = { "*": true };
 
     setup() {
         this.orm = useService("orm");
         this.action = useService("action");
         this.state = useState({
-            workflows: [],
+            automations: [],
             kpis: {},
-            filter: "all",
-            search: "",
+            topAutomation: {},
+            iaSuggestions: {},
             drawerOpen: false,
+            editId: false,
         });
-        onWillStart(() => this.load());
+        onWillStart(async () => {
+            try {
+                await this.load();
+            } catch (e) {
+                console.error("CivoraWorkflowsScreen load error:", e);
+            }
+        });
     }
 
     async load() {
-        const [kpis, workflows] = await Promise.all([
-            this.orm.call("civora.workflow", "get_workflows_kpis", []),
-            this.orm.searchRead("civora.workflow", [], [
-                "name", "title", "template_id", "state", "category",
-                "priority", "assigned_to", "start_date", "deadline",
-                "completed_date", "progress", "step_count", "completed_steps",
-            ], { order: "create_date desc", limit: 200 }),
+        const [kpis, automations, topAutomation, iaSuggestions] = await Promise.all([
+            this.orm.call("civora.workflow.template", "get_automations_kpis", []),
+            this.orm.call("civora.workflow.template", "get_automations_list", []),
+            this.orm.call("civora.workflow.template", "get_top_automation", []),
+            this.orm.call("civora.workflow.template", "get_ia_suggestions", []),
         ]);
         this.state.kpis = kpis;
-        this.state.workflows = workflows;
+        this.state.automations = automations;
+        this.state.topAutomation = topAutomation;
+        this.state.iaSuggestions = iaSuggestions;
     }
 
-    get filteredWorkflows() {
-        let list = this.state.workflows;
-        const f = this.state.filter;
-        if (f === "en_cours") list = list.filter(r => r.state === "en_cours");
-        else if (f === "brouillon") list = list.filter(r => r.state === "brouillon");
-        else if (f === "en_pause") list = list.filter(r => r.state === "en_pause");
-        else if (f === "termine") list = list.filter(r => r.state === "termine");
-        else if (f === "annule") list = list.filter(r => r.state === "annule");
-        if (this.state.search) {
-            const q = this.state.search.toLowerCase();
-            list = list.filter(r =>
-                (r.title || "").toLowerCase().includes(q) ||
-                (r.name || "").toLowerCase().includes(q) ||
-                (r.template_id && r.template_id[1] || "").toLowerCase().includes(q)
-            );
-        }
-        return list;
+    fmtNum(n) {
+        if (!n) return "0";
+        return ("" + n).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
     }
 
-    setFilter(f) { this.state.filter = f; }
-    onSearch(ev) { this.state.search = ev.target.value; }
-
-    stateLabel(s) { return STATE_LABELS[s] || s; }
-    stateClass(s) {
-        const m = {
-            brouillon: "muted",
-            en_cours: "info",
-            en_pause: "warning",
-            termine: "success",
-            annule: "danger",
-        };
-        return m[s] || "";
-    }
-    categoryLabel(s) { return CATEGORY_LABELS[s] || s; }
-    categoryClass(s) {
-        const m = { vente: "accent", location: "info", gestion: "primary", administratif: "violet" };
-        return m[s] || "";
-    }
-    priorityLabel(s) { return PRIORITY_LABELS[s] || s; }
-    priorityClass(s) {
-        const m = { normal: "muted", urgent: "warning", critique: "danger" };
-        return m[s] || "";
-    }
-
-    progressPercent(w) { return Math.round(w.progress || 0); }
-    progressLabel(w) { return (w.completed_steps || 0) + "/" + (w.step_count || 0); }
-
-    openDrawer() { this.state.drawerOpen = true; }
-    closeDrawer() { this.state.drawerOpen = false; }
-    async onSaved() {
-        this.state.drawerOpen = false;
+    async toggleActive(id) {
+        await this.orm.call("civora.workflow.template", "action_toggle_active", [[id]]);
         await this.load();
     }
 
-    openDetail(id) {
-        this.action.doAction({
-            type: "ir.actions.client",
-            tag: "civora.workflow_360",
-            params: { workflow_id: id },
-        });
+    async deleteAutomation(id) {
+        await this.orm.unlink("civora.workflow.template", [id]);
+        await this.load();
+    }
+
+    openDrawer() {
+        this.state.editId = false;
+        this.state.drawerOpen = true;
+    }
+
+    editAutomation(id) {
+        this.state.editId = id;
+        this.state.drawerOpen = true;
+    }
+
+    closeDrawer() {
+        this.state.drawerOpen = false;
+        this.state.editId = false;
+    }
+
+    async onSaved() {
+        this.state.drawerOpen = false;
+        this.state.editId = false;
+        await this.load();
     }
 }
 

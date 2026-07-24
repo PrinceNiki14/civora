@@ -9,57 +9,58 @@ export class WorkflowDrawer extends Component {
     static props = {
         onSaved: { type: Function },
         onClose: { type: Function },
+        editId: { optional: true },
     };
 
     setup() {
         this.orm = useService("orm");
         this.form = useState({
-            title: "",
-            template_id: "",
+            name: "",
             category: "gestion",
-            priority: "normal",
-            deadline: "",
-            notes: "",
+            trigger_type: "event",
+            trigger_description: "",
+            description: "",
         });
-        this.templates = useState({ list: [] });
-        onWillStart(() => this.loadTemplates());
-    }
-
-    async loadTemplates() {
-        this.templates.list = await this.orm.searchRead(
-            "civora.workflow.template",
-            [["is_active", "=", true]],
-            ["name", "category", "step_count"],
-            { order: "sequence" },
-        );
-    }
-
-    onTemplateChange(ev) {
-        const id = parseInt(ev.target.value) || "";
-        this.form.template_id = id;
-        if (id) {
-            const tmpl = this.templates.list.find(t => t.id === id);
-            if (tmpl) {
-                this.form.category = tmpl.category;
+        onWillStart(async () => {
+            if (this.props.editId) {
+                const records = await this.orm.read(
+                    "civora.workflow.template",
+                    [this.props.editId],
+                    ["name", "category", "trigger_type", "trigger_description", "description"],
+                );
+                if (records.length) {
+                    const rec = records[0];
+                    this.form.name = rec.name || "";
+                    this.form.category = rec.category || "gestion";
+                    this.form.trigger_type = rec.trigger_type || "event";
+                    this.form.trigger_description = rec.trigger_description || "";
+                    this.form.description = rec.description || "";
+                }
             }
-        }
+        });
+    }
+
+    get isEdit() {
+        return !!this.props.editId;
+    }
+
+    get drawerTitle() {
+        return this.isEdit ? "Modifier l'automatisation" : "Nouvelle automatisation";
     }
 
     async save() {
-        if (!this.form.title) return;
+        if (!this.form.name) return;
         const vals = {
-            title: this.form.title,
+            name: this.form.name,
             category: this.form.category,
-            priority: this.form.priority,
-            notes: this.form.notes || false,
-            deadline: this.form.deadline || false,
+            trigger_type: this.form.trigger_type,
+            trigger_description: this.form.trigger_description || false,
+            description: this.form.description || false,
         };
-        if (this.form.template_id) {
-            vals.template_id = this.form.template_id;
-        }
-        const id = await this.orm.create("civora.workflow", [vals]);
-        if (this.form.template_id) {
-            await this.orm.call("civora.workflow", "apply_template", [[id]]);
+        if (this.isEdit) {
+            await this.orm.write("civora.workflow.template", [this.props.editId], vals);
+        } else {
+            await this.orm.create("civora.workflow.template", [vals]);
         }
         this.props.onSaved();
     }

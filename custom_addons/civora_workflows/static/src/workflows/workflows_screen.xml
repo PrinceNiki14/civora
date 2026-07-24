@@ -2,99 +2,166 @@
 <templates xml:space="preserve">
 <t t-name="civora_workflows.WorkflowsScreen">
     <div class="civora-workflows-screen">
-        <!-- Header -->
+
+        <!-- ============ HEADER ============ -->
         <div class="civora-screen-header">
             <div class="civora-screen-title">
-                <h1>Workflows</h1>
-                <span class="civora-screen-subtitle">Suivi des processus metier de l'agence</span>
+                <h1>Workflows &amp; Automatisations</h1>
+                <span class="civora-screen-subtitle">No-code · drag &amp; drop · pilote par IA</span>
             </div>
             <div class="civora-screen-actions">
+                <button class="civora-btn civora-btn-outline">
+                    <i class="fa fa-th-large"/> Templates
+                </button>
                 <button class="civora-btn civora-btn-accent" t-on-click="openDrawer">
                     + Nouveau workflow
                 </button>
             </div>
         </div>
 
-        <!-- KPIs -->
+        <!-- ============ KPIs ============ -->
         <div class="civora-kpi-grid">
-            <CivoraStatCard label="'En cours'" value="'' + (state.kpis.active || 0)" icon="'fa-play-circle'"/>
-            <CivoraStatCard label="'En retard'" value="'' + (state.kpis.overdue || 0)" icon="'fa-exclamation-triangle'" trend="state.kpis.overdue > 0 ? 'down' : 'neutral'"/>
-            <CivoraStatCard label="'Termines ce mois'" value="'' + (state.kpis.completed_month || 0)" icon="'fa-check-circle'"/>
-            <CivoraStatCard label="'Progression moy.'" value="(state.kpis.avg_progress || 0) + '%'" icon="'fa-tasks'"/>
+            <CivoraStatCard
+                label="'WORKFLOWS ACTIFS'"
+                value="'' + (state.kpis.active_count or 0)"
+                delta="'+5 ce mois'"
+                icon="'fa fa-bolt'"
+                trend="'up'"/>
+            <CivoraStatCard
+                label="'EXECUTIONS 30J'"
+                value="fmtNum(state.kpis.executions_30d)"
+                delta="'+34%'"
+                icon="'fa fa-play-circle'"
+                trend="'up'"/>
+            <CivoraStatCard
+                label="'TEMPS ECONOMISE'"
+                value="(state.kpis.time_saved_hours or 0) + 'h'"
+                hint="'ce mois'"
+                icon="'fa fa-clock-o'"
+                trend="'up'"/>
+            <CivoraStatCard
+                label="'SLA RESPECTE'"
+                value="(state.kpis.sla_percent or 0) + '%'"
+                delta="'+1,2 pts'"
+                icon="'fa fa-check-circle'"
+                trend="'up'"/>
         </div>
 
-        <!-- Filters -->
-        <div class="civora-filters-bar">
-            <div class="civora-pills">
-                <button t-attf-class="civora-pill {{ state.filter === 'all' ? 'active' : '' }}" t-on-click="() => this.setFilter('all')">Tous</button>
-                <button t-attf-class="civora-pill {{ state.filter === 'en_cours' ? 'active' : '' }}" t-on-click="() => this.setFilter('en_cours')">En cours</button>
-                <button t-attf-class="civora-pill {{ state.filter === 'brouillon' ? 'active' : '' }}" t-on-click="() => this.setFilter('brouillon')">Brouillons</button>
-                <button t-attf-class="civora-pill {{ state.filter === 'en_pause' ? 'active' : '' }}" t-on-click="() => this.setFilter('en_pause')">En pause</button>
-                <button t-attf-class="civora-pill {{ state.filter === 'termine' ? 'active' : '' }}" t-on-click="() => this.setFilter('termine')">Termines</button>
+        <!-- ============ IA INSIGHT + TOP AUTOMATION ============ -->
+        <div class="civora-wf-middle">
+            <div class="civora-insight">
+                <div class="civora-insight-row">
+                    <div class="civora-insight-spark"><i class="fa fa-magic"/></div>
+                    <div class="civora-insight-main">
+                        <div class="civora-insight-tag">IA · INSIGHT</div>
+                        <div class="civora-insight-title" t-esc="state.iaSuggestions.title or ''"/>
+                        <p class="civora-insight-body" t-esc="state.iaSuggestions.description or ''"/>
+                        <div class="civora-insight-action">
+                            <button class="civora-btn civora-btn-accent">
+                                <i class="fa fa-magic"/> Voir suggestions
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="civora-search-box">
-                <i class="fa fa-search"/>
-                <input type="text" placeholder="Rechercher workflow, modele..." t-on-input="onSearch" t-att-value="state.search"/>
+
+            <div class="civora-wf-top-card">
+                <div class="civora-wf-top-label">TOP AUTOMATION</div>
+                <div class="civora-wf-top-name" t-esc="state.topAutomation.name or '—'"/>
+                <div class="civora-wf-top-stats">
+                    <t t-esc="fmtNum(state.topAutomation.execution_count)"/> envois automatises · <t t-esc="state.topAutomation.error_count or 0"/> erreur
+                </div>
+                <div class="civora-wf-top-action">
+                    <button class="civora-btn civora-btn-outline">Examiner</button>
+                </div>
             </div>
         </div>
 
-        <!-- Table -->
-        <div class="civora-table-wrapper">
-            <table class="civora-table">
-                <thead>
-                    <tr>
-                        <th>Ref</th>
-                        <th>Titre</th>
-                        <th>Modele</th>
-                        <th>Categorie</th>
-                        <th>Priorite</th>
-                        <th>Progression</th>
-                        <th>Echeance</th>
-                        <th>Statut</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <t t-foreach="filteredWorkflows" t-as="w" t-key="w.id">
-                        <tr class="civora-table-row" t-on-click="() => this.openDetail(w.id)">
-                            <td class="civora-ref"><t t-esc="w.name"/></td>
-                            <td class="civora-title-cell"><t t-esc="w.title"/></td>
-                            <td class="civora-muted-cell"><t t-esc="w.template_id ? w.template_id[1] : '—'"/></td>
-                            <td>
-                                <span t-attf-class="civora-cat-badge civora-cat-{{ categoryClass(w.category) }}">
-                                    <t t-esc="categoryLabel(w.category)"/>
-                                </span>
-                            </td>
-                            <td>
-                                <span t-attf-class="civora-priority-badge civora-priority-{{ priorityClass(w.priority) }}">
-                                    <t t-esc="priorityLabel(w.priority)"/>
-                                </span>
-                            </td>
-                            <td>
-                                <div class="civora-progress-cell">
-                                    <div class="civora-progress-bar-mini">
-                                        <div class="civora-progress-fill" t-attf-style="width: {{ progressPercent(w) }}%"/>
-                                    </div>
-                                    <span class="civora-progress-text"><t t-esc="progressLabel(w)"/></span>
-                                </div>
-                            </td>
-                            <td class="civora-muted-cell"><t t-esc="w.deadline || '—'"/></td>
-                            <td>
-                                <span t-attf-class="civora-status-badge civora-status-{{ stateClass(w.state) }}">
-                                    <t t-esc="stateLabel(w.state)"/>
-                                </span>
-                            </td>
-                        </tr>
-                    </t>
-                    <t t-if="filteredWorkflows.length === 0">
-                        <tr><td colspan="8" class="civora-empty">Aucun workflow</td></tr>
-                    </t>
-                </tbody>
-            </table>
+        <!-- ============ AUTOMATIONS LIST ============ -->
+        <div class="civora-wf-section">
+            <h2 class="civora-wf-section-title">Workflows en cours</h2>
+            <div class="civora-wf-list">
+                <t t-foreach="state.automations" t-as="rec" t-key="rec.id">
+                    <div class="civora-wf-card">
+                        <div class="civora-wf-card-icon">
+                            <i class="fa fa-cog"/>
+                        </div>
+                        <div class="civora-wf-card-content">
+                            <div class="civora-wf-card-title" t-esc="rec.name"/>
+                            <div class="civora-wf-card-meta">
+                                Declencheur: <t t-esc="rec.trigger_description or '—'"/> · <t t-esc="rec.step_count or 0"/> etapes
+                            </div>
+                        </div>
+                        <div class="civora-wf-card-right">
+                            <span class="civora-wf-card-stats">
+                                <t t-esc="fmtNum(rec.execution_count)"/> executions
+                            </span>
+                            <span t-attf-class="civora-wf-badge {{ rec.is_active ? 'civora-wf-badge-active' : 'civora-wf-badge-pause' }}">
+                                <t t-if="rec.is_active">Actif</t>
+                                <t t-else="">Pause</t>
+                            </span>
+                            <div class="civora-wf-card-actions">
+                                <button class="civora-wf-icon-btn" t-on-click="() => this.toggleActive(rec.id)"
+                                        t-att-title="rec.is_active ? 'Mettre en pause' : 'Activer'">
+                                    <i t-attf-class="fa {{ rec.is_active ? 'fa-pause' : 'fa-play' }}"/>
+                                </button>
+                                <button class="civora-wf-icon-btn civora-wf-icon-danger" t-on-click="() => this.deleteAutomation(rec.id)" title="Supprimer">
+                                    <i class="fa fa-trash-o"/>
+                                </button>
+                                <button class="civora-wf-edit-link" t-on-click="() => this.editAutomation(rec.id)">Editer</button>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+                <t t-if="!state.automations.length">
+                    <div class="civora-wf-empty">Aucune automatisation configuree</div>
+                </t>
+            </div>
         </div>
 
-        <!-- Drawer -->
+        <!-- ============ WORKFLOW BUILDER PREVIEW ============ -->
+        <div class="civora-wf-builder">
+            <div class="civora-wf-builder-header">
+                <h3>Workflow builder · apercu</h3>
+                <span>Glisser-deposer · branches conditionnelles · IA</span>
+            </div>
+            <div class="civora-wf-builder-pipeline">
+                <div class="civora-wf-builder-node">
+                    <div class="civora-wf-node-icon"><i class="fa fa-envelope"/></div>
+                    <div class="civora-wf-node-label">TRIGGER</div>
+                    <div class="civora-wf-node-name">Loyer non percu</div>
+                </div>
+                <div class="civora-wf-builder-arrow"><i class="fa fa-long-arrow-right"/></div>
+                <div class="civora-wf-builder-node">
+                    <div class="civora-wf-node-icon"><i class="fa fa-clock-o"/></div>
+                    <div class="civora-wf-node-label">DELAI</div>
+                    <div class="civora-wf-node-name">Attendre 5 jours</div>
+                </div>
+                <div class="civora-wf-builder-arrow"><i class="fa fa-long-arrow-right"/></div>
+                <div class="civora-wf-builder-node civora-wf-node-accent">
+                    <div class="civora-wf-node-icon"><i class="fa fa-code-fork"/></div>
+                    <div class="civora-wf-node-label">CONDITION</div>
+                    <div class="civora-wf-node-name">Score IA &lt; 60 ?</div>
+                </div>
+                <div class="civora-wf-builder-arrow"><i class="fa fa-long-arrow-right"/></div>
+                <div class="civora-wf-builder-node civora-wf-node-accent">
+                    <div class="civora-wf-node-icon"><i class="fa fa-magic"/></div>
+                    <div class="civora-wf-node-label">ACTION IA</div>
+                    <div class="civora-wf-node-name">WhatsApp personnalise</div>
+                </div>
+                <div class="civora-wf-builder-arrow"><i class="fa fa-long-arrow-right"/></div>
+                <div class="civora-wf-builder-node">
+                    <div class="civora-wf-node-icon"><i class="fa fa-envelope"/></div>
+                    <div class="civora-wf-node-label">ACTION</div>
+                    <div class="civora-wf-node-name">Email relance</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ DRAWER ============ -->
         <t t-if="state.drawerOpen">
             <WorkflowDrawer
+                editId="state.editId"
                 onSaved.bind="onSaved"
                 onClose.bind="closeDrawer"/>
         </t>
