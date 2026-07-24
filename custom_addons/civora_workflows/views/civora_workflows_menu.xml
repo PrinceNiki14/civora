@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="action_civora_workflows" model="ir.actions.client">
+        <field name="name">Workflows</field>
+        <field name="tag">civora.workflows</field>
+    </record>
+    <menuitem id="civora_agence.menu_workflows" action="action_civora_workflows"/>
+</odoo>

@@ -1,0 +1,36 @@
+{
+    "name": "CIVORA Workflows",
+    "version": "19.0.1.0.0",
+    "category": "Real Estate",
+    "summary": "Gestion des processus metier pour agences immobilieres",
+    "depends": [
+        "base",
+        "web",
+        "mail",
+        "civora_core",
+        "civora_agence",
+    ],
+    "data": [
+        "security/ir.model.access.csv",
+        "security/civora_workflows_rules.xml",
+        "data/civora_workflow_sequence.xml",
+        "views/civora_workflows_menu.xml",
+        "data/civora_workflows_demo.xml",
+    ],
+    "assets": {
+        "web.assets_backend": [
+            "civora_workflows/static/src/workflows/workflows_screen.scss",
+            "civora_workflows/static/src/workflows/workflow_drawer.scss",
+            "civora_workflows/static/src/workflow_detail/workflow_360.scss",
+            "civora_workflows/static/src/workflows/workflows_screen.js",
+            "civora_workflows/static/src/workflows/workflow_drawer.js",
+            "civora_workflows/static/src/workflow_detail/workflow_360.js",
+            "civora_workflows/static/src/workflows/workflows_screen.xml",
+            "civora_workflows/static/src/workflows/workflow_drawer.xml",
+            "civora_workflows/static/src/workflow_detail/workflow_360.xml",
+        ],
+    },
+    "application": False,
+    "installable": True,
+    "license": "LGPL-3",
+}

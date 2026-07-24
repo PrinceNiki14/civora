@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <record id="seq_civora_workflow" model="ir.sequence">
+        <field name="name">Workflow CIVORA</field>
+        <field name="code">civora.workflow</field>
+        <field name="prefix">WKF-%(year)s-</field>
+        <field name="padding">4</field>
+    </record>
+</odoo>

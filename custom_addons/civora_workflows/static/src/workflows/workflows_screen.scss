@@ -1,0 +1,91 @@
+.civora-workflows-screen {
+    padding: 1.5rem 2rem;
+    min-height: 100vh;
+    background: $civora-bg;
+}
+
+.civora-title-cell {
+    font-weight: 600;
+    color: $civora-fg;
+}
+
+.civora-muted-cell {
+    color: $civora-muted;
+    font-size: 0.85rem;
+}
+
+.civora-cat-badge {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+
+    &.civora-cat-accent {
+        background: rgba($civora-accent, 0.12);
+        color: $civora-accent;
+    }
+    &.civora-cat-info {
+        background: rgba($civora-info, 0.12);
+        color: $civora-info;
+    }
+    &.civora-cat-primary {
+        background: rgba($civora-primary, 0.12);
+        color: $civora-primary;
+    }
+    &.civora-cat-violet {
+        background: rgba($civora-violet, 0.12);
+        color: $civora-violet;
+    }
+}
+
+.civora-priority-badge {
+    display: inline-block;
+    padding: 0.2rem 0.5rem;
+    border-radius: $civora-radius-sm;
+    font-size: 0.75rem;
+    font-weight: 600;
+
+    &.civora-priority-muted {
+        background: rgba($civora-muted, 0.1);
+        color: $civora-muted;
+    }
+    &.civora-priority-warning {
+        background: rgba($civora-warning, 0.12);
+        color: darken($civora-warning, 10%);
+    }
+    &.civora-priority-danger {
+        background: rgba($civora-danger, 0.12);
+        color: $civora-danger;
+    }
+}
+
+.civora-progress-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.civora-progress-bar-mini {
+    flex: 1;
+    height: 6px;
+    background: $civora-border;
+    border-radius: 3px;
+    overflow: hidden;
+    min-width: 60px;
+
+    .civora-progress-fill {
+        height: 100%;
+        background: $civora-accent;
+        border-radius: 3px;
+        transition: width 0.3s ease;
+    }
+}
+
+.civora-progress-text {
+    font-size: 0.75rem;
+    color: $civora-muted;
+    white-space: nowrap;
+}

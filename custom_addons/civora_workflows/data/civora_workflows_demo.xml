@@ -1,0 +1,536 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+
+    <!-- ====== MODELES DE WORKFLOW ====== -->
+
+    <!-- 1. Processus de vente complete -->
+    <record id="tmpl_vente" model="civora.workflow.template">
+        <field name="name">Processus de vente complete</field>
+        <field name="category">vente</field>
+        <field name="description">Workflow complet pour la vente d'un bien immobilier, du mandat jusqu'a la remise des cles.</field>
+        <field name="sequence">1</field>
+    </record>
+    <record id="tmpl_vente_s1" model="civora.workflow.template.step">
+        <field name="template_id" ref="tmpl_vente"/>
+        <field name="name">Signature du mandat</field>
+        <field name="description">Signer le mandat de vente avec le proprietaire. Verifier les documents de propriete.</field>
+        <field name="sequence">10</field>
+        <field name="duration_days">3</field>
+        <field name="responsible_role">agent</field>
+    </record>
+    <record id="tmpl_vente_s2" model="civora.workflow.template.step">
+        <field name="template_id" ref="tmpl_vente"/>
+        <field name="name">Evaluation du bien</field>
+        <field name="description">Realiser l'evaluation du bien. Photos, metrages, etat des lieux.</field>
+        <field name="sequence">20</field>
+        <field name="duration_days">5</field>
+        <field name="responsible_role">agent</field>
+    </record>
+    <record id="tmpl_vente_s3" model="civora.workflow.template.step">
+        <field name="template_id" ref="tmpl_vente"/>
+        <field name="name">Mise en commercialisation</field>
+        <field name="description">Publication des annonces, portails immobiliers, reseaux sociaux.</field>
+        <field name="sequence">30</field>
+        <field name="duration_days">2</field>
+        <field name="responsible_role">agent</field>
+    </record>
+    <record id="tmpl_vente_s4" model="civora.workflow.template.step">
+        <field name="template_id" ref="tmpl_vente"/>
+        <field name="name">Organisation des visites</field>
+        <field name="description">Planifier et realiser les visites avec les acquereurs potentiels.</field>
+        <field name="sequence">40</field>
+        <field name="duration_days">14</field>
+        <field name="responsible_role">agent</field>
+    </record>
+    <record id="tmpl_vente_s5" model="civora.workflow.template.step">
+        <field name="template_id" ref="tmpl_vente"/>
+        <field name="name">Reception et negociation des offres</field>
+        <field name="description">Recevoir les offres, negocier avec les parties, obtenir l'accord du vendeur.</field>
+        <field name="sequence">50</field>
+        <field name="duration_days">7</field>
+        <field name="responsible_role">agent</field>
+    </record>
+    <record id="tmpl_vente_s6" model="civora.workflow.template.step">
+        <field name="template_id" ref="tmpl_vente"/>
+        <field name="name">Signature du compromis</field>
+        <field name="description">Preparer et signer le compromis de vente chez le notaire.</field>
+        <field name="sequence">60</field>
+        <field name="duration_days">10</field>
+        <field name="responsible_role">notaire</field>
+    </record>
+    <record id="tmpl_vente_s7" model="civora.workflow.template.step">
+        <field name="template_id" ref="tmpl_vente"/>
+        <field name="name">Suivi conditions suspensives</field>
+        <field name="description">Verifier l'obtention du pret, titre foncier, urbanisme. Relancer si necessaire.</field>
+        <field name="sequence">70</field>
+        <field name="duration_days">60</field>
+        <field name="responsible_role">agent</field>
+    </record>
+    <record id="tmpl_vente_s8" model="civora.workflow.template.step">
+        <field name="template_id" ref="tmpl_vente"/>
+        <field name="name">Signature de l'acte et remise des cles</field>
+        <field name="description">Acte authentique chez le notaire. Remise des cles a l'acquereur.</field>
+        <field name="sequence">80</field>
+        <field name="duration_days">5</field>
+        <field name="responsible_role">notaire</field>
+    </record>
+
+    <!-- 2. Mise en location -->
+    <record id="tmpl_location" model="civora.workflow.template">
+        <field name="name">Mise en location</field>
+        <field name="category">location</field>
+        <field name="description">Processus complet pour la mise en location d'un bien, du mandat a l'etat des lieux d'entree.</field>
+        <field name="sequence">2</field>
+    </record>
+    <record id="tmpl_location_s1" model="civora.workflow.template.step">
+        <field name="template_id" ref="tmpl_location"/>
+        <field name="name">Mandat de gestion locative</field>
+        <field name="description">Signer le mandat avec le proprietaire. Definir le loyer et les conditions.</field>
+        <field name="sequence">10</field>
+        <field name="duration_days">3</field>
+        <field name="responsible_role">agent</field>
+    </record>
+    <record id="tmpl_location_s2" model="civora.workflow.template.step">
+        <field name="template_id" ref="tmpl_location"/>
+        <field name="name">Publication de l'annonce</field>
+        <field name="description">Creer et publier l'annonce avec photos et description sur tous les canaux.</field>
+        <field name="sequence">20</field>
+        <field name="duration_days">2</field>
+        <field name="responsible_role">agent</field>
+    </record>
+    <record id="tmpl_location_s3" model="civora.workflow.template.step">
+        <field name="template_id" ref="tmpl_location"/>
+        <field name="name">Visites et selection</field>
+        <field name="description">Organiser les visites. Collecter et analyser les dossiers des candidats.</field>
+        <field name="sequence">30</field>
+        <field name="duration_days">10</field>
+        <field name="responsible_role">agent</field>
+    </record>
+    <record id="tmpl_location_s4" model="civora.workflow.template.step">
+        <field name="template_id" ref="tmpl_location"/>
+        <field name="name">Validation du dossier locataire</field>
+        <field name="description">Verifier les garanties, les references, et obtenir l'accord du proprietaire.</field>
+        <field name="sequence">40</field>
+        <field name="duration_days">5</field>
+        <field name="responsible_role">manager</field>
+    </record>
+    <record id="tmpl_location_s5" model="civora.workflow.template.step">
+        <field name="template_id" ref="tmpl_location"/>
+        <field name="name">Signature du bail</field>
+        <field name="description">Rediger et signer le contrat de bail. Collecte de la caution et du premier loyer.</field>
+        <field name="sequence">50</field>
+        <field name="duration_days">3</field>
+        <field name="responsible_role">agent</field>
+    </record>
+    <record id="tmpl_location_s6" model="civora.workflow.template.step">
+        <field name="template_id" ref="tmpl_location"/>
+        <field name="name">Etat des lieux d'entree</field>
+        <field name="description">Realiser l'etat des lieux contradictoire. Remise des cles au locataire.</field>
+        <field name="sequence">60</field>
+        <field name="duration_days">1</field>
+        <field name="responsible_role">agent</field>
+    </record>
+
+    <!-- 3. Onboarding proprietaire -->
+    <record id="tmpl_onboarding" model="civora.workflow.template">
+        <field name="name">Onboarding proprietaire</field>
+        <field name="category">gestion</field>
+        <field name="description">Integration d'un nouveau proprietaire dans le portefeuille de l'agence.</field>
+        <field name="sequence">3</field>
+    </record>
+    <record id="tmpl_onboarding_s1" model="civora.workflow.template.step">
+        <field name="template_id" ref="tmpl_onboarding"/>
+        <field name="name">Prise de contact initiale</field>
+        <field name="description">Premier rendez-vous avec le proprietaire. Recueil des besoins et attentes.</field>
+        <field name="sequence">10</field>
+        <field name="duration_days">1</field>
+        <field name="responsible_role">agent</field>
+    </record>
+    <record id="tmpl_onboarding_s2" model="civora.workflow.template.step">
+        <field name="template_id" ref="tmpl_onboarding"/>
+        <field name="name">Visite et evaluation du bien</field>
+        <field name="description">Visite sur place. Photos, metrages, diagnostic de l'etat general.</field>
+        <field name="sequence">20</field>
+        <field name="duration_days">3</field>
+        <field name="responsible_role">agent</field>
+    </record>
+    <record id="tmpl_onboarding_s3" model="civora.workflow.template.step">
+        <field name="template_id" ref="tmpl_onboarding"/>
+        <field name="name">Estimation et proposition</field>
+        <field name="description">Preparer l'estimation de prix/loyer et la proposition commerciale.</field>
+        <field name="sequence">30</field>
+        <field name="duration_days">3</field>
+        <field name="responsible_role">manager</field>
+    </record>
+    <record id="tmpl_onboarding_s4" model="civora.workflow.template.step">
+        <field name="template_id" ref="tmpl_onboarding"/>
+        <field name="name">Collecte des documents</field>
+        <field name="description">Titre foncier, plan cadastral, attestation villageoise, permis de construire.</field>
+        <field name="sequence">40</field>
+        <field name="duration_days">7</field>
+        <field name="responsible_role">admin</field>
+    </record>
+    <record id="tmpl_onboarding_s5" model="civora.workflow.template.step">
+        <field name="template_id" ref="tmpl_onboarding"/>
+        <field name="name">Signature du mandat</field>
+        <field name="description">Signature du mandat de gestion ou de vente avec le proprietaire.</field>
+        <field name="sequence">50</field>
+        <field name="duration_days">2</field>
+        <field name="responsible_role">agent</field>
+    </record>
+
+    <!-- 4. Recouvrement de loyer -->
+    <record id="tmpl_recouvrement" model="civora.workflow.template">
+        <field name="name">Recouvrement de loyer</field>
+        <field name="category">gestion</field>
+        <field name="description">Processus de recouvrement pour loyers impayes.</field>
+        <field name="sequence">4</field>
+    </record>
+    <record id="tmpl_recouvrement_s1" model="civora.workflow.template.step">
+        <field name="template_id" ref="tmpl_recouvrement"/>
+        <field name="name">Rappel amiable</field>
+        <field name="description">Appel telephonique et SMS de rappel au locataire.</field>
+        <field name="sequence">10</field>
+        <field name="duration_days">3</field>
+        <field name="responsible_role">agent</field>
+    </record>
+    <record id="tmpl_recouvrement_s2" model="civora.workflow.template.step">
+        <field name="template_id" ref="tmpl_recouvrement"/>
+        <field name="name">Lettre de relance</field>
+        <field name="description">Envoi d'une lettre de relance formelle avec accuse de reception.</field>
+        <field name="sequence">20</field>
+        <field name="duration_days">7</field>
+        <field name="responsible_role">admin</field>
+    </record>
+    <record id="tmpl_recouvrement_s3" model="civora.workflow.template.step">
+        <field name="template_id" ref="tmpl_recouvrement"/>
+        <field name="name">Mise en demeure</field>
+        <field name="description">Envoi de la mise en demeure par huissier. Delai de 30 jours.</field>
+        <field name="sequence">30</field>
+        <field name="duration_days">30</field>
+        <field name="responsible_role">externe</field>
+    </record>
+    <record id="tmpl_recouvrement_s4" model="civora.workflow.template.step">
+        <field name="template_id" ref="tmpl_recouvrement"/>
+        <field name="name">Action juridique</field>
+        <field name="description">Saisine du tribunal. Procedure d'expulsion si necessaire.</field>
+        <field name="sequence">40</field>
+        <field name="duration_days">60</field>
+        <field name="responsible_role">externe</field>
+        <field name="is_required" eval="False"/>
+    </record>
+
+    <!-- ====== WORKFLOWS ACTIFS ====== -->
+
+    <!-- WKF 1 : Vente Cocody en cours (etape 6 sur 8) -->
+    <record id="wkf_vente_cocody" model="civora.workflow">
+        <field name="title">Vente Villa Cocody Riviera 3</field>
+        <field name="template_id" ref="tmpl_vente"/>
+        <field name="state">en_cours</field>
+        <field name="category">vente</field>
+        <field name="priority">urgent</field>
+        <field name="assigned_to" ref="base.user_admin"/>
+        <field name="start_date">2026-04-01</field>
+        <field name="deadline">2026-09-30</field>
+        <field name="reference">Dossier VTE-2026-0002</field>
+        <field name="notes">Vente en bonne voie. Compromis signe le 10 juillet. En attente validation du pret bancaire de l'acquereur.</field>
+    </record>
+    <record id="wkf_vente_cocody_s1" model="civora.workflow.step">
+        <field name="workflow_id" ref="wkf_vente_cocody"/>
+        <field name="name">Signature du mandat</field>
+        <field name="sequence">10</field>
+        <field name="state">termine</field>
+        <field name="completed_date">2026-04-03</field>
+        <field name="responsible_role">agent</field>
+        <field name="notes">Mandat exclusif signe avec Bamba Seydou.</field>
+    </record>
+    <record id="wkf_vente_cocody_s2" model="civora.workflow.step">
+        <field name="workflow_id" ref="wkf_vente_cocody"/>
+        <field name="name">Evaluation du bien</field>
+        <field name="sequence">20</field>
+        <field name="state">termine</field>
+        <field name="completed_date">2026-04-10</field>
+        <field name="responsible_role">agent</field>
+    </record>
+    <record id="wkf_vente_cocody_s3" model="civora.workflow.step">
+        <field name="workflow_id" ref="wkf_vente_cocody"/>
+        <field name="name">Mise en commercialisation</field>
+        <field name="sequence">30</field>
+        <field name="state">termine</field>
+        <field name="completed_date">2026-04-15</field>
+        <field name="responsible_role">agent</field>
+    </record>
+    <record id="wkf_vente_cocody_s4" model="civora.workflow.step">
+        <field name="workflow_id" ref="wkf_vente_cocody"/>
+        <field name="name">Organisation des visites</field>
+        <field name="sequence">40</field>
+        <field name="state">termine</field>
+        <field name="completed_date">2026-05-20</field>
+        <field name="responsible_role">agent</field>
+        <field name="notes">12 visites realisees, 3 offres recues.</field>
+    </record>
+    <record id="wkf_vente_cocody_s5" model="civora.workflow.step">
+        <field name="workflow_id" ref="wkf_vente_cocody"/>
+        <field name="name">Reception et negociation des offres</field>
+        <field name="sequence">50</field>
+        <field name="state">termine</field>
+        <field name="completed_date">2026-06-25</field>
+        <field name="responsible_role">agent</field>
+        <field name="notes">Offre de Yao Adjoua retenue a 95 000 000 FCFA.</field>
+    </record>
+    <record id="wkf_vente_cocody_s6" model="civora.workflow.step">
+        <field name="workflow_id" ref="wkf_vente_cocody"/>
+        <field name="name">Signature du compromis</field>
+        <field name="sequence">60</field>
+        <field name="state">termine</field>
+        <field name="completed_date">2026-07-10</field>
+        <field name="responsible_role">notaire</field>
+        <field name="notes">Compromis signe chez Me Brou Christelle.</field>
+    </record>
+    <record id="wkf_vente_cocody_s7" model="civora.workflow.step">
+        <field name="workflow_id" ref="wkf_vente_cocody"/>
+        <field name="name">Suivi conditions suspensives</field>
+        <field name="sequence">70</field>
+        <field name="state">en_cours</field>
+        <field name="deadline">2026-09-10</field>
+        <field name="responsible_role">agent</field>
+        <field name="notes">Dossier de pret depose a la SGBCI. Verification titre foncier en cours au Conservatoire.</field>
+    </record>
+    <record id="wkf_vente_cocody_s8" model="civora.workflow.step">
+        <field name="workflow_id" ref="wkf_vente_cocody"/>
+        <field name="name">Signature de l'acte et remise des cles</field>
+        <field name="sequence">80</field>
+        <field name="state">a_faire</field>
+        <field name="deadline">2026-09-30</field>
+        <field name="responsible_role">notaire</field>
+    </record>
+
+    <!-- WKF 2 : Location Plateau en cours (etape 3 sur 6) -->
+    <record id="wkf_location_plateau" model="civora.workflow">
+        <field name="title">Location Appartement T3 Plateau</field>
+        <field name="template_id" ref="tmpl_location"/>
+        <field name="state">en_cours</field>
+        <field name="category">location</field>
+        <field name="priority">normal</field>
+        <field name="assigned_to" ref="base.user_admin"/>
+        <field name="start_date">2026-07-01</field>
+        <field name="deadline">2026-08-15</field>
+        <field name="notes">Appartement T3 au Plateau, 3e etage avec vue. Loyer cible : 450 000 FCFA/mois.</field>
+    </record>
+    <record id="wkf_location_plateau_s1" model="civora.workflow.step">
+        <field name="workflow_id" ref="wkf_location_plateau"/>
+        <field name="name">Mandat de gestion locative</field>
+        <field name="sequence">10</field>
+        <field name="state">termine</field>
+        <field name="completed_date">2026-07-03</field>
+        <field name="responsible_role">agent</field>
+    </record>
+    <record id="wkf_location_plateau_s2" model="civora.workflow.step">
+        <field name="workflow_id" ref="wkf_location_plateau"/>
+        <field name="name">Publication de l'annonce</field>
+        <field name="sequence">20</field>
+        <field name="state">termine</field>
+        <field name="completed_date">2026-07-05</field>
+        <field name="responsible_role">agent</field>
+        <field name="notes">Publie sur Jumia House, Coinafrique et Facebook Marketplace.</field>
+    </record>
+    <record id="wkf_location_plateau_s3" model="civora.workflow.step">
+        <field name="workflow_id" ref="wkf_location_plateau"/>
+        <field name="name">Visites et selection</field>
+        <field name="sequence">30</field>
+        <field name="state">en_cours</field>
+        <field name="deadline">2026-07-25</field>
+        <field name="responsible_role">agent</field>
+        <field name="notes">6 visites realisees, 2 dossiers en attente de retour.</field>
+    </record>
+    <record id="wkf_location_plateau_s4" model="civora.workflow.step">
+        <field name="workflow_id" ref="wkf_location_plateau"/>
+        <field name="name">Validation du dossier locataire</field>
+        <field name="sequence">40</field>
+        <field name="state">a_faire</field>
+        <field name="deadline">2026-07-30</field>
+        <field name="responsible_role">manager</field>
+    </record>
+    <record id="wkf_location_plateau_s5" model="civora.workflow.step">
+        <field name="workflow_id" ref="wkf_location_plateau"/>
+        <field name="name">Signature du bail</field>
+        <field name="sequence">50</field>
+        <field name="state">a_faire</field>
+        <field name="deadline">2026-08-05</field>
+        <field name="responsible_role">agent</field>
+    </record>
+    <record id="wkf_location_plateau_s6" model="civora.workflow.step">
+        <field name="workflow_id" ref="wkf_location_plateau"/>
+        <field name="name">Etat des lieux d'entree</field>
+        <field name="sequence">60</field>
+        <field name="state">a_faire</field>
+        <field name="deadline">2026-08-15</field>
+        <field name="responsible_role">agent</field>
+    </record>
+
+    <!-- WKF 3 : Onboarding termine -->
+    <record id="wkf_onboarding_done" model="civora.workflow">
+        <field name="title">Onboarding Koné Mariam</field>
+        <field name="template_id" ref="tmpl_onboarding"/>
+        <field name="state">termine</field>
+        <field name="category">gestion</field>
+        <field name="priority">normal</field>
+        <field name="assigned_to" ref="base.user_admin"/>
+        <field name="start_date">2026-05-01</field>
+        <field name="deadline">2026-05-20</field>
+        <field name="completed_date">2026-05-18</field>
+        <field name="notes">Proprietaire integree avec succes. Duplex a Angre Star 11 mis en vente.</field>
+    </record>
+    <record id="wkf_onboarding_done_s1" model="civora.workflow.step">
+        <field name="workflow_id" ref="wkf_onboarding_done"/>
+        <field name="name">Prise de contact initiale</field>
+        <field name="sequence">10</field>
+        <field name="state">termine</field>
+        <field name="completed_date">2026-05-02</field>
+    </record>
+    <record id="wkf_onboarding_done_s2" model="civora.workflow.step">
+        <field name="workflow_id" ref="wkf_onboarding_done"/>
+        <field name="name">Visite et evaluation du bien</field>
+        <field name="sequence">20</field>
+        <field name="state">termine</field>
+        <field name="completed_date">2026-05-06</field>
+    </record>
+    <record id="wkf_onboarding_done_s3" model="civora.workflow.step">
+        <field name="workflow_id" ref="wkf_onboarding_done"/>
+        <field name="name">Estimation et proposition</field>
+        <field name="sequence">30</field>
+        <field name="state">termine</field>
+        <field name="completed_date">2026-05-10</field>
+    </record>
+    <record id="wkf_onboarding_done_s4" model="civora.workflow.step">
+        <field name="workflow_id" ref="wkf_onboarding_done"/>
+        <field name="name">Collecte des documents</field>
+        <field name="sequence">40</field>
+        <field name="state">termine</field>
+        <field name="completed_date">2026-05-15</field>
+    </record>
+    <record id="wkf_onboarding_done_s5" model="civora.workflow.step">
+        <field name="workflow_id" ref="wkf_onboarding_done"/>
+        <field name="name">Signature du mandat</field>
+        <field name="sequence">50</field>
+        <field name="state">termine</field>
+        <field name="completed_date">2026-05-18</field>
+    </record>
+
+    <!-- WKF 4 : Recouvrement en cours bloque -->
+    <record id="wkf_recouvrement" model="civora.workflow">
+        <field name="title">Recouvrement loyer Diallo Ibrahim</field>
+        <field name="template_id" ref="tmpl_recouvrement"/>
+        <field name="state">en_cours</field>
+        <field name="category">gestion</field>
+        <field name="priority">critique</field>
+        <field name="assigned_to" ref="base.user_admin"/>
+        <field name="start_date">2026-06-01</field>
+        <field name="deadline">2026-07-31</field>
+        <field name="notes">Locataire avec 3 mois d'impayes (avril, mai, juin). Loyer mensuel : 350 000 FCFA. Total du : 1 050 000 FCFA.</field>
+    </record>
+    <record id="wkf_recouvrement_s1" model="civora.workflow.step">
+        <field name="workflow_id" ref="wkf_recouvrement"/>
+        <field name="name">Rappel amiable</field>
+        <field name="sequence">10</field>
+        <field name="state">termine</field>
+        <field name="completed_date">2026-06-05</field>
+        <field name="responsible_role">agent</field>
+        <field name="notes">Appel effectue. Le locataire promet de regulariser sous 15 jours.</field>
+    </record>
+    <record id="wkf_recouvrement_s2" model="civora.workflow.step">
+        <field name="workflow_id" ref="wkf_recouvrement"/>
+        <field name="name">Lettre de relance</field>
+        <field name="sequence">20</field>
+        <field name="state">termine</field>
+        <field name="completed_date">2026-06-20</field>
+        <field name="responsible_role">admin</field>
+        <field name="notes">Lettre AR envoyee. Aucune reponse apres 10 jours.</field>
+    </record>
+    <record id="wkf_recouvrement_s3" model="civora.workflow.step">
+        <field name="workflow_id" ref="wkf_recouvrement"/>
+        <field name="name">Mise en demeure</field>
+        <field name="sequence">30</field>
+        <field name="state">en_cours</field>
+        <field name="deadline">2026-07-31</field>
+        <field name="responsible_role">externe</field>
+        <field name="notes">Huissier mandate le 1er juillet. Delai legal de 30 jours en cours.</field>
+    </record>
+    <record id="wkf_recouvrement_s4" model="civora.workflow.step">
+        <field name="workflow_id" ref="wkf_recouvrement"/>
+        <field name="name">Action juridique</field>
+        <field name="sequence">40</field>
+        <field name="state">a_faire</field>
+        <field name="is_required" eval="False"/>
+        <field name="responsible_role">externe</field>
+    </record>
+
+    <!-- WKF 5 : Nouveau onboarding en brouillon -->
+    <record id="wkf_onboarding_new" model="civora.workflow">
+        <field name="title">Onboarding Toure Sekou</field>
+        <field name="template_id" ref="tmpl_onboarding"/>
+        <field name="state">brouillon</field>
+        <field name="category">gestion</field>
+        <field name="priority">normal</field>
+        <field name="assigned_to" ref="base.user_admin"/>
+        <field name="deadline">2026-08-30</field>
+        <field name="notes">Nouveau proprietaire recommande par Kouame. Possede 2 villas a Bingerville.</field>
+    </record>
+
+    <!-- WKF 6 : Location terminee -->
+    <record id="wkf_location_done" model="civora.workflow">
+        <field name="title">Location Studio Cocody Angre</field>
+        <field name="template_id" ref="tmpl_location"/>
+        <field name="state">termine</field>
+        <field name="category">location</field>
+        <field name="priority">normal</field>
+        <field name="assigned_to" ref="base.user_admin"/>
+        <field name="start_date">2026-06-01</field>
+        <field name="deadline">2026-07-15</field>
+        <field name="completed_date">2026-07-12</field>
+        <field name="notes">Studio meuble a Angre. Locataire: etudiante en master. Loyer: 180 000 FCFA/mois.</field>
+    </record>
+    <record id="wkf_location_done_s1" model="civora.workflow.step">
+        <field name="workflow_id" ref="wkf_location_done"/>
+        <field name="name">Mandat de gestion locative</field>
+        <field name="sequence">10</field>
+        <field name="state">termine</field>
+        <field name="completed_date">2026-06-03</field>
+    </record>
+    <record id="wkf_location_done_s2" model="civora.workflow.step">
+        <field name="workflow_id" ref="wkf_location_done"/>
+        <field name="name">Publication de l'annonce</field>
+        <field name="sequence">20</field>
+        <field name="state">termine</field>
+        <field name="completed_date">2026-06-05</field>
+    </record>
+    <record id="wkf_location_done_s3" model="civora.workflow.step">
+        <field name="workflow_id" ref="wkf_location_done"/>
+        <field name="name">Visites et selection</field>
+        <field name="sequence">30</field>
+        <field name="state">termine</field>
+        <field name="completed_date">2026-06-20</field>
+    </record>
+    <record id="wkf_location_done_s4" model="civora.workflow.step">
+        <field name="workflow_id" ref="wkf_location_done"/>
+        <field name="name">Validation du dossier locataire</field>
+        <field name="sequence">40</field>
+        <field name="state">termine</field>
+        <field name="completed_date">2026-06-25</field>
+    </record>
+    <record id="wkf_location_done_s5" model="civora.workflow.step">
+        <field name="workflow_id" ref="wkf_location_done"/>
+        <field name="name">Signature du bail</field>
+        <field name="sequence">50</field>
+        <field name="state">termine</field>
+        <field name="completed_date">2026-07-05</field>
+    </record>
+    <record id="wkf_location_done_s6" model="civora.workflow.step">
+        <field name="workflow_id" ref="wkf_location_done"/>
+        <field name="name">Etat des lieux d'entree</field>
+        <field name="sequence">60</field>
+        <field name="state">termine</field>
+        <field name="completed_date">2026-07-12</field>
+    </record>
+
+</odoo>

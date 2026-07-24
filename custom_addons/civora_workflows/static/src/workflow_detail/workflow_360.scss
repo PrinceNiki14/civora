@@ -1,0 +1,350 @@
+.civora-workflow-360 {
+    padding: 1.5rem 2rem;
+    min-height: 100vh;
+    background: $civora-bg;
+
+    .civora-360-topbar {
+        margin-bottom: 1rem;
+    }
+
+    .civora-back-btn {
+        background: $civora-card;
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius-sm;
+        padding: 0.4rem 0.8rem;
+        font-size: 0.82rem;
+        color: $civora-muted;
+        cursor: pointer;
+        transition: background 0.2s;
+
+        &:hover { background: darken($civora-card, 2%); }
+        i { margin-right: 0.3rem; }
+    }
+
+    .civora-360-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1.5rem;
+        gap: 1rem;
+
+        h2 {
+            font-family: $civora-font-display;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: $civora-fg;
+            margin: 0;
+        }
+    }
+
+    .civora-360-meta {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-top: 0.4rem;
+        font-size: 0.82rem;
+        color: $civora-muted;
+        flex-wrap: wrap;
+
+        i { margin-right: 0.2rem; }
+    }
+
+    .civora-360-actions {
+        display: flex;
+        gap: 0.5rem;
+        flex-shrink: 0;
+    }
+
+    .civora-360-kpis {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .civora-360-tabs {
+        display: flex;
+        gap: 0;
+        border-bottom: 2px solid $civora-border;
+        margin-bottom: 1.25rem;
+    }
+
+    .civora-tab {
+        padding: 0.6rem 1.2rem;
+        background: none;
+        border: none;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: $civora-muted;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -2px;
+        transition: color 0.2s;
+
+        &.active {
+            color: $civora-accent;
+            border-bottom-color: $civora-accent;
+        }
+    }
+
+    .civora-tab-count {
+        display: inline-block;
+        background: $civora-accent;
+        color: white;
+        font-size: 0.65rem;
+        padding: 0.1rem 0.4rem;
+        border-radius: 999px;
+        margin-left: 0.3rem;
+    }
+
+    .civora-360-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.25rem;
+    }
+
+    .civora-360-card {
+        background: $civora-card;
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius;
+        padding: 1.25rem;
+
+        h3 {
+            font-family: $civora-font-display;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: $civora-fg;
+            margin: 0 0 0.75rem 0;
+        }
+    }
+
+    .civora-kv {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.4rem 0;
+        border-bottom: 1px solid rgba($civora-border, 0.5);
+
+        &:last-child { border-bottom: none; }
+    }
+
+    .civora-k {
+        font-size: 0.82rem;
+        color: $civora-muted;
+    }
+
+    .civora-v {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: $civora-fg;
+        text-align: right;
+    }
+}
+
+// Progress bar
+.civora-wf-progress-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.civora-wf-progress-bar {
+    flex: 1;
+    height: 10px;
+    background: $civora-border;
+    border-radius: 5px;
+    overflow: hidden;
+
+    .civora-wf-progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, $civora-accent, lighten($civora-accent, 10%));
+        border-radius: 5px;
+        transition: width 0.4s ease;
+    }
+}
+
+.civora-wf-progress-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: $civora-accent;
+    white-space: nowrap;
+}
+
+// Priority badges
+.civora-priority-badge {
+    display: inline-block;
+    padding: 0.2rem 0.5rem;
+    border-radius: $civora-radius-sm;
+    font-size: 0.75rem;
+    font-weight: 600;
+
+    &.civora-priority-muted {
+        background: rgba($civora-muted, 0.1);
+        color: $civora-muted;
+    }
+    &.civora-priority-warning {
+        background: rgba($civora-warning, 0.12);
+        color: darken($civora-warning, 10%);
+    }
+    &.civora-priority-danger {
+        background: rgba($civora-danger, 0.12);
+        color: $civora-danger;
+    }
+}
+
+// Steps list
+.civora-steps-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.civora-step-card {
+    background: $civora-card;
+    border: 1px solid $civora-border;
+    border-radius: $civora-radius;
+    padding: 1rem 1.25rem;
+    border-left: 4px solid $civora-border;
+    transition: box-shadow 0.2s;
+
+    &:hover {
+        box-shadow: $civora-shadow-card;
+    }
+
+    &.civora-step-success {
+        border-left-color: $civora-success;
+        background: rgba($civora-success, 0.02);
+    }
+    &.civora-step-info {
+        border-left-color: $civora-info;
+        background: rgba($civora-info, 0.02);
+    }
+    &.civora-step-danger {
+        border-left-color: $civora-danger;
+        background: rgba($civora-danger, 0.02);
+    }
+    &.civora-step-muted {
+        border-left-color: $civora-border;
+    }
+}
+
+.civora-step-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.civora-step-left {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    flex: 1;
+}
+
+.civora-step-icon {
+    font-size: 1.1rem;
+    margin-top: 0.15rem;
+
+    .civora-step-success & { color: $civora-success; }
+    .civora-step-info & { color: $civora-info; }
+    .civora-step-danger & { color: $civora-danger; }
+    .civora-step-muted & { color: $civora-muted; }
+}
+
+.civora-step-name {
+    font-weight: 600;
+    color: $civora-fg;
+    font-size: 0.9rem;
+}
+
+.civora-step-required {
+    display: inline-block;
+    margin-left: 0.5rem;
+    padding: 0.1rem 0.4rem;
+    border-radius: 999px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    background: rgba($civora-warning, 0.12);
+    color: darken($civora-warning, 15%);
+}
+
+.civora-step-meta {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.25rem;
+    font-size: 0.8rem;
+    color: $civora-muted;
+
+    i { margin-right: 0.2rem; }
+}
+
+.civora-step-role {
+    font-weight: 500;
+}
+
+.civora-step-done-date {
+    color: $civora-success;
+}
+
+.civora-step-body {
+    margin-top: 0.75rem;
+    padding-left: 1.85rem;
+
+    p {
+        font-size: 0.82rem;
+        color: $civora-muted;
+        margin: 0 0 0.25rem 0;
+        line-height: 1.5;
+    }
+}
+
+.civora-step-notes {
+    font-style: italic;
+
+    i { color: $civora-warning; margin-right: 0.25rem; }
+}
+
+.civora-step-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    padding-left: 1.85rem;
+}
+
+.civora-btn-sm {
+    padding: 0.3rem 0.7rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border: none;
+    border-radius: $civora-radius-sm;
+    cursor: pointer;
+    transition: opacity 0.2s;
+
+    &:hover { opacity: 0.85; }
+
+    &.civora-btn-success {
+        background: $civora-success;
+        color: white;
+    }
+    &.civora-btn-info {
+        background: $civora-info;
+        color: white;
+    }
+    &.civora-btn-danger {
+        background: $civora-danger;
+        color: white;
+    }
+    &.civora-btn-muted {
+        background: $civora-border;
+        color: $civora-muted;
+    }
+}
+
+.civora-empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: $civora-muted;
+    font-size: 0.9rem;
+}

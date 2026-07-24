@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+<t t-name="civora_workflows.WorkflowsScreen">
+    <div class="civora-workflows-screen">
+        <!-- Header -->
+        <div class="civora-screen-header">
+            <div class="civora-screen-title">
+                <h1>Workflows</h1>
+                <span class="civora-screen-subtitle">Suivi des processus metier de l'agence</span>
+            </div>
+            <div class="civora-screen-actions">
+                <button class="civora-btn civora-btn-accent" t-on-click="openDrawer">
+                    + Nouveau workflow
+                </button>
+            </div>
+        </div>
+
+        <!-- KPIs -->
+        <div class="civora-kpi-grid">
+            <CivoraStatCard label="'En cours'" value="'' + (state.kpis.active || 0)" icon="'fa-play-circle'"/>
+            <CivoraStatCard label="'En retard'" value="'' + (state.kpis.overdue || 0)" icon="'fa-exclamation-triangle'" trend="state.kpis.overdue > 0 ? 'down' : 'neutral'"/>
+            <CivoraStatCard label="'Termines ce mois'" value="'' + (state.kpis.completed_month || 0)" icon="'fa-check-circle'"/>
+            <CivoraStatCard label="'Progression moy.'" value="(state.kpis.avg_progress || 0) + '%'" icon="'fa-tasks'"/>
+        </div>
+
+        <!-- Filters -->
+        <div class="civora-filters-bar">
+            <div class="civora-pills">
+                <button t-attf-class="civora-pill {{ state.filter === 'all' ? 'active' : '' }}" t-on-click="() => this.setFilter('all')">Tous</button>
+                <button t-attf-class="civora-pill {{ state.filter === 'en_cours' ? 'active' : '' }}" t-on-click="() => this.setFilter('en_cours')">En cours</button>
+                <button t-attf-class="civora-pill {{ state.filter === 'brouillon' ? 'active' : '' }}" t-on-click="() => this.setFilter('brouillon')">Brouillons</button>
+                <button t-attf-class="civora-pill {{ state.filter === 'en_pause' ? 'active' : '' }}" t-on-click="() => this.setFilter('en_pause')">En pause</button>
+                <button t-attf-class="civora-pill {{ state.filter === 'termine' ? 'active' : '' }}" t-on-click="() => this.setFilter('termine')">Termines</button>
+            </div>
+            <div class="civora-search-box">
+                <i class="fa fa-search"/>
+                <input type="text" placeholder="Rechercher workflow, modele..." t-on-input="onSearch" t-att-value="state.search"/>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="civora-table-wrapper">
+            <table class="civora-table">
+                <thead>
+                    <tr>
+                        <th>Ref</th>
+                        <th>Titre</th>
+                        <th>Modele</th>
+                        <th>Categorie</th>
+                        <th>Priorite</th>
+                        <th>Progression</th>
+                        <th>Echeance</th>
+                        <th>Statut</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-foreach="filteredWorkflows" t-as="w" t-key="w.id">
+                        <tr class="civora-table-row" t-on-click="() => this.openDetail(w.id)">
+                            <td class="civora-ref"><t t-esc="w.name"/></td>
+                            <td class="civora-title-cell"><t t-esc="w.title"/></td>
+                            <td class="civora-muted-cell"><t t-esc="w.template_id ? w.template_id[1] : '—'"/></td>
+                            <td>
+                                <span t-attf-class="civora-cat-badge civora-cat-{{ categoryClass(w.category) }}">
+                                    <t t-esc="categoryLabel(w.category)"/>
+                                </span>
+                            </td>
+                            <td>
+                                <span t-attf-class="civora-priority-badge civora-priority-{{ priorityClass(w.priority) }}">
+                                    <t t-esc="priorityLabel(w.priority)"/>
+                                </span>
+                            </td>
+                            <td>
+                                <div class="civora-progress-cell">
+                                    <div class="civora-progress-bar-mini">
+                                        <div class="civora-progress-fill" t-attf-style="width: {{ progressPercent(w) }}%"/>
+                                    </div>
+                                    <span class="civora-progress-text"><t t-esc="progressLabel(w)"/></span>
+                                </div>
+                            </td>
+                            <td class="civora-muted-cell"><t t-esc="w.deadline || '—'"/></td>
+                            <td>
+                                <span t-attf-class="civora-status-badge civora-status-{{ stateClass(w.state) }}">
+                                    <t t-esc="stateLabel(w.state)"/>
+                                </span>
+                            </td>
+                        </tr>
+                    </t>
+                    <t t-if="filteredWorkflows.length === 0">
+                        <tr><td colspan="8" class="civora-empty">Aucun workflow</td></tr>
+                    </t>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Drawer -->
+        <t t-if="state.drawerOpen">
+            <WorkflowDrawer
+                onSaved.bind="onSaved"
+                onClose.bind="closeDrawer"/>
+        </t>
+    </div>
+</t>
+</templates>
