@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_reservation_user,civora.reservation.user,model_civora_reservation,base.group_user,1,1,1,0
+access_reservation_admin,civora.reservation.admin,model_civora_reservation,base.group_system,1,1,1,1
+access_review_user,civora.reservation.review.user,model_civora_reservation_review,base.group_user,1,1,1,0
+access_review_admin,civora.reservation.review.admin,model_civora_reservation_review,base.group_system,1,1,1,1
+access_cleaning_user,civora.cleaning.task.user,model_civora_cleaning_task,base.group_user,1,1,1,0
+access_cleaning_admin,civora.cleaning.task.admin,model_civora_cleaning_task,base.group_system,1,1,1,1
+access_tariff_user,civora.seasonal.tariff.user,model_civora_seasonal_tariff,base.group_user,1,1,1,0
+access_tariff_admin,civora.seasonal.tariff.admin,model_civora_seasonal_tariff,base.group_system,1,1,1,1

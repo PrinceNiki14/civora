@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_civora_reservations" model="ir.actions.client">
+        <field name="name">Saisonnier</field>
+        <field name="tag">civora.reservations</field>
+    </record>
+
+    <menuitem id="civora_agence.menu_saisonnier" action="action_civora_reservations"/>
+
+</odoo>

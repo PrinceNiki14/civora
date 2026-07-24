@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+<t t-name="civora_saisonnier.ReservationsScreen">
+    <div class="civora-saisonnier-screen">
+        <!-- Header -->
+        <div class="civora-screen-header">
+            <div class="civora-screen-title">
+                <h1>Saisonnier</h1>
+                <span class="civora-screen-subtitle">Gestion des locations courte durée</span>
+            </div>
+            <div class="civora-screen-actions">
+                <button class="civora-btn civora-btn-accent" t-on-click="() => this.openDrawer('create')">
+                    + Nouvelle réservation
+                </button>
+            </div>
+        </div>
+
+        <!-- KPIs -->
+        <div class="civora-kpi-grid">
+            <CivoraStatCard label="'Réservations actives'" value="'' + (state.kpis.active || 0)" icon="'fa-calendar-check-o'"/>
+            <CivoraStatCard label="'Revenus du mois'" value="fmtMoney(state.kpis.revenue_month) + ' FCFA'" icon="'fa-money'"/>
+            <CivoraStatCard label="'Check-in du jour'" value="'' + (state.kpis.checkins_today || 0)" icon="'fa-sign-in'"/>
+            <CivoraStatCard label="'Note moyenne'" value="(state.kpis.avg_rating || 0) + ' / 5'" hint="(state.kpis.review_count || 0) + ' avis'" icon="'fa-star'"/>
+        </div>
+
+        <!-- Filters -->
+        <div class="civora-filters-bar">
+            <div class="civora-pills">
+                <button t-attf-class="civora-pill {{ state.filter === 'all' ? 'active' : '' }}" t-on-click="() => this.setFilter('all')">Toutes</button>
+                <button t-attf-class="civora-pill {{ state.filter === 'confirmed' ? 'active' : '' }}" t-on-click="() => this.setFilter('confirmed')">Confirmées</button>
+                <button t-attf-class="civora-pill {{ state.filter === 'in_stay' ? 'active' : '' }}" t-on-click="() => this.setFilter('in_stay')">En séjour</button>
+                <button t-attf-class="civora-pill {{ state.filter === 'checkin_today' ? 'active' : '' }}" t-on-click="() => this.setFilter('checkin_today')">Check-in du jour</button>
+                <button t-attf-class="civora-pill {{ state.filter === 'checkout_today' ? 'active' : '' }}" t-on-click="() => this.setFilter('checkout_today')">Check-out du jour</button>
+                <button t-attf-class="civora-pill {{ state.filter === 'upcoming' ? 'active' : '' }}" t-on-click="() => this.setFilter('upcoming')">À venir</button>
+            </div>
+            <div class="civora-search-box">
+                <i class="fa fa-search"/>
+                <input type="text" placeholder="Rechercher voyageur, bien, référence..." t-on-input="onSearch" t-att-value="state.search"/>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="civora-table-wrapper">
+            <table class="civora-table">
+                <thead>
+                    <tr>
+                        <th>Référence</th>
+                        <th>Bien</th>
+                        <th>Voyageur</th>
+                        <th>Arrivée</th>
+                        <th>Départ</th>
+                        <th>Nuitées</th>
+                        <th>Tarif/nuit</th>
+                        <th>Total</th>
+                        <th>Source</th>
+                        <th>Statut</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-foreach="filteredReservations" t-as="r" t-key="r.id">
+                        <tr class="civora-table-row" t-on-click="() => this.openDetail(r.id)">
+                            <td class="civora-ref"><t t-esc="r.name"/></td>
+                            <td><t t-esc="r.property_id ? r.property_id[1] : ''"/></td>
+                            <td><t t-esc="r.guest_id ? r.guest_id[1] : ''"/></td>
+                            <td><t t-esc="r.checkin_date"/></td>
+                            <td><t t-esc="r.checkout_date"/></td>
+                            <td class="text-center"><t t-esc="r.num_nights"/></td>
+                            <td class="text-right"><t t-esc="fmtMoney(r.tariff_night)"/></td>
+                            <td class="text-right font-semibold"><t t-esc="fmtMoney(r.total_amount)"/> F</td>
+                            <td><span class="civora-source-badge"><t t-esc="sourceLabel(r.source)"/></span></td>
+                            <td>
+                                <span t-attf-class="civora-status-badge civora-status-{{ stateClass(r.state) }}">
+                                    <t t-esc="stateLabel(r.state)"/>
+                                </span>
+                            </td>
+                        </tr>
+                    </t>
+                    <t t-if="filteredReservations.length === 0">
+                        <tr><td colspan="10" class="civora-empty">Aucune réservation trouvée</td></tr>
+                    </t>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Ménages à planifier -->
+        <t t-if="state.cleaningTasks.length > 0">
+            <div class="civora-section-card">
+                <div class="civora-section-header">
+                    <h3><i class="fa fa-broom"/> Ménages à planifier</h3>
+                    <span class="civora-badge-count"><t t-esc="state.cleaningTasks.length"/></span>
+                </div>
+                <div class="civora-cleaning-list">
+                    <t t-foreach="state.cleaningTasks" t-as="task" t-key="task.id">
+                        <div class="civora-cleaning-item">
+                            <div class="civora-cleaning-property">
+                                <i class="fa fa-home"/>
+                                <span><t t-esc="task.property_id ? task.property_id[1] : ''"/></span>
+                            </div>
+                            <div class="civora-cleaning-date">
+                                <i class="fa fa-calendar"/>
+                                <span><t t-esc="task.date"/></span>
+                            </div>
+                            <div class="civora-cleaning-slot">
+                                <t t-esc="timeSlotLabel(task.time_slot)"/>
+                            </div>
+                            <span t-attf-class="civora-status-badge civora-status-{{ task.state === 'a_planifier' ? 'warning' : 'info' }}">
+                                <t t-esc="task.state === 'a_planifier' ? 'À planifier' : 'Planifié'"/>
+                            </span>
+                        </div>
+                    </t>
+                </div>
+            </div>
+        </t>
+
+        <!-- Drawer -->
+        <t t-if="state.drawerOpen">
+            <ReservationDrawer
+                mode="state.drawerMode"
+                recordId="state.drawerRecordId"
+                onSaved.bind="onSaved"
+                onClose.bind="closeDrawer"/>
+        </t>
+    </div>
+</t>
+</templates>

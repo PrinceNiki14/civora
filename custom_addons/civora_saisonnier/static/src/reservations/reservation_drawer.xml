@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+<t t-name="civora_saisonnier.ReservationDrawer">
+    <CivoraDrawer title="props.mode === 'edit' ? 'Modifier la réservation' : 'Nouvelle réservation'"
+                  icon="'fa-calendar-plus-o'"
+                  size="'lg'"
+                  onClose="props.onClose">
+        <div class="civora-drawer-form civora-reservation-form">
+            <!-- Bien -->
+            <div class="civora-form-section">
+                <h4>Bien saisonnier</h4>
+                <div class="civora-form-grid">
+                    <div class="civora-field">
+                        <label>Bien *</label>
+                        <select t-on-change="(ev) => this.onPropertyChange(ev)">
+                            <option value="">— Sélectionner —</option>
+                            <t t-foreach="state.properties" t-as="p" t-key="p.id">
+                                <option t-att-value="p.id" t-att-selected="state.form.property_id === p.id">
+                                    <t t-esc="p.name"/> (<t t-esc="p.ref || ''"/>)
+                                </option>
+                            </t>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Voyageur -->
+            <div class="civora-form-section">
+                <h4>Voyageur</h4>
+                <div class="civora-form-grid">
+                    <div class="civora-field">
+                        <label>Voyageur *</label>
+                        <select t-on-change="(ev) => this.setSelect('guest_id', ev)">
+                            <option value="">— Sélectionner —</option>
+                            <t t-foreach="state.contacts" t-as="c" t-key="c.id">
+                                <option t-att-value="c.id" t-att-selected="state.form.guest_id === c.id">
+                                    <t t-esc="c.name"/>
+                                </option>
+                            </t>
+                        </select>
+                    </div>
+                    <div class="civora-field">
+                        <label>Nombre de voyageurs</label>
+                        <input type="number" min="1" t-att-value="state.form.num_guests"
+                               t-on-change="(ev) => this.setNumber('num_guests', ev)"/>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dates -->
+            <div class="civora-form-section">
+                <h4>Séjour</h4>
+                <div class="civora-form-grid">
+                    <div class="civora-field">
+                        <label>Date d'arrivée *</label>
+                        <input type="date" t-att-value="state.form.checkin_date"
+                               t-on-change="(ev) => this.setField('checkin_date', ev)"/>
+                    </div>
+                    <div class="civora-field">
+                        <label>Date de départ *</label>
+                        <input type="date" t-att-value="state.form.checkout_date"
+                               t-on-change="(ev) => this.setField('checkout_date', ev)"/>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tarification -->
+            <div class="civora-form-section">
+                <h4>Tarification</h4>
+                <div class="civora-form-grid">
+                    <div class="civora-field">
+                        <label>Tarif / nuit (FCFA) *</label>
+                        <input type="number" min="0" step="1000" t-att-value="state.form.tariff_night"
+                               t-on-change="(ev) => this.setNumber('tariff_night', ev)"/>
+                    </div>
+                    <div class="civora-field">
+                        <label>Caution (FCFA)</label>
+                        <input type="number" min="0" step="1000" t-att-value="state.form.deposit_amount"
+                               t-on-change="(ev) => this.setNumber('deposit_amount', ev)"/>
+                    </div>
+                    <div class="civora-field">
+                        <label>Source</label>
+                        <select t-on-change="(ev) => this.setField('source', ev)">
+                            <option value="direct" t-att-selected="state.form.source === 'direct'">Direct</option>
+                            <option value="airbnb" t-att-selected="state.form.source === 'airbnb'">Airbnb</option>
+                            <option value="booking" t-att-selected="state.form.source === 'booking'">Booking.com</option>
+                            <option value="whatsapp" t-att-selected="state.form.source === 'whatsapp'">WhatsApp</option>
+                            <option value="referral" t-att-selected="state.form.source === 'referral'">Référence</option>
+                            <option value="other" t-att-selected="state.form.source === 'other'">Autre</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notes -->
+            <div class="civora-form-section">
+                <h4>Informations complémentaires</h4>
+                <div class="civora-form-grid civora-form-grid-1">
+                    <div class="civora-field">
+                        <label>Instructions d'accès</label>
+                        <textarea rows="2" t-att-value="state.form.access_instructions"
+                                  t-on-change="(ev) => this.setField('access_instructions', ev)"/>
+                    </div>
+                    <div class="civora-field">
+                        <label>Notes</label>
+                        <textarea rows="2" t-att-value="state.form.notes"
+                                  t-on-change="(ev) => this.setField('notes', ev)"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <t t-set-slot="footer">
+            <button class="civora-btn civora-btn-accent" t-on-click="save" t-att-disabled="state.saving">
+                <t t-if="state.saving">Enregistrement...</t>
+                <t t-else="">Enregistrer</t>
+            </button>
+            <button class="civora-btn civora-btn-outline" t-on-click="props.onClose">Annuler</button>
+        </t>
+    </CivoraDrawer>
+</t>
+</templates>

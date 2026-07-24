@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+<t t-name="civora_saisonnier.Reservation360">
+    <div class="civora-reservation-360">
+        <t t-if="state.reservation" t-set="r" t-value="state.reservation"/>
+
+        <t t-if="!state.reservation">
+            <div class="civora-empty-state">Chargement...</div>
+        </t>
+
+        <t t-if="state.reservation">
+            <!-- Topbar -->
+            <div class="civora-360-topbar">
+                <button class="civora-btn-back" t-on-click="goBack">
+                    <i class="fa fa-arrow-left"/> Retour
+                </button>
+                <div class="civora-360-topbar-actions">
+                    <t t-if="r.state === 'draft'">
+                        <button class="civora-btn civora-btn-accent" t-on-click="actionConfirm">Confirmer</button>
+                        <button class="civora-btn civora-btn-outline civora-btn-danger-outline" t-on-click="actionCancel">Annuler</button>
+                    </t>
+                    <t t-if="r.state === 'confirmed'">
+                        <button class="civora-btn civora-btn-accent" t-on-click="actionCheckin">Check-in</button>
+                        <button class="civora-btn civora-btn-outline civora-btn-danger-outline" t-on-click="actionCancel">Annuler</button>
+                    </t>
+                    <t t-if="r.state === 'checkin'">
+                        <button class="civora-btn civora-btn-primary" t-on-click="actionCheckout">Check-out</button>
+                    </t>
+                </div>
+            </div>
+
+            <!-- Header -->
+            <div class="civora-360-header">
+                <div class="civora-360-title">
+                    <h1><t t-esc="r.name"/></h1>
+                    <span t-attf-class="civora-status-badge civora-status-{{ stateClass(r.state) }}">
+                        <t t-esc="stateLabel(r.state)"/>
+                    </span>
+                </div>
+                <div class="civora-360-meta">
+                    <span><i class="fa fa-home"/> <t t-esc="r.property_id ? r.property_id[1] : ''"/></span>
+                    <span><i class="fa fa-user"/> <t t-esc="r.guest_id ? r.guest_id[1] : ''"/></span>
+                    <span><i class="fa fa-users"/> <t t-esc="r.num_guests"/> voyageur(s)</span>
+                </div>
+            </div>
+
+            <!-- KPIs -->
+            <div class="civora-360-kpis">
+                <CivoraStatCard label="'Nuitées'" value="'' + (r.num_nights || 0)" icon="'fa-moon-o'"/>
+                <CivoraStatCard label="'Tarif / nuit'" value="fmtMoney(r.tariff_night) + ' F'" icon="'fa-tag'"/>
+                <CivoraStatCard label="'Montant total'" value="fmtMoney(r.total_amount) + ' F'" icon="'fa-money'"/>
+                <CivoraStatCard label="'Caution'" value="fmtMoney(r.deposit_amount) + ' F'" hint="depositLabel(r.deposit_status)" icon="'fa-shield'"/>
+            </div>
+
+            <!-- Tabs -->
+            <div class="civora-360-tabs">
+                <button t-attf-class="civora-tab {{ state.activeTab === 'overview' ? 'active' : '' }}"
+                        t-on-click="() => this.setTab('overview')">Vue d'ensemble</button>
+                <button t-attf-class="civora-tab {{ state.activeTab === 'cleaning' ? 'active' : '' }}"
+                        t-on-click="() => this.setTab('cleaning')">
+                    Ménage
+                    <t t-if="state.cleaningTasks.length > 0">
+                        <span class="civora-tab-count"><t t-esc="state.cleaningTasks.length"/></span>
+                    </t>
+                </button>
+                <button t-attf-class="civora-tab {{ state.activeTab === 'reviews' ? 'active' : '' }}"
+                        t-on-click="() => this.setTab('reviews')">
+                    Avis
+                    <t t-if="state.reviews.length > 0">
+                        <span class="civora-tab-count"><t t-esc="state.reviews.length"/></span>
+                    </t>
+                </button>
+            </div>
+
+            <!-- Tab: Overview -->
+            <t t-if="state.activeTab === 'overview'">
+                <div class="civora-360-grid">
+                    <div class="civora-360-card">
+                        <h3>Séjour</h3>
+                        <div class="civora-kv">
+                            <span class="civora-k">Arrivée</span>
+                            <span class="civora-v"><t t-esc="r.checkin_date"/></span>
+                        </div>
+                        <div class="civora-kv">
+                            <span class="civora-k">Départ</span>
+                            <span class="civora-v"><t t-esc="r.checkout_date"/></span>
+                        </div>
+                        <div class="civora-kv">
+                            <span class="civora-k">Nuitées</span>
+                            <span class="civora-v"><t t-esc="r.num_nights"/></span>
+                        </div>
+                        <div class="civora-kv">
+                            <span class="civora-k">Voyageurs</span>
+                            <span class="civora-v"><t t-esc="r.num_guests"/></span>
+                        </div>
+                        <div class="civora-kv">
+                            <span class="civora-k">Source</span>
+                            <span class="civora-v"><t t-esc="r.source"/></span>
+                        </div>
+                    </div>
+                    <div class="civora-360-card">
+                        <h3>Intervenants</h3>
+                        <div class="civora-kv">
+                            <span class="civora-k">Propriétaire</span>
+                            <span class="civora-v"><t t-esc="r.owner_id ? r.owner_id[1] : '—'"/></span>
+                        </div>
+                        <div class="civora-kv">
+                            <span class="civora-k">Agent</span>
+                            <span class="civora-v"><t t-esc="r.agent_id ? r.agent_id[1] : '—'"/></span>
+                        </div>
+                    </div>
+                    <t t-if="r.access_instructions">
+                        <div class="civora-360-card civora-360-card-full">
+                            <h3>Instructions d'accès</h3>
+                            <p class="civora-text"><t t-esc="r.access_instructions"/></p>
+                        </div>
+                    </t>
+                    <t t-if="r.notes">
+                        <div class="civora-360-card civora-360-card-full">
+                            <h3>Notes</h3>
+                            <p class="civora-text"><t t-esc="r.notes"/></p>
+                        </div>
+                    </t>
+                </div>
+            </t>
+
+            <!-- Tab: Cleaning -->
+            <t t-if="state.activeTab === 'cleaning'">
+                <div class="civora-360-section">
+                    <t t-if="state.cleaningTasks.length === 0">
+                        <div class="civora-empty-card">Aucune tâche de ménage</div>
+                    </t>
+                    <t t-foreach="state.cleaningTasks" t-as="task" t-key="task.id">
+                        <div class="civora-cleaning-card">
+                            <div class="civora-cleaning-info">
+                                <span class="civora-cleaning-date">
+                                    <i class="fa fa-calendar"/> <t t-esc="task.date"/>
+                                </span>
+                                <span class="civora-cleaning-slot">
+                                    <t t-esc="task.time_slot === 'matin' ? 'Matin' : 'Après-midi'"/>
+                                </span>
+                                <span t-if="task.assigned_to">
+                                    <i class="fa fa-user"/> <t t-esc="task.assigned_to[1]"/>
+                                </span>
+                            </div>
+                            <div class="civora-cleaning-actions">
+                                <span t-attf-class="civora-status-badge civora-status-{{ task.state === 'termine' ? 'success' : task.state === 'en_cours' ? 'accent' : 'warning' }}">
+                                    <t t-esc="task.state === 'a_planifier' ? 'À planifier' : task.state === 'planifie' ? 'Planifié' : task.state === 'en_cours' ? 'En cours' : 'Terminé'"/>
+                                </span>
+                                <t t-if="task.state !== 'termine'">
+                                    <button class="civora-btn civora-btn-sm civora-btn-accent"
+                                            t-on-click="() => this.markCleaningDone(task.id)">
+                                        Valider
+                                    </button>
+                                </t>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+            </t>
+
+            <!-- Tab: Reviews -->
+            <t t-if="state.activeTab === 'reviews'">
+                <div class="civora-360-section">
+                    <!-- Existing reviews -->
+                    <t t-foreach="state.reviews" t-as="rev" t-key="rev.id">
+                        <div class="civora-review-card">
+                            <div class="civora-review-header">
+                                <span class="civora-review-guest">
+                                    <i class="fa fa-user-circle"/>
+                                    <t t-esc="rev.guest_id ? rev.guest_id[1] : 'Anonyme'"/>
+                                </span>
+                                <span class="civora-review-date"><t t-esc="rev.date"/></span>
+                            </div>
+                            <div class="civora-review-stars">
+                                <t t-esc="renderStars(rev.rating)"/>
+                                <span class="civora-review-score"><t t-esc="rev.rating"/>/5</span>
+                            </div>
+                            <div class="civora-review-ratings">
+                                <span>Propreté: <t t-esc="rev.cleanliness_rating"/>/5</span>
+                                <span>Emplacement: <t t-esc="rev.location_rating"/>/5</span>
+                                <span>Confort: <t t-esc="rev.comfort_rating"/>/5</span>
+                                <span>Qualité/prix: <t t-esc="rev.value_rating"/>/5</span>
+                            </div>
+                            <t t-if="rev.comment">
+                                <p class="civora-review-comment"><t t-esc="rev.comment"/></p>
+                            </t>
+                            <t t-if="rev.internal_note">
+                                <p class="civora-review-internal"><i class="fa fa-lock"/> <t t-esc="rev.internal_note"/></p>
+                            </t>
+                        </div>
+                    </t>
+
+                    <!-- Add review form -->
+                    <t t-if="r.state === 'checkout'">
+                        <div class="civora-review-form-card">
+                            <h4>Ajouter un avis</h4>
+                            <div class="civora-review-form-grid">
+                                <div class="civora-field">
+                                    <label>Note globale (1-5)</label>
+                                    <input type="number" min="1" max="5" t-att-value="state.reviewForm.rating"
+                                           t-on-change="(ev) => this.setReviewNumber('rating', ev)"/>
+                                </div>
+                                <div class="civora-field">
+                                    <label>Propreté</label>
+                                    <input type="number" min="1" max="5" t-att-value="state.reviewForm.cleanliness_rating"
+                                           t-on-change="(ev) => this.setReviewNumber('cleanliness_rating', ev)"/>
+                                </div>
+                                <div class="civora-field">
+                                    <label>Emplacement</label>
+                                    <input type="number" min="1" max="5" t-att-value="state.reviewForm.location_rating"
+                                           t-on-change="(ev) => this.setReviewNumber('location_rating', ev)"/>
+                                </div>
+                                <div class="civora-field">
+                                    <label>Confort</label>
+                                    <input type="number" min="1" max="5" t-att-value="state.reviewForm.comfort_rating"
+                                           t-on-change="(ev) => this.setReviewNumber('comfort_rating', ev)"/>
+                                </div>
+                                <div class="civora-field">
+                                    <label>Qualité/prix</label>
+                                    <input type="number" min="1" max="5" t-att-value="state.reviewForm.value_rating"
+                                           t-on-change="(ev) => this.setReviewNumber('value_rating', ev)"/>
+                                </div>
+                            </div>
+                            <div class="civora-field" style="margin-top: 0.5rem;">
+                                <label>Commentaire</label>
+                                <textarea rows="2" t-att-value="state.reviewForm.comment"
+                                          t-on-change="(ev) => this.setReviewField('comment', ev)"/>
+                            </div>
+                            <div class="civora-field" style="margin-top: 0.5rem;">
+                                <label>Note interne</label>
+                                <textarea rows="2" t-att-value="state.reviewForm.internal_note"
+                                          t-on-change="(ev) => this.setReviewField('internal_note', ev)"/>
+                            </div>
+                            <button class="civora-btn civora-btn-accent" style="margin-top: 0.75rem;"
+                                    t-on-click="submitReview">Enregistrer l'avis</button>
+                        </div>
+                    </t>
+                </div>
+            </t>
+        </t>
+    </div>
+</t>
+</templates>

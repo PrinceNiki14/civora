@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <record id="seq_civora_reservation" model="ir.sequence">
+        <field name="name">Réservation saisonnière</field>
+        <field name="code">civora.reservation</field>
+        <field name="prefix">RES-%(year)s-</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+</odoo>

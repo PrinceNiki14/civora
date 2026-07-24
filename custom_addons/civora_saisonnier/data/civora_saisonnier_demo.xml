@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+
+        <!-- ====== VOYAGEURS (contacts) ====== -->
+        <record id="guest_konan" model="res.partner">
+            <field name="name">Konan Yao Patrick</field>
+            <field name="phone">+225 07 08 09 10 11</field>
+            <field name="email">konan.yao@gmail.com</field>
+            <field name="civora_is_contact" eval="True"/>
+            <field name="city">Paris</field>
+            <field name="country_id" ref="base.fr"/>
+        </record>
+        <record id="guest_diallo" model="res.partner">
+            <field name="name">Diallo Aminata</field>
+            <field name="phone">+225 05 06 07 08 09</field>
+            <field name="email">aminata.diallo@outlook.com</field>
+            <field name="civora_is_contact" eval="True"/>
+            <field name="city">Abidjan</field>
+        </record>
+        <record id="guest_mensah" model="res.partner">
+            <field name="name">Mensah Koffi Éric</field>
+            <field name="phone">+233 24 555 1234</field>
+            <field name="email">eric.mensah@yahoo.com</field>
+            <field name="civora_is_contact" eval="True"/>
+            <field name="city">Accra</field>
+            <field name="country_id" ref="base.gh"/>
+        </record>
+        <record id="guest_toure" model="res.partner">
+            <field name="name">Touré Fatoumata</field>
+            <field name="phone">+225 01 02 03 04 05</field>
+            <field name="email">fatoumata.toure@gmail.com</field>
+            <field name="civora_is_contact" eval="True"/>
+            <field name="city">Bouaké</field>
+        </record>
+        <record id="guest_dupont" model="res.partner">
+            <field name="name">Dupont Jean-Marc</field>
+            <field name="phone">+33 6 12 34 56 78</field>
+            <field name="email">jm.dupont@free.fr</field>
+            <field name="civora_is_contact" eval="True"/>
+            <field name="city">Lyon</field>
+            <field name="country_id" ref="base.fr"/>
+        </record>
+
+        <!-- ====== BIENS SAISONNIERS ====== -->
+        <record id="prop_villa_riviera" model="civora.property">
+            <field name="name">Villa Palmier — Riviera Golf</field>
+            <field name="ref">SAI-001</field>
+            <field name="transaction">saisonnier</field>
+            <field name="status">disponible</field>
+            <field name="city">Abidjan</field>
+            <field name="neighborhood">Riviera Golf</field>
+            <field name="surface">250</field>
+            <field name="bedrooms">4</field>
+            <field name="bathrooms">3</field>
+            <field name="default_tariff_night">85000</field>
+            <field name="property_type_id" ref="civora_biens.ptype_villa"/>
+        </record>
+        <record id="prop_appart_cocody" model="civora.property">
+            <field name="name">Appartement Standing — Cocody Angré</field>
+            <field name="ref">SAI-002</field>
+            <field name="transaction">saisonnier</field>
+            <field name="status">saisonnier</field>
+            <field name="city">Abidjan</field>
+            <field name="neighborhood">Cocody Angré</field>
+            <field name="surface">95</field>
+            <field name="bedrooms">2</field>
+            <field name="bathrooms">2</field>
+            <field name="default_tariff_night">45000</field>
+            <field name="property_type_id" ref="civora_biens.ptype_appartement"/>
+        </record>
+        <record id="prop_studio_plateau" model="civora.property">
+            <field name="name">Studio Meublé — Plateau Centre</field>
+            <field name="ref">SAI-003</field>
+            <field name="transaction">saisonnier</field>
+            <field name="status">disponible</field>
+            <field name="city">Abidjan</field>
+            <field name="neighborhood">Plateau</field>
+            <field name="surface">35</field>
+            <field name="bedrooms">1</field>
+            <field name="bathrooms">1</field>
+            <field name="default_tariff_night">25000</field>
+            <field name="property_type_id" ref="civora_biens.ptype_studio"/>
+        </record>
+        <record id="prop_villa_assinie" model="civora.property">
+            <field name="name">Villa Bord de Mer — Assinie Mafia</field>
+            <field name="ref">SAI-004</field>
+            <field name="transaction">saisonnier</field>
+            <field name="status">saisonnier</field>
+            <field name="city">Assinie</field>
+            <field name="neighborhood">Assinie Mafia</field>
+            <field name="surface">320</field>
+            <field name="bedrooms">5</field>
+            <field name="bathrooms">4</field>
+            <field name="default_tariff_night">150000</field>
+            <field name="property_type_id" ref="civora_biens.ptype_villa"/>
+        </record>
+
+        <!-- ====== TARIFS SAISONNIERS ====== -->
+        <record id="tariff_riviera_basse" model="civora.seasonal.tariff">
+            <field name="name">Basse saison — Villa Riviera</field>
+            <field name="property_id" ref="prop_villa_riviera"/>
+            <field name="season">basse</field>
+            <field name="date_start">2026-03-01</field>
+            <field name="date_end">2026-06-30</field>
+            <field name="tariff_night">65000</field>
+            <field name="min_nights">2</field>
+        </record>
+        <record id="tariff_riviera_haute" model="civora.seasonal.tariff">
+            <field name="name">Haute saison — Villa Riviera</field>
+            <field name="property_id" ref="prop_villa_riviera"/>
+            <field name="season">haute</field>
+            <field name="date_start">2026-07-01</field>
+            <field name="date_end">2026-09-30</field>
+            <field name="tariff_night">95000</field>
+            <field name="min_nights">3</field>
+        </record>
+        <record id="tariff_riviera_fete" model="civora.seasonal.tariff">
+            <field name="name">Fêtes de fin d'année — Villa Riviera</field>
+            <field name="property_id" ref="prop_villa_riviera"/>
+            <field name="season">fete</field>
+            <field name="date_start">2026-12-15</field>
+            <field name="date_end">2027-01-05</field>
+            <field name="tariff_night">120000</field>
+            <field name="min_nights">5</field>
+        </record>
+        <record id="tariff_assinie_haute" model="civora.seasonal.tariff">
+            <field name="name">Haute saison — Villa Assinie</field>
+            <field name="property_id" ref="prop_villa_assinie"/>
+            <field name="season">haute</field>
+            <field name="date_start">2026-07-01</field>
+            <field name="date_end">2026-09-30</field>
+            <field name="tariff_night">180000</field>
+            <field name="min_nights">3</field>
+        </record>
+        <record id="tariff_cocody_basse" model="civora.seasonal.tariff">
+            <field name="name">Basse saison — Cocody Angré</field>
+            <field name="property_id" ref="prop_appart_cocody"/>
+            <field name="season">basse</field>
+            <field name="date_start">2026-01-15</field>
+            <field name="date_end">2026-05-31</field>
+            <field name="tariff_night">35000</field>
+            <field name="min_nights">2</field>
+        </record>
+
+        <!-- ====== RÉSERVATIONS ====== -->
+        <!-- 1. Terminée avec avis (Cocody) -->
+        <record id="res_cocody_1" model="civora.reservation">
+            <field name="property_id" ref="prop_appart_cocody"/>
+            <field name="guest_id" ref="guest_konan"/>
+            <field name="checkin_date">2026-06-10</field>
+            <field name="checkout_date">2026-06-17</field>
+            <field name="num_guests">2</field>
+            <field name="tariff_night">45000</field>
+            <field name="deposit_amount">100000</field>
+            <field name="deposit_status">returned</field>
+            <field name="state">checkout</field>
+            <field name="source">airbnb</field>
+            <field name="notes">Séjour de vacances familial, arrivée prévue en soirée</field>
+        </record>
+        <!-- 2. En séjour actuellement (Assinie) -->
+        <record id="res_assinie_1" model="civora.reservation">
+            <field name="property_id" ref="prop_villa_assinie"/>
+            <field name="guest_id" ref="guest_dupont"/>
+            <field name="checkin_date">2026-07-20</field>
+            <field name="checkout_date">2026-07-30</field>
+            <field name="num_guests">6</field>
+            <field name="tariff_night">150000</field>
+            <field name="deposit_amount">500000</field>
+            <field name="deposit_status">collected</field>
+            <field name="state">checkin</field>
+            <field name="source">direct</field>
+            <field name="access_instructions">Portail blanc côté plage, code 4589. Gardien disponible 24h/24.</field>
+        </record>
+        <!-- 3. Confirmée, check-in aujourd'hui (Riviera) -->
+        <record id="res_riviera_1" model="civora.reservation">
+            <field name="property_id" ref="prop_villa_riviera"/>
+            <field name="guest_id" ref="guest_diallo"/>
+            <field name="checkin_date">2026-07-24</field>
+            <field name="checkout_date">2026-07-28</field>
+            <field name="num_guests">3</field>
+            <field name="tariff_night">95000</field>
+            <field name="deposit_amount">200000</field>
+            <field name="deposit_status">pending</field>
+            <field name="state">confirmed</field>
+            <field name="source">whatsapp</field>
+            <field name="access_instructions">Résidence Les Palmiers, Bât. A. Gardien préviendra de l'arrivée.</field>
+        </record>
+        <!-- 4. Confirmée, à venir (Studio Plateau) -->
+        <record id="res_plateau_1" model="civora.reservation">
+            <field name="property_id" ref="prop_studio_plateau"/>
+            <field name="guest_id" ref="guest_mensah"/>
+            <field name="checkin_date">2026-08-01</field>
+            <field name="checkout_date">2026-08-08</field>
+            <field name="num_guests">1</field>
+            <field name="tariff_night">25000</field>
+            <field name="deposit_amount">50000</field>
+            <field name="deposit_status">pending</field>
+            <field name="state">confirmed</field>
+            <field name="source">booking</field>
+            <field name="notes">Voyage d'affaires, besoin du wifi haut débit</field>
+        </record>
+        <!-- 5. Brouillon (Riviera, août) -->
+        <record id="res_riviera_2" model="civora.reservation">
+            <field name="property_id" ref="prop_villa_riviera"/>
+            <field name="guest_id" ref="guest_toure"/>
+            <field name="checkin_date">2026-08-10</field>
+            <field name="checkout_date">2026-08-15</field>
+            <field name="num_guests">4</field>
+            <field name="tariff_night">95000</field>
+            <field name="deposit_amount">200000</field>
+            <field name="deposit_status">pending</field>
+            <field name="state">draft</field>
+            <field name="source">referral</field>
+        </record>
+        <!-- 6. Terminée ancienne (Studio) -->
+        <record id="res_plateau_2" model="civora.reservation">
+            <field name="property_id" ref="prop_studio_plateau"/>
+            <field name="guest_id" ref="guest_toure"/>
+            <field name="checkin_date">2026-05-15</field>
+            <field name="checkout_date">2026-05-20</field>
+            <field name="num_guests">1</field>
+            <field name="tariff_night">25000</field>
+            <field name="deposit_amount">50000</field>
+            <field name="deposit_status">returned</field>
+            <field name="state">checkout</field>
+            <field name="source">direct</field>
+        </record>
+        <!-- 7. Annulée (Assinie) -->
+        <record id="res_assinie_cancelled" model="civora.reservation">
+            <field name="property_id" ref="prop_villa_assinie"/>
+            <field name="guest_id" ref="guest_konan"/>
+            <field name="checkin_date">2026-06-01</field>
+            <field name="checkout_date">2026-06-05</field>
+            <field name="num_guests">4</field>
+            <field name="tariff_night">150000</field>
+            <field name="deposit_amount">300000</field>
+            <field name="deposit_status">returned</field>
+            <field name="state">cancelled</field>
+            <field name="source">airbnb</field>
+            <field name="notes">Annulé pour raison personnelle</field>
+        </record>
+
+        <!-- ====== AVIS ====== -->
+        <record id="review_cocody_1" model="civora.reservation.review">
+            <field name="reservation_id" ref="res_cocody_1"/>
+            <field name="rating">4</field>
+            <field name="cleanliness_rating">5</field>
+            <field name="location_rating">4</field>
+            <field name="comfort_rating">4</field>
+            <field name="value_rating">4</field>
+            <field name="comment">Très bel appartement, bien situé à Angré. Propre et fonctionnel. Un peu de bruit le soir depuis la rue mais rien de grave. Je recommande !</field>
+            <field name="date">2026-06-18</field>
+        </record>
+        <record id="review_plateau_1" model="civora.reservation.review">
+            <field name="reservation_id" ref="res_plateau_2"/>
+            <field name="rating">5</field>
+            <field name="cleanliness_rating">5</field>
+            <field name="location_rating">5</field>
+            <field name="comfort_rating">4</field>
+            <field name="value_rating">5</field>
+            <field name="comment">Studio parfait pour un séjour court au Plateau. Accès facile, très propre, excellent rapport qualité-prix.</field>
+            <field name="internal_note">Locataire très soigneuse, à privilégier pour les prochaines réservations.</field>
+            <field name="date">2026-05-21</field>
+        </record>
+
+        <!-- ====== TÂCHES DE MÉNAGE ====== -->
+        <record id="cleaning_cocody_1" model="civora.cleaning.task">
+            <field name="reservation_id" ref="res_cocody_1"/>
+            <field name="property_id" ref="prop_appart_cocody"/>
+            <field name="date">2026-06-17</field>
+            <field name="time_slot">matin</field>
+            <field name="state">termine</field>
+            <field name="checklist_done" eval="True"/>
+            <field name="notes">Ménage complet effectué, draps changés, cuisine nettoyée</field>
+        </record>
+        <record id="cleaning_assinie_pending" model="civora.cleaning.task">
+            <field name="reservation_id" ref="res_assinie_1"/>
+            <field name="property_id" ref="prop_villa_assinie"/>
+            <field name="date">2026-07-30</field>
+            <field name="time_slot">matin</field>
+            <field name="state">planifie</field>
+            <field name="notes">Ménage de grande villa — prévoir 2 personnes, piscine à vérifier</field>
+        </record>
+        <record id="cleaning_plateau_pending" model="civora.cleaning.task">
+            <field name="property_id" ref="prop_studio_plateau"/>
+            <field name="date">2026-07-31</field>
+            <field name="time_slot">apres_midi</field>
+            <field name="state">a_planifier</field>
+        </record>
+
+</odoo>

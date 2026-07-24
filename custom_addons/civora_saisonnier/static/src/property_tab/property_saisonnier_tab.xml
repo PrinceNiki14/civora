@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+<t t-name="civora_saisonnier.PropertySaisonnierTab">
+    <div class="civora-saisonnier-tab">
+        <!-- Stats -->
+        <div class="civora-saisonnier-tab-stats">
+            <div class="civora-mini-stat">
+                <span class="civora-mini-stat-value"><t t-esc="state.stats.active || 0"/></span>
+                <span class="civora-mini-stat-label">Réservations</span>
+            </div>
+            <div class="civora-mini-stat">
+                <span class="civora-mini-stat-value"><t t-esc="fmtMoney(state.stats.revenue)"/> F</span>
+                <span class="civora-mini-stat-label">Revenus totaux</span>
+            </div>
+            <div class="civora-mini-stat">
+                <span class="civora-mini-stat-value"><t t-esc="fmtMoney(state.stats.adr)"/> F</span>
+                <span class="civora-mini-stat-label">ADR (tarif moyen/nuit)</span>
+            </div>
+        </div>
+
+        <!-- Tariffs -->
+        <t t-if="state.tariffs.length > 0">
+            <div class="civora-saisonnier-section">
+                <h4>Grille tarifaire</h4>
+                <table class="civora-mini-table">
+                    <thead>
+                        <tr>
+                            <th>Libellé</th>
+                            <th>Saison</th>
+                            <th>Début</th>
+                            <th>Fin</th>
+                            <th>Tarif/nuit</th>
+                            <th>Min. nuits</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="state.tariffs" t-as="t" t-key="t.id">
+                            <tr>
+                                <td><t t-esc="t.name"/></td>
+                                <td><t t-esc="seasonLabel(t.season)"/></td>
+                                <td><t t-esc="t.date_start"/></td>
+                                <td><t t-esc="t.date_end"/></td>
+                                <td class="text-right"><t t-esc="fmtMoney(t.tariff_night)"/> F</td>
+                                <td class="text-center"><t t-esc="t.min_nights"/></td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+            </div>
+        </t>
+
+        <!-- Reservations -->
+        <div class="civora-saisonnier-section">
+            <h4>Historique des réservations</h4>
+            <t t-if="state.reservations.length === 0">
+                <div class="civora-empty-msg">Aucune réservation pour ce bien</div>
+            </t>
+            <t t-if="state.reservations.length > 0">
+                <table class="civora-mini-table">
+                    <thead>
+                        <tr>
+                            <th>Réf.</th>
+                            <th>Voyageur</th>
+                            <th>Arrivée</th>
+                            <th>Départ</th>
+                            <th>Nuitées</th>
+                            <th>Total</th>
+                            <th>Statut</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="state.reservations" t-as="r" t-key="r.id">
+                            <tr class="civora-clickable" t-on-click="() => this.openReservation(r.id)">
+                                <td class="civora-ref"><t t-esc="r.name"/></td>
+                                <td><t t-esc="r.guest_id ? r.guest_id[1] : ''"/></td>
+                                <td><t t-esc="r.checkin_date"/></td>
+                                <td><t t-esc="r.checkout_date"/></td>
+                                <td class="text-center"><t t-esc="r.num_nights"/></td>
+                                <td class="text-right"><t t-esc="fmtMoney(r.total_amount)"/> F</td>
+                                <td><t t-esc="stateLabel(r.state)"/></td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+            </t>
+        </div>
+    </div>
+</t>
+</templates>

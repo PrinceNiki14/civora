@@ -1,0 +1,60 @@
+.civora-reservation-form {
+    padding: 1.25rem;
+
+    .civora-form-section {
+        margin-bottom: 1.25rem;
+
+        h4 {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: $civora-primary;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin: 0 0 0.75rem 0;
+            padding-bottom: 0.4rem;
+            border-bottom: 1px solid $civora-border;
+        }
+    }
+
+    .civora-form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+
+        &.civora-form-grid-1 {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .civora-field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+
+        label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: $civora-muted;
+        }
+
+        input, select, textarea {
+            padding: 0.5rem 0.65rem;
+            border: 1px solid $civora-border;
+            border-radius: 0.4rem;
+            font-size: 0.82rem;
+            color: $civora-fg;
+            background: $civora-bg;
+            transition: border-color 0.15s;
+
+            &:focus {
+                outline: none;
+                border-color: $civora-accent;
+            }
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+    }
+}
