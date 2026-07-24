@@ -1,0 +1,141 @@
+<odoo noupdate="1">
+
+    <!-- Users for team members -->
+    <record id="user_mariam_bamba" model="res.users">
+        <field name="name">Mariam Bamba</field>
+        <field name="login">mariam.bamba@civora.ci</field>
+        <field name="password">demo</field>
+    </record>
+
+    <record id="user_kofi_asante" model="res.users">
+        <field name="name">Kofi Asante</field>
+        <field name="login">kofi.asante@civora.ci</field>
+        <field name="password">demo</field>
+    </record>
+
+    <record id="user_lea_nguema" model="res.users">
+        <field name="name">Lea Nguema</field>
+        <field name="login">lea.nguema@civora.ci</field>
+        <field name="password">demo</field>
+    </record>
+
+    <record id="user_ibrahim_diallo" model="res.users">
+        <field name="name">Ibrahim Diallo</field>
+        <field name="login">ibrahim.diallo@civora.ci</field>
+        <field name="password">demo</field>
+    </record>
+
+    <record id="user_awa_kone" model="res.users">
+        <field name="name">Awa Kone</field>
+        <field name="login">awa.kone@civora.ci</field>
+        <field name="password">demo</field>
+    </record>
+
+    <record id="user_sekou_toure" model="res.users">
+        <field name="name">Sekou Toure</field>
+        <field name="login">sekou.toure@civora.ci</field>
+        <field name="password">demo</field>
+    </record>
+
+    <record id="user_fatou_sy" model="res.users">
+        <field name="name">Fatou Sy</field>
+        <field name="login">fatou.sy@civora.ci</field>
+        <field name="password">demo</field>
+    </record>
+
+    <record id="user_moussa_ouattara" model="res.users">
+        <field name="name">Moussa Ouattara</field>
+        <field name="login">moussa.ouattara@civora.ci</field>
+        <field name="password">demo</field>
+    </record>
+
+    <!-- Team Members -->
+    <record id="member_mariam" model="civora.team.member">
+        <field name="user_id" ref="user_mariam_bamba"/>
+        <field name="role_id" ref="civora_contacts.agent_role_negociateur"/>
+        <field name="department">commercial</field>
+        <field name="status">actif</field>
+        <field name="hire_date">2022-03-15</field>
+        <field name="phone">+225 07 12 34 56</field>
+        <field name="bio">Negociatrice senior specialisee dans les ventes haut de gamme sur Cocody et Riviera. 12 ventes conclues ce semestre, meilleure performance de l'agence.</field>
+        <field name="sequence">1</field>
+    </record>
+
+    <record id="member_kofi" model="civora.team.member">
+        <field name="user_id" ref="user_kofi_asante"/>
+        <field name="role_id" ref="civora_contacts.agent_role_agent_immobilier"/>
+        <field name="department">commercial</field>
+        <field name="status">actif</field>
+        <field name="hire_date">2023-01-10</field>
+        <field name="phone">+225 05 98 76 54</field>
+        <field name="bio">Agent immobilier specialise dans le marche Plateau et Zone 4. Expert en immobilier commercial et bureaux.</field>
+        <field name="sequence">2</field>
+    </record>
+
+    <record id="member_lea" model="civora.team.member">
+        <field name="user_id" ref="user_lea_nguema"/>
+        <field name="role_id" ref="civora_contacts.agent_role_negociateur"/>
+        <field name="department">commercial</field>
+        <field name="status">actif</field>
+        <field name="hire_date">2023-06-01</field>
+        <field name="phone">+225 01 23 45 67</field>
+        <field name="bio">Negociatrice junior avec une forte croissance. Specialisee locations meublees et saisonnier sur Marcory et Treichville.</field>
+        <field name="sequence">3</field>
+    </record>
+
+    <record id="member_ibrahim" model="civora.team.member">
+        <field name="user_id" ref="user_ibrahim_diallo"/>
+        <field name="role_id" ref="civora_contacts.agent_role_gestionnaire"/>
+        <field name="department">gestion</field>
+        <field name="status">actif</field>
+        <field name="hire_date">2021-09-01</field>
+        <field name="phone">+225 07 65 43 21</field>
+        <field name="bio">Gestionnaire locatif senior. Gere un portefeuille de 85 biens en location longue duree. Taux de recouvrement 96%.</field>
+        <field name="sequence">4</field>
+    </record>
+
+    <record id="member_awa" model="civora.team.member">
+        <field name="user_id" ref="user_awa_kone"/>
+        <field name="role_id" ref="civora_contacts.agent_role_gestionnaire"/>
+        <field name="department">gestion</field>
+        <field name="status">conge</field>
+        <field name="hire_date">2022-11-15</field>
+        <field name="phone">+225 05 11 22 33</field>
+        <field name="bio">Gestionnaire specialisee dans l'onboarding proprietaires et la relation client. En conge maternite jusqu'a septembre 2026.</field>
+        <field name="sequence">5</field>
+    </record>
+
+    <record id="member_sekou" model="civora.team.member">
+        <field name="user_id" ref="user_sekou_toure"/>
+        <field name="role_id" ref="civora_contacts.agent_role_conseiller"/>
+        <field name="department">commercial</field>
+        <field name="status">actif</field>
+        <field name="hire_date">2024-02-01</field>
+        <field name="phone">+225 01 44 55 66</field>
+        <field name="bio">Conseiller clientele. Accompagne les acquereurs dans leurs projets d'achat. Specialiste VEFA et programmes neufs.</field>
+        <field name="sequence">6</field>
+    </record>
+
+    <record id="member_fatou" model="civora.team.member">
+        <field name="user_id" ref="user_fatou_sy"/>
+        <field name="role_id" ref="civora_contacts.agent_role_agent_immobilier"/>
+        <field name="department">support</field>
+        <field name="status">actif</field>
+        <field name="hire_date">2023-04-15</field>
+        <field name="phone">+225 07 77 88 99</field>
+        <field name="bio">Responsable administrative. Coordination des visites, gestion documentaire et support aux agents commerciaux.</field>
+        <field name="sequence">7</field>
+    </record>
+
+    <record id="member_moussa" model="civora.team.member">
+        <field name="user_id" ref="user_moussa_ouattara"/>
+        <field name="role_id" ref="civora_contacts.agent_role_agent_immobilier"/>
+        <field name="department">direction</field>
+        <field name="status">actif</field>
+        <field name="hire_date">2020-01-10</field>
+        <field name="phone">+225 05 00 11 22</field>
+        <field name="bio">Directeur d'agence. 15 ans d'experience dans l'immobilier en Afrique de l'Ouest. Pilote la strategie commerciale et le developpement.</field>
+        <field name="sequence">0</field>
+    </record>
+
+</odoo>

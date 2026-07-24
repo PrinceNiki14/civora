@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+<t t-name="civora_equipe.TeamScreen">
+    <div class="civora-team-screen">
+        <!-- Header -->
+        <div class="civora-screen-header">
+            <div>
+                <h1 class="civora-screen-title">Equipe</h1>
+                <p class="civora-screen-subtitle">Gestion des agents et collaborateurs</p>
+            </div>
+            <button class="civora-btn civora-btn-accent" t-on-click="openDrawer">+ Nouveau membre</button>
+        </div>
+
+        <!-- KPIs -->
+        <div class="civora-kpi-grid">
+            <CivoraStatCard label="'Membres'" value="'' + (state.kpis.total || 0)" icon="'fa-users'"/>
+            <CivoraStatCard label="'Actifs'" value="'' + (state.kpis.actifs || 0)" trend="'up'" icon="'fa-check-circle'"/>
+            <CivoraStatCard label="'En conge'" value="'' + (state.kpis.en_conge || 0)" icon="'fa-pause-circle'"/>
+            <CivoraStatCard label="'Inactifs'" value="'' + (state.kpis.inactifs || 0)" icon="'fa-times-circle'"/>
+        </div>
+
+        <!-- Filters -->
+        <div class="civora-filters">
+            <div class="civora-pills">
+                <button t-attf-class="civora-pill {{ state.filter === 'all' ? 'active' : '' }}" t-on-click="() => this.setFilter('all')">Tous</button>
+                <button t-attf-class="civora-pill {{ state.filter === 'actif' ? 'active' : '' }}" t-on-click="() => this.setFilter('actif')">Actifs</button>
+                <button t-attf-class="civora-pill {{ state.filter === 'commercial' ? 'active' : '' }}" t-on-click="() => this.setFilter('commercial')">Commercial</button>
+                <button t-attf-class="civora-pill {{ state.filter === 'gestion' ? 'active' : '' }}" t-on-click="() => this.setFilter('gestion')">Gestion</button>
+                <button t-attf-class="civora-pill {{ state.filter === 'direction' ? 'active' : '' }}" t-on-click="() => this.setFilter('direction')">Direction</button>
+                <button t-attf-class="civora-pill {{ state.filter === 'support' ? 'active' : '' }}" t-on-click="() => this.setFilter('support')">Support</button>
+                <button t-attf-class="civora-pill {{ state.filter === 'conge' ? 'active' : '' }}" t-on-click="() => this.setFilter('conge')">En conge</button>
+            </div>
+            <div class="civora-search">
+                <i class="fa fa-search"/>
+                <input type="text" placeholder="Rechercher un membre..." t-on-input="onSearch" t-att-value="state.search"/>
+            </div>
+        </div>
+
+        <!-- Members Grid -->
+        <div class="civora-members-grid">
+            <t t-foreach="filteredMembers" t-as="m" t-key="m.id">
+                <div class="civora-member-card" t-on-click="() => this.openDetail(m.id)">
+                    <div class="civora-member-avatar">
+                        <i class="fa fa-user-circle-o"/>
+                    </div>
+                    <div class="civora-member-info">
+                        <div class="civora-member-name"><t t-esc="m.name"/></div>
+                        <div class="civora-member-role" t-if="m.role_id"><t t-esc="m.role_id[1]"/></div>
+                    </div>
+                    <div class="civora-member-badges">
+                        <span t-attf-class="civora-dept-badge civora-dept-{{ deptClass(m.department) }}">
+                            <t t-esc="deptLabel(m.department)"/>
+                        </span>
+                        <span t-attf-class="civora-status-dot civora-dot-{{ statusClass(m.status) }}" t-att-title="statusLabel(m.status)"/>
+                    </div>
+                    <div class="civora-member-stats">
+                        <div class="civora-member-stat" t-if="m.property_count">
+                            <span class="civora-stat-value"><t t-esc="m.property_count"/></span>
+                            <span class="civora-stat-label">biens</span>
+                        </div>
+                        <div class="civora-member-stat" t-if="m.sale_count">
+                            <span class="civora-stat-value"><t t-esc="m.sale_count"/></span>
+                            <span class="civora-stat-label">ventes</span>
+                        </div>
+                        <div class="civora-member-stat" t-if="m.lead_count">
+                            <span class="civora-stat-value"><t t-esc="m.lead_count"/></span>
+                            <span class="civora-stat-label">pistes</span>
+                        </div>
+                        <div class="civora-member-stat" t-if="m.workflow_count">
+                            <span class="civora-stat-value"><t t-esc="m.workflow_count"/></span>
+                            <span class="civora-stat-label">workflows</span>
+                        </div>
+                    </div>
+                    <div class="civora-member-contact">
+                        <span t-if="m.email" class="civora-member-email"><i class="fa fa-envelope-o"/> <t t-esc="m.email"/></span>
+                        <span t-if="m.phone" class="civora-member-phone"><i class="fa fa-phone"/> <t t-esc="m.phone"/></span>
+                    </div>
+                </div>
+            </t>
+            <t t-if="filteredMembers.length === 0">
+                <div class="civora-empty-state">
+                    <i class="fa fa-users"/>
+                    <p>Aucun membre trouve</p>
+                </div>
+            </t>
+        </div>
+
+        <!-- Drawer -->
+        <t t-if="state.showDrawer">
+            <MemberDrawer onClose.bind="closeDrawer" onSaved.bind="onMemberSaved"/>
+        </t>
+    </div>
+</t>
+</templates>

@@ -1,0 +1,10 @@
+<odoo>
+    <record id="action_civora_equipe" model="ir.actions.client">
+        <field name="name">Equipe</field>
+        <field name="tag">civora.equipe</field>
+    </record>
+
+    <record id="civora_agence.menu_equipe" model="ir.ui.menu">
+        <field name="action" ref="action_civora_equipe"/>
+    </record>
+</odoo>

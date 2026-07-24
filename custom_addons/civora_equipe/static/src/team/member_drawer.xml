@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+<t t-name="civora_equipe.MemberDrawer">
+    <CivoraDrawer title="'Nouveau membre'" icon="'fa-user-plus'" onClose="props.onClose">
+        <div class="civora-drawer-form">
+            <div class="civora-form-section">
+                <h3>Utilisateur</h3>
+                <div class="civora-form-group">
+                    <label>Utilisateur *</label>
+                    <select class="civora-input" t-on-change="(ev) => this.updateField('user_id', ev)">
+                        <option value="">-- Choisir --</option>
+                        <t t-foreach="state.users" t-as="u" t-key="u.id">
+                            <option t-att-value="u.id"><t t-esc="u.name"/></option>
+                        </t>
+                    </select>
+                </div>
+            </div>
+
+            <div class="civora-form-section">
+                <h3>Informations</h3>
+                <div class="civora-form-row">
+                    <div class="civora-form-group">
+                        <label>Fonction</label>
+                        <select class="civora-input" t-on-change="(ev) => this.updateField('role_id', ev)">
+                            <option value="">-- Aucune --</option>
+                            <t t-foreach="state.roles" t-as="r" t-key="r.id">
+                                <option t-att-value="r.id"><t t-esc="r.name"/></option>
+                            </t>
+                        </select>
+                    </div>
+                    <div class="civora-form-group">
+                        <label>Departement</label>
+                        <select class="civora-input" t-on-change="(ev) => this.updateField('department', ev)">
+                            <option value="commercial">Commercial</option>
+                            <option value="gestion">Gestion locative</option>
+                            <option value="direction">Direction</option>
+                            <option value="support">Support</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="civora-form-row">
+                    <div class="civora-form-group">
+                        <label>Telephone</label>
+                        <input type="text" class="civora-input" placeholder="+225 ..."
+                               t-on-input="(ev) => this.updateField('phone', ev)"
+                               t-att-value="state.form.phone"/>
+                    </div>
+                    <div class="civora-form-group">
+                        <label>Date d'embauche</label>
+                        <input type="date" class="civora-input"
+                               t-on-input="(ev) => this.updateField('hire_date', ev)"
+                               t-att-value="state.form.hire_date"/>
+                    </div>
+                </div>
+            </div>
+
+            <div class="civora-form-section">
+                <h3>Bio</h3>
+                <div class="civora-form-group">
+                    <textarea class="civora-input" rows="3" placeholder="Presentation, specialites..."
+                              t-on-input="(ev) => this.updateField('bio', ev)"
+                              t-att-value="state.form.bio"/>
+                </div>
+            </div>
+
+            <div class="civora-drawer-actions">
+                <button class="civora-btn civora-btn-accent" t-on-click="save">Ajouter le membre</button>
+            </div>
+        </div>
+    </CivoraDrawer>
+</t>
+</templates>

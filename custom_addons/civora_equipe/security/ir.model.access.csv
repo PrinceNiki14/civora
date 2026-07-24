@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_civora_team_member_user,civora.team.member.user,model_civora_team_member,base.group_user,1,1,1,0
+access_civora_team_member_admin,civora.team.member.admin,model_civora_team_member,base.group_system,1,1,1,1

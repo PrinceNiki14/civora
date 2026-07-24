@@ -1,0 +1,7 @@
+<odoo noupdate="1">
+    <record id="rule_team_member_company" model="ir.rule">
+        <field name="name">Membre equipe: isolation societe</field>
+        <field name="model_id" ref="model_civora_team_member"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+</odoo>

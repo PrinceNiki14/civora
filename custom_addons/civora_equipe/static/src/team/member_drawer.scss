@@ -1,0 +1,63 @@
+.civora-drawer-form {
+    .civora-form-section {
+        margin-bottom: 1.5rem;
+
+        h3 {
+            font-family: $civora-font-display;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: $civora-muted;
+            margin-bottom: 0.75rem;
+        }
+    }
+
+    .civora-form-row {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .civora-form-group {
+        flex: 1;
+
+        label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: $civora-fg;
+            margin-bottom: 0.3rem;
+        }
+    }
+
+    .civora-input {
+        width: 100%;
+        padding: 0.5rem 0.75rem;
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius-sm;
+        font-size: 0.85rem;
+        color: $civora-fg;
+        background: $civora-card;
+        transition: border-color 0.2s;
+
+        &:focus {
+            outline: none;
+            border-color: $civora-accent;
+        }
+    }
+
+    textarea.civora-input {
+        resize: vertical;
+        min-height: 60px;
+    }
+}
+
+.civora-drawer-actions {
+    padding-top: 1rem;
+    border-top: 1px solid $civora-border;
+
+    .civora-btn {
+        width: 100%;
+    }
+}
