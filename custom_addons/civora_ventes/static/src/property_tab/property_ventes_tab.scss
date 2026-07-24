@@ -1,0 +1,82 @@
+.civora-property-ventes-tab {
+    .civora-ventes-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+
+        .civora-stat-mini {
+            background: $civora-bg;
+            border-radius: $civora-radius-sm;
+            padding: 0.85rem 1rem;
+            text-align: center;
+
+            .civora-stat-val {
+                font-size: 1.3rem;
+                font-weight: 700;
+                color: $civora-primary;
+            }
+            .civora-stat-lbl {
+                font-size: 0.72rem;
+                color: $civora-muted;
+                margin-top: 0.2rem;
+            }
+        }
+    }
+
+    .civora-sale-history {
+        h4 {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: $civora-fg;
+            margin-bottom: 0.75rem;
+        }
+    }
+
+    .civora-sale-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.65rem 0.75rem;
+        border-radius: $civora-radius-sm;
+        background: $civora-bg;
+        margin-bottom: 0.5rem;
+        font-size: 0.82rem;
+
+        .civora-sale-ref {
+            font-weight: 600;
+            color: $civora-primary;
+        }
+        .civora-sale-buyer {
+            color: $civora-muted;
+        }
+        .civora-sale-amount {
+            font-weight: 600;
+        }
+    }
+
+    .civora-status-badge {
+        display: inline-block;
+        padding: 0.2rem 0.6rem;
+        border-radius: 1rem;
+        font-size: 0.72rem;
+        font-weight: 600;
+        white-space: nowrap;
+
+        &.civora-status-success { background: rgba($civora-success, 0.1); color: $civora-success; }
+        &.civora-status-info { background: rgba($civora-info, 0.1); color: $civora-info; }
+        &.civora-status-warning { background: rgba($civora-warning, 0.12); color: darken($civora-warning, 12%); }
+        &.civora-status-danger { background: rgba($civora-danger, 0.1); color: $civora-danger; }
+        &.civora-status-muted { background: rgba($civora-muted, 0.1); color: $civora-muted; }
+        &.civora-status-accent { background: rgba($civora-accent, 0.12); color: $civora-accent; }
+        &.civora-status-primary { background: rgba($civora-primary, 0.08); color: $civora-primary; }
+        &.civora-status-violet { background: rgba($civora-violet, 0.1); color: $civora-violet; }
+    }
+
+    .civora-empty-state {
+        text-align: center;
+        padding: 2rem;
+        color: $civora-muted;
+        font-size: 0.85rem;
+    }
+}

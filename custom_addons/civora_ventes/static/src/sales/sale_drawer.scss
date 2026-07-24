@@ -1,0 +1,62 @@
+.civora-sale-drawer {
+    .civora-drawer-section {
+        margin-bottom: 1.5rem;
+
+        h4 {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: $civora-muted;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.4rem;
+            border-bottom: 1px solid $civora-border;
+        }
+    }
+
+    .civora-field-group {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+
+        &.full { grid-template-columns: 1fr; }
+    }
+
+    .civora-field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+
+        label {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: $civora-muted;
+        }
+        input, select, textarea {
+            padding: 0.45rem 0.6rem;
+            border: 1px solid $civora-border;
+            border-radius: $civora-radius-sm;
+            font-size: 0.82rem;
+            color: $civora-fg;
+            background: $civora-card;
+            outline: none;
+            transition: border-color 0.15s;
+
+            &:focus {
+                border-color: $civora-accent;
+            }
+        }
+        textarea {
+            min-height: 70px;
+            resize: vertical;
+        }
+    }
+
+    .civora-drawer-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.75rem;
+        padding-top: 1rem;
+        border-top: 1px solid $civora-border;
+    }
+}

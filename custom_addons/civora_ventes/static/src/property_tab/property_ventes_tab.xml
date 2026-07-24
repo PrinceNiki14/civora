@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+<t t-name="civora_ventes.PropertyVentesTab">
+    <div class="civora-property-ventes-tab">
+        <!-- Stats -->
+        <div class="civora-ventes-stats">
+            <div class="civora-stat-mini">
+                <div class="civora-stat-val"><t t-esc="state.sales.length"/></div>
+                <div class="civora-stat-lbl">Dossiers</div>
+            </div>
+            <div class="civora-stat-mini">
+                <div class="civora-stat-val"><t t-esc="state.activeSales"/></div>
+                <div class="civora-stat-lbl">Actifs</div>
+            </div>
+            <div class="civora-stat-mini">
+                <div class="civora-stat-val"><t t-esc="fmtMoney(state.totalVolume)"/></div>
+                <div class="civora-stat-lbl">Volume (FCFA)</div>
+            </div>
+        </div>
+
+        <!-- Historique -->
+        <div class="civora-sale-history">
+            <h4>Historique des ventes</h4>
+            <t t-if="state.sales.length === 0">
+                <div class="civora-empty-state">Aucun dossier de vente pour ce bien</div>
+            </t>
+            <t t-foreach="state.sales" t-as="s" t-key="s.id">
+                <div class="civora-sale-item">
+                    <div>
+                        <span class="civora-sale-ref"><t t-esc="s.name"/></span>
+                        <span class="civora-sale-buyer"> — <t t-esc="s.buyer_id ? s.buyer_id[1] : 'Pas d acquereur'"/></span>
+                    </div>
+                    <div>
+                        <span class="civora-sale-amount"><t t-esc="s.sale_amount ? fmtMoney(s.sale_amount) + ' F' : fmtMoney(s.asking_price) + ' F'"/></span>
+                        <span t-attf-class="civora-status-badge civora-status-{{ stateClass(s.state) }}" style="margin-left: 0.5rem;">
+                            <t t-esc="stateLabel(s.state)"/>
+                        </span>
+                    </div>
+                </div>
+            </t>
+        </div>
+    </div>
+</t>
+</templates>

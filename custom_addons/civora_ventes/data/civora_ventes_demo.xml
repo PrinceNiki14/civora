@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+
+    <!-- ====== VENDEURS (contacts propriétaires) ====== -->
+    <record id="seller_kouame" model="res.partner">
+        <field name="name">Kouamé Aka Bernard</field>
+        <field name="phone">+225 07 77 88 99 00</field>
+        <field name="email">kouame.aka@gmail.com</field>
+        <field name="civora_is_contact" eval="True"/>
+        <field name="city">Abidjan</field>
+    </record>
+    <record id="seller_bamba" model="res.partner">
+        <field name="name">Bamba Seydou</field>
+        <field name="phone">+225 05 44 55 66 77</field>
+        <field name="email">s.bamba@yahoo.fr</field>
+        <field name="civora_is_contact" eval="True"/>
+        <field name="city">Abidjan</field>
+    </record>
+    <record id="seller_kone" model="res.partner">
+        <field name="name">Koné Mariam</field>
+        <field name="phone">+225 01 22 33 44 55</field>
+        <field name="email">mariam.kone@outlook.com</field>
+        <field name="civora_is_contact" eval="True"/>
+        <field name="city">Abidjan</field>
+    </record>
+
+    <!-- ====== ACQUÉREURS ====== -->
+    <record id="buyer_traore" model="res.partner">
+        <field name="name">Traoré Mamadou</field>
+        <field name="phone">+225 07 11 22 33 44</field>
+        <field name="email">mamadou.traore@gmail.com</field>
+        <field name="civora_is_contact" eval="True"/>
+        <field name="city">Abidjan</field>
+        <field name="civora_budget">120000000</field>
+    </record>
+    <record id="buyer_coulibaly" model="res.partner">
+        <field name="name">Coulibaly Awa</field>
+        <field name="phone">+225 05 99 88 77 66</field>
+        <field name="email">awa.coulibaly@hotmail.com</field>
+        <field name="civora_is_contact" eval="True"/>
+        <field name="city">Abidjan</field>
+        <field name="civora_budget">80000000</field>
+    </record>
+    <record id="buyer_nguessan" model="res.partner">
+        <field name="name">N'Guessan Koffi</field>
+        <field name="phone">+225 01 55 66 77 88</field>
+        <field name="email">koffi.nguessan@gmail.com</field>
+        <field name="civora_is_contact" eval="True"/>
+        <field name="city">Bouaké</field>
+        <field name="civora_budget">200000000</field>
+    </record>
+    <record id="buyer_yao" model="res.partner">
+        <field name="name">Yao Adjoua</field>
+        <field name="phone">+33 6 78 90 12 34</field>
+        <field name="email">adjoua.yao@free.fr</field>
+        <field name="civora_is_contact" eval="True"/>
+        <field name="city">Paris</field>
+        <field name="country_id" ref="base.fr"/>
+        <field name="civora_budget">350000000</field>
+    </record>
+
+    <!-- ====== BIENS À VENDRE ====== -->
+    <record id="prop_villa_cocody" model="civora.property">
+        <field name="name">Villa 5 pièces — Cocody Riviera 3</field>
+        <field name="ref">VTE-001</field>
+        <field name="transaction">vente</field>
+        <field name="status">disponible</field>
+        <field name="city">Abidjan</field>
+        <field name="neighborhood">Cocody Riviera 3</field>
+        <field name="surface">280</field>
+        <field name="bedrooms">4</field>
+        <field name="bathrooms">3</field>
+        <field name="price">95000000</field>
+        <field name="property_type_id" ref="civora_biens.ptype_villa"/>
+    </record>
+    <record id="prop_appart_plateau" model="civora.property">
+        <field name="name">Appartement T3 — Plateau Cité Administrative</field>
+        <field name="ref">VTE-002</field>
+        <field name="transaction">vente</field>
+        <field name="status">disponible</field>
+        <field name="city">Abidjan</field>
+        <field name="neighborhood">Plateau</field>
+        <field name="surface">110</field>
+        <field name="bedrooms">2</field>
+        <field name="bathrooms">2</field>
+        <field name="price">65000000</field>
+        <field name="property_type_id" ref="civora_biens.ptype_appartement"/>
+    </record>
+    <record id="prop_duplex_angre" model="civora.property">
+        <field name="name">Duplex Standing — Angré Star 11</field>
+        <field name="ref">VTE-003</field>
+        <field name="transaction">vente</field>
+        <field name="status">disponible</field>
+        <field name="city">Abidjan</field>
+        <field name="neighborhood">Angré Star 11</field>
+        <field name="surface">200</field>
+        <field name="bedrooms">3</field>
+        <field name="bathrooms">3</field>
+        <field name="price">120000000</field>
+        <field name="property_type_id" ref="civora_biens.ptype_appartement"/>
+    </record>
+    <record id="prop_terrain_bingerville" model="civora.property">
+        <field name="name">Terrain 600m² — Bingerville</field>
+        <field name="ref">VTE-004</field>
+        <field name="transaction">vente</field>
+        <field name="status">disponible</field>
+        <field name="city">Bingerville</field>
+        <field name="neighborhood">Bingerville Centre</field>
+        <field name="surface">600</field>
+        <field name="bedrooms">0</field>
+        <field name="bathrooms">0</field>
+        <field name="price">35000000</field>
+        <field name="property_type_id" ref="civora_biens.ptype_terrain"/>
+    </record>
+    <record id="prop_villa_marcory" model="civora.property">
+        <field name="name">Villa 4 pièces — Marcory Zone 4</field>
+        <field name="ref">VTE-005</field>
+        <field name="transaction">vente</field>
+        <field name="status">vendu</field>
+        <field name="city">Abidjan</field>
+        <field name="neighborhood">Marcory Zone 4</field>
+        <field name="surface">180</field>
+        <field name="bedrooms">3</field>
+        <field name="bathrooms">2</field>
+        <field name="price">75000000</field>
+        <field name="property_type_id" ref="civora_biens.ptype_villa"/>
+    </record>
+
+    <!-- ====== DOSSIERS DE VENTE ====== -->
+
+    <!-- 1. Clôturée (Marcory) — vente aboutie -->
+    <record id="sale_marcory" model="civora.sale">
+        <field name="property_id" ref="prop_villa_marcory"/>
+        <field name="seller_id" ref="seller_kouame"/>
+        <field name="buyer_id" ref="buyer_traore"/>
+        <field name="state">cloture</field>
+        <field name="mandate_type">exclusif</field>
+        <field name="mandate_date">2026-03-15</field>
+        <field name="asking_price">80000000</field>
+        <field name="sale_amount">75000000</field>
+        <field name="commission_rate">5.0</field>
+        <field name="notary_name">Me Konan Patrice</field>
+        <field name="notary_phone">+225 27 22 44 55 66</field>
+        <field name="compromis_date">2026-05-10</field>
+        <field name="acte_date">2026-07-01</field>
+        <field name="notes">Vente conclue en 3,5 mois. Client satisfait, recommandation attendue.</field>
+    </record>
+
+    <!-- 2. Compromis signé (Cocody Riviera 3) -->
+    <record id="sale_cocody" model="civora.sale">
+        <field name="property_id" ref="prop_villa_cocody"/>
+        <field name="seller_id" ref="seller_bamba"/>
+        <field name="buyer_id" ref="buyer_yao"/>
+        <field name="state">compromis</field>
+        <field name="mandate_type">exclusif</field>
+        <field name="mandate_date">2026-04-01</field>
+        <field name="mandate_end_date">2026-10-01</field>
+        <field name="asking_price">100000000</field>
+        <field name="sale_amount">95000000</field>
+        <field name="commission_rate">5.0</field>
+        <field name="notary_name">Me Brou Christelle</field>
+        <field name="notary_phone">+225 27 22 33 44 55</field>
+        <field name="compromis_date">2026-07-10</field>
+        <field name="estimated_acte_date">2026-09-15</field>
+        <field name="conditions_text">Obtention du prêt bancaire sous 60 jours. Vérification du titre foncier en cours au Conservatoire.</field>
+    </record>
+
+    <!-- 3. Offre reçue (Duplex Angré) -->
+    <record id="sale_angre" model="civora.sale">
+        <field name="property_id" ref="prop_duplex_angre"/>
+        <field name="seller_id" ref="seller_kone"/>
+        <field name="buyer_id" ref="buyer_nguessan"/>
+        <field name="state">offre</field>
+        <field name="mandate_type">simple</field>
+        <field name="mandate_date">2026-05-20</field>
+        <field name="mandate_end_date">2026-11-20</field>
+        <field name="asking_price">125000000</field>
+        <field name="sale_amount">120000000</field>
+        <field name="commission_rate">5.0</field>
+    </record>
+
+    <!-- 4. En commercialisation (Appart Plateau) -->
+    <record id="sale_plateau" model="civora.sale">
+        <field name="property_id" ref="prop_appart_plateau"/>
+        <field name="seller_id" ref="seller_bamba"/>
+        <field name="state">commercialisation</field>
+        <field name="mandate_type">simple</field>
+        <field name="mandate_date">2026-06-15</field>
+        <field name="mandate_end_date">2026-12-15</field>
+        <field name="asking_price">68000000</field>
+        <field name="commission_rate">5.0</field>
+        <field name="notes">Visites organisées chaque samedi matin. 4 visites réalisées, 2 en attente de retour.</field>
+    </record>
+
+    <!-- 5. Mandat signé (Terrain Bingerville) -->
+    <record id="sale_bingerville" model="civora.sale">
+        <field name="property_id" ref="prop_terrain_bingerville"/>
+        <field name="seller_id" ref="seller_kouame"/>
+        <field name="state">mandat</field>
+        <field name="mandate_type">delegue</field>
+        <field name="mandate_date">2026-07-20</field>
+        <field name="mandate_end_date">2027-01-20</field>
+        <field name="asking_price">38000000</field>
+        <field name="commission_rate">7.0</field>
+        <field name="notes">Terrain avec ACD, zone résidentielle en développement. Titre foncier disponible.</field>
+    </record>
+
+    <!-- 6. Annulée (ancien dossier Cocody) -->
+    <record id="sale_cancelled" model="civora.sale">
+        <field name="property_id" ref="prop_villa_cocody"/>
+        <field name="seller_id" ref="seller_bamba"/>
+        <field name="buyer_id" ref="buyer_coulibaly"/>
+        <field name="state">annule</field>
+        <field name="mandate_type">simple</field>
+        <field name="mandate_date">2026-01-10</field>
+        <field name="asking_price">105000000</field>
+        <field name="notes">Mandat annulé — le vendeur a changé d'avis temporairement. Nouveau mandat exclusif signé en avril.</field>
+    </record>
+
+    <!-- ====== OFFRES D'ACHAT ====== -->
+    <!-- Offres sur le duplex Angré -->
+    <record id="offer_angre_1" model="civora.sale.offer">
+        <field name="sale_id" ref="sale_angre"/>
+        <field name="buyer_id" ref="buyer_nguessan"/>
+        <field name="amount">115000000</field>
+        <field name="date">2026-07-05</field>
+        <field name="validity_date">2026-07-20</field>
+        <field name="state">refused</field>
+        <field name="notes">Première offre refusée par le vendeur, jugée trop basse.</field>
+    </record>
+    <record id="offer_angre_2" model="civora.sale.offer">
+        <field name="sale_id" ref="sale_angre"/>
+        <field name="buyer_id" ref="buyer_nguessan"/>
+        <field name="amount">120000000</field>
+        <field name="date">2026-07-12</field>
+        <field name="validity_date">2026-07-27</field>
+        <field name="state">accepted</field>
+        <field name="notes">Contre-offre acceptée après négociation.</field>
+    </record>
+    <record id="offer_angre_3" model="civora.sale.offer">
+        <field name="sale_id" ref="sale_angre"/>
+        <field name="buyer_id" ref="buyer_coulibaly"/>
+        <field name="amount">118000000</field>
+        <field name="date">2026-07-08</field>
+        <field name="validity_date">2026-07-23</field>
+        <field name="state">refused</field>
+        <field name="notes">Offre concurrente refusée, l'offre de N'Guessan était plus élevée.</field>
+    </record>
+
+    <!-- Offres sur la villa Cocody (compromis déjà signé) -->
+    <record id="offer_cocody_1" model="civora.sale.offer">
+        <field name="sale_id" ref="sale_cocody"/>
+        <field name="buyer_id" ref="buyer_yao"/>
+        <field name="amount">90000000</field>
+        <field name="date">2026-06-01</field>
+        <field name="validity_date">2026-06-15</field>
+        <field name="state">refused</field>
+        <field name="notes">Première offre jugée basse, négociation engagée.</field>
+    </record>
+    <record id="offer_cocody_2" model="civora.sale.offer">
+        <field name="sale_id" ref="sale_cocody"/>
+        <field name="buyer_id" ref="buyer_yao"/>
+        <field name="amount">95000000</field>
+        <field name="date">2026-06-20</field>
+        <field name="validity_date">2026-07-05</field>
+        <field name="state">accepted</field>
+        <field name="notes">Offre finale acceptée. Compromis signé le 10 juillet.</field>
+    </record>
+
+</odoo>

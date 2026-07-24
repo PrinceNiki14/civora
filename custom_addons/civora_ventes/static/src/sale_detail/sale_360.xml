@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+<t t-name="civora_ventes.Sale360">
+    <div class="civora-sale-360">
+        <t t-if="state.sale">
+            <t t-set="rec" t-value="state.sale"/>
+
+            <!-- Topbar -->
+            <div class="civora-360-topbar">
+                <button class="civora-back-btn" t-on-click="goBack">
+                    <i class="fa fa-arrow-left"/> Retour aux ventes
+                </button>
+            </div>
+
+            <!-- Header -->
+            <div class="civora-360-header">
+                <div class="civora-360-info">
+                    <h2><t t-esc="rec.name"/> — <t t-esc="rec.property_id ? rec.property_id[1] : ''"/></h2>
+                    <div class="civora-360-meta">
+                        <span t-attf-class="civora-status-badge civora-status-{{ stateClass(rec.state) }}">
+                            <t t-esc="stateLabel(rec.state)"/>
+                        </span>
+                        <span t-if="rec.seller_id"><i class="fa fa-user"/> <t t-esc="rec.seller_id[1]"/></span>
+                        <span t-if="rec.buyer_id"><i class="fa fa-user-plus"/> <t t-esc="rec.buyer_id[1]"/></span>
+                        <span t-if="rec.mandate_type" class="civora-mandate-badge"><t t-esc="mandateLabel(rec.mandate_type)"/></span>
+                    </div>
+                </div>
+                <div class="civora-360-actions">
+                    <t t-if="rec.state === 'mandat'">
+                        <button class="civora-btn civora-btn-accent" t-on-click="() => this.doAction('action_commercialisation')">Lancer la commercialisation</button>
+                    </t>
+                    <t t-if="rec.state === 'offre'">
+                        <button class="civora-btn civora-btn-primary" t-on-click="() => this.doAction('action_compromis')">Passer au compromis</button>
+                    </t>
+                    <t t-if="rec.state === 'compromis'">
+                        <button class="civora-btn civora-btn-primary" t-on-click="() => this.doAction('action_acte')">Passer a l'acte</button>
+                    </t>
+                    <t t-if="rec.state === 'acte'">
+                        <button class="civora-btn civora-btn-success" t-on-click="() => this.doAction('action_cloturer')">Cloturer la vente</button>
+                    </t>
+                    <t t-if="rec.state !== 'cloture' and rec.state !== 'annule'">
+                        <button class="civora-btn civora-btn-danger" t-on-click="() => this.doAction('action_annuler')">Annuler</button>
+                    </t>
+                </div>
+            </div>
+
+            <!-- KPIs -->
+            <div class="civora-360-kpis">
+                <CivoraStatCard label="'Prix demande'" value="fmtMoney(rec.asking_price) + ' F'" icon="'fa-tag'"/>
+                <CivoraStatCard label="'Prix de vente'" value="rec.sale_amount ? fmtMoney(rec.sale_amount) + ' F' : '—'" icon="'fa-money'"/>
+                <CivoraStatCard label="'Commission'" value="rec.commission_amount ? fmtMoney(rec.commission_amount) + ' F' : '—'" hint="rec.commission_rate + '%'" icon="'fa-percent'"/>
+                <CivoraStatCard label="'Offres'" value="'' + state.offers.length" icon="'fa-gavel'"/>
+            </div>
+
+            <!-- Tabs -->
+            <div class="civora-360-tabs">
+                <button t-attf-class="civora-tab {{ state.activeTab === 'overview' ? 'active' : '' }}"
+                        t-on-click="() => this.setTab('overview')">Vue d'ensemble</button>
+                <button t-attf-class="civora-tab {{ state.activeTab === 'offers' ? 'active' : '' }}"
+                        t-on-click="() => this.setTab('offers')">
+                    Offres
+                    <t t-if="state.offers.length > 0">
+                        <span class="civora-tab-count"><t t-esc="state.offers.length"/></span>
+                    </t>
+                </button>
+            </div>
+
+            <!-- Tab: Overview -->
+            <t t-if="state.activeTab === 'overview'">
+                <div class="civora-360-grid">
+                    <div class="civora-360-card">
+                        <h3>Mandat</h3>
+                        <div class="civora-kv">
+                            <span class="civora-k">Type</span>
+                            <span class="civora-v"><t t-esc="mandateLabel(rec.mandate_type)"/></span>
+                        </div>
+                        <div class="civora-kv">
+                            <span class="civora-k">Date du mandat</span>
+                            <span class="civora-v"><t t-esc="rec.mandate_date || '—'"/></span>
+                        </div>
+                        <div class="civora-kv">
+                            <span class="civora-k">Fin du mandat</span>
+                            <span class="civora-v"><t t-esc="rec.mandate_end_date || '—'"/></span>
+                        </div>
+                        <div class="civora-kv">
+                            <span class="civora-k">Prix demande</span>
+                            <span class="civora-v"><t t-esc="fmtMoney(rec.asking_price)"/> FCFA</span>
+                        </div>
+                    </div>
+                    <div class="civora-360-card">
+                        <h3>Parties</h3>
+                        <div class="civora-kv">
+                            <span class="civora-k">Vendeur</span>
+                            <span class="civora-v"><t t-esc="rec.seller_id ? rec.seller_id[1] : '—'"/></span>
+                        </div>
+                        <div class="civora-kv">
+                            <span class="civora-k">Acquereur</span>
+                            <span class="civora-v"><t t-esc="rec.buyer_id ? rec.buyer_id[1] : '—'"/></span>
+                        </div>
+                        <div class="civora-kv">
+                            <span class="civora-k">Agent</span>
+                            <span class="civora-v"><t t-esc="rec.agent_id ? rec.agent_id[1] : '—'"/></span>
+                        </div>
+                        <div class="civora-kv">
+                            <span class="civora-k">Notaire</span>
+                            <span class="civora-v"><t t-esc="rec.notary_name || '—'"/></span>
+                        </div>
+                    </div>
+                    <div class="civora-360-card">
+                        <h3>Compromis</h3>
+                        <div class="civora-kv">
+                            <span class="civora-k">Date compromis</span>
+                            <span class="civora-v"><t t-esc="rec.compromis_date || '—'"/></span>
+                        </div>
+                        <div class="civora-kv">
+                            <span class="civora-k">Conditions suspensives</span>
+                            <span class="civora-v"><t t-esc="rec.conditions_text || '—'"/></span>
+                        </div>
+                        <div class="civora-kv">
+                            <span class="civora-k">Acte prevu le</span>
+                            <span class="civora-v"><t t-esc="rec.estimated_acte_date || '—'"/></span>
+                        </div>
+                        <div class="civora-kv">
+                            <span class="civora-k">Date acte</span>
+                            <span class="civora-v"><t t-esc="rec.acte_date || '—'"/></span>
+                        </div>
+                    </div>
+                    <div class="civora-360-card">
+                        <h3>Finances</h3>
+                        <div class="civora-kv">
+                            <span class="civora-k">Prix de vente</span>
+                            <span class="civora-v"><t t-esc="rec.sale_amount ? fmtMoney(rec.sale_amount) + ' FCFA' : '—'"/></span>
+                        </div>
+                        <div class="civora-kv">
+                            <span class="civora-k">Taux commission</span>
+                            <span class="civora-v"><t t-esc="rec.commission_rate"/>%</span>
+                        </div>
+                        <div class="civora-kv">
+                            <span class="civora-k">Commission agence</span>
+                            <span class="civora-v"><t t-esc="rec.commission_amount ? fmtMoney(rec.commission_amount) + ' FCFA' : '—'"/></span>
+                        </div>
+                    </div>
+                </div>
+                <t t-if="rec.notes">
+                    <div class="civora-360-card" style="margin-top: 1.25rem;">
+                        <h3>Notes internes</h3>
+                        <p style="font-size: 0.85rem; color: #626a75; margin: 0;"><t t-esc="rec.notes"/></p>
+                    </div>
+                </t>
+            </t>
+
+            <!-- Tab: Offers -->
+            <t t-if="state.activeTab === 'offers'">
+                <t t-if="state.offers.length === 0">
+                    <div class="civora-360-card">
+                        <p style="text-align: center; color: #626a75; padding: 2rem;">Aucune offre pour ce dossier</p>
+                    </div>
+                </t>
+                <t t-foreach="state.offers" t-as="offer" t-key="offer.id">
+                    <div class="civora-offer-card">
+                        <div class="civora-offer-header">
+                            <span class="civora-offer-buyer">
+                                <i class="fa fa-user"/> <t t-esc="offer.buyer_id ? offer.buyer_id[1] : ''"/>
+                            </span>
+                            <span class="civora-offer-amount"><t t-esc="fmtMoney(offer.amount)"/> FCFA</span>
+                        </div>
+                        <div class="civora-offer-meta">
+                            <span><i class="fa fa-calendar"/> <t t-esc="offer.date"/></span>
+                            <span t-if="offer.validity_date">Valide jusqu'au <t t-esc="offer.validity_date"/></span>
+                            <span t-attf-class="civora-status-badge civora-status-{{ offerStateClass(offer.state) }}">
+                                <t t-esc="offerStateLabel(offer.state)"/>
+                            </span>
+                        </div>
+                        <t t-if="offer.notes">
+                            <div class="civora-offer-notes"><t t-esc="offer.notes"/></div>
+                        </t>
+                        <t t-if="offer.state === 'pending'">
+                            <div class="civora-offer-actions">
+                                <button class="civora-btn civora-btn-success" t-on-click="() => this.acceptOffer(offer.id)">Accepter</button>
+                                <button class="civora-btn civora-btn-danger" t-on-click="() => this.refuseOffer(offer.id)">Refuser</button>
+                            </div>
+                        </t>
+                    </div>
+                </t>
+            </t>
+
+        </t>
+        <t t-else="">
+            <div style="text-align: center; padding: 4rem; color: #626a75;">Chargement...</div>
+        </t>
+    </div>
+</t>
+</templates>

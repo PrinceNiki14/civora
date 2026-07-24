@@ -1,0 +1,206 @@
+.civora-sale-360 {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+
+    .civora-360-topbar {
+        margin-bottom: 1rem;
+        .civora-back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.35rem 0.75rem;
+            border-radius: 0.4rem;
+            border: 1px solid $civora-border;
+            background: $civora-card;
+            color: $civora-muted;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.12s;
+            &:hover { border-color: $civora-accent; color: $civora-accent; }
+        }
+    }
+
+    .civora-360-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1.5rem;
+        gap: 1rem;
+
+        .civora-360-info {
+            h2 {
+                font-family: $civora-font-display;
+                font-size: 1.4rem;
+                font-weight: 700;
+                color: $civora-fg;
+                margin: 0 0 0.25rem;
+            }
+            .civora-360-meta {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                font-size: 0.82rem;
+                color: $civora-muted;
+                flex-wrap: wrap;
+            }
+        }
+        .civora-360-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+    }
+
+    .civora-360-kpis {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .civora-360-tabs {
+        display: flex;
+        gap: 0;
+        border-bottom: 2px solid $civora-border;
+        margin-bottom: 1.5rem;
+
+        .civora-tab {
+            padding: 0.6rem 1.2rem;
+            font-size: 0.82rem;
+            font-weight: 500;
+            color: $civora-muted;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.15s;
+
+            &:hover { color: $civora-accent; }
+            &.active {
+                color: $civora-accent;
+                border-bottom-color: $civora-accent;
+                font-weight: 600;
+            }
+            .civora-tab-count {
+                background: $civora-accent;
+                color: #fff;
+                font-size: 0.65rem;
+                font-weight: 700;
+                padding: 0.1rem 0.4rem;
+                border-radius: 1rem;
+                margin-left: 0.3rem;
+            }
+        }
+    }
+
+    .civora-360-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.25rem;
+    }
+
+    .civora-360-card {
+        background: $civora-card;
+        border-radius: $civora-radius;
+        box-shadow: $civora-shadow-card;
+        padding: 1.25rem;
+
+        h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: $civora-fg;
+            margin: 0 0 1rem;
+        }
+    }
+
+    .civora-kv {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.35rem 0;
+        font-size: 0.82rem;
+        border-bottom: 1px solid rgba($civora-border, 0.4);
+
+        &:last-child { border-bottom: none; }
+
+        .civora-k { color: $civora-muted; }
+        .civora-v { font-weight: 500; color: $civora-fg; }
+    }
+
+    .civora-offer-card {
+        background: $civora-bg;
+        border-radius: $civora-radius-sm;
+        padding: 0.85rem 1rem;
+        margin-bottom: 0.75rem;
+
+        .civora-offer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            font-size: 0.82rem;
+
+            .civora-offer-buyer { font-weight: 600; color: $civora-fg; }
+            .civora-offer-amount { font-weight: 700; color: $civora-primary; }
+        }
+        .civora-offer-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.75rem;
+            color: $civora-muted;
+        }
+        .civora-offer-notes {
+            font-size: 0.78rem;
+            color: $civora-muted;
+            margin-top: 0.3rem;
+            font-style: italic;
+        }
+        .civora-offer-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+    }
+
+    .civora-btn {
+        padding: 0.4rem 0.85rem;
+        border-radius: 0.4rem;
+        font-size: 0.78rem;
+        font-weight: 500;
+        border: none;
+        cursor: pointer;
+        transition: all 0.12s;
+    }
+    .civora-btn-accent {
+        background: $civora-accent;
+        color: #fff;
+        &:hover { background: darken($civora-accent, 6%); }
+    }
+    .civora-btn-primary {
+        background: $civora-primary;
+        color: #fff;
+        &:hover { background: lighten($civora-primary, 8%); }
+    }
+    .civora-btn-outline {
+        background: transparent;
+        border: 1px solid $civora-border;
+        color: $civora-muted;
+        &:hover { border-color: $civora-accent; color: $civora-accent; }
+    }
+    .civora-btn-danger {
+        background: rgba($civora-danger, 0.08);
+        color: $civora-danger;
+        &:hover { background: rgba($civora-danger, 0.15); }
+    }
+    .civora-btn-success {
+        background: rgba($civora-success, 0.08);
+        color: $civora-success;
+        &:hover { background: rgba($civora-success, 0.15); }
+    }
+
+    @media (max-width: 900px) {
+        .civora-360-kpis { grid-template-columns: repeat(2, 1fr); }
+        .civora-360-grid { grid-template-columns: 1fr; }
+    }
+}

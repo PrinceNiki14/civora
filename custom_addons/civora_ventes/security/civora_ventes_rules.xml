@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <record id="rule_sale_company" model="ir.rule">
+        <field name="name">Ventes : multi-société</field>
+        <field name="model_id" ref="model_civora_sale"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_sale_offer_company" model="ir.rule">
+        <field name="name">Offres : multi-société</field>
+        <field name="model_id" ref="model_civora_sale_offer"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+</odoo>

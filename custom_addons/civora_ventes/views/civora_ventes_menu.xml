@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_civora_ventes" model="ir.actions.client">
+        <field name="name">Ventes Immo</field>
+        <field name="tag">civora.ventes</field>
+    </record>
+
+    <menuitem id="civora_agence.menu_ventes" action="action_civora_ventes"/>
+
+</odoo>

@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_civora_sale_user,civora.sale.user,model_civora_sale,base.group_user,1,1,1,0
+access_civora_sale_admin,civora.sale.admin,model_civora_sale,base.group_system,1,1,1,1
+access_civora_sale_offer_user,civora.sale.offer.user,model_civora_sale_offer,base.group_user,1,1,1,0
+access_civora_sale_offer_admin,civora.sale.offer.admin,model_civora_sale_offer,base.group_system,1,1,1,1

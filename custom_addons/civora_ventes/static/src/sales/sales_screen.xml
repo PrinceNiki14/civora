@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+<t t-name="civora_ventes.SalesScreen">
+    <div class="civora-ventes-screen">
+        <!-- Header -->
+        <div class="civora-screen-header">
+            <div class="civora-screen-title">
+                <h1>Ventes Immobilières</h1>
+                <span class="civora-screen-subtitle">Gestion des mandats, offres, compromis et actes</span>
+            </div>
+            <div class="civora-screen-actions">
+                <button class="civora-btn civora-btn-accent" t-on-click="() => this.openDrawer('create')">
+                    + Nouveau dossier
+                </button>
+            </div>
+        </div>
+
+        <!-- KPIs -->
+        <div class="civora-kpi-grid">
+            <CivoraStatCard label="'Dossiers actifs'" value="'' + (state.kpis.active || 0)" icon="'fa-folder-open-o'"/>
+            <CivoraStatCard label="'Volume du mois'" value="fmtMoney(state.kpis.volume_month) + ' FCFA'" icon="'fa-line-chart'"/>
+            <CivoraStatCard label="'Mandats en cours'" value="'' + (state.kpis.mandats || 0)" icon="'fa-file-text-o'"/>
+            <CivoraStatCard label="'Offres en attente'" value="'' + (state.kpis.pending_offers || 0)" icon="'fa-gavel'"/>
+        </div>
+
+        <!-- Filters -->
+        <div class="civora-filters-bar">
+            <div class="civora-pills">
+                <button t-attf-class="civora-pill {{ state.filter === 'all' ? 'active' : '' }}" t-on-click="() => this.setFilter('all')">Tous</button>
+                <button t-attf-class="civora-pill {{ state.filter === 'mandats' ? 'active' : '' }}" t-on-click="() => this.setFilter('mandats')">Mandats</button>
+                <button t-attf-class="civora-pill {{ state.filter === 'offres' ? 'active' : '' }}" t-on-click="() => this.setFilter('offres')">Offres</button>
+                <button t-attf-class="civora-pill {{ state.filter === 'compromis' ? 'active' : '' }}" t-on-click="() => this.setFilter('compromis')">Compromis</button>
+                <button t-attf-class="civora-pill {{ state.filter === 'acte' ? 'active' : '' }}" t-on-click="() => this.setFilter('acte')">Acte</button>
+                <button t-attf-class="civora-pill {{ state.filter === 'cloture' ? 'active' : '' }}" t-on-click="() => this.setFilter('cloture')">Clotures</button>
+            </div>
+            <div class="civora-search-box">
+                <i class="fa fa-search"/>
+                <input type="text" placeholder="Rechercher bien, vendeur, acquereur..." t-on-input="onSearch" t-att-value="state.search"/>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="civora-table-wrapper">
+            <table class="civora-table">
+                <thead>
+                    <tr>
+                        <th>Ref</th>
+                        <th>Bien</th>
+                        <th>Vendeur</th>
+                        <th>Acquereur</th>
+                        <th>Prix demande</th>
+                        <th>Prix vente</th>
+                        <th>Mandat</th>
+                        <th>Commission</th>
+                        <th>Statut</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-foreach="filteredSales" t-as="s" t-key="s.id">
+                        <tr class="civora-table-row" t-on-click="() => this.openDetail(s.id)">
+                            <td class="civora-ref"><t t-esc="s.name"/></td>
+                            <td><t t-esc="s.property_id ? s.property_id[1] : ''"/></td>
+                            <td><t t-esc="s.seller_id ? s.seller_id[1] : ''"/></td>
+                            <td><t t-esc="s.buyer_id ? s.buyer_id[1] : '—'"/></td>
+                            <td class="text-right"><t t-esc="fmtMoney(s.asking_price)"/></td>
+                            <td class="text-right font-semibold"><t t-esc="s.sale_amount ? fmtMoney(s.sale_amount) + ' F' : '—'"/></td>
+                            <td><span class="civora-mandate-badge"><t t-esc="mandateLabel(s.mandate_type)"/></span></td>
+                            <td class="text-right"><t t-esc="s.commission_amount ? fmtMoney(s.commission_amount) + ' F' : '—'"/></td>
+                            <td>
+                                <span t-attf-class="civora-status-badge civora-status-{{ stateClass(s.state) }}">
+                                    <t t-esc="stateLabel(s.state)"/>
+                                </span>
+                            </td>
+                        </tr>
+                    </t>
+                    <t t-if="filteredSales.length === 0">
+                        <tr><td colspan="9" class="civora-empty">Aucun dossier de vente</td></tr>
+                    </t>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Drawer -->
+        <t t-if="state.drawerOpen">
+            <SaleDrawer
+                mode="state.drawerMode"
+                recordId="state.drawerRecordId"
+                onSaved.bind="onSaved"
+                onClose.bind="closeDrawer"/>
+        </t>
+    </div>
+</t>
+</templates>
