@@ -141,28 +141,67 @@ class CivoraSale(models.Model):
     def get_sales_kpis(self):
         today = fields.Date.today()
         month_start = today.replace(day=1)
-        domain_active = [('state', 'not in', ['cloture', 'annule']), ('company_id', 'in', self.env.companies.ids)]
-        domain_closed_month = [
-            ('state', '=', 'cloture'),
-            ('acte_date', '>=', month_start),
-            ('company_id', 'in', self.env.companies.ids),
-        ]
+        company_domain = [('company_id', 'in', self.env.companies.ids)]
+        domain_active = [('state', 'not in', ['cloture', 'annule'])] + company_domain
+        domain_closed = [('state', '=', 'cloture')] + company_domain
 
-        active = self.search_count(domain_active)
-        mandats = self.search_count([('state', 'in', ['mandat', 'commercialisation'])] + domain_active[:1] + [('company_id', 'in', self.env.companies.ids)])
-        closed = self.search(domain_closed_month)
-        volume = sum(closed.mapped('sale_amount'))
+        active_records = self.search(domain_active)
+        active = len(active_records)
+        pipeline_value = sum(active_records.mapped('asking_price'))
+
+        closed = self.search(domain_closed)
+        volume_signed = sum(closed.mapped('sale_amount'))
         commission_total = sum(closed.mapped('commission_amount'))
-        pending_offers = self.env['civora.sale.offer'].search_count([
-            ('state', '=', 'pending'),
-            ('company_id', 'in', self.env.companies.ids),
-        ])
+
+        all_records = self.search(company_domain)
+        total_count = len(all_records)
+        closed_count = len(closed)
+        transformation_rate = round(closed_count / total_count * 100) if total_count else 0
+
+        avg_commission_rate = 0
+        if closed:
+            avg_commission_rate = round(sum(closed.mapped('commission_rate')) / len(closed), 1)
 
         return {
             'active': active,
-            'mandats': mandats,
-            'volume_month': volume,
-            'commission_month': commission_total,
-            'closed_month': len(closed),
-            'pending_offers': pending_offers,
+            'pipeline_value': pipeline_value,
+            'volume_signed': volume_signed,
+            'commission_total': commission_total,
+            'avg_commission_rate': avg_commission_rate,
+            'transformation_rate': transformation_rate,
         }
+
+    @api.model
+    def get_pipeline_data(self):
+        company_domain = [('company_id', 'in', self.env.companies.ids)]
+        columns = [
+            ('offre', 'Promesse'),
+            ('compromis', 'Compromis signe'),
+            ('acte', 'Acte authentique'),
+            ('cloture', 'Encaisse'),
+        ]
+        result = []
+        for state_key, label in columns:
+            records = self.search([('state', '=', state_key)] + company_domain, order='create_date desc')
+            cards = []
+            for r in records:
+                cards.append({
+                    'id': r.id,
+                    'name': r.name,
+                    'property_name': r.property_id.name if r.property_id else '',
+                    'city': r.property_id.city if r.property_id else '',
+                    'amount': r.sale_amount or r.asking_price or 0,
+                    'commission_rate': r.commission_rate or 0,
+                    'agent_name': r.agent_id.name if r.agent_id else '',
+                    'agent_initials': ''.join([w[0] for w in (r.agent_id.name or '').split()[:2]]).upper(),
+                    'date': str(r.compromis_date or r.mandate_date or r.create_date.date()) if r.create_date else '',
+                })
+            total = sum(r.sale_amount or r.asking_price or 0 for r in records)
+            result.append({
+                'key': state_key,
+                'label': label,
+                'count': len(records),
+                'total': total,
+                'cards': cards,
+            })
+        return result

@@ -2,90 +2,604 @@
 <templates xml:space="preserve">
 <t t-name="civora_equipe.TeamScreen">
     <div class="civora-team-screen">
-        <!-- Header -->
-        <div class="civora-screen-header">
-            <div>
-                <h1 class="civora-screen-title">Equipe</h1>
-                <p class="civora-screen-subtitle">Gestion des agents et collaborateurs</p>
+
+        <!-- ============ HEADER ============ -->
+        <div class="civora-team-header">
+            <div class="civora-team-header-left">
+                <h1 class="civora-team-title">Équipe &amp; RH</h1>
+                <p class="civora-team-subtitle" t-esc="subtitle"/>
             </div>
-            <button class="civora-btn civora-btn-accent" t-on-click="openDrawer">+ Nouveau membre</button>
+            <div class="civora-team-header-actions">
+                <button class="civora-btn civora-btn-outline">
+                    <i class="fa fa-download"/> Export RH
+                </button>
+                <button class="civora-btn civora-btn-accent" t-on-click="openDrawer">
+                    + Ajouter un membre
+                </button>
+            </div>
         </div>
 
-        <!-- KPIs -->
+        <!-- ============ KPIs ============ -->
         <div class="civora-kpi-grid">
-            <CivoraStatCard label="'Membres'" value="'' + (state.kpis.total || 0)" icon="'fa-users'"/>
-            <CivoraStatCard label="'Actifs'" value="'' + (state.kpis.actifs || 0)" trend="'up'" icon="'fa-check-circle'"/>
-            <CivoraStatCard label="'En conge'" value="'' + (state.kpis.en_conge || 0)" icon="'fa-pause-circle'"/>
-            <CivoraStatCard label="'Inactifs'" value="'' + (state.kpis.inactifs || 0)" icon="'fa-times-circle'"/>
+            <CivoraStatCard
+                label="'COLLABORATEURS'"
+                value="'' + (state.kpis.total or 0)"
+                delta="'+1 ce mois'"
+                icon="'fa fa-users'"
+                trend="'up'"/>
+            <CivoraStatCard
+                label="'VENTES EQUIPE'"
+                value="'' + (state.kpis.total_deals or 0)"
+                delta="'+8 vs Oct.'"
+                icon="'fa fa-handshake-o'"
+                trend="'up'"/>
+            <CivoraStatCard
+                label="'COMMISSIONS Q4'"
+                value="fmtAmount(state.kpis.total_commission)"
+                hint="'FCFA · variable'"
+                icon="'fa fa-money'"
+                trend="'up'"/>
+            <CivoraStatCard
+                label="'PERF. MOYENNE'"
+                value="(state.kpis.avg_performance or 0) + '%'"
+                delta="'+5 pts'"
+                icon="'fa fa-line-chart'"
+                trend="'up'"/>
         </div>
 
-        <!-- Filters -->
-        <div class="civora-filters">
-            <div class="civora-pills">
-                <button t-attf-class="civora-pill {{ state.filter === 'all' ? 'active' : '' }}" t-on-click="() => this.setFilter('all')">Tous</button>
-                <button t-attf-class="civora-pill {{ state.filter === 'actif' ? 'active' : '' }}" t-on-click="() => this.setFilter('actif')">Actifs</button>
-                <button t-attf-class="civora-pill {{ state.filter === 'commercial' ? 'active' : '' }}" t-on-click="() => this.setFilter('commercial')">Commercial</button>
-                <button t-attf-class="civora-pill {{ state.filter === 'gestion' ? 'active' : '' }}" t-on-click="() => this.setFilter('gestion')">Gestion</button>
-                <button t-attf-class="civora-pill {{ state.filter === 'direction' ? 'active' : '' }}" t-on-click="() => this.setFilter('direction')">Direction</button>
-                <button t-attf-class="civora-pill {{ state.filter === 'support' ? 'active' : '' }}" t-on-click="() => this.setFilter('support')">Support</button>
-                <button t-attf-class="civora-pill {{ state.filter === 'conge' ? 'active' : '' }}" t-on-click="() => this.setFilter('conge')">En conge</button>
-            </div>
-            <div class="civora-search">
-                <i class="fa fa-search"/>
-                <input type="text" placeholder="Rechercher un membre..." t-on-input="onSearch" t-att-value="state.search"/>
-            </div>
-        </div>
-
-        <!-- Members Grid -->
-        <div class="civora-members-grid">
-            <t t-foreach="filteredMembers" t-as="m" t-key="m.id">
-                <div class="civora-member-card" t-on-click="() => this.openDetail(m.id)">
-                    <div class="civora-member-avatar">
-                        <i class="fa fa-user-circle-o"/>
-                    </div>
-                    <div class="civora-member-info">
-                        <div class="civora-member-name"><t t-esc="m.name"/></div>
-                        <div class="civora-member-role" t-if="m.role_id"><t t-esc="m.role_id[1]"/></div>
-                    </div>
-                    <div class="civora-member-badges">
-                        <span t-attf-class="civora-dept-badge civora-dept-{{ deptClass(m.department) }}">
-                            <t t-esc="deptLabel(m.department)"/>
-                        </span>
-                        <span t-attf-class="civora-status-dot civora-dot-{{ statusClass(m.status) }}" t-att-title="statusLabel(m.status)"/>
-                    </div>
-                    <div class="civora-member-stats">
-                        <div class="civora-member-stat" t-if="m.property_count">
-                            <span class="civora-stat-value"><t t-esc="m.property_count"/></span>
-                            <span class="civora-stat-label">biens</span>
-                        </div>
-                        <div class="civora-member-stat" t-if="m.sale_count">
-                            <span class="civora-stat-value"><t t-esc="m.sale_count"/></span>
-                            <span class="civora-stat-label">ventes</span>
-                        </div>
-                        <div class="civora-member-stat" t-if="m.lead_count">
-                            <span class="civora-stat-value"><t t-esc="m.lead_count"/></span>
-                            <span class="civora-stat-label">pistes</span>
-                        </div>
-                        <div class="civora-member-stat" t-if="m.workflow_count">
-                            <span class="civora-stat-value"><t t-esc="m.workflow_count"/></span>
-                            <span class="civora-stat-label">workflows</span>
-                        </div>
-                    </div>
-                    <div class="civora-member-contact">
-                        <span t-if="m.email" class="civora-member-email"><i class="fa fa-envelope-o"/> <t t-esc="m.email"/></span>
-                        <span t-if="m.phone" class="civora-member-phone"><i class="fa fa-phone"/> <t t-esc="m.phone"/></span>
-                    </div>
-                </div>
-            </t>
-            <t t-if="filteredMembers.length === 0">
-                <div class="civora-empty-state">
-                    <i class="fa fa-users"/>
-                    <p>Aucun membre trouve</p>
-                </div>
+        <!-- ============ TABS ============ -->
+        <div class="civora-team-tabs">
+            <t t-foreach="tabs" t-as="tab" t-key="tab.key">
+                <button t-attf-class="civora-team-tab {{ state.activeTab === tab.key ? 'active' : '' }}"
+                        t-on-click="() => this.setTab(tab.key)">
+                    <t t-esc="tab.label"/>
+                </button>
             </t>
         </div>
 
-        <!-- Drawer -->
+        <!-- ============ TAB: ANNUAIRE ============ -->
+        <t t-if="state.activeTab === 'annuaire'">
+            <div class="civora-team-members-grid">
+                <t t-foreach="filteredMembers" t-as="m" t-key="m.id">
+                    <div class="civora-team-member-card">
+                        <!-- Top: avatar + info + badge -->
+                        <div class="civora-tmc-header">
+                            <div class="civora-tmc-avatar">
+                                <t t-esc="m.initials"/>
+                            </div>
+                            <div class="civora-tmc-info">
+                                <div class="civora-tmc-name"><t t-esc="m.name"/></div>
+                                <div class="civora-tmc-role"><t t-esc="m.role"/></div>
+                                <div class="civora-tmc-location" t-if="m.location">
+                                    <i class="fa fa-map-marker"/> <t t-esc="m.location"/>
+                                </div>
+                            </div>
+                            <span t-attf-class="civora-tmc-presence civora-presence-{{ presenceClass(m.presence) }}">
+                                <t t-esc="presenceLabel(m.presence)"/>
+                            </span>
+                        </div>
+
+                        <!-- Separator -->
+                        <div class="civora-tmc-separator"/>
+
+                        <!-- Stats row -->
+                        <div class="civora-tmc-stats">
+                            <div class="civora-tmc-stat">
+                                <div class="civora-tmc-stat-label">DEALS</div>
+                                <div class="civora-tmc-stat-value"><t t-esc="m.deal_count"/></div>
+                            </div>
+                            <div class="civora-tmc-stat">
+                                <div class="civora-tmc-stat-label">COMMISSIONS</div>
+                                <div class="civora-tmc-stat-value"><t t-esc="fmtCommission(m.commission_amount)"/></div>
+                            </div>
+                            <div class="civora-tmc-stat">
+                                <div class="civora-tmc-stat-label">PERF.</div>
+                                <div class="civora-tmc-stat-value"><t t-esc="m.performance"/>%</div>
+                            </div>
+                        </div>
+
+                        <!-- Perf bar -->
+                        <div class="civora-tmc-perfbar">
+                            <div class="civora-tmc-perfbar-fill"
+                                 t-attf-style="width: {{ m.performance }}%; background: {{ perfBarColor(m.performance) }}"/>
+                        </div>
+
+                        <!-- Rating + seniority -->
+                        <div class="civora-tmc-footer-meta">
+                            <span class="civora-tmc-rating" t-if="m.rating">
+                                <i class="fa fa-star"/> <t t-esc="m.rating"/>/5
+                            </span>
+                            <span class="civora-tmc-seniority" t-if="m.hire_year">
+                                Chez Civora depuis <t t-esc="m.hire_year"/>
+                            </span>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="civora-tmc-actions">
+                            <button class="civora-tmc-btn civora-tmc-btn-open" t-on-click.stop="() => this.openDetail(m.id)">
+                                Ouvrir <i class="fa fa-chevron-right"/>
+                            </button>
+                            <button class="civora-tmc-btn civora-tmc-btn-edit" t-on-click.stop="() => this.openDetail(m.id)">
+                                <i class="fa fa-pencil"/> Modifier
+                            </button>
+                            <button class="civora-tmc-btn-icon">
+                                <i class="fa fa-envelope-o"/>
+                            </button>
+                            <button class="civora-tmc-btn-icon">
+                                <i class="fa fa-phone"/>
+                            </button>
+                        </div>
+                    </div>
+                </t>
+                <t t-if="filteredMembers.length === 0">
+                    <div class="civora-empty-state">
+                        <i class="fa fa-users"/>
+                        <p>Aucun membre trouve</p>
+                    </div>
+                </t>
+            </div>
+        </t>
+
+        <!-- ============ TAB: PERFORMANCE ============ -->
+        <t t-if="state.activeTab === 'performance'">
+            <div class="civora-perf-tab">
+                <!-- Filter bar -->
+                <div class="civora-filter-bar">
+                    <span class="civora-filter-label">Periode</span>
+                    <select class="civora-filter-select">
+                        <option>2026</option>
+                        <option>2025</option>
+                    </select>
+                    <select class="civora-filter-select">
+                        <option>Trimestre Q3</option>
+                        <option>Trimestre Q2</option>
+                        <option>Trimestre Q1</option>
+                    </select>
+                    <span class="civora-filter-summary">
+                        <t t-esc="rankedMembers.length"/> commerciaux ·
+                        <t t-esc="totalDeals"/> deals ·
+                        <t t-esc="fmtAmount(totalCA)"/> FCFA
+                    </span>
+                </div>
+
+                <!-- IA Insight card -->
+                <t t-if="topPerformer">
+                    <div class="civora-ia-insight">
+                        <div class="civora-ia-insight-header">
+                            <span class="civora-ia-sparkle">&#10024;</span>
+                            <span class="civora-ia-label">IA · INSIGHT</span>
+                        </div>
+                        <div class="civora-ia-insight-title">
+                            Top performer · <t t-esc="topPerformer.name"/>
+                        </div>
+                        <div class="civora-ia-insight-text">
+                            <t t-esc="topPerformer.deal_count"/> deals conclus · Performance <t t-esc="topPerformer.performance"/>% · Note <t t-esc="topPerformer.rating || '-'"/>/5
+                        </div>
+                        <button class="civora-btn-ia">Voir evaluation</button>
+                    </div>
+                </t>
+
+                <!-- Rankings table -->
+                <div class="civora-table-section">
+                    <h3 class="civora-table-title">Classement commerciaux — Q3 2026</h3>
+                    <div class="civora-table-wrap">
+                        <table class="civora-table">
+                            <thead>
+                                <tr>
+                                    <th class="civora-th-rank">#</th>
+                                    <th>AGENT</th>
+                                    <th>DEALS</th>
+                                    <th>CA GENERE</th>
+                                    <th>OBJECTIF</th>
+                                    <th>ATTEINTE</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="rankedMembers" t-as="m" t-key="m.id">
+                                    <tr>
+                                        <td class="civora-td-rank">
+                                            <t t-if="m.rank === 1">&#127942;</t>
+                                            <t t-else=""><t t-esc="m.rank"/></t>
+                                        </td>
+                                        <td>
+                                            <div class="civora-agent-cell">
+                                                <div class="civora-agent-avatar-sm"><t t-esc="m.initials"/></div>
+                                                <span><t t-esc="m.name"/></span>
+                                            </div>
+                                        </td>
+                                        <td><t t-esc="m.deal_count || 0"/></td>
+                                        <td><t t-esc="fmtAmount(m.commission_amount)"/> FCFA</td>
+                                        <td>120M FCFA</td>
+                                        <td>
+                                            <div class="civora-progress-cell">
+                                                <div class="civora-progress-bar">
+                                                    <div class="civora-progress-fill"
+                                                         t-attf-style="width: {{ m.performance || 0 }}%; background: {{ perfBarColor(m.performance || 0) }}"/>
+                                                </div>
+                                                <span class="civora-progress-label"><t t-esc="m.performance || 0"/>%</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </t>
+
+        <!-- ============ TAB: PLANNING ============ -->
+        <t t-if="state.activeTab === 'planning'">
+            <div class="civora-planning-tab">
+                <!-- KPI cards -->
+                <div class="civora-kpi-grid-4">
+                    <div class="civora-mini-kpi">
+                        <div class="civora-mini-kpi-label">CRENEAUX PLANIFIES</div>
+                        <div class="civora-mini-kpi-value">38</div>
+                        <div class="civora-mini-kpi-hint">27 juil. &#8594; 01 aout 2026</div>
+                    </div>
+                    <div class="civora-mini-kpi">
+                        <div class="civora-mini-kpi-label">TAUX DE COUVERTURE</div>
+                        <div class="civora-mini-kpi-value">79%</div>
+                        <div class="civora-mini-kpi-hint">8 collaborateurs</div>
+                    </div>
+                    <div class="civora-mini-kpi">
+                        <div class="civora-mini-kpi-label">EN CONGE</div>
+                        <div class="civora-mini-kpi-value">1</div>
+                        <div class="civora-mini-kpi-hint">Awa Traore</div>
+                    </div>
+                    <div class="civora-mini-kpi">
+                        <div class="civora-mini-kpi-label">ASTREINTES</div>
+                        <div class="civora-mini-kpi-value">2</div>
+                        <div class="civora-mini-kpi-hint">cette semaine</div>
+                    </div>
+                </div>
+
+                <!-- Title bar -->
+                <div class="civora-planning-titlebar">
+                    <div class="civora-planning-title-left">
+                        <i class="fa fa-calendar"/> Planning
+                    </div>
+                    <div class="civora-planning-week-nav">
+                        <button class="civora-btn-nav">&lt;</button>
+                        <span>Semaine du 27 juil.</span>
+                        <button class="civora-btn-nav">&gt;</button>
+                    </div>
+                    <button class="civora-btn civora-btn-accent">+ Ajouter creneau</button>
+                </div>
+
+                <!-- Weekly grid -->
+                <div class="civora-table-wrap">
+                    <table class="civora-table civora-planning-table">
+                        <thead>
+                            <tr>
+                                <th class="civora-th-agent">AGENT</th>
+                                <t t-foreach="planningDays" t-as="day" t-key="day.key">
+                                    <th><t t-esc="day.label"/></th>
+                                </t>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="planningMembers" t-as="m" t-key="m.id">
+                                <tr>
+                                    <td>
+                                        <div class="civora-agent-cell">
+                                            <div class="civora-agent-avatar-sm"><t t-esc="m.initials"/></div>
+                                            <span><t t-esc="m.name"/></span>
+                                        </div>
+                                    </td>
+                                    <t t-foreach="planningDays" t-as="day" t-key="day.key">
+                                        <td class="civora-planning-cell">
+                                            <t t-foreach="getPlanningEvents(m_index, day.key)" t-as="ev" t-key="ev.type">
+                                                <div t-attf-class="civora-plan-event civora-plan-{{ ev.color }}">
+                                                    <div class="civora-plan-event-type"><t t-esc="ev.type"/></div>
+                                                    <div class="civora-plan-event-time"><t t-esc="ev.time"/></div>
+                                                    <div class="civora-plan-event-loc" t-if="ev.location"><t t-esc="ev.location"/></div>
+                                                </div>
+                                            </t>
+                                        </td>
+                                    </t>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </t>
+
+        <!-- ============ TAB: OBJECTIFS ============ -->
+        <t t-if="state.activeTab === 'objectifs'">
+            <div class="civora-objectifs-tab">
+                <!-- Filter bar -->
+                <div class="civora-filter-bar">
+                    <span class="civora-filter-label">Periode</span>
+                    <select class="civora-filter-select">
+                        <option>2026</option>
+                        <option>2025</option>
+                    </select>
+                    <select class="civora-filter-select">
+                        <option>Trimestre Q3</option>
+                        <option>Trimestre Q2</option>
+                        <option>Trimestre Q1</option>
+                    </select>
+                    <span class="civora-filter-summary">
+                        <t t-esc="totalDeals"/> deals · <t t-esc="fmtAmount(totalCA)"/> / 120 FCFA · <t t-esc="state.kpis.avg_performance || 0"/>%
+                    </span>
+                </div>
+
+                <h3 class="civora-table-title">Objectifs Q3 2026</h3>
+
+                <div class="civora-objectifs-list">
+                    <t t-foreach="rankedMembers" t-as="m" t-key="m.id">
+                        <div class="civora-objectif-row">
+                            <div class="civora-objectif-info">
+                                <div class="civora-agent-cell">
+                                    <div class="civora-agent-avatar-sm"><t t-esc="m.initials"/></div>
+                                    <div>
+                                        <div class="civora-objectif-name"><t t-esc="m.name"/></div>
+                                        <div class="civora-objectif-sub">
+                                            <t t-esc="m.deal_count || 0"/> deals · <t t-esc="fmtAmount(m.commission_amount)"/> / 120M FCFA
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="civora-objectif-progress">
+                                <div class="civora-progress-bar civora-progress-bar-lg">
+                                    <div class="civora-progress-fill"
+                                         t-attf-style="width: {{ m.performance || 0 }}%; background: {{ perfBarColor(m.performance || 0) }}"/>
+                                </div>
+                            </div>
+                            <div class="civora-objectif-status">
+                                En cours · <t t-esc="m.performance || 0"/>%
+                            </div>
+                        </div>
+                    </t>
+                </div>
+            </div>
+        </t>
+
+        <!-- ============ TAB: COMMISSIONS ============ -->
+        <t t-if="state.activeTab === 'commissions'">
+            <div class="civora-commissions-tab">
+                <!-- KPI cards -->
+                <div class="civora-kpi-grid-4">
+                    <div class="civora-mini-kpi">
+                        <div class="civora-mini-kpi-label">VARIABLE Q4</div>
+                        <div class="civora-mini-kpi-value">24,0M</div>
+                        <div class="civora-mini-kpi-hint">FCFA · commissions</div>
+                    </div>
+                    <div class="civora-mini-kpi">
+                        <div class="civora-mini-kpi-label">BONUS Q4</div>
+                        <div class="civora-mini-kpi-value">950k</div>
+                        <div class="civora-mini-kpi-hint">4 beneficiaires</div>
+                    </div>
+                    <div class="civora-mini-kpi">
+                        <div class="civora-mini-kpi-label">TOTAL A VERSER</div>
+                        <div class="civora-mini-kpi-value">25,0M</div>
+                        <div class="civora-mini-kpi-hint">FCFA · decembre</div>
+                    </div>
+                    <div class="civora-mini-kpi">
+                        <div class="civora-mini-kpi-label">PLAN COMMISSION</div>
+                        <div class="civora-mini-kpi-value">5-8%</div>
+                        <div class="civora-mini-kpi-hint">du CA genere</div>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="civora-table-section">
+                    <div class="civora-table-header">
+                        <h3 class="civora-table-title">Bulletin commissions — Decembre 2025</h3>
+                        <button class="civora-btn civora-btn-outline"><i class="fa fa-file-pdf-o"/> Export PDF</button>
+                    </div>
+                    <div class="civora-table-wrap">
+                        <table class="civora-table">
+                            <thead>
+                                <tr>
+                                    <th>COLLABORATEUR</th>
+                                    <th>FIXE</th>
+                                    <th>VARIABLE</th>
+                                    <th>BONUS</th>
+                                    <th>TOTAL BRUT</th>
+                                    <th>VERSEMENT</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="commissionRows" t-as="row" t-key="row.id">
+                                    <tr>
+                                        <td>
+                                            <div class="civora-agent-cell">
+                                                <div class="civora-agent-avatar-sm"><t t-esc="row.initials"/></div>
+                                                <span><t t-esc="row.name"/></span>
+                                            </div>
+                                        </td>
+                                        <td><t t-esc="fmtNumber(row.fixe)"/></td>
+                                        <td><t t-esc="fmtNumber(row.variable)"/></td>
+                                        <td>
+                                            <t t-if="row.bonus > 0"><t t-esc="fmtNumber(row.bonus)"/></t>
+                                            <t t-else="">—</t>
+                                        </td>
+                                        <td class="civora-td-bold"><t t-esc="fmtNumber(row.totalBrut)"/></td>
+                                        <td><span class="civora-badge-date">30/12</span></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </t>
+
+        <!-- ============ TAB: FORMATION ============ -->
+        <t t-if="state.activeTab === 'formation'">
+            <div class="civora-formation-tab">
+                <!-- KPI cards -->
+                <div class="civora-kpi-grid-4">
+                    <div class="civora-mini-kpi">
+                        <div class="civora-mini-kpi-label">SESSIONS PLANIFIEES</div>
+                        <div class="civora-mini-kpi-value">4</div>
+                        <div class="civora-mini-kpi-hint">5 au total</div>
+                    </div>
+                    <div class="civora-mini-kpi">
+                        <div class="civora-mini-kpi-label">SESSIONS REALISEES</div>
+                        <div class="civora-mini-kpi-value">1</div>
+                        <div class="civora-mini-kpi-hint">16h cumulees</div>
+                    </div>
+                    <div class="civora-mini-kpi">
+                        <div class="civora-mini-kpi-label">COUVERTURE EQUIPE</div>
+                        <div class="civora-mini-kpi-value">75%</div>
+                        <div class="civora-mini-kpi-hint">6/8 formes</div>
+                    </div>
+                    <div class="civora-mini-kpi">
+                        <div class="civora-mini-kpi-label">BUDGET FORMATION</div>
+                        <div class="civora-mini-kpi-value">2,4M</div>
+                        <div class="civora-mini-kpi-hint">FCFA annuel</div>
+                    </div>
+                </div>
+
+                <!-- Title + button -->
+                <div class="civora-section-header">
+                    <h3 class="civora-table-title">Programme formation</h3>
+                    <button class="civora-btn civora-btn-accent">+ Ajouter</button>
+                </div>
+
+                <!-- Search + filters -->
+                <div class="civora-filter-bar">
+                    <input class="civora-filter-search" type="text" placeholder="Rechercher une formation..."/>
+                    <select class="civora-filter-select">
+                        <option>Tous les statuts</option>
+                        <option>Planifie</option>
+                        <option>En cours</option>
+                        <option>Termine</option>
+                    </select>
+                    <select class="civora-filter-select">
+                        <option>Toutes categories</option>
+                        <option>Reglementaire</option>
+                        <option>Commercial</option>
+                        <option>Outils &amp; digital</option>
+                        <option>Onboarding</option>
+                        <option>Certification</option>
+                    </select>
+                </div>
+
+                <!-- Training list -->
+                <div class="civora-formation-list">
+                    <t t-foreach="trainingSessions" t-as="s" t-key="s.id">
+                        <div class="civora-formation-card">
+                            <div class="civora-formation-main">
+                                <div class="civora-formation-title">
+                                    <t t-esc="s.title"/>
+                                    <span class="civora-badge-certified" t-if="s.certified">Certifiante</span>
+                                </div>
+                                <div class="civora-formation-meta">
+                                    <t t-esc="s.category"/> · <t t-esc="s.mode"/> · <t t-esc="s.hours"/>h · <t t-esc="s.participants"/> participant<t t-if="s.participants > 1">s</t> · <t t-esc="s.instructor"/>
+                                </div>
+                            </div>
+                            <div class="civora-formation-date"><t t-esc="s.date"/></div>
+                            <div t-attf-class="civora-formation-status civora-status-{{ s.status === 'Termine' ? 'termine' : s.status === 'En cours' ? 'encours' : 'planifie' }}">
+                                <t t-esc="s.status"/>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+            </div>
+        </t>
+
+        <!-- ============ TAB: PERMISSIONS ============ -->
+        <t t-if="state.activeTab === 'permissions'">
+            <div class="civora-permissions-tab">
+                <!-- KPI cards -->
+                <div class="civora-kpi-grid-4">
+                    <div class="civora-mini-kpi">
+                        <div class="civora-mini-kpi-label">ROLES DEFINIS</div>
+                        <div class="civora-mini-kpi-value">4</div>
+                    </div>
+                    <div class="civora-mini-kpi">
+                        <div class="civora-mini-kpi-label">ROLES PERSONNALISES</div>
+                        <div class="civora-mini-kpi-value">0</div>
+                    </div>
+                    <div class="civora-mini-kpi">
+                        <div class="civora-mini-kpi-label">MEMBRES COUVERTS</div>
+                        <div class="civora-mini-kpi-value">8/8</div>
+                    </div>
+                    <div class="civora-mini-kpi">
+                        <div class="civora-mini-kpi-label">MODULES GERES</div>
+                        <div class="civora-mini-kpi-value">19</div>
+                    </div>
+                </div>
+
+                <!-- Permissions matrix table -->
+                <div class="civora-table-section">
+                    <h3 class="civora-table-title">Matrice des permissions</h3>
+                    <div class="civora-table-wrap">
+                        <table class="civora-table">
+                            <thead>
+                                <tr>
+                                    <th>ROLE</th>
+                                    <th>MEMBRES</th>
+                                    <th>PERIMETRE</th>
+                                    <th>ACCES</th>
+                                    <th>NB</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="permissionsMatrix" t-as="p" t-key="p.role">
+                                    <tr>
+                                        <td>
+                                            <span t-attf-class="civora-role-badge civora-role-{{ p.color }}">
+                                                <t t-esc="p.role"/>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <t t-if="p.members.length > 0">
+                                                <t t-esc="p.members.join(', ')"/>
+                                            </t>
+                                            <t t-else="">—</t>
+                                        </td>
+                                        <td><t t-esc="p.perimeter"/></td>
+                                        <td>
+                                            <div class="civora-access-cell">
+                                                <div class="civora-access-bar">
+                                                    <div class="civora-access-fill"
+                                                         t-attf-style="width: {{ (p.access / p.total) * 100 }}%"/>
+                                                </div>
+                                                <span><t t-esc="p.access"/>/<t t-esc="p.total"/></span>
+                                            </div>
+                                        </td>
+                                        <td><t t-esc="p.count"/></td>
+                                        <td>
+                                            <button class="civora-btn-link">Configurer &gt;</button>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </t>
+
+        <!-- ============ TAB: ACTIVITE ============ -->
+        <t t-if="state.activeTab === 'activite'">
+            <div class="civora-activite-tab">
+                <h3 class="civora-table-title">Flux d'activite equipe</h3>
+                <div class="civora-timeline">
+                    <t t-foreach="activityFeed" t-as="a" t-key="a_index">
+                        <div class="civora-timeline-item">
+                            <div t-attf-class="civora-timeline-icon civora-icon-{{ a.iconColor }}">
+                                <i t-attf-class="fa {{ a.icon }}"/>
+                            </div>
+                            <div class="civora-timeline-content">
+                                <div class="civora-timeline-text"><t t-esc="a.text"/></div>
+                                <div class="civora-timeline-time"><t t-esc="a.time"/></div>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+            </div>
+        </t>
+
+        <!-- ============ DRAWER ============ -->
         <t t-if="state.showDrawer">
             <MemberDrawer onClose.bind="closeDrawer" onSaved.bind="onMemberSaved"/>
         </t>

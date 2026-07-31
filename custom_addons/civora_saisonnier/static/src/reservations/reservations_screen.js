@@ -12,10 +12,10 @@ function fmtMoney(v) {
 
 const STATE_LABELS = {
     draft: "Brouillon",
-    confirmed: "Confirmée",
-    checkin: "En séjour",
-    checkout: "Terminée",
-    cancelled: "Annulée",
+    confirmed: "Confirmee",
+    checkin: "En sejour",
+    checkout: "Terminee",
+    cancelled: "Annulee",
 };
 
 const SOURCE_LABELS = {
@@ -23,9 +23,14 @@ const SOURCE_LABELS = {
     airbnb: "Airbnb",
     booking: "Booking.com",
     whatsapp: "WhatsApp",
-    referral: "Référence",
+    referral: "Reference",
     other: "Autre",
 };
+
+const MONTHS_FR = [
+    "Janvier", "Fevrier", "Mars", "Avril", "Mai", "Juin",
+    "Juillet", "Aout", "Septembre", "Octobre", "Novembre", "Decembre"
+];
 
 class CivoraReservationsScreen extends Component {
     static template = "civora_saisonnier.ReservationsScreen";
@@ -43,12 +48,16 @@ class CivoraReservationsScreen extends Component {
             drawerMode: "create",
             drawerRecordId: null,
             cleaningTasks: [],
+            checkinsToday: [],
+            checkoutsAndCleaning: [],
+            recentReviews: [],
+            activeTab: "reservations",
         });
         onWillStart(() => this.load());
     }
 
     async load() {
-        const [kpis, reservations, cleaningTasks] = await Promise.all([
+        const [kpis, reservations, cleaningTasks, checkinsToday, checkoutsAndCleaning, recentReviews] = await Promise.all([
             this.orm.call("civora.reservation", "get_seasonal_kpis", []),
             this.orm.searchRead("civora.reservation", [], [
                 "name", "property_id", "guest_id", "agent_id",
@@ -62,10 +71,26 @@ class CivoraReservationsScreen extends Component {
                 "property_id", "date", "time_slot", "state",
                 "assigned_to", "reservation_id",
             ], { order: "date asc", limit: 50 }),
+            this.orm.call("civora.reservation", "get_checkins_today", []),
+            this.orm.call("civora.reservation", "get_checkouts_and_cleaning", []),
+            this.orm.call("civora.reservation", "get_recent_reviews", []),
         ]);
         this.state.kpis = kpis;
         this.state.reservations = reservations;
         this.state.cleaningTasks = cleaningTasks;
+        this.state.checkinsToday = checkinsToday;
+        this.state.checkoutsAndCleaning = checkoutsAndCleaning;
+        this.state.recentReviews = recentReviews;
+    }
+
+    get dynamicSubtitle() {
+        const k = this.state.kpis;
+        const now = new Date();
+        const month = MONTHS_FR[now.getMonth()];
+        const year = now.getFullYear();
+        const props = k.property_count || 0;
+        const occ = k.occupation_rate || 0;
+        return `${month} ${year} · ${props} biens · ${occ}% d'occupation`;
     }
 
     get filteredReservations() {
@@ -88,6 +113,16 @@ class CivoraReservationsScreen extends Component {
         return list;
     }
 
+    get tabs() {
+        return [
+            { key: "reservations", label: "Reservations", count: this.state.reservations.length },
+            { key: "checkins", label: "Check-in aujourd'hui", count: this.state.checkinsToday.length },
+            { key: "cleaning", label: "Menage & maintenance", count: this.state.cleaningTasks.length },
+            { key: "reviews", label: "Avis recents", count: this.state.recentReviews.length },
+        ];
+    }
+
+    setTab(tab) { this.state.activeTab = tab; }
     setFilter(f) { this.state.filter = f; }
     onSearch(ev) { this.state.search = ev.target.value; }
 
@@ -98,6 +133,17 @@ class CivoraReservationsScreen extends Component {
     }
     sourceLabel(s) { return SOURCE_LABELS[s] || s; }
     fmtMoney(v) { return fmtMoney(v); }
+
+    cleaningStateLabel(s) {
+        if (s === "a_planifier") return "En attente";
+        if (s === "planifie") return "Planifie";
+        if (s === "done") return "Termine";
+        return s;
+    }
+
+    ratingStars(rating) {
+        return Math.round(rating || 0);
+    }
 
     openDrawer(mode, id) {
         this.state.drawerMode = mode || "create";
@@ -121,7 +167,7 @@ class CivoraReservationsScreen extends Component {
     }
 
     timeSlotLabel(s) {
-        return s === "matin" ? "Matin" : "Après-midi";
+        return s === "matin" ? "Matin" : "Apres-midi";
     }
 }
 

@@ -21,6 +21,12 @@
             font-size: 0.85rem;
             color: $civora-muted;
         }
+        .civora-screen-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-shrink: 0;
+        }
     }
 
     .civora-kpi-grid {
@@ -30,6 +36,236 @@
         margin-bottom: 1.5rem;
     }
 
+    // ── IA Insight ────────────────────────────────────────────────────
+    .civora-ventes-insight {
+        margin-bottom: 1.5rem;
+    }
+
+    // ── Search row ───────────────────────────────────────────────────
+    .civora-ventes-search-row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .civora-ventes-search-box {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.55rem 0.85rem;
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius;
+        background: $civora-card;
+
+        i { color: $civora-muted; font-size: 0.85rem; }
+        input {
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 0.85rem;
+            color: $civora-fg;
+            width: 100%;
+        }
+    }
+
+    // ── Tabs ─────────────────────────────────────────────────────────
+    .civora-ventes-tabs {
+        display: flex;
+        gap: 0;
+        border-bottom: 1px solid $civora-border;
+        margin-bottom: 1.25rem;
+    }
+
+    .civora-ventes-tab {
+        padding: 0.75rem 1.25rem;
+        border: none;
+        background: none;
+        color: $civora-muted;
+        font-size: 0.85rem;
+        font-weight: 500;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        transition: all 0.15s;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+
+        &:hover { color: $civora-fg; }
+
+        &.active {
+            color: $civora-accent;
+            border-bottom-color: $civora-accent;
+            font-weight: 600;
+        }
+    }
+
+    .civora-ventes-tab-count {
+        background: rgba($civora-accent, 0.12);
+        color: $civora-accent;
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 0.1rem 0.45rem;
+        border-radius: 999px;
+    }
+
+    // ── Pipeline (Kanban) ────────────────────────────────────────────
+    .civora-pipeline {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        align-items: flex-start;
+    }
+
+    .civora-pipeline-col {
+        background: $civora-bg;
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius;
+        padding: 0.75rem;
+        min-height: 200px;
+    }
+
+    .civora-pipeline-col-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.65rem;
+        border-bottom: 1px solid $civora-border;
+    }
+
+    .civora-pipeline-col-badge {
+        display: inline-block;
+        padding: 0.2rem 0.6rem;
+        border-radius: 999px;
+        font-size: 0.72rem;
+        font-weight: 600;
+        white-space: nowrap;
+
+        &.civora-pipeline-badge-offre {
+            background: rgba($civora-warning, 0.12);
+            color: darken($civora-warning, 12%);
+        }
+        &.civora-pipeline-badge-compromis {
+            background: rgba($civora-violet, 0.1);
+            color: $civora-violet;
+        }
+        &.civora-pipeline-badge-acte {
+            background: rgba($civora-primary, 0.08);
+            color: $civora-primary;
+        }
+        &.civora-pipeline-badge-cloture {
+            background: rgba($civora-success, 0.1);
+            color: $civora-success;
+        }
+    }
+
+    .civora-pipeline-col-count {
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: $civora-fg;
+    }
+
+    .civora-pipeline-col-total {
+        font-size: 0.78rem;
+        color: $civora-muted;
+        margin-left: auto;
+    }
+
+    .civora-pipeline-cards {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .civora-pipeline-card {
+        background: $civora-card;
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius;
+        padding: 0.85rem;
+        cursor: pointer;
+        transition: box-shadow 0.15s;
+
+        &:hover {
+            box-shadow: $civora-shadow-card;
+        }
+    }
+
+    .civora-pipeline-card-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.35rem;
+    }
+
+    .civora-pipeline-card-ref {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: $civora-muted;
+    }
+
+    .civora-pipeline-card-amount {
+        font-family: $civora-font-display;
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: $civora-fg;
+    }
+
+    .civora-pipeline-card-property {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: $civora-fg;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .civora-pipeline-card-city {
+        font-size: 0.75rem;
+        color: $civora-muted;
+        margin-bottom: 0.5rem;
+    }
+
+    .civora-pipeline-card-bottom {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.25rem;
+    }
+
+    .civora-pipeline-card-comm {
+        font-size: 0.72rem;
+        color: $civora-muted;
+    }
+
+    .civora-pipeline-card-agent {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: rgba($civora-accent, 0.12);
+        color: $civora-accent;
+        font-size: 0.6rem;
+        font-weight: 700;
+    }
+
+    .civora-pipeline-card-date {
+        font-size: 0.7rem;
+        color: $civora-muted;
+    }
+
+    .civora-pipeline-empty {
+        text-align: center;
+        padding: 2rem 0.5rem;
+        color: $civora-muted;
+        font-size: 0.82rem;
+    }
+
+    // ── Filters ──────────────────────────────────────────────────────
     .civora-filters-bar {
         display: flex;
         justify-content: space-between;
@@ -65,29 +301,9 @@
                 border-color: $civora-accent;
             }
         }
-
-        .civora-search-box {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.4rem 0.75rem;
-            border: 1px solid $civora-border;
-            border-radius: 0.5rem;
-            background: $civora-card;
-            min-width: 260px;
-
-            i { color: $civora-muted; font-size: 0.85rem; }
-            input {
-                border: none;
-                outline: none;
-                background: transparent;
-                font-size: 0.8rem;
-                color: $civora-fg;
-                width: 100%;
-            }
-        }
     }
 
+    // ── Table ─────────────────────────────────────────────────────────
     .civora-table-wrapper {
         background: $civora-card;
         border-radius: $civora-radius;
@@ -122,20 +338,14 @@
             transition: background 0.12s;
             &:hover { background: rgba($civora-accent, 0.04); }
         }
-        .civora-ref {
-            font-weight: 600;
-            color: $civora-primary;
-        }
+        .civora-ref { font-weight: 600; color: $civora-primary; }
         .text-center { text-align: center; }
         .text-right { text-align: right; }
         .font-semibold { font-weight: 600; }
-        .civora-empty {
-            text-align: center;
-            padding: 2rem;
-            color: $civora-muted;
-        }
+        .civora-empty { text-align: center; padding: 2rem; color: $civora-muted; }
     }
 
+    // ── Badges ────────────────────────────────────────────────────────
     .civora-status-badge {
         display: inline-block;
         padding: 0.2rem 0.6rem;
@@ -164,12 +374,42 @@
         color: $civora-primary;
     }
 
+    // ── Placeholder tabs ─────────────────────────────────────────────
+    .civora-ventes-placeholder {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: $civora-muted;
+        background: $civora-card;
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius;
+
+        i {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        h3 {
+            font-family: $civora-font-display;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: $civora-fg;
+            margin: 0 0 0.5rem 0;
+        }
+        p {
+            font-size: 0.85rem;
+            margin: 0;
+        }
+    }
+
+    // ── Responsive ───────────────────────────────────────────────────
     @media (max-width: 1100px) {
         .civora-kpi-grid { grid-template-columns: repeat(2, 1fr); }
+        .civora-pipeline { grid-template-columns: repeat(2, 1fr); }
     }
     @media (max-width: 768px) {
         .civora-kpi-grid { grid-template-columns: 1fr; }
+        .civora-pipeline { grid-template-columns: 1fr; }
         .civora-filters-bar { flex-direction: column; align-items: stretch; }
-        .civora-search-box { min-width: unset; }
+        .civora-ventes-search-row { flex-direction: column; }
     }
 }

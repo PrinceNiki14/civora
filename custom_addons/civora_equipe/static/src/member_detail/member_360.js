@@ -2,49 +2,44 @@
 import { Component, useState, onWillStart } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
-import { CivoraStatCard } from "@civora_core/components/civora_stat_card";
+import { standardActionServiceProps } from "@web/webclient/actions/action_service";
 
-const DEPT_LABELS = {
-    direction: "Direction",
-    commercial: "Commercial",
-    gestion: "Gestion locative",
-    support: "Support",
-};
-const STATUS_LABELS = {
-    actif: "Actif",
-    conge: "En conge",
-    inactif: "Inactif",
+const TABS = [
+    { key: "overview", label: "Vue d'ensemble" },
+    { key: "performance", label: "Performance" },
+    { key: "portfolio", label: "Portefeuille" },
+    { key: "planning", label: "Planning" },
+    { key: "commissions", label: "Commissions" },
+    { key: "permissions", label: "Permissions" },
+];
+
+const PRESENCE_LABELS = {
+    present: "Au bureau",
+    remote: "A distance",
+    absent: "Absent",
+    terrain: "Sur le terrain",
 };
 
-class CivoraMember360 extends Component {
+export class CivoraMember360 extends Component {
     static template = "civora_equipe.Member360";
-    static components = { CivoraStatCard };
+    static props = { ...standardActionServiceProps };
 
     setup() {
         this.orm = useService("orm");
         this.action = useService("action");
-        this.memberId = this.props.action.params?.member_id;
+        this.tabs = TABS;
         this.state = useState({
             member: null,
-            stats: {},
             activeTab: "overview",
         });
         onWillStart(() => this.load());
     }
 
     async load() {
-        if (!this.memberId) return;
-        const [member] = await this.orm.read("civora.team.member", [this.memberId], [
-            "name", "user_id", "role_id", "department", "status",
-            "hire_date", "phone", "email", "bio",
-            "property_count", "lead_count", "sale_count",
-            "location_count", "workflow_count", "event_count",
-        ]);
-        const stats = await this.orm.call(
-            "civora.team.member", "get_member_stats", [this.memberId],
-        );
-        this.state.member = member;
-        this.state.stats = stats;
+        const memberId = this.props.action?.params?.member_id;
+        if (!memberId) return;
+        const members = await this.orm.call("civora.team.member", "get_members_list", []);
+        this.state.member = members.find((m) => m.id === memberId) || null;
     }
 
     goBack() {
@@ -54,23 +49,64 @@ class CivoraMember360 extends Component {
         });
     }
 
-    setTab(t) { this.state.activeTab = t; }
-
-    deptLabel(d) { return DEPT_LABELS[d] || d; }
-    deptClass(d) {
-        const m = { direction: "violet", commercial: "accent", gestion: "info", support: "primary" };
-        return m[d] || "";
-    }
-    statusLabel(s) { return STATUS_LABELS[s] || s; }
-    statusClass(s) {
-        const m = { actif: "success", conge: "warning", inactif: "danger" };
-        return m[s] || "";
+    setTab(tab) {
+        this.state.activeTab = tab;
     }
 
-    async setStatus(status) {
-        await this.orm.write("civora.team.member", [this.memberId], { status });
-        await this.load();
+    get portfolioCount() {
+        const m = this.state.member;
+        return m ? (m.deal_count || 0) : 0;
+    }
+
+    get tabsWithCounts() {
+        return this.tabs.map((t) => {
+            if (t.key === "portfolio") {
+                return { ...t, label: `Portefeuille`, count: this.portfolioCount };
+            }
+            return t;
+        });
+    }
+
+    get anciennete() {
+        const m = this.state.member;
+        if (!m || !m.hire_year) return 0;
+        const now = new Date();
+        return now.getFullYear() - m.hire_year;
+    }
+
+    get presenceLabel() {
+        const m = this.state.member;
+        if (!m) return "";
+        return PRESENCE_LABELS[m.presence] || m.presence || "";
+    }
+
+    get objectifPct() {
+        const m = this.state.member;
+        if (!m) return 0;
+        return Math.min(Math.round(m.performance || 0), 100);
+    }
+
+    get commissionDisplay() {
+        const m = this.state.member;
+        if (!m) return "0";
+        return (m.commission_amount || 0).toLocaleString("fr-FR");
+    }
+
+    get ratingDisplay() {
+        const m = this.state.member;
+        if (!m) return "0";
+        return (m.rating || 0).toFixed(1);
+    }
+
+    get perfBadge() {
+        const m = this.state.member;
+        return m ? Math.round(m.performance || 0) : 0;
+    }
+
+    get mandatsActifs() {
+        const m = this.state.member;
+        return m ? (m.deal_count || 0) : 0;
     }
 }
 
-registry.category("actions").add("civora.member_360", CivoraMember360);
+registry.category("actions").add("civora.member_360", CivoraMember360, { force: true });

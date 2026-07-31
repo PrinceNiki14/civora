@@ -11,7 +11,7 @@
         gap: 1rem;
 
         .civora-screen-title h1 {
-            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+            font-family: $civora-font-display;
             font-size: 1.75rem;
             font-weight: 700;
             color: $civora-fg;
@@ -20,6 +20,12 @@
         .civora-screen-subtitle {
             font-size: 0.85rem;
             color: $civora-muted;
+        }
+        .civora-screen-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-shrink: 0;
         }
     }
 
@@ -30,6 +36,153 @@
         margin-bottom: 1.5rem;
     }
 
+    // ── IA Insight ────────────────────────────────────────────────────
+    .civora-sais-insight {
+        margin-bottom: 1.5rem;
+    }
+
+    // ── Superhote status ─────────────────────────────────────────────
+    .civora-sais-superhote {
+        background: $civora-card;
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .civora-sais-superhote-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.25rem;
+    }
+
+    .civora-sais-superhote-left {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .civora-sais-superhote-icon {
+        font-size: 1.5rem;
+        color: $civora-accent;
+    }
+
+    .civora-sais-superhote-title {
+        font-family: $civora-font-display;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: $civora-fg;
+    }
+
+    .civora-sais-superhote-badge {
+        display: inline-block;
+        margin-left: 0.5rem;
+        padding: 0.15rem 0.6rem;
+        border-radius: 999px;
+        font-size: 0.72rem;
+        font-weight: 600;
+        background: rgba($civora-accent, 0.12);
+        color: $civora-accent;
+    }
+
+    .civora-sais-superhote-sub {
+        font-size: 0.8rem;
+        color: $civora-muted;
+        margin-top: 0.15rem;
+    }
+
+    .civora-sais-superhote-grid {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 0.75rem;
+    }
+
+    .civora-sais-superhote-stat {
+        background: $civora-bg;
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius;
+        padding: 1rem;
+    }
+
+    .civora-sais-superhote-stat-icon {
+        font-size: 0.85rem;
+        color: $civora-muted;
+        margin-bottom: 0.4rem;
+    }
+
+    .civora-sais-superhote-stat-label {
+        font-size: 9px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: $civora-muted;
+        margin-bottom: 0.3rem;
+    }
+
+    .civora-sais-superhote-stat-value {
+        font-family: $civora-font-display;
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: $civora-fg;
+        margin-bottom: 0.25rem;
+    }
+
+    .civora-sais-superhote-stat-hint {
+        font-size: 0.72rem;
+        color: $civora-accent;
+
+        i {
+            font-size: 0.65rem;
+            margin-right: 0.2rem;
+        }
+    }
+
+    // ── Tabs ─────────────────────────────────────────────────────────
+    .civora-sais-tabs {
+        display: flex;
+        gap: 0;
+        border-bottom: 1px solid $civora-border;
+        margin-bottom: 1.25rem;
+        overflow-x: auto;
+    }
+
+    .civora-sais-tab {
+        padding: 0.75rem 1.25rem;
+        border: none;
+        background: none;
+        color: $civora-muted;
+        font-size: 0.85rem;
+        font-weight: 500;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        transition: all 0.15s;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+
+        &:hover {
+            color: $civora-fg;
+        }
+
+        &.active {
+            color: $civora-accent;
+            border-bottom-color: $civora-accent;
+            font-weight: 600;
+        }
+    }
+
+    .civora-sais-tab-count {
+        background: rgba($civora-accent, 0.12);
+        color: $civora-accent;
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 0.1rem 0.45rem;
+        border-radius: 999px;
+    }
+
+    // ── Filters ──────────────────────────────────────────────────────
     .civora-filters-bar {
         display: flex;
         justify-content: space-between;
@@ -88,6 +241,7 @@
         }
     }
 
+    // ── Table ─────────────────────────────────────────────────────────
     .civora-table-wrapper {
         background: $civora-card;
         border-radius: $civora-radius;
@@ -136,6 +290,7 @@
         }
     }
 
+    // ── Status & source badges ───────────────────────────────────────
     .civora-status-badge {
         display: inline-block;
         padding: 0.2rem 0.6rem;
@@ -162,79 +317,180 @@
         color: $civora-primary;
     }
 
-    .civora-section-card {
-        background: $civora-card;
-        border-radius: $civora-radius;
-        box-shadow: $civora-shadow-card;
-        padding: 1.25rem;
+    // ── Check-in cards ───────────────────────────────────────────────
+    .civora-sais-section-title {
+        font-family: $civora-font-display;
+        font-size: 1rem;
+        font-weight: 700;
+        color: $civora-fg;
+        margin: 0 0 1rem 0;
+    }
+
+    .civora-sais-checkin-section {
         margin-bottom: 1.5rem;
+    }
 
-        .civora-section-header {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 1rem;
+    .civora-sais-checkin-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+    }
 
-            h3 {
-                font-size: 1rem;
-                font-weight: 600;
-                color: $civora-fg;
-                margin: 0;
-                i { margin-right: 0.4rem; color: $civora-warning; }
-            }
-            .civora-badge-count {
-                background: $civora-warning;
-                color: #fff;
-                font-size: 0.7rem;
-                font-weight: 700;
-                padding: 0.15rem 0.5rem;
-                border-radius: 1rem;
-            }
+    .civora-sais-checkin-card {
+        background: $civora-card;
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius;
+        padding: 1.25rem;
+    }
+
+    .civora-sais-checkin-guest {
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: $civora-fg;
+        margin-bottom: 0.25rem;
+    }
+
+    .civora-sais-checkin-property {
+        font-size: 0.82rem;
+        color: $civora-muted;
+        margin-bottom: 0.5rem;
+    }
+
+    .civora-sais-checkin-code {
+        font-size: 0.82rem;
+        color: $civora-muted;
+        margin-bottom: 0.75rem;
+
+        strong {
+            color: $civora-fg;
         }
     }
 
-    .civora-cleaning-list {
+    .civora-sais-checkin-btn {
+        font-size: 0.78rem !important;
+        padding: 0.35rem 0.85rem !important;
+    }
+
+    // ── Cleaning cards ───────────────────────────────────────────────
+    .civora-sais-cleaning-list {
         display: flex;
         flex-direction: column;
         gap: 0.5rem;
     }
 
-    .civora-cleaning-item {
+    .civora-sais-cleaning-card {
         display: flex;
         align-items: center;
-        gap: 1.5rem;
-        padding: 0.6rem 0.75rem;
-        border-radius: 0.5rem;
-        background: $civora-bg;
-        font-size: 0.82rem;
+        justify-content: space-between;
+        background: $civora-card;
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius;
+        padding: 0.85rem 1.25rem;
+    }
 
-        .civora-cleaning-property {
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            font-weight: 600;
-            color: $civora-fg;
-            min-width: 180px;
-            i { color: $civora-accent; }
-        }
-        .civora-cleaning-date {
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            color: $civora-muted;
-            i { font-size: 0.8rem; }
-        }
-        .civora-cleaning-slot {
-            color: $civora-muted;
-            font-size: 0.78rem;
+    .civora-sais-cleaning-property {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: $civora-fg;
+    }
+
+    .civora-sais-cleaning-meta {
+        font-size: 0.78rem;
+        color: $civora-muted;
+        margin-top: 0.15rem;
+    }
+
+    // ── Reviews ──────────────────────────────────────────────────────
+    .civora-sais-reviews-list {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+    }
+
+    .civora-sais-review-card {
+        background: $civora-card;
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius;
+        padding: 1.25rem;
+    }
+
+    .civora-sais-review-header {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        margin-bottom: 0.65rem;
+    }
+
+    .civora-sais-review-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: rgba($civora-accent, 0.12);
+        color: $civora-accent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.85rem;
+        flex-shrink: 0;
+    }
+
+    .civora-sais-review-guest {
+        font-weight: 600;
+        font-size: 0.88rem;
+        color: $civora-fg;
+    }
+
+    .civora-sais-review-property {
+        font-size: 0.75rem;
+        color: $civora-muted;
+    }
+
+    .civora-sais-review-stars {
+        margin-bottom: 0.5rem;
+        color: #f59e0b;
+        font-size: 0.8rem;
+
+        i {
+            margin-right: 0.1rem;
         }
     }
 
+    .civora-sais-review-comment {
+        font-size: 0.82rem;
+        color: $civora-muted;
+        margin: 0 0 0.75rem 0;
+        line-height: 1.5;
+    }
+
+    .civora-sais-review-reply {
+        font-size: 0.78rem !important;
+        padding: 0.3rem 0.75rem !important;
+    }
+
+    // ── Empty state ──────────────────────────────────────────────────
+    .civora-wf-empty {
+        text-align: center;
+        padding: 3rem;
+        color: $civora-muted;
+        font-size: 0.9rem;
+        background: $civora-card;
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius;
+    }
+
+    // ── Responsive ───────────────────────────────────────────────────
     @media (max-width: 1100px) {
         .civora-kpi-grid { grid-template-columns: repeat(2, 1fr); }
+        .civora-sais-superhote-grid { grid-template-columns: repeat(3, 1fr); }
+        .civora-sais-checkin-grid { grid-template-columns: repeat(2, 1fr); }
+        .civora-sais-reviews-list { grid-template-columns: repeat(2, 1fr); }
     }
     @media (max-width: 768px) {
         .civora-kpi-grid { grid-template-columns: 1fr; }
+        .civora-sais-superhote-grid { grid-template-columns: repeat(2, 1fr); }
+        .civora-sais-checkin-grid { grid-template-columns: 1fr; }
+        .civora-sais-reviews-list { grid-template-columns: 1fr; }
         .civora-filters-bar { flex-direction: column; align-items: stretch; }
         .civora-search-box { min-width: unset; }
     }

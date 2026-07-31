@@ -1,5 +1,4 @@
 from odoo import models, fields, api
-from odoo.exceptions import ValidationError
 
 
 class CivoraTeamMember(models.Model):
@@ -29,11 +28,18 @@ class CivoraTeamMember(models.Model):
         ("conge", "En conge"),
         ("inactif", "Inactif"),
     ], string="Statut", default="actif", tracking=True)
+    presence = fields.Selection([
+        ("present", "Present"),
+        ("en_visite", "En visite"),
+        ("conge", "Conge"),
+        ("absent", "Absent"),
+    ], string="Presence", default="present")
     hire_date = fields.Date(string="Date d'embauche")
     phone = fields.Char(string="Telephone")
     email = fields.Char(
         string="Email", compute="_compute_email", store=True,
     )
+    location = fields.Char(string="Localisation", default="Plateau HQ")
     bio = fields.Text(string="Bio")
     avatar = fields.Binary(
         string="Photo", related="user_id.image_128", readonly=True,
@@ -43,6 +49,10 @@ class CivoraTeamMember(models.Model):
         "res.company", string="Societe", required=True,
         default=lambda self: self.env.company,
     )
+    deal_count = fields.Integer(string="Deals")
+    commission_amount = fields.Float(string="Commissions")
+    performance = fields.Integer(string="Performance %", default=0)
+    rating = fields.Float(string="Note /5", default=0.0)
 
     property_count = fields.Integer(
         string="Biens", compute="_compute_stats",
@@ -104,20 +114,55 @@ class CivoraTeamMember(models.Model):
     def get_team_kpis(self):
         company_id = self.env.company.id
         domain = [("company_id", "=", company_id)]
-        total = self.search_count(domain)
-        actifs = self.search_count(domain + [("status", "=", "actif")])
-        en_conge = self.search_count(domain + [("status", "=", "conge")])
-        departments = {}
-        for dep in ["direction", "commercial", "gestion", "support"]:
-            departments[dep] = self.search_count(
-                domain + [("department", "=", dep)])
+        members = self.search(domain)
+        total = len(members)
+        actifs = len(members.filtered(lambda m: m.status == "actif"))
+        commerciaux = len(members.filtered(lambda m: m.department == "commercial"))
+        total_deals = sum(members.mapped("deal_count"))
+        total_commission = sum(members.mapped("commission_amount"))
+        perfs = [m.performance for m in members if m.performance > 0]
+        avg_perf = round(sum(perfs) / len(perfs)) if perfs else 0
+        en_conge = len(members.filtered(lambda m: m.status == "conge"))
         return {
             "total": total,
             "actifs": actifs,
             "en_conge": en_conge,
             "inactifs": total - actifs - en_conge,
-            "departments": departments,
+            "commerciaux": commerciaux,
+            "total_deals": total_deals,
+            "total_commission": total_commission,
+            "avg_performance": avg_perf,
         }
+
+    @api.model
+    def get_members_list(self):
+        domain = [("company_id", "=", self.env.company.id)]
+        members = self.search(domain, order="sequence, name")
+        result = []
+        for m in members:
+            hire_year = m.hire_date.year if m.hire_date else ""
+            initials = ""
+            if m.name:
+                parts = m.name.strip().split()
+                initials = "".join(p[0].upper() for p in parts[:2])
+            result.append({
+                "id": m.id,
+                "name": m.name or "",
+                "initials": initials,
+                "role": m.role_id.name if m.role_id else "",
+                "department": m.department or "",
+                "status": m.status or "actif",
+                "presence": m.presence or "present",
+                "location": m.location or "",
+                "phone": m.phone or "",
+                "email": m.email or "",
+                "hire_year": hire_year,
+                "deal_count": m.deal_count or 0,
+                "commission_amount": m.commission_amount or 0,
+                "performance": m.performance or 0,
+                "rating": m.rating or 0,
+            })
+        return result
 
     @api.model
     def get_member_stats(self, member_id):

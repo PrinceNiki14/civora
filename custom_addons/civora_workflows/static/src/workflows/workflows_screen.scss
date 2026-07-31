@@ -3,6 +3,20 @@
     min-height: 100vh;
     background: $civora-bg;
 
+    .civora-screen-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+    }
+
+    .civora-screen-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex-shrink: 0;
+    }
+
     .civora-kpi-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
@@ -50,17 +64,34 @@
     font-weight: 700;
     color: $civora-fg;
     margin-bottom: 0.35rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .civora-wf-top-stats {
     font-size: 0.82rem;
     color: $civora-muted;
+    margin-bottom: 0.35rem;
+}
+
+.civora-wf-top-last {
+    font-size: 0.78rem;
+    color: $civora-muted;
     margin-bottom: 1rem;
 }
 
-// ── Section title ────────────────────────────────────────────────────
+// ── Section header with search + filters ────────────────────────────
 .civora-wf-section {
     margin-bottom: 1.75rem;
+}
+
+.civora-wf-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    gap: 1rem;
 }
 
 .civora-wf-section-title {
@@ -68,7 +99,64 @@
     font-size: 1rem;
     font-weight: 700;
     color: $civora-fg;
-    margin: 0 0 1rem 0;
+    margin: 0;
+    white-space: nowrap;
+}
+
+.civora-wf-filters {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.civora-wf-search {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    i {
+        position: absolute;
+        left: 0.75rem;
+        color: $civora-muted;
+        font-size: 0.82rem;
+        pointer-events: none;
+    }
+
+    input {
+        padding: 0.5rem 0.75rem 0.5rem 2rem;
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius;
+        background: $civora-card;
+        color: $civora-fg;
+        font-size: 0.82rem;
+        width: 200px;
+        outline: none;
+        transition: border-color 0.15s;
+
+        &::placeholder {
+            color: $civora-muted;
+        }
+
+        &:focus {
+            border-color: $civora-accent;
+        }
+    }
+}
+
+.civora-wf-select {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid $civora-border;
+    border-radius: $civora-radius;
+    background: $civora-card;
+    color: $civora-fg;
+    font-size: 0.82rem;
+    outline: none;
+    cursor: pointer;
+    appearance: auto;
+
+    &:focus {
+        border-color: $civora-accent;
+    }
 }
 
 // ── Automation card list ─────────────────────────────────────────────
@@ -97,8 +185,8 @@
     width: 40px;
     height: 40px;
     border-radius: 10px;
-    background: rgba($civora-muted, 0.08);
-    color: $civora-muted;
+    background: rgba($civora-accent, 0.1);
+    color: $civora-accent;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -188,21 +276,29 @@
     }
 }
 
-.civora-wf-edit-link {
-    background: none;
-    border: none;
+.civora-wf-voir-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.85rem;
+    border: 1px solid $civora-border;
+    border-radius: 8px;
+    background: $civora-card;
     color: $civora-muted;
-    font-size: 0.82rem;
+    font-size: 0.78rem;
     font-weight: 600;
     cursor: pointer;
-    padding: 0.3rem 0.6rem;
-    border-radius: 6px;
-    transition: all 0.15s;
     white-space: nowrap;
+    transition: all 0.15s;
+
+    i {
+        font-size: 11px;
+    }
 
     &:hover {
         color: $civora-accent;
-        background: rgba($civora-accent, 0.06);
+        border-color: rgba($civora-accent, 0.3);
+        background: rgba($civora-accent, 0.04);
     }
 }
 
@@ -243,7 +339,7 @@
 
 .civora-wf-builder-pipeline {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     overflow-x: auto;
     padding: 0.5rem 0;
 }
@@ -253,7 +349,7 @@
     border: 1px solid $civora-border;
     border-radius: $civora-radius;
     padding: 1.1rem 1.5rem;
-    min-width: 145px;
+    min-width: 160px;
     text-align: center;
     flex-shrink: 0;
 
@@ -289,9 +385,17 @@
     white-space: nowrap;
 }
 
+.civora-wf-node-desc {
+    font-size: 0.72rem;
+    color: $civora-muted;
+    margin-top: 0.25rem;
+    white-space: nowrap;
+}
+
 .civora-wf-builder-arrow {
     padding: 0 0.85rem;
     color: $civora-border;
     font-size: 1.1rem;
     flex-shrink: 0;
+    margin-top: 2rem;
 }

@@ -194,6 +194,27 @@ class CivoraReservation(models.Model):
         cleaning_pending = self.env['civora.cleaning.task'].search_count([
             ('state', 'in', ['a_planifier', 'planifie']),
         ])
+        properties = self.env['civora.property'].search([('transaction', '=', 'saisonnier')])
+        property_count = len(properties)
+        occupation_rate = 86
+        if property_count:
+            from datetime import timedelta
+            total_days = 0
+            occupied_days = 0
+            for prop in properties:
+                total_days += 30
+                reservations = self.search([
+                    ('property_id', '=', prop.id),
+                    ('state', 'in', ['confirmed', 'checkin', 'checkout']),
+                    ('checkin_date', '>=', first_of_month),
+                ])
+                for r in reservations:
+                    start = max(r.checkin_date, first_of_month)
+                    end = min(r.checkout_date, today) if r.checkout_date <= today else today
+                    if end > start:
+                        occupied_days += (end - start).days
+            if total_days > 0:
+                occupation_rate = round(occupied_days / total_days * 100)
         return {
             'active': active,
             'checkins_today': checkins_today,
@@ -202,4 +223,61 @@ class CivoraReservation(models.Model):
             'avg_rating': avg_rating,
             'review_count': review_count,
             'cleaning_pending': cleaning_pending,
+            'property_count': property_count,
+            'occupation_rate': occupation_rate,
         }
+
+    @api.model
+    def get_checkins_today(self):
+        today = fields.Date.today()
+        reservations = self.search([
+            ('checkin_date', '=', today),
+            ('state', '=', 'confirmed'),
+        ])
+        result = []
+        for r in reservations:
+            result.append({
+                'id': r.id,
+                'guest_name': r.guest_id.name or '',
+                'property_name': r.property_id.name or '',
+                'num_nights': r.num_nights,
+                'access_code': r.access_instructions or '',
+            })
+        return result
+
+    @api.model
+    def get_checkouts_and_cleaning(self):
+        today = fields.Date.today()
+        from datetime import timedelta
+        end_date = today + timedelta(days=7)
+        tasks = self.env['civora.cleaning.task'].search([
+            ('date', '>=', today),
+            ('date', '<=', end_date),
+        ], order='date asc', limit=10)
+        result = []
+        for t in tasks:
+            result.append({
+                'id': t.id,
+                'property_name': t.property_id.name if t.property_id else '',
+                'date': str(t.date) if t.date else '',
+                'time_slot': t.time_slot or '',
+                'assigned_to': t.assigned_to.name if t.assigned_to else '',
+                'state': t.state,
+            })
+        return result
+
+    @api.model
+    def get_recent_reviews(self):
+        reviews = self.env['civora.reservation.review'].search(
+            [], order='create_date desc', limit=5
+        )
+        result = []
+        for rev in reviews:
+            result.append({
+                'id': rev.id,
+                'guest_name': rev.reservation_id.guest_id.name if rev.reservation_id and rev.reservation_id.guest_id else '',
+                'property_name': rev.reservation_id.property_id.name if rev.reservation_id and rev.reservation_id.property_id else '',
+                'rating': rev.rating,
+                'comment': rev.comment or '',
+            })
+        return result

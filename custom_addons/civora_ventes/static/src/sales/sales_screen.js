@@ -7,6 +7,15 @@ import { SaleDrawer } from "./sale_drawer";
 
 function fmtMoney(v) {
     if (!v && v !== 0) return "0";
+    const n = Number(v);
+    if (n >= 1e9) return (n / 1e9).toFixed(1).replace('.0', '') + 'Md';
+    if (n >= 1e6) return Math.round(n / 1e6) + 'M';
+    if (n >= 1e3) return Math.round(n / 1e3) + 'k';
+    return n.toLocaleString("fr-FR");
+}
+
+function fmtMoneyFull(v) {
+    if (!v && v !== 0) return "0";
     return Number(v).toLocaleString("fr-FR");
 }
 
@@ -36,8 +45,10 @@ class CivoraVentesScreen extends Component {
         this.state = useState({
             sales: [],
             kpis: {},
+            pipeline: [],
             filter: "all",
             search: "",
+            activeTab: "pipeline",
             drawerOpen: false,
             drawerMode: "create",
             drawerRecordId: null,
@@ -46,17 +57,29 @@ class CivoraVentesScreen extends Component {
     }
 
     async load() {
-        const [kpis, sales] = await Promise.all([
+        const [kpis, sales, pipeline] = await Promise.all([
             this.orm.call("civora.sale", "get_sales_kpis", []),
             this.orm.searchRead("civora.sale", [], [
                 "name", "property_id", "seller_id", "buyer_id", "agent_id",
                 "state", "mandate_type", "mandate_date", "asking_price",
-                "sale_amount", "commission_amount", "offer_count",
+                "sale_amount", "commission_amount", "commission_rate", "offer_count",
                 "compromis_date", "acte_date",
             ], { order: "create_date desc", limit: 200 }),
+            this.orm.call("civora.sale", "get_pipeline_data", []),
         ]);
         this.state.kpis = kpis;
         this.state.sales = sales;
+        this.state.pipeline = pipeline;
+    }
+
+    get tabs() {
+        const pipelineCount = this.state.pipeline.reduce((s, c) => s + c.count, 0);
+        return [
+            { key: "pipeline", label: "Pipeline", count: pipelineCount },
+            { key: "transactions", label: "Transactions", count: this.state.sales.length },
+            { key: "commissions", label: "Commissions", count: 0 },
+            { key: "performance", label: "Performance", count: 0 },
+        ];
     }
 
     get filteredSales() {
@@ -80,24 +103,21 @@ class CivoraVentesScreen extends Component {
         return list;
     }
 
+    setTab(tab) { this.state.activeTab = tab; }
     setFilter(f) { this.state.filter = f; }
     onSearch(ev) { this.state.search = ev.target.value; }
 
     stateLabel(s) { return STATE_LABELS[s] || s; }
     stateClass(s) {
         const m = {
-            mandat: "muted",
-            commercialisation: "info",
-            offre: "warning",
-            compromis: "violet",
-            acte: "primary",
-            cloture: "success",
-            annule: "danger",
+            mandat: "muted", commercialisation: "info", offre: "warning",
+            compromis: "violet", acte: "primary", cloture: "success", annule: "danger",
         };
         return m[s] || "";
     }
     mandateLabel(s) { return MANDATE_LABELS[s] || s; }
     fmtMoney(v) { return fmtMoney(v); }
+    fmtMoneyFull(v) { return fmtMoneyFull(v); }
 
     openDrawer(mode, id) {
         this.state.drawerMode = mode || "create";

@@ -88,10 +88,12 @@ class CivoraWorkflowTemplate(models.Model):
             order="execution_count desc", limit=1,
         )
         if top:
+            success_rate = round((top.execution_count - top.error_count) / top.execution_count * 100) if top.execution_count else 100
             return {
                 "name": top.name,
                 "execution_count": top.execution_count,
                 "error_count": top.error_count,
+                "success_rate": success_rate,
             }
         return {}
 

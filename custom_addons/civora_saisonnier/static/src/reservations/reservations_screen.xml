@@ -2,117 +2,280 @@
 <templates xml:space="preserve">
 <t t-name="civora_saisonnier.ReservationsScreen">
     <div class="civora-saisonnier-screen">
-        <!-- Header -->
+
+        <!-- ============ HEADER ============ -->
         <div class="civora-screen-header">
             <div class="civora-screen-title">
-                <h1>Saisonnier</h1>
-                <span class="civora-screen-subtitle">Gestion des locations courte durée</span>
+                <h1>Locations saisonnieres</h1>
+                <span class="civora-screen-subtitle" t-esc="dynamicSubtitle"/>
             </div>
             <div class="civora-screen-actions">
+                <button class="civora-btn civora-btn-outline">
+                    <i class="fa fa-refresh"/> Sync Channels
+                </button>
                 <button class="civora-btn civora-btn-accent" t-on-click="() => this.openDrawer('create')">
-                    + Nouvelle réservation
+                    + Reservation
                 </button>
             </div>
         </div>
 
-        <!-- KPIs -->
+        <!-- ============ KPIs ============ -->
         <div class="civora-kpi-grid">
-            <CivoraStatCard label="'Réservations actives'" value="'' + (state.kpis.active || 0)" icon="'fa-calendar-check-o'"/>
-            <CivoraStatCard label="'Revenus du mois'" value="fmtMoney(state.kpis.revenue_month) + ' FCFA'" icon="'fa-money'"/>
-            <CivoraStatCard label="'Check-in du jour'" value="'' + (state.kpis.checkins_today || 0)" icon="'fa-sign-in'"/>
-            <CivoraStatCard label="'Note moyenne'" value="(state.kpis.avg_rating || 0) + ' / 5'" hint="(state.kpis.review_count || 0) + ' avis'" icon="'fa-star'"/>
+            <CivoraStatCard
+                label="'RESERVATIONS ACTIVES'"
+                value="'' + (state.kpis.active || 0)"
+                delta="'+6 cette sem.'"
+                icon="'fa fa-calendar-check-o'"
+                trend="'up'"/>
+            <CivoraStatCard
+                label="'REVENUS MOIS'"
+                value="fmtMoney(state.kpis.revenue_month) + ' FCFA'"
+                delta="'+24%'"
+                icon="'fa fa-usd'"
+                trend="'up'"/>
+            <CivoraStatCard
+                label="'TAUX D OCCUPATION'"
+                value="(state.kpis.occupation_rate || 0) + '%'"
+                delta="'+5 pts'"
+                icon="'fa fa-line-chart'"
+                trend="'up'"/>
+            <CivoraStatCard
+                label="'NOTE MOYENNE'"
+                value="(state.kpis.avg_rating || 0) + ' / 5'"
+                hint="(state.kpis.review_count || 0) + ' avis'"
+                icon="'fa fa-star-o'"
+                trend="'up'"/>
         </div>
 
-        <!-- Filters -->
-        <div class="civora-filters-bar">
-            <div class="civora-pills">
-                <button t-attf-class="civora-pill {{ state.filter === 'all' ? 'active' : '' }}" t-on-click="() => this.setFilter('all')">Toutes</button>
-                <button t-attf-class="civora-pill {{ state.filter === 'confirmed' ? 'active' : '' }}" t-on-click="() => this.setFilter('confirmed')">Confirmées</button>
-                <button t-attf-class="civora-pill {{ state.filter === 'in_stay' ? 'active' : '' }}" t-on-click="() => this.setFilter('in_stay')">En séjour</button>
-                <button t-attf-class="civora-pill {{ state.filter === 'checkin_today' ? 'active' : '' }}" t-on-click="() => this.setFilter('checkin_today')">Check-in du jour</button>
-                <button t-attf-class="civora-pill {{ state.filter === 'checkout_today' ? 'active' : '' }}" t-on-click="() => this.setFilter('checkout_today')">Check-out du jour</button>
-                <button t-attf-class="civora-pill {{ state.filter === 'upcoming' ? 'active' : '' }}" t-on-click="() => this.setFilter('upcoming')">À venir</button>
-            </div>
-            <div class="civora-search-box">
-                <i class="fa fa-search"/>
-                <input type="text" placeholder="Rechercher voyageur, bien, référence..." t-on-input="onSearch" t-att-value="state.search"/>
-            </div>
-        </div>
-
-        <!-- Table -->
-        <div class="civora-table-wrapper">
-            <table class="civora-table">
-                <thead>
-                    <tr>
-                        <th>Référence</th>
-                        <th>Bien</th>
-                        <th>Voyageur</th>
-                        <th>Arrivée</th>
-                        <th>Départ</th>
-                        <th>Nuitées</th>
-                        <th>Tarif/nuit</th>
-                        <th>Total</th>
-                        <th>Source</th>
-                        <th>Statut</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <t t-foreach="filteredReservations" t-as="r" t-key="r.id">
-                        <tr class="civora-table-row" t-on-click="() => this.openDetail(r.id)">
-                            <td class="civora-ref"><t t-esc="r.name"/></td>
-                            <td><t t-esc="r.property_id ? r.property_id[1] : ''"/></td>
-                            <td><t t-esc="r.guest_id ? r.guest_id[1] : ''"/></td>
-                            <td><t t-esc="r.checkin_date"/></td>
-                            <td><t t-esc="r.checkout_date"/></td>
-                            <td class="text-center"><t t-esc="r.num_nights"/></td>
-                            <td class="text-right"><t t-esc="fmtMoney(r.tariff_night)"/></td>
-                            <td class="text-right font-semibold"><t t-esc="fmtMoney(r.total_amount)"/> F</td>
-                            <td><span class="civora-source-badge"><t t-esc="sourceLabel(r.source)"/></span></td>
-                            <td>
-                                <span t-attf-class="civora-status-badge civora-status-{{ stateClass(r.state) }}">
-                                    <t t-esc="stateLabel(r.state)"/>
-                                </span>
-                            </td>
-                        </tr>
-                    </t>
-                    <t t-if="filteredReservations.length === 0">
-                        <tr><td colspan="10" class="civora-empty">Aucune réservation trouvée</td></tr>
-                    </t>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Ménages à planifier -->
-        <t t-if="state.cleaningTasks.length > 0">
-            <div class="civora-section-card">
-                <div class="civora-section-header">
-                    <h3><i class="fa fa-broom"/> Ménages à planifier</h3>
-                    <span class="civora-badge-count"><t t-esc="state.cleaningTasks.length"/></span>
+        <!-- ============ IA INSIGHT ============ -->
+        <div class="civora-insight civora-sais-insight">
+            <div class="civora-insight-row">
+                <div class="civora-insight-spark"><i class="fa fa-magic"/></div>
+                <div class="civora-insight-main">
+                    <div class="civora-insight-tag">IA · INSIGHT</div>
+                    <div class="civora-insight-title">Pricing dynamique — opportunite weekend</div>
+                    <p class="civora-insight-body">
+                        Forte demande detectee sur Assinie (+38% recherches). Augmenter le tarif nuit Villa Assinie de 180k a 220k FCFA pourrait generer +180k FCFA sur le weekend sans perte d'occupation.
+                    </p>
+                    <div class="civora-insight-action">
+                        <button class="civora-btn civora-btn-accent">
+                            <i class="fa fa-magic"/> Appliquer suggestion
+                        </button>
+                    </div>
                 </div>
-                <div class="civora-cleaning-list">
-                    <t t-foreach="state.cleaningTasks" t-as="task" t-key="task.id">
-                        <div class="civora-cleaning-item">
-                            <div class="civora-cleaning-property">
-                                <i class="fa fa-home"/>
-                                <span><t t-esc="task.property_id ? task.property_id[1] : ''"/></span>
-                            </div>
-                            <div class="civora-cleaning-date">
-                                <i class="fa fa-calendar"/>
-                                <span><t t-esc="task.date"/></span>
-                            </div>
-                            <div class="civora-cleaning-slot">
-                                <t t-esc="timeSlotLabel(task.time_slot)"/>
-                            </div>
-                            <span t-attf-class="civora-status-badge civora-status-{{ task.state === 'a_planifier' ? 'warning' : 'info' }}">
-                                <t t-esc="task.state === 'a_planifier' ? 'À planifier' : 'Planifié'"/>
-                            </span>
+            </div>
+        </div>
+
+        <!-- ============ SUPERHOTE STATUS ============ -->
+        <div class="civora-sais-superhote">
+            <div class="civora-sais-superhote-header">
+                <div class="civora-sais-superhote-left">
+                    <div class="civora-sais-superhote-icon"><i class="fa fa-user-circle-o"/></div>
+                    <div>
+                        <div class="civora-sais-superhote-title">
+                            Statut Superhote
+                            <span class="civora-sais-superhote-badge">Actif · Q4 2025</span>
                         </div>
+                        <div class="civora-sais-superhote-sub">Prochaine evaluation : 1er janv. 2026 · Tous les criteres sont remplis</div>
+                    </div>
+                </div>
+                <button class="civora-btn civora-btn-outline">
+                    <i class="fa fa-bar-chart"/> Detail scoring
+                </button>
+            </div>
+            <div class="civora-sais-superhote-grid">
+                <div class="civora-sais-superhote-stat">
+                    <div class="civora-sais-superhote-stat-icon"><i class="fa fa-star"/></div>
+                    <div class="civora-sais-superhote-stat-label">NOTE GLOBALE</div>
+                    <div class="civora-sais-superhote-stat-value">4,86</div>
+                    <div class="civora-sais-superhote-stat-hint"><i class="fa fa-check"/> 312 avis · top 5%</div>
+                </div>
+                <div class="civora-sais-superhote-stat">
+                    <div class="civora-sais-superhote-stat-icon"><i class="fa fa-comment-o"/></div>
+                    <div class="civora-sais-superhote-stat-label">TAUX DE REPONSE</div>
+                    <div class="civora-sais-superhote-stat-value">100%</div>
+                    <div class="civora-sais-superhote-stat-hint"><i class="fa fa-check"/> sur 30j</div>
+                </div>
+                <div class="civora-sais-superhote-stat">
+                    <div class="civora-sais-superhote-stat-icon"><i class="fa fa-clock-o"/></div>
+                    <div class="civora-sais-superhote-stat-label">TEMPS DE REPONSE</div>
+                    <div class="civora-sais-superhote-stat-value">8 min</div>
+                    <div class="civora-sais-superhote-stat-hint"><i class="fa fa-check"/> mediane</div>
+                </div>
+                <div class="civora-sais-superhote-stat">
+                    <div class="civora-sais-superhote-stat-icon"><i class="fa fa-thumbs-up"/></div>
+                    <div class="civora-sais-superhote-stat-label">TAUX D'ACCEPTATION</div>
+                    <div class="civora-sais-superhote-stat-value">94%</div>
+                    <div class="civora-sais-superhote-stat-hint"><i class="fa fa-check"/> demandes acceptees</div>
+                </div>
+                <div class="civora-sais-superhote-stat">
+                    <div class="civora-sais-superhote-stat-icon"><i class="fa fa-ban"/></div>
+                    <div class="civora-sais-superhote-stat-label">ANNULATIONS HOTE</div>
+                    <div class="civora-sais-superhote-stat-value">0,8%</div>
+                    <div class="civora-sais-superhote-stat-hint"><i class="fa fa-check"/> 12 mois glissants</div>
+                </div>
+                <div class="civora-sais-superhote-stat">
+                    <div class="civora-sais-superhote-stat-icon"><i class="fa fa-picture-o"/></div>
+                    <div class="civora-sais-superhote-stat-label">COMPLETION ANNONCES</div>
+                    <div class="civora-sais-superhote-stat-value">96%</div>
+                    <div class="civora-sais-superhote-stat-hint"><i class="fa fa-check"/> photos, tags, regles</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ TABS ============ -->
+        <div class="civora-sais-tabs">
+            <t t-foreach="tabs" t-as="tab" t-key="tab.key">
+                <button t-attf-class="civora-sais-tab {{ state.activeTab === tab.key ? 'active' : '' }}"
+                        t-on-click="() => this.setTab(tab.key)">
+                    <t t-esc="tab.label"/>
+                    <span t-if="tab.count" class="civora-sais-tab-count"><t t-esc="tab.count"/></span>
+                </button>
+            </t>
+        </div>
+
+        <!-- ============ TAB: RESERVATIONS ============ -->
+        <t t-if="state.activeTab === 'reservations'">
+            <div class="civora-filters-bar">
+                <div class="civora-pills">
+                    <button t-attf-class="civora-pill {{ state.filter === 'all' ? 'active' : '' }}" t-on-click="() => this.setFilter('all')">Toutes</button>
+                    <button t-attf-class="civora-pill {{ state.filter === 'confirmed' ? 'active' : '' }}" t-on-click="() => this.setFilter('confirmed')">Confirmees</button>
+                    <button t-attf-class="civora-pill {{ state.filter === 'in_stay' ? 'active' : '' }}" t-on-click="() => this.setFilter('in_stay')">En sejour</button>
+                    <button t-attf-class="civora-pill {{ state.filter === 'checkin_today' ? 'active' : '' }}" t-on-click="() => this.setFilter('checkin_today')">Check-in du jour</button>
+                    <button t-attf-class="civora-pill {{ state.filter === 'checkout_today' ? 'active' : '' }}" t-on-click="() => this.setFilter('checkout_today')">Check-out du jour</button>
+                    <button t-attf-class="civora-pill {{ state.filter === 'upcoming' ? 'active' : '' }}" t-on-click="() => this.setFilter('upcoming')">A venir</button>
+                </div>
+                <div class="civora-search-box">
+                    <i class="fa fa-search"/>
+                    <input type="text" placeholder="Rechercher voyageur, bien, reference..." t-on-input="onSearch" t-att-value="state.search"/>
+                </div>
+            </div>
+
+            <div class="civora-table-wrapper">
+                <table class="civora-table">
+                    <thead>
+                        <tr>
+                            <th>Reference</th>
+                            <th>Bien</th>
+                            <th>Voyageur</th>
+                            <th>Arrivee</th>
+                            <th>Depart</th>
+                            <th>Nuitees</th>
+                            <th>Tarif/nuit</th>
+                            <th>Total</th>
+                            <th>Source</th>
+                            <th>Statut</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="filteredReservations" t-as="r" t-key="r.id">
+                            <tr class="civora-table-row" t-on-click="() => this.openDetail(r.id)">
+                                <td class="civora-ref"><t t-esc="r.name"/></td>
+                                <td><t t-esc="r.property_id ? r.property_id[1] : ''"/></td>
+                                <td><t t-esc="r.guest_id ? r.guest_id[1] : ''"/></td>
+                                <td><t t-esc="r.checkin_date"/></td>
+                                <td><t t-esc="r.checkout_date"/></td>
+                                <td class="text-center"><t t-esc="r.num_nights"/></td>
+                                <td class="text-right"><t t-esc="fmtMoney(r.tariff_night)"/></td>
+                                <td class="text-right font-semibold"><t t-esc="fmtMoney(r.total_amount)"/> F</td>
+                                <td><span class="civora-source-badge"><t t-esc="sourceLabel(r.source)"/></span></td>
+                                <td>
+                                    <span t-attf-class="civora-status-badge civora-status-{{ stateClass(r.state) }}">
+                                        <t t-esc="stateLabel(r.state)"/>
+                                    </span>
+                                </td>
+                            </tr>
+                        </t>
+                        <t t-if="filteredReservations.length === 0">
+                            <tr><td colspan="10" class="civora-empty">Aucune reservation trouvee</td></tr>
+                        </t>
+                    </tbody>
+                </table>
+            </div>
+        </t>
+
+        <!-- ============ TAB: CHECK-IN AUJOURD'HUI ============ -->
+        <t t-if="state.activeTab === 'checkins'">
+            <div class="civora-sais-checkin-section">
+                <h3 class="civora-sais-section-title">Check-in aujourd'hui</h3>
+                <div class="civora-sais-checkin-grid">
+                    <t t-foreach="state.checkinsToday" t-as="ci" t-key="ci.id">
+                        <div class="civora-sais-checkin-card">
+                            <div class="civora-sais-checkin-guest"><t t-esc="ci.guest_name"/></div>
+                            <div class="civora-sais-checkin-property"><t t-esc="ci.property_name"/> · <t t-esc="ci.num_nights"/> nuits</div>
+                            <div class="civora-sais-checkin-code">
+                                Code: <strong><t t-esc="ci.access_code || '—'"/></strong>
+                            </div>
+                            <button class="civora-btn civora-btn-outline civora-sais-checkin-btn">
+                                <i class="fa fa-sign-in"/> Check-in
+                            </button>
+                        </div>
+                    </t>
+                    <t t-if="!state.checkinsToday.length">
+                        <div class="civora-wf-empty">Aucun check-in prevu aujourd'hui</div>
                     </t>
                 </div>
             </div>
         </t>
 
-        <!-- Drawer -->
+        <!-- ============ TAB: MENAGE & MAINTENANCE ============ -->
+        <t t-if="state.activeTab === 'cleaning'">
+            <div class="civora-sais-checkin-section">
+                <h3 class="civora-sais-section-title">Check-out &amp; menages</h3>
+                <div class="civora-sais-cleaning-list">
+                    <t t-foreach="state.checkoutsAndCleaning" t-as="task" t-key="task.id">
+                        <div class="civora-sais-cleaning-card">
+                            <div class="civora-sais-cleaning-info">
+                                <div class="civora-sais-cleaning-property"><t t-esc="task.property_name"/></div>
+                                <div class="civora-sais-cleaning-meta">
+                                    <t t-esc="task.date"/> · <t t-esc="task.assigned_to || 'A assigner'"/>
+                                </div>
+                            </div>
+                            <span t-attf-class="civora-status-badge {{ task.state === 'planifie' ? 'civora-status-info' : 'civora-status-warning' }}">
+                                <t t-esc="cleaningStateLabel(task.state)"/>
+                            </span>
+                        </div>
+                    </t>
+                    <t t-if="!state.checkoutsAndCleaning.length">
+                        <div class="civora-wf-empty">Aucun menage planifie</div>
+                    </t>
+                </div>
+            </div>
+        </t>
+
+        <!-- ============ TAB: AVIS RECENTS ============ -->
+        <t t-if="state.activeTab === 'reviews'">
+            <div class="civora-sais-checkin-section">
+                <h3 class="civora-sais-section-title">Avis recents</h3>
+                <div class="civora-sais-reviews-list">
+                    <t t-foreach="state.recentReviews" t-as="rev" t-key="rev.id">
+                        <div class="civora-sais-review-card">
+                            <div class="civora-sais-review-header">
+                                <div class="civora-sais-review-avatar">
+                                    <t t-esc="(rev.guest_name || '?')[0]"/>
+                                </div>
+                                <div>
+                                    <div class="civora-sais-review-guest"><t t-esc="rev.guest_name"/></div>
+                                    <div class="civora-sais-review-property"><t t-esc="rev.property_name"/></div>
+                                </div>
+                            </div>
+                            <div class="civora-sais-review-stars">
+                                <t t-foreach="[1,2,3,4,5]" t-as="s" t-key="s">
+                                    <i t-attf-class="fa {{ s &lt;= ratingStars(rev.rating) ? 'fa-star' : 'fa-star-o' }}"/>
+                                </t>
+                            </div>
+                            <p class="civora-sais-review-comment"><t t-esc="rev.comment"/></p>
+                            <button class="civora-btn civora-btn-outline civora-sais-review-reply">Repondre</button>
+                        </div>
+                    </t>
+                    <t t-if="!state.recentReviews.length">
+                        <div class="civora-wf-empty">Aucun avis recent</div>
+                    </t>
+                </div>
+            </div>
+        </t>
+
+        <!-- ============ DRAWER ============ -->
         <t t-if="state.drawerOpen">
             <ReservationDrawer
                 mode="state.drawerMode"

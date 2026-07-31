@@ -20,6 +20,9 @@ class CivoraWorkflowsScreen extends Component {
             iaSuggestions: {},
             drawerOpen: false,
             editId: false,
+            searchQuery: "",
+            filterStatus: "all",
+            filterCategory: "all",
         });
         onWillStart(async () => {
             try {
@@ -41,6 +44,53 @@ class CivoraWorkflowsScreen extends Component {
         this.state.automations = automations;
         this.state.topAutomation = topAutomation;
         this.state.iaSuggestions = iaSuggestions;
+    }
+
+    get dynamicSubtitle() {
+        const k = this.state.kpis;
+        const total = k.total_count || 0;
+        const active = k.active_count || 0;
+        const exec = this.fmtNum(k.executions_30d);
+        return `${total} workflows · ${active} actifs · ${exec} executions cumulees`;
+    }
+
+    get filteredAutomations() {
+        let list = this.state.automations;
+        const q = (this.state.searchQuery || "").toLowerCase().trim();
+        if (q) {
+            list = list.filter(r =>
+                (r.name || "").toLowerCase().includes(q) ||
+                (r.trigger_description || "").toLowerCase().includes(q)
+            );
+        }
+        if (this.state.filterStatus !== "all") {
+            const wantActive = this.state.filterStatus === "active";
+            list = list.filter(r => r.is_active === wantActive);
+        }
+        if (this.state.filterCategory !== "all") {
+            list = list.filter(r => r.category === this.state.filterCategory);
+        }
+        return list;
+    }
+
+    get categories() {
+        const cats = new Set();
+        for (const r of this.state.automations) {
+            if (r.category) cats.add(r.category);
+        }
+        return [...cats].sort();
+    }
+
+    onSearchInput(ev) {
+        this.state.searchQuery = ev.target.value;
+    }
+
+    onFilterStatus(ev) {
+        this.state.filterStatus = ev.target.value;
+    }
+
+    onFilterCategory(ev) {
+        this.state.filterCategory = ev.target.value;
     }
 
     fmtNum(n) {

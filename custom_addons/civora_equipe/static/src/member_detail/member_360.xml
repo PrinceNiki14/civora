@@ -3,211 +3,176 @@
 <t t-name="civora_equipe.Member360">
     <div class="civora-member-360">
         <t t-if="state.member">
-            <t t-set="rec" t-value="state.member"/>
+            <t t-set="m" t-value="state.member"/>
 
-            <!-- Topbar -->
-            <div class="civora-360-topbar">
-                <button class="civora-back-btn" t-on-click="goBack">
-                    <i class="fa fa-arrow-left"/> Retour a l'equipe
-                </button>
+            <!-- Breadcrumb -->
+            <div class="m360-breadcrumb">
+                <span class="m360-breadcrumb-link" t-on-click="goBack">Equipe</span>
+                <span class="m360-breadcrumb-sep">/</span>
+                <span class="m360-breadcrumb-current"><t t-esc="m.name"/></span>
             </div>
 
-            <!-- Header -->
-            <div class="civora-360-header">
-                <div class="civora-360-info">
-                    <div class="civora-member-360-avatar">
-                        <i class="fa fa-user-circle-o"/>
+            <!-- Page title -->
+            <div class="m360-page-title">
+                <h1>Fiche collaborateur</h1>
+                <p class="m360-page-subtitle">Performance, planning et permissions</p>
+            </div>
+
+            <!-- Member card -->
+            <div class="m360-member-card">
+                <div class="m360-member-left">
+                    <div class="m360-avatar">
+                        <span class="m360-avatar-initials"><t t-esc="m.initials || '??'"/></span>
                     </div>
-                    <div>
-                        <h2><t t-esc="rec.name"/></h2>
-                        <div class="civora-360-meta">
-                            <span t-if="rec.role_id" class="civora-member-360-role"><t t-esc="rec.role_id[1]"/></span>
-                            <span t-attf-class="civora-dept-badge civora-dept-{{ deptClass(rec.department) }}">
-                                <t t-esc="deptLabel(rec.department)"/>
-                            </span>
-                            <span t-attf-class="civora-status-badge civora-status-{{ statusClass(rec.status) }}">
-                                <t t-esc="statusLabel(rec.status)"/>
-                            </span>
+                    <div class="m360-member-info">
+                        <h2 class="m360-member-name"><t t-esc="m.name"/></h2>
+                        <div class="m360-member-role-line">
+                            <span t-if="m.role"><t t-esc="m.role"/></span>
+                            <span t-if="m.location" class="m360-dot-sep">·</span>
+                            <span t-if="m.location"><t t-esc="m.location"/></span>
+                            <span class="m360-dot-sep">·</span>
+                            <span><t t-esc="presenceLabel"/></span>
+                        </div>
+                        <div class="m360-badges">
+                            <span class="m360-badge-pill">Perf. <t t-esc="perfBadge"/>%</span>
+                            <span class="m360-badge-pill">Objectifs <t t-esc="objectifPct"/>%</span>
+                            <span class="m360-badge-pill"><t t-esc="anciennete"/> ans d'anciennete</span>
                         </div>
                     </div>
                 </div>
-                <div class="civora-360-actions">
-                    <t t-if="rec.status === 'actif'">
-                        <button class="civora-btn civora-btn-outline" t-on-click="() => this.setStatus('conge')">Mettre en conge</button>
-                        <button class="civora-btn civora-btn-danger" t-on-click="() => this.setStatus('inactif')">Desactiver</button>
-                    </t>
-                    <t t-if="rec.status === 'conge'">
-                        <button class="civora-btn civora-btn-accent" t-on-click="() => this.setStatus('actif')">Reactiver</button>
-                    </t>
-                    <t t-if="rec.status === 'inactif'">
-                        <button class="civora-btn civora-btn-accent" t-on-click="() => this.setStatus('actif')">Reactiver</button>
-                    </t>
+                <div class="m360-member-actions">
+                    <button class="m360-icon-btn" title="Appeler">
+                        <i class="fa fa-phone"/>
+                    </button>
+                    <button class="m360-icon-btn" title="Message">
+                        <i class="fa fa-comment-o"/>
+                    </button>
+                    <button class="m360-btn-outline">Modifier</button>
+                    <button class="m360-btn-accent">Affecter un lead</button>
                 </div>
-            </div>
-
-            <!-- KPIs -->
-            <div class="civora-360-kpis">
-                <CivoraStatCard label="'Biens'" value="'' + (rec.property_count || 0)" icon="'fa-building'"/>
-                <CivoraStatCard label="'Ventes'" value="'' + (rec.sale_count || 0)" icon="'fa-handshake-o'"/>
-                <CivoraStatCard label="'Pistes'" value="'' + (rec.lead_count || 0)" icon="'fa-bullseye'"/>
-                <CivoraStatCard label="'Workflows'" value="'' + (rec.workflow_count || 0)" icon="'fa-random'"/>
             </div>
 
             <!-- Tabs -->
-            <div class="civora-360-tabs">
-                <button t-attf-class="civora-tab {{ state.activeTab === 'overview' ? 'active' : '' }}"
-                        t-on-click="() => this.setTab('overview')">Profil</button>
-                <button t-attf-class="civora-tab {{ state.activeTab === 'properties' ? 'active' : '' }}"
-                        t-on-click="() => this.setTab('properties')">
-                    Biens
-                    <t t-if="rec.property_count"><span class="civora-tab-count"><t t-esc="rec.property_count"/></span></t>
-                </button>
-                <button t-attf-class="civora-tab {{ state.activeTab === 'sales' ? 'active' : '' }}"
-                        t-on-click="() => this.setTab('sales')">
-                    Ventes
-                    <t t-if="rec.sale_count"><span class="civora-tab-count"><t t-esc="rec.sale_count"/></span></t>
-                </button>
-                <button t-attf-class="civora-tab {{ state.activeTab === 'workflows' ? 'active' : '' }}"
-                        t-on-click="() => this.setTab('workflows')">
-                    Workflows
-                    <t t-if="rec.workflow_count"><span class="civora-tab-count"><t t-esc="rec.workflow_count"/></span></t>
-                </button>
+            <div class="m360-tabs">
+                <t t-foreach="tabsWithCounts" t-as="tab" t-key="tab.key">
+                    <button t-attf-class="m360-tab {{ state.activeTab === tab.key ? 'active' : '' }}"
+                            t-on-click="() => this.setTab(tab.key)">
+                        <t t-esc="tab.label"/>
+                        <span t-if="tab.count" class="m360-tab-count"><t t-esc="tab.count"/></span>
+                    </button>
+                </t>
             </div>
 
-            <!-- Tab: Overview -->
+            <!-- Tab: Vue d'ensemble -->
             <t t-if="state.activeTab === 'overview'">
-                <div class="civora-360-grid">
-                    <div class="civora-360-card">
-                        <h3>Coordonnees</h3>
-                        <div class="civora-kv">
-                            <span class="civora-k">Email</span>
-                            <span class="civora-v"><t t-esc="rec.email || '---'"/></span>
-                        </div>
-                        <div class="civora-kv">
-                            <span class="civora-k">Telephone</span>
-                            <span class="civora-v"><t t-esc="rec.phone || '---'"/></span>
-                        </div>
-                        <div class="civora-kv">
-                            <span class="civora-k">Date d'embauche</span>
-                            <span class="civora-v"><t t-esc="rec.hire_date || '---'"/></span>
-                        </div>
-                        <div class="civora-kv">
-                            <span class="civora-k">Departement</span>
-                            <span class="civora-v"><t t-esc="deptLabel(rec.department)"/></span>
-                        </div>
+                <div class="m360-kpi-row">
+                    <div class="m360-kpi-card">
+                        <div class="m360-kpi-label">COMMISSIONS Q4</div>
+                        <div class="m360-kpi-value"><t t-esc="commissionDisplay"/> FCFA</div>
+                        <div class="m360-kpi-sub"><t t-esc="m.deal_count || 0"/> deals fermes</div>
                     </div>
-                    <div class="civora-360-card">
-                        <h3>Activite</h3>
-                        <div class="civora-kv">
-                            <span class="civora-k">Biens geres</span>
-                            <span class="civora-v"><t t-esc="rec.property_count || 0"/></span>
+                    <div class="m360-kpi-card">
+                        <div class="m360-kpi-label">ATTEINTE OBJECTIF</div>
+                        <div class="m360-kpi-value"><t t-esc="objectifPct"/>%</div>
+                        <div class="m360-kpi-sub">cible <t t-esc="Math.max(m.deal_count || 0, 10)"/> deals</div>
+                    </div>
+                    <div class="m360-kpi-card">
+                        <div class="m360-kpi-label">MANDATS ACTIFS</div>
+                        <div class="m360-kpi-value"><t t-esc="mandatsActifs"/></div>
+                        <div class="m360-kpi-sub">+<t t-esc="Math.max(1, Math.round((m.deal_count || 0) * 0.2))"/> ce mois</div>
+                    </div>
+                    <div class="m360-kpi-card">
+                        <div class="m360-kpi-label">NOTE INTERNE</div>
+                        <div class="m360-kpi-value"><t t-esc="ratingDisplay"/>/5</div>
+                        <div class="m360-kpi-sub">Perf. <t t-esc="perfBadge"/>%</div>
+                    </div>
+                </div>
+
+                <div class="m360-bottom-grid">
+                    <!-- IA Insight -->
+                    <div class="m360-insight-card">
+                        <div class="m360-insight-header">
+                            <span class="m360-insight-icon">&#10024;</span>
+                            <span class="m360-insight-title">IA INSIGHT</span>
                         </div>
-                        <div class="civora-kv">
-                            <span class="civora-k">Ventes</span>
-                            <span class="civora-v"><t t-esc="rec.sale_count || 0"/></span>
+                        <p class="m360-insight-text">
+                            Performance exceptionnelle ce trimestre.
+                            <t t-esc="m.name"/> depasse ses objectifs avec un taux d'atteinte de <t t-esc="objectifPct"/>%.
+                            Recommandation : envisager un bonus de performance ou une promotion.
+                        </p>
+                        <button class="m360-btn-accent m360-insight-btn">Valider bonus</button>
+                    </div>
+
+                    <!-- Coordonnees -->
+                    <div class="m360-coord-card">
+                        <h3 class="m360-coord-title">Coordonnees</h3>
+                        <div class="m360-coord-item">
+                            <i class="fa fa-envelope-o"/>
+                            <span><t t-esc="m.email || '---'"/></span>
                         </div>
-                        <div class="civora-kv">
-                            <span class="civora-k">Pistes CRM</span>
-                            <span class="civora-v"><t t-esc="rec.lead_count || 0"/></span>
+                        <div class="m360-coord-item">
+                            <i class="fa fa-phone"/>
+                            <span><t t-esc="m.phone || '---'"/></span>
                         </div>
-                        <div class="civora-kv">
-                            <span class="civora-k">Locations</span>
-                            <span class="civora-v"><t t-esc="rec.location_count || 0"/></span>
-                        </div>
-                        <div class="civora-kv">
-                            <span class="civora-k">Evenements</span>
-                            <span class="civora-v"><t t-esc="rec.event_count || 0"/></span>
+                        <div class="m360-coord-item" t-if="m.location">
+                            <i class="fa fa-map-marker"/>
+                            <span><t t-esc="m.location"/></span>
                         </div>
                     </div>
                 </div>
-                <t t-if="rec.bio">
-                    <div class="civora-360-card" style="margin-top: 1.25rem;">
-                        <h3>Bio</h3>
-                        <p class="civora-bio-text"><t t-esc="rec.bio"/></p>
-                    </div>
-                </t>
             </t>
 
-            <!-- Tab: Properties -->
-            <t t-if="state.activeTab === 'properties'">
-                <div class="civora-360-list">
-                    <t t-if="state.stats.properties and state.stats.properties.length">
-                        <t t-foreach="state.stats.properties" t-as="p" t-key="p.id">
-                            <div class="civora-list-item">
-                                <div class="civora-list-icon"><i class="fa fa-building"/></div>
-                                <div class="civora-list-content">
-                                    <div class="civora-list-title"><t t-esc="p.name"/></div>
-                                    <div class="civora-list-meta">
-                                        <span t-if="p.city"><i class="fa fa-map-marker"/> <t t-esc="p.city"/></span>
-                                        <span t-if="p.property_type_id"><t t-esc="p.property_type_id[1]"/></span>
-                                    </div>
-                                </div>
-                                <div class="civora-list-value" t-if="p.price">
-                                    <t t-esc="(p.price || 0).toLocaleString('fr-FR')"/> F
-                                </div>
-                            </div>
-                        </t>
-                    </t>
-                    <t t-else="">
-                        <div class="civora-empty-tab">Aucun bien assigne</div>
-                    </t>
+            <!-- Tab: Performance -->
+            <t t-if="state.activeTab === 'performance'">
+                <div class="m360-placeholder-tab">
+                    <i class="fa fa-line-chart"/>
+                    <h3>Performance</h3>
+                    <p>Graphiques de performance et historique des KPIs. Module en cours de developpement.</p>
                 </div>
             </t>
 
-            <!-- Tab: Sales -->
-            <t t-if="state.activeTab === 'sales'">
-                <div class="civora-360-list">
-                    <t t-if="state.stats.sales and state.stats.sales.length">
-                        <t t-foreach="state.stats.sales" t-as="s" t-key="s.id">
-                            <div class="civora-list-item">
-                                <div class="civora-list-icon"><i class="fa fa-handshake-o"/></div>
-                                <div class="civora-list-content">
-                                    <div class="civora-list-title"><t t-esc="s.name"/></div>
-                                    <div class="civora-list-meta">
-                                        <span t-if="s.property_id"><t t-esc="s.property_id[1]"/></span>
-                                        <span t-if="s.state"><t t-esc="s.state"/></span>
-                                    </div>
-                                </div>
-                                <div class="civora-list-value" t-if="s.asking_price">
-                                    <t t-esc="(s.asking_price || 0).toLocaleString('fr-FR')"/> F
-                                </div>
-                            </div>
-                        </t>
-                    </t>
-                    <t t-else="">
-                        <div class="civora-empty-tab">Aucune vente</div>
-                    </t>
+            <!-- Tab: Portefeuille -->
+            <t t-if="state.activeTab === 'portfolio'">
+                <div class="m360-placeholder-tab">
+                    <i class="fa fa-briefcase"/>
+                    <h3>Portefeuille</h3>
+                    <p>Liste des mandats, biens et clients assignes. Module en cours de developpement.</p>
                 </div>
             </t>
 
-            <!-- Tab: Workflows -->
-            <t t-if="state.activeTab === 'workflows'">
-                <div class="civora-360-list">
-                    <t t-if="state.stats.workflows and state.stats.workflows.length">
-                        <t t-foreach="state.stats.workflows" t-as="w" t-key="w.id">
-                            <div class="civora-list-item">
-                                <div class="civora-list-icon"><i class="fa fa-random"/></div>
-                                <div class="civora-list-content">
-                                    <div class="civora-list-title"><t t-esc="w.name"/> — <t t-esc="w.title"/></div>
-                                    <div class="civora-list-meta">
-                                        <span><t t-esc="w.state"/></span>
-                                    </div>
-                                </div>
-                                <div class="civora-list-value" t-if="w.progress !== undefined">
-                                    <t t-esc="Math.round(w.progress || 0)"/>%
-                                </div>
-                            </div>
-                        </t>
-                    </t>
-                    <t t-else="">
-                        <div class="civora-empty-tab">Aucun workflow assigne</div>
-                    </t>
+            <!-- Tab: Planning -->
+            <t t-if="state.activeTab === 'planning'">
+                <div class="m360-placeholder-tab">
+                    <i class="fa fa-calendar"/>
+                    <h3>Planning</h3>
+                    <p>Calendrier des visites, rendez-vous et evenements. Module en cours de developpement.</p>
+                </div>
+            </t>
+
+            <!-- Tab: Commissions -->
+            <t t-if="state.activeTab === 'commissions'">
+                <div class="m360-placeholder-tab">
+                    <i class="fa fa-money"/>
+                    <h3>Commissions</h3>
+                    <p>Detail des commissions et historique de paiement. Module en cours de developpement.</p>
+                </div>
+            </t>
+
+            <!-- Tab: Permissions -->
+            <t t-if="state.activeTab === 'permissions'">
+                <div class="m360-placeholder-tab">
+                    <i class="fa fa-lock"/>
+                    <h3>Permissions</h3>
+                    <p>Gestion des droits d'acces et des roles. Module en cours de developpement.</p>
                 </div>
             </t>
 
         </t>
         <t t-else="">
-            <div class="civora-loading">Chargement...</div>
+            <div class="m360-loading">
+                <i class="fa fa-spinner fa-spin"/>
+                <span>Chargement de la fiche collaborateur...</span>
+            </div>
         </t>
     </div>
 </t>

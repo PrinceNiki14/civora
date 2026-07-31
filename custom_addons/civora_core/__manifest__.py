@@ -42,6 +42,7 @@ Devient l'ecran d'accueil (remplace l'action "menu").
             'civora_core/static/src/command_center/command_center.scss',
             'civora_core/static/src/command_center/command_center.js',
             'civora_core/static/src/command_center/command_center.xml',
+            'civora_core/static/src/action_fix.js',
         ],
     },
     'installable': True,
