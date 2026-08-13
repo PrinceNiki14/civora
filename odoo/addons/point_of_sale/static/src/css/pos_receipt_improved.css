@@ -1,0 +1,231 @@
+/* ========================================
+   STYLES REÇU POS - TOUT EN GRAS
+   Pour impression thermique optimale
+   ======================================== */
+
+/* Base du reçu - TOUT EN GRAS */
+.pos-receipt {
+    width: 100%;
+    max-width: 512px;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.4;
+    color: #000;
+    padding: 0;
+    margin: 0;
+    font-weight: bold !important;
+}
+
+/* TOUT le texte du reçu en gras */
+.pos-receipt * {
+    font-weight: bold !important;
+}
+
+/* En-tête (logo, adresse, téléphone) */
+.pos-receipt .pos-receipt-logo {
+    display: block;
+    margin: 10px auto;
+    max-width: 200px;
+}
+
+.pos-receipt .pos-receipt-contact {
+    text-align: center;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.pos-receipt .pos-receipt-contact div {
+    margin: 2px 0;
+    font-weight: bold;
+}
+
+/* Séparateurs */
+.pos-receipt .separator {
+    text-align: center;
+    margin: 5px 0;
+    font-weight: bold;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+/* Informations de commande */
+.pos-receipt .receipt-info {
+    margin: 8px 0;
+    font-weight: bold;
+}
+
+.pos-receipt .receipt-info div {
+    margin: 3px 0;
+    font-weight: bold;
+}
+
+/* Titre PRODUITS */
+.pos-receipt .products-title {
+    text-align: center;
+    font-weight: bold;
+    margin: 8px 0;
+}
+
+/* Lignes de produits */
+.pos-receipt .orderline {
+    display: flex;
+    justify-content: space-between;
+    margin: 3px 0;
+    font-weight: bold;
+}
+
+.pos-receipt .orderline .product-name {
+    flex: 1;
+    font-weight: bold;
+}
+
+.pos-receipt .orderline .quantity {
+    width: 40px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.pos-receipt .orderline .price {
+    width: 100px;
+    text-align: right;
+    font-weight: bold;
+}
+
+/* Lignes de reçu (sous-total, total, paiements) */
+.pos-receipt .receipt-line {
+    display: flex;
+    justify-content: space-between;
+    margin: 5px 0;
+    font-weight: bold;
+}
+
+.pos-receipt .receipt-line span {
+    display: inline-block;
+    font-weight: bold;
+}
+
+.pos-receipt .receipt-line .amount {
+    text-align: right;
+    min-width: 100px;
+    font-weight: bold;
+}
+
+/* Ligne de total - ENCORE PLUS EN GRAS */
+.pos-receipt .total-line {
+    font-weight: 900 !important;
+    margin: 8px 0;
+}
+
+.pos-receipt .total-amount {
+    font-weight: 900 !important;
+    font-size: 16px;
+}
+
+/* Ligne vide pour espacement */
+.pos-receipt .empty-line {
+    height: 8px;
+}
+
+/* Message de remerciement */
+.pos-receipt .thank-you {
+    text-align: center;
+    margin: 15px 0;
+    font-weight: bold;
+}
+
+/* Notes client */
+.pos-receipt .customer-note {
+    font-style: italic;
+    margin: 5px 0;
+    padding: 5px;
+    background-color: #f5f5f5;
+    font-weight: bold;
+}
+
+/* Section QR Code */
+.pos-receipt .qr-section {
+    text-align: center;
+    margin: 15px 0;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.pos-receipt .qr-section img {
+    max-width: 150px;
+    margin: 10px auto;
+}
+
+.pos-receipt .qr-section div {
+    font-weight: bold;
+}
+
+/* Footer */
+.pos-receipt .receipt-footer {
+    text-align: center;
+    margin: 15px 0;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* Terminal de paiement */
+.pos-receipt .payment-terminal {
+    text-align: center;
+    font-size: 11px;
+    margin: 10px 0;
+    font-weight: bold;
+}
+
+.pos-receipt .payment-terminal pre {
+    margin: 0;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+}
+
+/* Impression - Forcer le gras */
+@media print {
+    .pos-receipt {
+        width: 80mm;
+        font-size: 12px;
+        font-weight: bold !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    
+    .pos-receipt * {
+        font-weight: bold !important;
+    }
+    
+    .pos-receipt .total-line,
+    .pos-receipt .total-amount {
+        font-weight: 900 !important;
+    }
+}
+
+/* Classes utilitaires */
+.pos-receipt .text-center {
+    text-align: center;
+    font-weight: bold;
+}
+
+.pos-receipt .text-right {
+    text-align: right;
+    font-weight: bold;
+}
+
+.pos-receipt .fw-bold {
+    font-weight: bold !important;
+}
+
+.pos-receipt .fw-bolder {
+    font-weight: 900 !important;
+}
+
+/* S'assurer que même les spans sont en gras */
+.pos-receipt span,
+.pos-receipt div,
+.pos-receipt p,
+.pos-receipt li,
+.pos-receipt td,
+.pos-receipt th {
+    font-weight: bold !important;
+}

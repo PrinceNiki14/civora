@@ -1,0 +1,8 @@
+// Fix scroll for CIVORA custom client actions inside Odoo's action manager.
+// Odoo's default layout prevents mouse-wheel scrolling on custom OWL screens.
+
+.o_action_manager {
+    overflow: auto !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+}

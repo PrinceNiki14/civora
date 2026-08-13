@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="point_of_sale.OrderReceipt">
+        <div class="pos-receipt">
+            <t t-set="showTaxGroupLabels" t-value="doesAnyOrderlineHaveTaxLabel()"/>
+            <ReceiptHeader order="order" />
+            
+            <!-- Séparateur -->
+            <div class="separator">==================================================</div>
+            
+            <!-- Informations commande -->
+            <div class="receipt-info">
+                <div>Caissier(e): <t t-esc="order.employee?.name or order.cashier?.name or ''"/></div>
+                <div>Client: <t t-esc="order.partner_id?.name or 'BASSAM'"/></div>
+                <div>Commande <t t-esc="order.name"/></div>
+                <div>Date : <t t-esc="order.formatDateOrTime('date_order', 'datetime')"/></div>
+            </div>
+            
+            <!-- Séparateur -->
+            <div class="separator">==================================================</div>
+            
+            <!-- PRODUITS -->
+            <div class="products-title">PRODUITS</div>
+            
+            <OrderDisplay order="order" t-slot-scope="scope" mode="'receipt'">
+                <t t-set="line" t-value="scope.line"/>
+                <Orderline line="line" showTaxGroup="showTaxGroupLabels" mode="'receipt'" basic_receipt="props.basic_receipt">
+                    <li t-if="line.customerNote" class="customer-note">
+                        <i class="fa fa-sticky-note me-1" role="img" aria-label="Customer Note" title="Customer Note"/>
+                        <t t-esc="line.customerNote" />
+                    </li>
+                </Orderline>
+            </OrderDisplay>
+            
+            <!-- Séparateur -->
+            <div class="separator">==================================================</div>
+            
+            <t t-if="!props.basic_receipt">
+                <t t-set="taxTotals" t-value="order.prices.taxDetails"/>
+                
+                <!-- Sous-total et taxes -->
+                <div t-if="taxTotals and taxTotals.has_tax_groups">
+                    <t t-foreach="taxTotals.subtotals" t-as="subtotal" t-key="subtotal.name">
+                        <div class="receipt-line">
+                            <span>Sous-total :</span>
+                            <span class="amount"><t t-out="formatCurrency(order.priceExcl)"/></span>
+                        </div>
+                        
+                        <div t-foreach="subtotal.tax_groups" t-as="tax_group" t-key="tax_group.id" class="receipt-line">
+                            <span><t t-esc="tax_group.group_name"/></span>
+                            <span class="amount"><t t-out="formatCurrency(tax_group.tax_amount_currency)"/></span>
+                        </div>
+                    </t>
+                </div>
+                
+                <!-- Total -->
+                <div class="receipt-line total-line">
+                    <span>Total:</span>
+                    <span class="amount total-amount"><t t-out="order.currencyDisplayPriceIncl"/></span>
+                </div>
+                
+                <!-- Ligne vide -->
+                <div class="empty-line"></div>
+                
+                <!-- Payment Lines -->
+                <div t-foreach="paymentLines" t-as="line" t-key="line_index" class="receipt-line">
+                    <span><t t-esc="line.payment_method_id.name"/></span>
+                    <span class="amount"><t t-out="formatCurrency(line.getAmount())"/></span>
+                </div>
+                
+                <!-- Ligne vide -->
+                <div class="empty-line"></div>
+                
+                <!-- Rendu -->
+                <div t-if="order.showChange" class="receipt-line">
+                    <span>Rendu :</span>
+                    <span class="amount"><t t-out="formatCurrency(order.change)"/></span>
+                </div>
+                
+                <!-- Remises -->
+                <t t-set="totalDiscount" t-value="order.getTotalDiscount()" />
+                <t t-if="totalDiscount">
+                    <div class="receipt-line">
+                        <span>Remises :</span>
+                        <span class="amount"><t t-out="formatCurrency(totalDiscount)"/></span>
+                    </div>
+                </t>
+                
+                <!-- Ligne vide -->
+                <div class="empty-line"></div>
+                
+                <!-- Message de remerciement -->
+                <div class="thank-you">MERCI ET À TRÈS BIENTÔT !</div>
+                
+                <!-- QR Code si activé -->
+                <div t-if="order.company.point_of_sale_use_ticket_qr_code and order.finalized" class="qr-section">
+                    <div t-if="['qr_code', 'qr_code_and_url'].includes(header.company.point_of_sale_ticket_portal_url_display_mode)">
+                        <img id="posqrcode" t-att-src="this.qrCode"/>
+                    </div>
+                    <div>
+                        <div>Besoin d'une facture ?</div>
+                        <div t-if="['url', 'qr_code_and_url'].includes(header.company.point_of_sale_ticket_portal_url_display_mode)">
+                            <t t-out="getPortalURL()"/>
+                        </div>
+                        <div>Code: <t t-out="order.ticket_code"/></div>
+                    </div>
+                </div>
+                
+                <div class="before-footer"/>
+            </t>
+            
+            <!-- Footer personnalisé -->
+            <div t-if="order.config.receipt_footer" class="receipt-footer">
+                <t t-esc="order.config.receipt_footer" />
+            </div>
+            
+            <!-- Terminal de paiement -->
+            <div class="after-footer">
+                <t t-foreach="paymentLines" t-as="line" t-key="line_index">
+                    <t t-if="line.ticket">
+                        <div class="payment-terminal">
+                            <pre t-esc="line.ticket" />
+                        </div>
+                    </t>
+                </t>
+            </div>
+        </div>
+    </t>
+</templates>

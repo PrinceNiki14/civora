@@ -22,6 +22,7 @@ Devient l'ecran d'accueil (remplace l'action "menu").
     'assets': {
         'web.assets_backend': [
             'civora_core/static/src/scss/civora_tokens.scss',
+            'civora_core/static/src/scss/civora_scroll_fix.scss',
             'civora_core/static/src/components/civora_ui.scss',
             'civora_core/static/src/components/civora_kit.scss',
             'civora_core/static/src/components/civora_drawer.scss',
