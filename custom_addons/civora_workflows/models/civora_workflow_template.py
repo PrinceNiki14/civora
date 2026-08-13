@@ -1,128 +1,139 @@
+# -*- coding: utf-8 -*-
+"""Bibliotheque de modeles de workflows CIVORA.
+
+Un modele est une definition prete a l'emploi : on le "deploie" pour creer
+un vrai workflow (avec ses etapes) que l'agence peut ensuite modifier.
+"""
 from odoo import models, fields, api
+from odoo.exceptions import UserError
+
+from .civora_workflow import WORKFLOW_CATEGORY, TRIGGER_TYPE
+from .civora_workflow_step import STEP_KIND, STEP_ICON
 
 
 class CivoraWorkflowTemplate(models.Model):
     _name = "civora.workflow.template"
-    _description = "Modele de workflow"
+    _description = "Modèle de workflow"
     _order = "sequence, name"
 
     name = fields.Char(string="Nom", required=True)
     description = fields.Text(string="Description")
-    category = fields.Selection([
-        ("vente", "Vente"),
-        ("location", "Location"),
-        ("gestion", "Gestion"),
-        ("administratif", "Administratif"),
-    ], string="Categorie", required=True, default="gestion")
+    category = fields.Selection(
+        WORKFLOW_CATEGORY, string="Catégorie", required=True, default="locatif",
+    )
+    trigger_description = fields.Char(string="Déclencheur")
+    trigger_type = fields.Selection(TRIGGER_TYPE, string="Type de déclencheur", default="event")
     step_ids = fields.One2many(
-        "civora.workflow.template.step", "template_id", string="Etapes",
+        "civora.workflow.template.step", "template_id", string="Étapes",
     )
-    step_count = fields.Integer(compute="_compute_step_count", string="Nb etapes")
-    workflow_count = fields.Integer(compute="_compute_workflow_count", string="Workflows actifs")
-    is_active = fields.Boolean(string="Actif", default=True)
+    step_count = fields.Integer(string="Nb étapes", compute="_compute_counts", store=True)
+    deployed_count = fields.Integer(
+        string="Workflows déployés", compute="_compute_deployed_count",
+    )
+    is_active = fields.Boolean(string="Disponible", default=True)
     sequence = fields.Integer(default=10)
-    company_id = fields.Many2one(
-        "res.company", string="Societe",
-        default=lambda self: self.env.company,
+    time_saved_hours = fields.Integer(
+        string="Temps économisé estimé (h)", default=0,
+        help="Valeur pre-remplie sur le workflow cree a partir de ce modele.",
     )
-
-    trigger_type = fields.Selection([
-        ("event", "Evenement"),
-        ("schedule", "Planifie"),
-        ("condition", "Condition IA"),
-        ("manual", "Manuel"),
-    ], string="Type de declencheur", default="event")
-    trigger_description = fields.Char(string="Declencheur")
-    execution_count = fields.Integer(string="Executions", default=0)
-    time_saved_minutes = fields.Integer(string="Temps economise (min)", default=0)
-    error_count = fields.Integer(string="Erreurs", default=0)
+    company_id = fields.Many2one("res.company", string="Société")
 
     @api.depends("step_ids")
-    def _compute_step_count(self):
+    def _compute_counts(self):
         for rec in self:
             rec.step_count = len(rec.step_ids)
 
-    @api.depends()
-    def _compute_workflow_count(self):
-        data = self.env["civora.workflow"].read_group(
-            [("template_id", "in", self.ids), ("state", "not in", ["termine", "annule"])],
-            ["template_id"], ["template_id"],
+    def _compute_deployed_count(self):
+        # formatted_read_group remplace read_group (supprime en Odoo 19).
+        groups = self.env["civora.workflow"].formatted_read_group(
+            [("template_id", "in", self.ids)], groupby=["template_id"], aggregates=["__count"],
         )
-        mapped = {d["template_id"][0]: d["template_id_count"] for d in data}
+        mapped = {
+            (g["template_id"][0] if g["template_id"] else False): g["__count"]
+            for g in groups
+        }
         for rec in self:
-            rec.workflow_count = mapped.get(rec.id, 0)
+            rec.deployed_count = mapped.get(rec.id, 0)
 
     def action_toggle_active(self):
         for rec in self:
             rec.is_active = not rec.is_active
+        return True
 
+    # ------------------------------------------------------------------
     @api.model
-    def get_automations_kpis(self):
-        templates = self.search([("company_id", "=", self.env.company.id)])
-        active_count = len(templates.filtered(lambda t: t.is_active))
-        total_executions = sum(templates.mapped("execution_count"))
-        total_time = sum(templates.mapped("time_saved_minutes"))
-        total_errors = sum(templates.mapped("error_count"))
-        sla = round((total_executions - total_errors) / total_executions * 100, 1) if total_executions else 100
-        return {
-            "active_count": active_count,
-            "total_count": len(templates),
-            "executions_30d": total_executions,
-            "time_saved_hours": round(total_time / 60),
-            "sla_percent": sla,
-        }
+    def get_template_library(self):
+        categories = dict(WORKFLOW_CATEGORY)
+        templates = self.search([("is_active", "=", True)])
+        deployed = set(self.env["civora.workflow"].search([]).mapped("template_id").ids)
+        return [{
+            "id": t.id,
+            "name": t.name,
+            "description": t.description or "",
+            "category": t.category,
+            "category_label": categories.get(t.category, ""),
+            "trigger_description": t.trigger_description or "",
+            "step_count": t.step_count,
+            "time_saved_hours": t.time_saved_hours,
+            "deployed": t.id in deployed,
+            "steps": [{
+                "kind": s.kind,
+                "kind_label": dict(STEP_KIND).get(s.kind, ""),
+                "icon": STEP_ICON.get(s.kind, "fa-cog"),
+                "name": s.name,
+                "detail": s.detail or "",
+                "sequence": s.sequence,
+            } for s in t.step_ids.sorted(lambda s: (s.sequence, s.id))],
+        } for t in templates]
 
-    @api.model
-    def get_automations_list(self):
-        return self.search_read(
-            [("company_id", "=", self.env.company.id)],
-            ["name", "trigger_description", "trigger_type", "step_count",
-             "execution_count", "is_active", "category", "error_count"],
-            order="sequence, name",
-        )
-
-    @api.model
-    def get_top_automation(self):
-        top = self.search(
-            [("company_id", "=", self.env.company.id), ("is_active", "=", True)],
-            order="execution_count desc", limit=1,
-        )
-        if top:
-            success_rate = round((top.execution_count - top.error_count) / top.execution_count * 100) if top.execution_count else 100
-            return {
-                "name": top.name,
-                "execution_count": top.execution_count,
-                "error_count": top.error_count,
-                "success_rate": success_rate,
-            }
-        return {}
-
-    @api.model
-    def get_ia_suggestions(self):
-        return {
-            "count": 3,
-            "title": "3 workflows suggeres par l'IA",
-            "description": "Sur la base des actions repetees par votre equipe ces 30j, CIVORA AI suggere : 'Confirmation visite J-1', 'Pre-qualification lead WhatsApp', 'Relance compteurs eau/electricite'.",
-        }
+    def action_deploy(self, activate=True):
+        """Cree un workflow reel a partir du modele et renvoie son id."""
+        self.ensure_one()
+        Workflow = self.env["civora.workflow"]
+        title = self.name
+        suffix = 2
+        while Workflow.search_count([
+            ("title", "=", title),
+            ("company_id", "=", self.env.company.id),
+        ]):
+            title = "%s (%s)" % (self.name, suffix)
+            suffix += 1
+        workflow = Workflow.create({
+            "title": title,
+            "description": self.description,
+            "category": self.category,
+            "trigger_description": self.trigger_description,
+            "trigger_type": self.trigger_type,
+            "time_saved_hours": self.time_saved_hours,
+            "template_id": self.id,
+            "status": "brouillon",
+        })
+        for step in self.step_ids.sorted(lambda s: (s.sequence, s.id)):
+            self.env["civora.workflow.step"].create({
+                "workflow_id": workflow.id,
+                "kind": step.kind,
+                "name": step.name,
+                "detail": step.detail,
+                "sequence": step.sequence,
+            })
+        if activate:
+            if not workflow.step_ids.filtered(lambda s: s.kind == "declencheur"):
+                raise UserError(
+                    "Le modèle « %s » ne définit pas de déclencheur." % self.name
+                )
+            workflow.status = "actif"
+        return workflow.id
 
 
 class CivoraWorkflowTemplateStep(models.Model):
     _name = "civora.workflow.template.step"
-    _description = "Etape de modele de workflow"
+    _description = "Étape de modèle de workflow"
     _order = "sequence, id"
 
     template_id = fields.Many2one(
-        "civora.workflow.template", string="Modele", required=True, ondelete="cascade",
+        "civora.workflow.template", string="Modèle", required=True, ondelete="cascade",
     )
-    name = fields.Char(string="Nom", required=True)
-    description = fields.Text(string="Description")
+    name = fields.Char(string="Libellé", required=True)
+    detail = fields.Char(string="Détail")
+    kind = fields.Selection(STEP_KIND, string="Type", required=True, default="action")
     sequence = fields.Integer(default=10)
-    duration_days = fields.Integer(string="Duree estimee (jours)", default=1)
-    is_required = fields.Boolean(string="Obligatoire", default=True)
-    responsible_role = fields.Selection([
-        ("agent", "Agent"),
-        ("manager", "Manager"),
-        ("admin", "Administrateur"),
-        ("notaire", "Notaire"),
-        ("externe", "Prestataire externe"),
-    ], string="Responsable type", default="agent")

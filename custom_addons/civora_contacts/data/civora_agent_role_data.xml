@@ -31,4 +31,63 @@
         <field name="sequence">40</field>
     </record>
 
+    <!-- Catalogue de postes CIVORA (aligne sur le referentiel produit).
+         Table parametrable : chaque agence peut ajouter/retirer ses fonctions. -->
+    <record id="agent_role_sales_manager" model="civora.agent.role">
+        <field name="company_id" eval="False"/>
+        <field name="name">Sales Manager</field>
+        <field name="code">sales_manager</field>
+        <field name="color">#091e40</field>
+        <field name="sequence">5</field>
+    </record>
+    <record id="agent_role_agent_commercial" model="civora.agent.role">
+        <field name="company_id" eval="False"/>
+        <field name="name">Agent commercial</field>
+        <field name="code">agent_commercial</field>
+        <field name="color">#00ab68</field>
+        <field name="sequence">15</field>
+    </record>
+    <record id="agent_role_gestionnaire_locatif" model="civora.agent.role">
+        <field name="company_id" eval="False"/>
+        <field name="name">Gestionnaire locatif</field>
+        <field name="code">gestionnaire_locatif</field>
+        <field name="color">#25afd2</field>
+        <field name="sequence">35</field>
+    </record>
+    <record id="agent_role_responsable_saisonnier" model="civora.agent.role">
+        <field name="company_id" eval="False"/>
+        <field name="name">Responsable saisonnier</field>
+        <field name="code">responsable_saisonnier</field>
+        <field name="color">#efa831</field>
+        <field name="sequence">45</field>
+    </record>
+    <record id="agent_role_comptable" model="civora.agent.role">
+        <field name="company_id" eval="False"/>
+        <field name="name">Comptable</field>
+        <field name="code">comptable</field>
+        <field name="color">#626a75</field>
+        <field name="sequence">50</field>
+    </record>
+    <record id="agent_role_marketing" model="civora.agent.role">
+        <field name="company_id" eval="False"/>
+        <field name="name">Marketing &amp; Lead Gen</field>
+        <field name="code">marketing_lead_gen</field>
+        <field name="color">#9260da</field>
+        <field name="sequence">55</field>
+    </record>
+    <record id="agent_role_office_manager" model="civora.agent.role">
+        <field name="company_id" eval="False"/>
+        <field name="name">Office Manager</field>
+        <field name="code">office_manager</field>
+        <field name="color">#15bb77</field>
+        <field name="sequence">60</field>
+    </record>
+    <record id="agent_role_administrateur" model="civora.agent.role">
+        <field name="company_id" eval="False"/>
+        <field name="name">Administrateur</field>
+        <field name="code">administrateur</field>
+        <field name="color">#e62c2c</field>
+        <field name="sequence">65</field>
+    </record>
+
 </odoo>

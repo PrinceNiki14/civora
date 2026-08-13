@@ -7,7 +7,7 @@
 
             <!-- Breadcrumb -->
             <div class="m360-breadcrumb">
-                <span class="m360-breadcrumb-link" t-on-click="goBack">Equipe</span>
+                <span class="m360-breadcrumb-link" t-on-click="goBack">Équipe</span>
                 <span class="m360-breadcrumb-sep">/</span>
                 <span class="m360-breadcrumb-current"><t t-esc="m.name"/></span>
             </div>
@@ -154,7 +154,7 @@
                 <div class="m360-placeholder-tab">
                     <i class="fa fa-money"/>
                     <h3>Commissions</h3>
-                    <p>Detail des commissions et historique de paiement. Module en cours de developpement.</p>
+                    <p>Détail des commissions et historique de paiement.</p>
                 </div>
             </t>
 
@@ -163,7 +163,7 @@
                 <div class="m360-placeholder-tab">
                     <i class="fa fa-lock"/>
                     <h3>Permissions</h3>
-                    <p>Gestion des droits d'acces et des roles. Module en cours de developpement.</p>
+                    <p>Gestion des droits d'accès et des rôles.</p>
                 </div>
             </t>
 

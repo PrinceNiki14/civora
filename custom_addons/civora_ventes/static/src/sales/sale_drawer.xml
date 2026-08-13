@@ -26,7 +26,7 @@
                 <h4>Vendeur</h4>
                 <div class="civora-field-group full">
                     <div class="civora-field">
-                        <label>Proprietaire / Vendeur</label>
+                        <label>Propriétaire / Vendeur</label>
                         <select t-on-change="(ev) => this.onSelectChange('seller_id', ev)">
                             <option value="">-- Selectionner --</option>
                             <t t-foreach="state.contacts" t-as="c" t-key="c.id">

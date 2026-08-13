@@ -28,7 +28,7 @@
                 icon="'fa fa-users'"
                 trend="'up'"/>
             <CivoraStatCard
-                label="'VENTES EQUIPE'"
+                label="'VENTES ÉQUIPE'"
                 value="'' + (state.kpis.total_deals or 0)"
                 delta="'+8 vs Oct.'"
                 icon="'fa fa-handshake-o'"
@@ -119,13 +119,23 @@
                             <button class="civora-tmc-btn civora-tmc-btn-open" t-on-click.stop="() => this.openDetail(m.id)">
                                 Ouvrir <i class="fa fa-chevron-right"/>
                             </button>
-                            <button class="civora-tmc-btn civora-tmc-btn-edit" t-on-click.stop="() => this.openDetail(m.id)">
+                            <button class="civora-tmc-btn civora-tmc-btn-edit" t-on-click.stop="() => this.openEditMember(m.id)">
                                 <i class="fa fa-pencil"/> Modifier
                             </button>
-                            <button class="civora-tmc-btn-icon">
+                            <a t-if="m.email" class="civora-tmc-btn-icon" title="Écrire au collaborateur"
+                               t-attf-href="mailto:{{m.email}}" t-on-click.stop="">
+                                <i class="fa fa-envelope-o"/>
+                            </a>
+                            <button t-else="" class="civora-tmc-btn-icon" disabled="1"
+                                    title="Aucun email renseigné" t-on-click.stop="">
                                 <i class="fa fa-envelope-o"/>
                             </button>
-                            <button class="civora-tmc-btn-icon">
+                            <a t-if="m.phone" class="civora-tmc-btn-icon" title="Appeler le collaborateur"
+                               t-attf-href="tel:{{m.phone}}" t-on-click.stop="">
+                                <i class="fa fa-phone"/>
+                            </a>
+                            <button t-else="" class="civora-tmc-btn-icon" disabled="1"
+                                    title="Aucun téléphone renseigné" t-on-click.stop="">
                                 <i class="fa fa-phone"/>
                             </button>
                         </div>
@@ -134,7 +144,7 @@
                 <t t-if="filteredMembers.length === 0">
                     <div class="civora-empty-state">
                         <i class="fa fa-users"/>
-                        <p>Aucun membre trouve</p>
+                        <p>Aucun membre trouvé</p>
                     </div>
                 </t>
             </div>
@@ -145,7 +155,7 @@
             <div class="civora-perf-tab">
                 <!-- Filter bar -->
                 <div class="civora-filter-bar">
-                    <span class="civora-filter-label">Periode</span>
+                    <span class="civora-filter-label">Période</span>
                     <select class="civora-filter-select">
                         <option>2026</option>
                         <option>2025</option>
@@ -175,7 +185,7 @@
                         <div class="civora-ia-insight-text">
                             <t t-esc="topPerformer.deal_count"/> deals conclus · Performance <t t-esc="topPerformer.performance"/>% · Note <t t-esc="topPerformer.rating || '-'"/>/5
                         </div>
-                        <button class="civora-btn-ia">Voir evaluation</button>
+                        <button class="civora-btn-ia">Voir évaluation</button>
                     </div>
                 </t>
 
@@ -312,7 +322,7 @@
             <div class="civora-objectifs-tab">
                 <!-- Filter bar -->
                 <div class="civora-filter-bar">
-                    <span class="civora-filter-label">Periode</span>
+                    <span class="civora-filter-label">Période</span>
                     <select class="civora-filter-select">
                         <option>2026</option>
                         <option>2025</option>
@@ -435,17 +445,17 @@
                 <!-- KPI cards -->
                 <div class="civora-kpi-grid-4">
                     <div class="civora-mini-kpi">
-                        <div class="civora-mini-kpi-label">SESSIONS PLANIFIEES</div>
+                        <div class="civora-mini-kpi-label">SESSIONS PLANIFIÉES</div>
                         <div class="civora-mini-kpi-value">4</div>
                         <div class="civora-mini-kpi-hint">5 au total</div>
                     </div>
                     <div class="civora-mini-kpi">
-                        <div class="civora-mini-kpi-label">SESSIONS REALISEES</div>
+                        <div class="civora-mini-kpi-label">SESSIONS RÉALISÉES</div>
                         <div class="civora-mini-kpi-value">1</div>
                         <div class="civora-mini-kpi-hint">16h cumulees</div>
                     </div>
                     <div class="civora-mini-kpi">
-                        <div class="civora-mini-kpi-label">COUVERTURE EQUIPE</div>
+                        <div class="civora-mini-kpi-label">COUVERTURE ÉQUIPE</div>
                         <div class="civora-mini-kpi-value">75%</div>
                         <div class="civora-mini-kpi-hint">6/8 formes</div>
                     </div>
@@ -537,7 +547,7 @@
                                     <th>ROLE</th>
                                     <th>MEMBRES</th>
                                     <th>PERIMETRE</th>
-                                    <th>ACCES</th>
+                                    <th>ACCÈS</th>
                                     <th>NB</th>
                                     <th></th>
                                 </tr>
@@ -582,7 +592,7 @@
         <!-- ============ TAB: ACTIVITE ============ -->
         <t t-if="state.activeTab === 'activite'">
             <div class="civora-activite-tab">
-                <h3 class="civora-table-title">Flux d'activite equipe</h3>
+                <h3 class="civora-table-title">Flux d'activité équipe</h3>
                 <div class="civora-timeline">
                     <t t-foreach="activityFeed" t-as="a" t-key="a_index">
                         <div class="civora-timeline-item">
@@ -601,7 +611,8 @@
 
         <!-- ============ DRAWER ============ -->
         <t t-if="state.showDrawer">
-            <MemberDrawer onClose.bind="closeDrawer" onSaved.bind="onMemberSaved"/>
+            <MemberDialog memberId="state.editMemberId"
+                          onClose.bind="closeDrawer" onSaved.bind="onMemberSaved"/>
         </t>
     </div>
 </t>

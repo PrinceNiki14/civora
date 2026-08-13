@@ -13,15 +13,15 @@ const STATE_LABELS = {
     mandat: "Mandat signe",
     commercialisation: "En commercialisation",
     offre: "Offre recue",
-    compromis: "Compromis signe",
+    compromis: "Compromis signé",
     acte: "Acte en cours",
     cloture: "Cloturee",
-    annule: "Annulee",
+    annule: "Annulée",
 };
 
 const OFFER_LABELS = {
     pending: "En attente",
-    accepted: "Acceptee",
+    accepted: "Acceptée",
     refused: "Refusee",
     withdrawn: "Retiree",
 };

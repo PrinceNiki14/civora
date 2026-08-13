@@ -171,6 +171,10 @@ export class MilestoneDialog extends BaseRecordDialog {
             ["name"], { order: "sequence, id" }
         );
     }
+    /** Vrai si la phase `p` est celle liee a l'echeance. */
+    isPhase(p) {
+        return `${this.state.values.phase_id}` === `${p.id}`;
+    }
     validate() {
         if (!(this.state.values.name || "").trim()) return "Le libellé est obligatoire.";
         const pct = Number(this.state.values.cumulative_pct);

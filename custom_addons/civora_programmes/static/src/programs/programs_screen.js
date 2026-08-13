@@ -87,6 +87,8 @@ export class CivoraProgramsScreen extends Component {
             statusFilter: "tous",
             typeFilter: "tous",
             dialog: { open: false, programId: false },
+            confirmDelete: null,   // { id, name, ref } du programme a supprimer
+            deleting: false,
         });
 
         onWillStart(() => this.load());
@@ -228,15 +230,44 @@ export class CivoraProgramsScreen extends Component {
             target: "current",
         });
     }
+    /** Ouvre le module Pipeline commercial (CRM) de CIVORA. */
     openPipeline() {
         this.action.doAction({
             type: "ir.actions.client",
-            tag: "civora.placeholder",
+            tag: "civora.pipeline",
             target: "current",
         });
     }
     openCreate() {
         this.state.dialog = { open: true, programId: false };
+    }
+    openEdit(p) {
+        this.state.dialog = { open: true, programId: p.id };
+    }
+
+    // --- Suppression (avec confirmation explicite) ----------------------
+    askDelete(p) {
+        this.state.confirmDelete = { id: p.id, name: p.name, ref: p.ref };
+    }
+    cancelDelete() {
+        this.state.confirmDelete = null;
+    }
+    async confirmDelete() {
+        const target = this.state.confirmDelete;
+        if (!target || this.state.deleting) return;
+        this.state.deleting = true;
+        try {
+            await this.orm.unlink("civora.program", [target.id]);
+            this.notification.add(`Programme ${target.name} supprimé`, { type: "success" });
+            this.state.confirmDelete = null;
+            await this.load();
+        } catch (e) {
+            this.notification.add(
+                "Suppression impossible : " + (e.message || e), { type: "danger" }
+            );
+        } finally {
+            this.state.deleting = false;
+        }
     }
     closeDialog() {
         this.state.dialog = { ...this.state.dialog, open: false };

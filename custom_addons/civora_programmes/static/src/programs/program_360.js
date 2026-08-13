@@ -226,6 +226,72 @@ export class CivoraProgram360 extends Component {
         this.state.tab = id;
     }
 
+    // ------------------------------------------------------------------
+    // Colonne laterale de la vue d'ensemble
+    // ------------------------------------------------------------------
+    /** Repartition du stock : une ligne + une barre par statut commercial. */
+    get advancementRows() {
+        const total = this.p.lot_count || 0;
+        const pct = (n) => (total ? Math.round((n / total) * 100) : 0);
+        return [
+            { key: "vendu", label: "Vendus", count: this.p.lot_sold || 0, tone: "accent" },
+            { key: "reserve", label: "Réservés", count: this.p.lot_reserved || 0, tone: "success" },
+            { key: "optionne", label: "Optionnés", count: this.p.lot_optioned || 0, tone: "warning" },
+            { key: "disponible", label: "Disponibles", count: this.p.lot_available || 0, tone: "accent" },
+            { key: "bloque", label: "Bloqués", count: this.p.lot_blocked || 0, tone: "danger" },
+        ].map((r) => ({ ...r, width: pct(r.count) }));
+    }
+
+    /** Icone d'un acteur, choisie d'apres son role. */
+    stakeholderIcon(s) {
+        const role = (s.role || "").toLowerCase();
+        if (role.includes("ouvrage") || role.includes("promoteur")) return "fa-users";
+        if (role.includes("architecte")) return "fa-pencil-square-o";
+        if (role.includes("étude") || role.includes("etude") || role.includes("bet")) return "fa-comments-o";
+        if (role.includes("entreprise") || role.includes("btp")) return "fa-industry";
+        if (role.includes("contrôle") || role.includes("controle")) return "fa-check-square-o";
+        if (role.includes("notaire")) return "fa-gavel";
+        if (role.includes("chantier")) return "fa-wrench";
+        if (role.includes("commercial")) return "fa-handshake-o";
+        return "fa-user-o";
+    }
+
+    /** Premier acteur disposant d'un telephone / email, pour les boutons. */
+    get primaryContact() {
+        const withPhone = this.state.stakeholders.find((s) => s.phone);
+        const withMail = this.state.stakeholders.find((s) => s.email);
+        return { phone: withPhone ? withPhone.phone : "", email: withMail ? withMail.email : "" };
+    }
+
+    /**
+     * Liens rapides. Les deux premiers et le dernier ouvrent les modules
+     * CIVORA correspondants ; la tresorerie et le dossier documentaire
+     * renvoient vers les onglets du programme courant, qui portent la donnee
+     * reelle (les modules Comptabilite et GED globale ne sont pas encore
+     * livres, un lien mort serait pire qu'un raccourci utile).
+     */
+    get quickLinks() {
+        return [
+            { id: "pipeline", icon: "fa-users", label: "Pipeline commercial", action: "civora.pipeline" },
+            { id: "ventes", icon: "fa-file-text-o", label: "Ventes signées", action: "civora.ventes" },
+            { id: "tresorerie", icon: "fa-credit-card", label: "Trésorerie & appels", tab: "calls" },
+            { id: "documents", icon: "fa-folder-open-o", label: "Dossier documentaire", tab: "documents" },
+            { id: "acquereurs", icon: "fa-user-plus", label: "Acquéreurs", action: "civora.buyers" },
+        ];
+    }
+
+    onQuickLink(link) {
+        if (link.tab) {
+            this.setTab(link.tab);
+            return;
+        }
+        this.openClientAction(link.action);
+    }
+
+    openClientAction(tag) {
+        this.action.doAction({ type: "ir.actions.client", tag, target: "current" });
+    }
+
     // --- Formatteurs ---------------------------------------------------
     money(n) {
         return fmtMoneyShort(n) + " FCFA";
@@ -566,6 +632,9 @@ export class CivoraProgram360 extends Component {
     async onProgramSaved() {
         this.closeProgramDialog();
         await this.load();
+    }
+    openPipeline() {
+        this.openClientAction("civora.pipeline");
     }
     backToList() {
         this.action.doAction({

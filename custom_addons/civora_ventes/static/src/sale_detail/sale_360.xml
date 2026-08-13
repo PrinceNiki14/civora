@@ -94,7 +94,7 @@
                             <span class="civora-v"><t t-esc="rec.seller_id ? rec.seller_id[1] : '—'"/></span>
                         </div>
                         <div class="civora-kv">
-                            <span class="civora-k">Acquereur</span>
+                            <span class="civora-k">Acquéreur</span>
                             <span class="civora-v"><t t-esc="rec.buyer_id ? rec.buyer_id[1] : '—'"/></span>
                         </div>
                         <div class="civora-kv">
@@ -117,7 +117,7 @@
                             <span class="civora-v"><t t-esc="rec.conditions_text || '—'"/></span>
                         </div>
                         <div class="civora-kv">
-                            <span class="civora-k">Acte prevu le</span>
+                            <span class="civora-k">Acte prévu le</span>
                             <span class="civora-v"><t t-esc="rec.estimated_acte_date || '—'"/></span>
                         </div>
                         <div class="civora-kv">

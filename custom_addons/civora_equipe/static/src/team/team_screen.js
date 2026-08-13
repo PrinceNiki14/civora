@@ -3,7 +3,7 @@ import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { standardActionServiceProps } from "@web/webclient/actions/action_service";
 import { CivoraStatCard } from "@civora_core/components/civora_stat_card";
-import { MemberDrawer } from "./member_drawer";
+import { MemberDialog } from "./member_drawer";
 
 const TABS = [
     { key: "annuaire", label: "Annuaire" },
@@ -13,13 +13,13 @@ const TABS = [
     { key: "commissions", label: "Commissions" },
     { key: "formation", label: "Formation" },
     { key: "permissions", label: "Permissions" },
-    { key: "activite", label: "Activite" },
+    { key: "activite", label: "Activité" },
 ];
 
 const PRESENCE_LABELS = {
-    present: "Present",
+    present: "Présent",
     en_visite: "En visite",
-    conge: "Conge",
+    conge: "Congé",
     absent: "Absent",
 };
 
@@ -76,7 +76,7 @@ const TRAINING_SESSIONS = [
         id: 1,
         title: "Loi Bail 2024 — mise a jour reglementaire",
         category: "Reglementaire",
-        mode: "Presentiel",
+        mode: "Présentiel",
         hours: 3,
         participants: 3,
         instructor: "Cabinet Assoumou",
@@ -100,7 +100,7 @@ const TRAINING_SESSIONS = [
         id: 3,
         title: "Negociation acheteurs premium",
         category: "Commercial",
-        mode: "Presentiel",
+        mode: "Présentiel",
         hours: 8,
         participants: 3,
         instructor: "Institut Vente Abidjan",
@@ -124,7 +124,7 @@ const TRAINING_SESSIONS = [
         id: 5,
         title: "Certification courtage immobilier",
         category: "Certification",
-        mode: "Presentiel",
+        mode: "Présentiel",
         hours: 40,
         participants: 2,
         instructor: "Chambre des courtiers CI",
@@ -139,7 +139,7 @@ const PERMISSIONS_MATRIX = [
         role: "Administrateur",
         color: "red",
         members: [],
-        perimeter: "Total · acces a toutes les donnees",
+        perimeter: "Total · accès à toutes les données",
         access: 19,
         total: 19,
         count: 0,
@@ -148,7 +148,7 @@ const PERMISSIONS_MATRIX = [
         role: "Manager",
         color: "blue",
         members: ["Mariam Bamba", "Karim Diallo"],
-        perimeter: "Pipeline, equipe, reporting",
+        perimeter: "Pipeline, équipe, reporting",
         access: 18,
         total: 19,
         count: 2,
@@ -166,7 +166,7 @@ const PERMISSIONS_MATRIX = [
         role: "Finance",
         color: "yellow",
         members: ["Jean-Marc Koffi"],
-        perimeter: "Comptabilite, commissions, factures",
+        perimeter: "Comptabilité, commissions, factures",
         access: 12,
         total: 19,
         count: 1,
@@ -201,7 +201,7 @@ const ACTIVITY_FEED = [
     {
         icon: "fa-check-circle",
         iconColor: "green",
-        text: "Aicha Konate — formation Negociation terminee",
+        text: "Aïcha Konaté — formation Négociation terminée",
         time: "il y a 1j",
     },
     {
@@ -213,14 +213,14 @@ const ACTIVITY_FEED = [
     {
         icon: "fa-cog",
         iconColor: "gray",
-        text: "Karim Diallo a mis a jour les permissions Agent",
+        text: "Karim Diallo a mis à jour les permissions Agent",
         time: "il y a 3j",
     },
 ];
 
 export class CivoraTeamScreen extends Component {
     static template = "civora_equipe.TeamScreen";
-    static components = { CivoraStatCard, MemberDrawer };
+    static components = { CivoraStatCard, MemberDialog };
     static props = { ...standardActionServiceProps };
 
     setup() {
@@ -237,6 +237,7 @@ export class CivoraTeamScreen extends Component {
             activeTab: "annuaire",
             search: "",
             showDrawer: false,
+            editMemberId: false,
         });
         onWillStart(() => this.load());
     }
@@ -370,8 +371,18 @@ export class CivoraTeamScreen extends Component {
         });
     }
 
-    openDrawer() { this.state.showDrawer = true; }
-    closeDrawer() { this.state.showDrawer = false; }
+    openDrawer() {
+        this.state.editMemberId = false;
+        this.state.showDrawer = true;
+    }
+    openEditMember(id) {
+        this.state.editMemberId = id;
+        this.state.showDrawer = true;
+    }
+    closeDrawer() {
+        this.state.showDrawer = false;
+        this.state.editMemberId = false;
+    }
     async onMemberSaved() {
         this.state.showDrawer = false;
         await this.load();

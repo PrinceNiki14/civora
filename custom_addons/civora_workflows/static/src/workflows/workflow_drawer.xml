@@ -1,69 +1,296 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
-<t t-name="civora_workflows.WorkflowDrawer">
-    <CivoraDrawer title="drawerTitle" icon="'fa-random'" onClose="props.onClose">
-        <t t-set-slot="default">
-            <div class="civora-drawer-form">
-                <div class="civora-form-section">
-                    <h3>Informations</h3>
-                    <div class="civora-form-row">
-                        <div class="civora-form-group" style="flex:1">
-                            <label>Nom *</label>
-                            <input type="text" class="civora-input" t-att-value="form.name"
-                                   t-on-input="(ev) => this.form.name = ev.target.value"
-                                   placeholder="Ex: Relance impayes J+5..."/>
-                        </div>
-                    </div>
-                    <div class="civora-form-row">
-                        <div class="civora-form-group">
-                            <label>Categorie</label>
-                            <select class="civora-input" t-att-value="form.category"
-                                    t-on-change="(ev) => this.form.category = ev.target.value">
-                                <option value="vente">Vente</option>
-                                <option value="location">Location</option>
-                                <option value="gestion">Gestion</option>
-                                <option value="administratif">Administratif</option>
-                            </select>
-                        </div>
-                        <div class="civora-form-group">
-                            <label>Type de declencheur</label>
-                            <select class="civora-input" t-att-value="form.trigger_type"
-                                    t-on-change="(ev) => this.form.trigger_type = ev.target.value">
-                                <option value="event">Evenement</option>
-                                <option value="schedule">Planifie</option>
-                                <option value="condition">Condition IA</option>
-                                <option value="manual">Manuel</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="civora-form-row">
-                        <div class="civora-form-group" style="flex:1">
-                            <label>Declencheur</label>
-                            <input type="text" class="civora-input" t-att-value="form.trigger_description"
-                                   t-on-input="(ev) => this.form.trigger_description = ev.target.value"
-                                   placeholder="Ex: Loyer non percu, Bail signe..."/>
-                        </div>
-                    </div>
-                </div>
 
-                <div class="civora-form-section">
-                    <h3>Description</h3>
-                    <div class="civora-form-row">
-                        <div class="civora-form-group" style="flex:1">
-                            <textarea class="civora-input" rows="3" t-att-value="form.description"
-                                      t-on-input="(ev) => this.form.description = ev.target.value"
-                                      placeholder="Description du workflow..."/>
-                        </div>
-                    </div>
+<!-- ==================================================================
+     BUILDER
+     ================================================================== -->
+<t t-name="civora_workflows.WorkflowBuilderDialog">
+    <CivoraDrawer variant="'modal'" size="'xl'" icon="'fa-sitemap'"
+                  title="dialogTitle" onClose="props.onClose">
+        <div class="civora-wfb">
+            <t t-if="state.error">
+                <div class="civora-wfb-error"><i class="fa fa-exclamation-triangle"/> <t t-esc="state.error"/></div>
+            </t>
+
+            <div class="civora-wfb-grid2">
+                <div class="civora-wfb-field">
+                    <label>Nom</label>
+                    <input type="text" class="civora-input" placeholder="ex: Relance impayés J+5"
+                           t-att-value="state.values.title"
+                           t-on-input="(ev) => this.update('title', ev)"/>
+                </div>
+                <div class="civora-wfb-field">
+                    <label>Déclencheur</label>
+                    <input type="text" class="civora-input" placeholder="ex: Loyer non perçu"
+                           t-att-value="state.values.trigger_description"
+                           t-on-input="(ev) => this.update('trigger_description', ev)"/>
                 </div>
             </div>
-        </t>
+
+            <div class="civora-wfb-grid2">
+                <div class="civora-wfb-field">
+                    <label>Catégorie</label>
+                    <select class="civora-input" t-on-change="(ev) => this.update('category', ev)">
+                        <t t-foreach="categories" t-as="c" t-key="c.value">
+                            <option t-att-value="c.value" t-att-selected="isCategory(c.value)" t-esc="c.label"/>
+                        </t>
+                    </select>
+                </div>
+                <div class="civora-wfb-field">
+                    <label>Statut</label>
+                    <select class="civora-input" t-on-change="(ev) => this.update('status', ev)">
+                        <t t-foreach="statuses" t-as="s" t-key="s.value">
+                            <option t-att-value="s.value" t-att-selected="isStatus(s.value)" t-esc="s.label"/>
+                        </t>
+                    </select>
+                </div>
+            </div>
+
+            <div class="civora-wfb-grid2">
+                <div class="civora-wfb-field">
+                    <label>Type de déclenchement</label>
+                    <select class="civora-input" t-on-change="(ev) => this.update('trigger_type', ev)">
+                        <t t-foreach="triggerTypes" t-as="t" t-key="t.value">
+                            <option t-att-value="t.value" t-att-selected="isTrigger(t.value)" t-esc="t.label"/>
+                        </t>
+                    </select>
+                </div>
+                <div class="civora-wfb-field">
+                    <label>Temps économisé estimé (h)</label>
+                    <input type="number" min="0" class="civora-input"
+                           t-att-value="state.values.time_saved_hours"
+                           t-on-input="(ev) => this.update('time_saved_hours', ev)"/>
+                    <span class="civora-wfb-hint">Sert au KPI « Temps économisé » de l'écran.</span>
+                </div>
+            </div>
+
+            <div class="civora-wfb-field">
+                <label>Description</label>
+                <textarea class="civora-input" rows="2" placeholder="À quoi sert ce workflow ?"
+                          t-on-input="(ev) => this.update('description', ev)"><t t-esc="state.values.description"/></textarea>
+            </div>
+
+            <div class="civora-wfb-stepshead">
+                <h4>Étapes (<t t-esc="state.steps.length"/>)</h4>
+                <button class="civora-btn civora-btn-outline civora-wfb-addbtn" t-on-click="addStep">
+                    <i class="fa fa-plus"/> Ajouter une étape
+                </button>
+            </div>
+
+            <div class="civora-wfb-steps">
+                <t t-foreach="state.steps" t-as="step" t-key="step.key">
+                    <div class="civora-wfb-step">
+                        <div class="civora-wfb-steprow">
+                            <span class="civora-wfb-stepnum" t-esc="stepIndex(step)"/>
+                            <select class="civora-input civora-wfb-kind"
+                                    t-on-change="(ev) => this.updateStep(step, 'kind', ev)">
+                                <t t-foreach="kinds" t-as="k" t-key="k.value">
+                                    <option t-att-value="k.value" t-att-selected="isKind(step, k.value)" t-esc="k.label"/>
+                                </t>
+                            </select>
+                            <input type="text" class="civora-input civora-wfb-label" placeholder="Libellé de l'étape"
+                                   t-att-value="step.name"
+                                   t-on-input="(ev) => this.updateStep(step, 'name', ev)"/>
+                            <button class="civora-wfb-iconbtn" title="Monter"
+                                    t-on-click="() => this.moveStep(step, -1)"><i class="fa fa-arrow-up"/></button>
+                            <button class="civora-wfb-iconbtn" title="Descendre"
+                                    t-on-click="() => this.moveStep(step, 1)"><i class="fa fa-arrow-down"/></button>
+                            <button class="civora-wfb-iconbtn civora-wfb-iconbtn--danger" title="Supprimer"
+                                    t-on-click="() => this.removeStep(step)"><i class="fa fa-trash-o"/></button>
+                        </div>
+                        <input type="text" class="civora-input civora-wfb-detail" placeholder="Détail (optionnel)"
+                               t-att-value="step.detail"
+                               t-on-input="(ev) => this.updateStep(step, 'detail', ev)"/>
+                    </div>
+                </t>
+                <t t-if="!state.steps.length">
+                    <div class="civora-wfb-empty">Aucune étape. Cliquez sur « Ajouter une étape ».</div>
+                </t>
+            </div>
+        </div>
+
         <t t-set-slot="footer">
-            <button class="civora-btn civora-btn-accent" t-on-click="save">
-                <t t-if="isEdit">Enregistrer</t>
-                <t t-else="">Creer l'automatisation</t>
+            <button class="civora-btn civora-btn-ghost" t-on-click="() => props.onClose()">Annuler</button>
+            <button class="civora-btn civora-btn-accent" t-att-disabled="state.saving" t-on-click="save">
+                <i class="fa fa-check"/> <t t-esc="saveLabel"/>
             </button>
         </t>
     </CivoraDrawer>
 </t>
+
+<!-- ==================================================================
+     BIBLIOTHEQUE DE TEMPLATES
+     ================================================================== -->
+<t t-name="civora_workflows.WorkflowTemplatesDialog">
+    <CivoraDrawer variant="'modal'" size="'xl'" icon="'fa-th-large'"
+                  title="'Bibliothèque de templates'" onClose="props.onClose">
+        <div class="civora-wtpl">
+            <div class="civora-wtpl-tabs">
+                <t t-foreach="categories" t-as="c" t-key="c.value">
+                    <button t-attf-class="civora-wtpl-tab {{ isActiveCat(c.value) ? 'is-active' : '' }}"
+                            t-on-click="() => this.setCategory(c.value)" t-esc="c.label"/>
+                </t>
+            </div>
+
+            <div class="civora-wtpl-grid">
+                <t t-foreach="filtered" t-as="tpl" t-key="tpl.id">
+                    <div t-attf-class="civora-wtpl-card {{ isSuggested(tpl) ? 'is-suggested' : '' }}">
+                        <div class="civora-wtpl-cardhead">
+                            <div class="civora-wtpl-name" t-esc="tpl.name"/>
+                            <span class="civora-wtpl-cat" t-esc="tpl.category_label"/>
+                        </div>
+                        <p class="civora-wtpl-desc" t-esc="tpl.description"/>
+                        <div class="civora-wtpl-meta">
+                            Déclencheur : <t t-esc="tpl.trigger_description"/> · <t t-esc="tpl.step_count"/> étapes
+                        </div>
+                        <div class="civora-wtpl-kinds">
+                            <t t-foreach="tpl.steps" t-as="s" t-key="s.sequence">
+                                <span class="civora-wtpl-kind">
+                                    <i t-attf-class="fa {{ s.icon }}"/> <t t-esc="s.kind_label"/>
+                                </span>
+                            </t>
+                        </div>
+                        <div class="civora-wtpl-actions">
+                            <button class="civora-btn civora-btn-accent" t-on-click="() => this.props.onUse(tpl)">
+                                <i class="fa fa-bolt"/> Utiliser
+                            </button>
+                            <button class="civora-btn civora-btn-outline" t-on-click="() => this.props.onCustomize(tpl)">
+                                Personnaliser
+                            </button>
+                            <span t-if="tpl.deployed" class="civora-wtpl-deployed" title="Déjà déployé dans votre agence">
+                                <i class="fa fa-check-circle"/> déployé
+                            </span>
+                        </div>
+                    </div>
+                </t>
+                <t t-if="!filtered.length">
+                    <div class="civora-wtpl-empty">Aucun modèle dans cette catégorie.</div>
+                </t>
+            </div>
+        </div>
+    </CivoraDrawer>
+</t>
+
+<!-- ==================================================================
+     APERCU
+     ================================================================== -->
+<t t-name="civora_workflows.WorkflowViewDialog">
+    <CivoraDrawer variant="'modal'" size="'lg'" icon="'fa-eye'"
+                  title="w.title" onClose="props.onClose">
+        <div class="civora-wview">
+            <div class="civora-wview-head">
+                <span t-attf-class="civora-wf-badge civora-wf-badge-{{ w.status }}" t-esc="w.status_label"/>
+                <span class="civora-wview-trigger">
+                    Déclencheur : <t t-esc="w.trigger_description or '—'"/> · <t t-esc="w.category_label"/>
+                </span>
+            </div>
+            <p class="civora-wview-desc" t-esc="w.description"/>
+
+            <div class="civora-wview-kpis">
+                <div class="civora-wview-kpi">
+                    <div class="civora-wview-kpilabel"><i class="fa fa-play-circle"/> EXÉCUTIONS</div>
+                    <div class="civora-wview-kpival" t-esc="w.run_count"/>
+                </div>
+                <div class="civora-wview-kpi">
+                    <div class="civora-wview-kpilabel"><i class="fa fa-check-circle"/> SUCCÈS</div>
+                    <div class="civora-wview-kpival"><t t-esc="w.success_rate"/>%</div>
+                </div>
+                <div class="civora-wview-kpi">
+                    <div class="civora-wview-kpilabel"><i class="fa fa-sitemap"/> ÉTAPES</div>
+                    <div class="civora-wview-kpival" t-esc="w.step_count"/>
+                </div>
+                <div class="civora-wview-kpi">
+                    <div class="civora-wview-kpilabel"><i class="fa fa-clock-o"/> TEMPS GAGNÉ</div>
+                    <div class="civora-wview-kpival"><t t-esc="w.time_saved_hours"/>h</div>
+                </div>
+            </div>
+
+            <h4 class="civora-wview-sec">Étapes</h4>
+            <div class="civora-wview-steps">
+                <t t-foreach="w.steps" t-as="s" t-key="s.id">
+                    <div class="civora-wview-step">
+                        <span class="civora-wview-stepnum" t-esc="s_index + 1"/>
+                        <span t-attf-class="civora-wf-kind civora-wf-kind--{{ s.kind }}">
+                            <i t-attf-class="fa {{ s.icon }}"/> <t t-esc="s.kind_label"/>
+                        </span>
+                        <div class="civora-wview-steptxt">
+                            <div class="civora-wview-steplabel" t-esc="s.name"/>
+                            <div t-if="s.detail" class="civora-wview-stepdetail" t-esc="s.detail"/>
+                        </div>
+                    </div>
+                </t>
+                <t t-if="!w.steps.length">
+                    <div class="civora-wtpl-empty">Ce workflow n'a pas encore d'étape.</div>
+                </t>
+            </div>
+
+            <h4 class="civora-wview-sec">Dernières exécutions</h4>
+            <div class="civora-wview-runs">
+                <t t-foreach="w.history" t-as="h" t-key="h.id">
+                    <div class="civora-wview-run">
+                        <i t-attf-class="fa {{ resultIcon(h.result) }} civora-wview-run--{{ resultClass(h.result) }}"/>
+                        <span class="civora-wview-runmsg" t-esc="h.message"/>
+                        <span t-if="h.is_test" class="civora-wview-runtest">test</span>
+                        <span class="civora-wview-rundate" t-esc="h.date_label"/>
+                    </div>
+                </t>
+                <t t-if="!w.history.length">
+                    <div class="civora-wtpl-empty">Aucune exécution enregistrée pour le moment.</div>
+                </t>
+            </div>
+        </div>
+
+        <t t-set-slot="footer">
+            <button class="civora-btn civora-btn-ghost" t-on-click="() => props.onClose()">Fermer</button>
+            <button class="civora-btn civora-btn-accent" t-on-click="() => props.onOpenFull(w.id)">
+                Ouvrir la fiche complète <i class="fa fa-arrow-right"/>
+            </button>
+        </t>
+    </CivoraDrawer>
+</t>
+
+<!-- ==================================================================
+     TEST PAS A PAS
+     ================================================================== -->
+<t t-name="civora_workflows.WorkflowTestDialog">
+    <CivoraDrawer variant="'modal'" size="'md'" icon="'fa-flask'"
+                  title="'Test — ' + props.title"
+                  subtitle="'Exécution simulée du workflow, étape par étape. Aucune donnée réelle n\'est modifiée.'"
+                  onClose="props.onClose">
+        <div class="civora-wtest">
+            <t t-if="state.error">
+                <div class="civora-wfb-error"><i class="fa fa-exclamation-triangle"/> <t t-esc="state.error"/></div>
+            </t>
+            <t t-foreach="state.steps" t-as="s" t-key="s.id">
+                <div t-attf-class="civora-wtest-step {{ isDone(s_index) ? 'is-done' : (isCurrent(s_index) ? 'is-current' : '') }}">
+                    <span class="civora-wtest-ico">
+                        <i t-if="isDone(s_index)" class="fa fa-check-circle"/>
+                        <i t-elif="isCurrent(s_index)" class="fa fa-spinner fa-pulse"/>
+                        <i t-else="" class="fa fa-circle-o"/>
+                    </span>
+                    <div class="civora-wtest-body">
+                        <div class="civora-wtest-line">
+                            <span t-attf-class="civora-wf-kind civora-wf-kind--{{ s.kind }}" t-esc="s.kind_label"/>
+                            <span class="civora-wtest-label" t-esc="s.name"/>
+                        </div>
+                        <div class="civora-wtest-detail" t-esc="s.detail or stepStatus(s_index)"/>
+                    </div>
+                </div>
+            </t>
+        </div>
+
+        <t t-set-slot="footer">
+            <span class="civora-wtest-progress">
+                <t t-if="state.finished">
+                    Terminé — <t t-esc="state.done"/>/<t t-esc="state.steps.length"/> étapes exécutées, exécution ajoutée à l'historique.
+                </t>
+                <t t-else="">
+                    Progression : <t t-esc="state.done"/>/<t t-esc="state.steps.length"/> étapes
+                </t>
+            </span>
+            <button class="civora-btn civora-btn-outline" t-on-click="() => props.onClose()">Fermer</button>
+        </t>
+    </CivoraDrawer>
+</t>
+
 </templates>

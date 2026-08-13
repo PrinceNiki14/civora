@@ -1,9 +1,11 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_workflow_template_user,civora.workflow.template.user,model_civora_workflow_template,base.group_user,1,1,1,0
 access_workflow_template_admin,civora.workflow.template.admin,model_civora_workflow_template,base.group_system,1,1,1,1
-access_workflow_template_step_user,civora.workflow.template.step.user,model_civora_workflow_template_step,base.group_user,1,1,1,0
+access_workflow_template_step_user,civora.workflow.template.step.user,model_civora_workflow_template_step,base.group_user,1,1,1,1
 access_workflow_template_step_admin,civora.workflow.template.step.admin,model_civora_workflow_template_step,base.group_system,1,1,1,1
-access_workflow_user,civora.workflow.user,model_civora_workflow,base.group_user,1,1,1,0
+access_workflow_user,civora.workflow.user,model_civora_workflow,base.group_user,1,1,1,1
 access_workflow_admin,civora.workflow.admin,model_civora_workflow,base.group_system,1,1,1,1
-access_workflow_step_user,civora.workflow.step.user,model_civora_workflow_step,base.group_user,1,1,1,0
+access_workflow_step_user,civora.workflow.step.user,model_civora_workflow_step,base.group_user,1,1,1,1
 access_workflow_step_admin,civora.workflow.step.admin,model_civora_workflow_step,base.group_system,1,1,1,1
+access_workflow_execution_user,civora.workflow.execution.user,model_civora_workflow_execution,base.group_user,1,1,1,1
+access_workflow_execution_admin,civora.workflow.execution.admin,model_civora_workflow_execution,base.group_system,1,1,1,1

@@ -25,9 +25,12 @@ const STATUSES = [
 ];
 
 const DEFAULT_CONTACTS = [
-    { role: "Responsable programme", name: "", phone: "" },
-    { role: "Chef de chantier", name: "", phone: "" },
-    { role: "Responsable commercialisation", name: "", phone: "" },
+    { role: "Maître d'ouvrage", name: "", phone: "", email: "" },
+    { role: "Architecte", name: "", phone: "", email: "" },
+    { role: "Bureau d'études", name: "", phone: "", email: "" },
+    { role: "Entreprise générale", name: "", phone: "", email: "" },
+    { role: "Contrôle technique", name: "", phone: "", email: "" },
+    { role: "Notaire", name: "", phone: "", email: "" },
 ];
 
 const STEP_TITLES = [
@@ -120,7 +123,7 @@ export class ProgramDialog extends Component {
         this.state.selectedAmenities = (rec.amenity_ids || []).slice();
         const contacts = await this.orm.searchRead(
             "civora.program.stakeholder", [["program_id", "=", id]],
-            ["role", "name", "phone"], { order: "sequence, id" }
+            ["role", "name", "phone", "email"], { order: "sequence, id" }
         );
         if (contacts.length) {
             this.state.contacts = contacts.map((c) => ({
@@ -128,6 +131,7 @@ export class ProgramDialog extends Component {
                 role: c.role || "",
                 name: c.name || "",
                 phone: c.phone || "",
+                email: c.email || "",
             }));
         }
     }
@@ -157,7 +161,7 @@ export class ProgramDialog extends Component {
         }
     }
     addContact() {
-        this.state.contacts.push({ role: "", name: "", phone: "" });
+        this.state.contacts.push({ role: "", name: "", phone: "", email: "" });
     }
     removeContact(index) {
         this.state.contacts.splice(index, 1);
@@ -230,6 +234,7 @@ export class ProgramDialog extends Component {
                     role: c.role.trim(),
                     name: c.name || false,
                     phone: c.phone || false,
+                    email: c.email || false,
                 }));
             if (rows.length) {
                 await this.orm.create("civora.program.stakeholder", rows);

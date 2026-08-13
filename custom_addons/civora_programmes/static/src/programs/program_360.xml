@@ -97,45 +97,60 @@
             </div>
 
             <!-- ============ VUE D'ENSEMBLE ============ -->
-            <div t-if="state.tab === 'overview'" class="civora-prg360-pane">
-                <div class="civora-card civora-prg-block">
-                    <div class="civora-prg-block-h">Présentation du programme</div>
-                    <p class="civora-prg-desc" t-esc="p.description or 'Aucune description saisie.'"/>
+            <div t-if="state.tab === 'overview'" class="civora-prg-overview">
 
-                    <div class="civora-prg-deflist">
-                        <div><span>RÉFÉRENCE</span><strong t-esc="p.ref or '—'"/></div>
-                        <div><span>STATUT</span><strong t-esc="statusMeta.label"/></div>
-                        <div><span>LANCEMENT TRAVAUX</span><strong t-esc="monthLabel(p.start_date)"/></div>
-                        <div><span>LIVRAISON PRÉVUE</span><strong t-esc="monthLabel(p.delivery_date)"/></div>
-                        <div><span>BÂTIMENTS</span><strong t-esc="p.building_count or 0"/></div>
-                        <div><span>TOTAL LOTS</span><strong t-esc="totalLots"/></div>
-                        <div><span>RÉGIME</span><strong t-esc="typeLabel"/></div>
-                        <div><span>PERMIS</span><strong t-esc="p.building_permit or '—'"/></div>
+                <!-- Colonne principale -->
+                <div class="civora-prg-ovmain">
+                    <div class="civora-card civora-prg-block">
+                        <div class="civora-prg-block-h">Présentation du programme</div>
+                        <p class="civora-prg-desc" t-esc="p.description or 'Aucune description saisie.'"/>
+
+                        <div class="civora-prg-deflist">
+                            <div><span>RÉFÉRENCE</span><strong t-esc="p.ref or '—'"/></div>
+                            <div><span>STATUT</span><strong t-esc="statusMeta.label"/></div>
+                            <div><span>LANCEMENT TRAVAUX</span><strong t-esc="monthLabel(p.start_date)"/></div>
+                            <div><span>LIVRAISON PRÉVUE</span><strong t-esc="monthLabel(p.delivery_date)"/></div>
+                            <div><span>BÂTIMENTS</span><strong t-esc="p.building_count or 0"/></div>
+                            <div><span>TOTAL LOTS</span><strong t-esc="totalLots"/></div>
+                            <div><span>RÉGIME</span><strong t-esc="typeLabel"/></div>
+                            <div><span>PERMIS DE CONSTRUIRE</span><strong t-esc="p.building_permit or '—'"/></div>
+                            <div t-if="p.notary_office"><span>OFFICE NOTARIAL</span><strong t-esc="p.notary_office"/></div>
+                            <div t-if="p.gfa_reference"><span>GARANTIE (GFA)</span><strong t-esc="p.gfa_reference"/></div>
+                        </div>
+                    </div>
+
+                    <div class="civora-card civora-prg-block">
+                        <div class="civora-prg-block-h">Prestations &amp; équipements</div>
+                        <div t-if="!state.amenities.length" class="civora-prg-muted">
+                            Aucune prestation renseignée — ajoutez-les à l'étape 4 de la fiche programme.
+                        </div>
+                        <div t-else="" class="civora-prg-amenities">
+                            <span t-foreach="state.amenities" t-as="a" t-key="a.id" class="civora-prg-amenity">
+                                <i class="fa fa-check-circle-o"/> <t t-esc="a.name"/>
+                            </span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="civora-card civora-prg-block">
-                    <div class="civora-prg-block-h">Prestations &amp; équipements</div>
-                    <div t-if="!state.amenities.length" class="civora-prg-muted">
-                        Aucune prestation renseignée.
-                    </div>
-                    <div t-else="" class="civora-prgf-taglist">
-                        <span t-foreach="state.amenities" t-as="a" t-key="a.id"
-                              class="civora-prgf-tag is-static">
-                            <i class="fa fa-check"/> <t t-esc="a.name"/>
-                        </span>
-                    </div>
-                </div>
+                <!-- Colonne laterale -->
+                <div class="civora-prg-ovside">
 
-                <div class="civora-prg-cols">
                     <div class="civora-card civora-prg-block">
                         <div class="civora-prg-block-h">Avancement commercial</div>
-                        <div class="civora-prg-adv">
-                            <div><span>Vendus</span><strong t-esc="(p.lot_sold or 0) + ' lots'"/></div>
-                            <div><span>Réservés</span><strong t-esc="(p.lot_reserved or 0) + ' lots'"/></div>
-                            <div><span>Optionnés</span><strong t-esc="(p.lot_optioned or 0) + ' lots'"/></div>
-                            <div><span>Disponibles</span><strong t-esc="(p.lot_available or 0) + ' lots'"/></div>
-                            <div><span>Bloqués</span><strong t-esc="(p.lot_blocked or 0) + ' lots'"/></div>
+                        <div t-if="!p.lot_count" class="civora-prg-muted">
+                            Aucun lot au stock — ajoutez des lots depuis l'onglet « Plan &amp; Lots ».
+                        </div>
+                        <div t-else="" class="civora-prg-adv">
+                            <div t-foreach="advancementRows" t-as="r" t-key="r.key" class="civora-prg-advrow">
+                                <div class="civora-prg-advhead">
+                                    <span t-esc="r.label"/>
+                                    <strong t-esc="r.count + ' lots'"/>
+                                </div>
+                                <div class="civora-pg-track">
+                                    <div class="civora-pg-fill" t-attf-class="civora-pg-{{r.tone}}"
+                                         t-attf-style="width: {{r.width}}%;"/>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -144,22 +159,49 @@
                         <div t-if="!state.stakeholders.length" class="civora-prg-muted">
                             Aucun acteur renseigné — complétez l'étape 4 de la fiche programme.
                         </div>
-                        <div t-else="" class="civora-prg-contacts">
-                            <div t-foreach="state.stakeholders" t-as="s" t-key="s.id"
-                                 class="civora-prg-contactline">
-                                <div>
-                                    <strong t-esc="s.name or s.role"/>
-                                    <div class="civora-prg-muted" t-esc="s.role"/>
-                                </div>
-                                <div class="civora-prg-contactline-act">
-                                    <a t-if="s.phone" t-attf-href="tel:{{s.phone}}" title="Appeler">
-                                        <i class="fa fa-phone"/>
-                                    </a>
-                                    <a t-if="s.email" t-attf-href="mailto:{{s.email}}" title="Email">
-                                        <i class="fa fa-envelope-o"/>
-                                    </a>
+                        <t t-else="">
+                            <div class="civora-prg-actors">
+                                <div t-foreach="state.stakeholders.slice(0, 3)" t-as="s" t-key="s.id"
+                                     class="civora-prg-actor">
+                                    <div class="civora-prg-actor-ico">
+                                        <i t-attf-class="fa {{stakeholderIcon(s)}}"/>
+                                    </div>
+                                    <div class="civora-prg-actor-txt">
+                                        <div class="civora-prg-actor-n" t-esc="s.name or s.role"/>
+                                        <div class="civora-prg-actor-r" t-esc="s.role"/>
+                                    </div>
                                 </div>
                             </div>
+                            <div class="civora-prg-actor-actions">
+                                <a t-if="primaryContact.phone" class="civora-btn civora-btn-primary"
+                                   t-attf-href="tel:{{primaryContact.phone}}">
+                                    <i class="fa fa-phone"/> Appeler
+                                </a>
+                                <button t-else="" class="civora-btn civora-btn-primary" disabled="1"
+                                        title="Aucun téléphone renseigné sur les acteurs du projet">
+                                    <i class="fa fa-phone"/> Appeler
+                                </button>
+                                <a t-if="primaryContact.email" class="civora-btn civora-btn-outline"
+                                   t-attf-href="mailto:{{primaryContact.email}}">
+                                    <i class="fa fa-envelope-o"/> Email
+                                </a>
+                                <button t-else="" class="civora-btn civora-btn-outline" disabled="1"
+                                        title="Aucun email renseigné sur les acteurs du projet">
+                                    <i class="fa fa-envelope-o"/> Email
+                                </button>
+                            </div>
+                        </t>
+                    </div>
+
+                    <div class="civora-card civora-prg-block">
+                        <div class="civora-prg-block-h">Liens rapides</div>
+                        <div class="civora-prg-quicklinks">
+                            <button t-foreach="quickLinks" t-as="l" t-key="l.id"
+                                    class="civora-prg-quicklink" t-on-click="() => this.onQuickLink(l)">
+                                <i t-attf-class="fa {{l.icon}}"/>
+                                <span t-esc="l.label"/>
+                                <i class="fa fa-angle-right civora-prg-quicklink-chev"/>
+                            </button>
                         </div>
                     </div>
                 </div>

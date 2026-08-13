@@ -13,9 +13,9 @@ function fmtMoney(v) {
 const STATE_LABELS = {
     draft: "Brouillon",
     confirmed: "Confirmee",
-    checkin: "En sejour",
-    checkout: "Terminee",
-    cancelled: "Annulee",
+    checkin: "En séjour",
+    checkout: "Terminée",
+    cancelled: "Annulée",
 };
 
 const SOURCE_LABELS = {
@@ -23,13 +23,13 @@ const SOURCE_LABELS = {
     airbnb: "Airbnb",
     booking: "Booking.com",
     whatsapp: "WhatsApp",
-    referral: "Reference",
+    referral: "Référence",
     other: "Autre",
 };
 
 const MONTHS_FR = [
-    "Janvier", "Fevrier", "Mars", "Avril", "Mai", "Juin",
-    "Juillet", "Aout", "Septembre", "Octobre", "Novembre", "Decembre"
+    "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
+    "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"
 ];
 
 class CivoraReservationsScreen extends Component {
@@ -115,10 +115,10 @@ class CivoraReservationsScreen extends Component {
 
     get tabs() {
         return [
-            { key: "reservations", label: "Reservations", count: this.state.reservations.length },
+            { key: "reservations", label: "Réservations", count: this.state.reservations.length },
             { key: "checkins", label: "Check-in aujourd'hui", count: this.state.checkinsToday.length },
-            { key: "cleaning", label: "Menage & maintenance", count: this.state.cleaningTasks.length },
-            { key: "reviews", label: "Avis recents", count: this.state.recentReviews.length },
+            { key: "cleaning", label: "Ménage & maintenance", count: this.state.cleaningTasks.length },
+            { key: "reviews", label: "Avis récents", count: this.state.recentReviews.length },
         ];
     }
 

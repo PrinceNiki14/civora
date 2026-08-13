@@ -216,6 +216,8 @@
                            t-on-input="(ev) => this.setContact(c_index, 'name', ev)"/>
                     <input type="text" placeholder="Téléphone" t-att-value="c.phone"
                            t-on-input="(ev) => this.setContact(c_index, 'phone', ev)"/>
+                    <input type="text" placeholder="Email" t-att-value="c.email"
+                           t-on-input="(ev) => this.setContact(c_index, 'email', ev)"/>
                     <button class="civora-prgf-delbtn" title="Retirer"
                             t-on-click="() => this.removeContact(c_index)">
                         <i class="fa fa-trash-o"/>

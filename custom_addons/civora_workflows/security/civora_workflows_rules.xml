@@ -10,8 +10,13 @@
         <field name="model_id" ref="model_civora_workflow_step"/>
         <field name="domain_force">[('company_id','in',company_ids)]</field>
     </record>
+    <record id="rule_workflow_execution_company" model="ir.rule">
+        <field name="name">Execution workflow : isolation societe</field>
+        <field name="model_id" ref="model_civora_workflow_execution"/>
+        <field name="domain_force">[('company_id','in',company_ids)]</field>
+    </record>
     <record id="rule_workflow_template_company" model="ir.rule">
-        <field name="name">Modele workflow : isolation societe</field>
+        <field name="name">Modele workflow : bibliotheque partagee</field>
         <field name="model_id" ref="model_civora_workflow_template"/>
         <field name="domain_force">['|',('company_id','=',False),('company_id','in',company_ids)]</field>
     </record>

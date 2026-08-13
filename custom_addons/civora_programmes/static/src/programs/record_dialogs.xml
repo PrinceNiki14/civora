@@ -97,7 +97,7 @@
                     <option value="0" t-att-selected="!state.values.phase_id">— Aucun —</option>
                     <option t-foreach="phases" t-as="p" t-key="p.id"
                             t-att-value="p.id"
-                            t-att-selected="Number(state.values.phase_id) === p.id"
+                            t-att-selected="isPhase(p)"
                             t-esc="p.name"/>
                 </select>
             </div>

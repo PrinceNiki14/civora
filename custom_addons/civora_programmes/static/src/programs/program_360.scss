@@ -136,13 +136,13 @@
     p { margin: 4px 0 0; font-size: 12.5px; color: $civora-muted; line-height: 1.6; }
 }
 
-// Liste de definitions (REFERENCE / STATUT / ...).
+// Liste de definitions (REFERENCE / STATUT / ...), sur deux colonnes.
 .civora-prg-deflist {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px 24px;
 
-    @media (max-width: 980px) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    @media (max-width: 640px) { grid-template-columns: 1fr; }
 
     > div {
         display: flex;
@@ -162,23 +162,151 @@
     }
 }
 
-// Avancement commercial.
+// =====================================================================
+// Vue d'ensemble : colonne principale + colonne laterale
+// =====================================================================
+.civora-prg-overview {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(300px, 1fr);
+    align-items: start;
+    gap: 18px;
+
+    @media (max-width: 1100px) { grid-template-columns: 1fr; }
+}
+.civora-prg-ovmain,
+.civora-prg-ovside {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    min-width: 0;
+}
+
+// Prestations : pastilles neutres avec coche.
+.civora-prg-amenities {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+}
+.civora-prg-amenity {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(9, 30, 64, .04);
+    border: 1px solid $civora-border;
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-size: 12.5px;
+    color: $civora-fg;
+
+    i { color: $civora-muted; font-size: 12px; }
+}
+
+// Avancement commercial : libelle + compteur + barre de repartition.
 .civora-prg-adv {
     display: flex;
     flex-direction: column;
+    gap: 14px;
+    margin-top: 14px;
+}
+.civora-prg-advhead {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    font-size: 13px;
+    color: $civora-muted;
+    margin-bottom: 6px;
+
+    strong { color: $civora-fg; font-weight: 700; font-size: 12.5px; }
+}
+
+// Contact projet : acteurs + actions.
+.civora-prg-actors {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin: 16px 0 18px;
+}
+.civora-prg-actor {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.civora-prg-actor-ico {
+    flex: 0 0 auto;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(9, 30, 64, .05);
+    color: $civora-muted;
+    font-size: 14px;
+}
+.civora-prg-actor-txt { min-width: 0; }
+.civora-prg-actor-n {
+    font-weight: 700;
+    font-size: 13.5px;
+    line-height: 1.25;
+}
+.civora-prg-actor-r {
+    font-size: 11.5px;
+    color: $civora-muted;
+    margin-top: 1px;
+}
+.civora-prg-actor-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
 
-    > div {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        border-bottom: 1px dashed $civora-border;
-        padding-bottom: 8px;
-        font-size: 13px;
-        color: $civora-muted;
-        &:last-child { border-bottom: 0; padding-bottom: 0; }
+    .civora-btn {
+        justify-content: center;
+        text-decoration: none;
+        &[disabled] { opacity: .45; cursor: not-allowed; }
     }
-    strong { color: $civora-fg; font-weight: 700; }
+}
+
+// Liens rapides.
+.civora-prg-quicklinks {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+}
+.civora-prg-quicklink {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    border: 0;
+    border-bottom: 1px solid $civora-border;
+    background: transparent;
+    padding: 13px 2px;
+    font-size: 13.5px;
+    color: $civora-fg;
+    font-family: $civora-font;
+    cursor: pointer;
+    text-align: left;
+    transition: color .12s ease;
+
+    &:last-child { border-bottom: 0; }
+    &:hover { color: $civora-accent; }
+
+    > i:first-child { color: $civora-muted; width: 16px; text-align: center; }
+    > span { flex: 1; }
+}
+.civora-prg-quicklink-chev { color: $civora-muted; font-size: 15px; }
+
+// Confirmation de suppression.
+.civora-prg-confirm {
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0 0 10px;
+    strong { font-weight: 700; }
+}
+.civora-drawer-ico--danger {
+    background: rgba(230, 44, 44, .12) !important;
+    color: $civora-danger !important;
 }
 .civora-prg-contacts { display: flex; flex-direction: column; gap: 10px; }
 .civora-prg-contactline {
@@ -773,7 +901,7 @@
 .civora-prgf-contacts { display: flex; flex-direction: column; gap: 8px; }
 .civora-prgf-contact {
     display: grid;
-    grid-template-columns: 1.2fr 1.4fr 1fr auto;
+    grid-template-columns: 1.1fr 1.3fr .9fr 1.2fr auto;
     gap: 8px;
 
     @media (max-width: 760px) { grid-template-columns: 1fr; }

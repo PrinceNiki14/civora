@@ -6,7 +6,7 @@
         <!-- ============ HEADER ============ -->
         <div class="civora-screen-header">
             <div class="civora-screen-title">
-                <h1>Locations saisonnieres</h1>
+                <h1>Locations saisonnières</h1>
                 <span class="civora-screen-subtitle" t-esc="dynamicSubtitle"/>
             </div>
             <div class="civora-screen-actions">
@@ -14,7 +14,7 @@
                     <i class="fa fa-refresh"/> Sync Channels
                 </button>
                 <button class="civora-btn civora-btn-accent" t-on-click="() => this.openDrawer('create')">
-                    + Reservation
+                    + Réservation
                 </button>
             </div>
         </div>
@@ -22,7 +22,7 @@
         <!-- ============ KPIs ============ -->
         <div class="civora-kpi-grid">
             <CivoraStatCard
-                label="'RESERVATIONS ACTIVES'"
+                label="'RÉSERVATIONS ACTIVES'"
                 value="'' + (state.kpis.active || 0)"
                 delta="'+6 cette sem.'"
                 icon="'fa fa-calendar-check-o'"
@@ -34,7 +34,7 @@
                 icon="'fa fa-usd'"
                 trend="'up'"/>
             <CivoraStatCard
-                label="'TAUX D OCCUPATION'"
+                label="&quot;TAUX D'OCCUPATION&quot;"
                 value="(state.kpis.occupation_rate || 0) + '%'"
                 delta="'+5 pts'"
                 icon="'fa fa-line-chart'"
@@ -53,9 +53,9 @@
                 <div class="civora-insight-spark"><i class="fa fa-magic"/></div>
                 <div class="civora-insight-main">
                     <div class="civora-insight-tag">IA · INSIGHT</div>
-                    <div class="civora-insight-title">Pricing dynamique — opportunite weekend</div>
+                    <div class="civora-insight-title">Pricing dynamique — opportunité weekend du 22-23</div>
                     <p class="civora-insight-body">
-                        Forte demande detectee sur Assinie (+38% recherches). Augmenter le tarif nuit Villa Assinie de 180k a 220k FCFA pourrait generer +180k FCFA sur le weekend sans perte d'occupation.
+                        Forte demande détectée sur Assinie (+38% recherches). Augmenter le tarif nuit Villa Assinie de 180k → 220k FCFA pourrait générer +180k FCFA sur le weekend sans perte d'occupation.
                     </p>
                     <div class="civora-insight-action">
                         <button class="civora-btn civora-btn-accent">
@@ -66,21 +66,21 @@
             </div>
         </div>
 
-        <!-- ============ SUPERHOTE STATUS ============ -->
+        <!-- ============ SUPERHÔTE STATUS ============ -->
         <div class="civora-sais-superhote">
             <div class="civora-sais-superhote-header">
                 <div class="civora-sais-superhote-left">
                     <div class="civora-sais-superhote-icon"><i class="fa fa-user-circle-o"/></div>
                     <div>
                         <div class="civora-sais-superhote-title">
-                            Statut Superhote
+                            Statut Superhôte
                             <span class="civora-sais-superhote-badge">Actif · Q4 2025</span>
                         </div>
-                        <div class="civora-sais-superhote-sub">Prochaine evaluation : 1er janv. 2026 · Tous les criteres sont remplis</div>
+                        <div class="civora-sais-superhote-sub">Prochaine évaluation : 1er janv. 2026 · Tous les critères sont remplis</div>
                     </div>
                 </div>
                 <button class="civora-btn civora-btn-outline">
-                    <i class="fa fa-bar-chart"/> Detail scoring
+                    <i class="fa fa-bar-chart"/> Détail scoring
                 </button>
             </div>
             <div class="civora-sais-superhote-grid">
@@ -92,33 +92,33 @@
                 </div>
                 <div class="civora-sais-superhote-stat">
                     <div class="civora-sais-superhote-stat-icon"><i class="fa fa-comment-o"/></div>
-                    <div class="civora-sais-superhote-stat-label">TAUX DE REPONSE</div>
+                    <div class="civora-sais-superhote-stat-label">TAUX DE RÉPONSE</div>
                     <div class="civora-sais-superhote-stat-value">100%</div>
                     <div class="civora-sais-superhote-stat-hint"><i class="fa fa-check"/> sur 30j</div>
                 </div>
                 <div class="civora-sais-superhote-stat">
                     <div class="civora-sais-superhote-stat-icon"><i class="fa fa-clock-o"/></div>
-                    <div class="civora-sais-superhote-stat-label">TEMPS DE REPONSE</div>
+                    <div class="civora-sais-superhote-stat-label">TEMPS DE RÉPONSE</div>
                     <div class="civora-sais-superhote-stat-value">8 min</div>
-                    <div class="civora-sais-superhote-stat-hint"><i class="fa fa-check"/> mediane</div>
+                    <div class="civora-sais-superhote-stat-hint"><i class="fa fa-check"/> médiane</div>
                 </div>
                 <div class="civora-sais-superhote-stat">
                     <div class="civora-sais-superhote-stat-icon"><i class="fa fa-thumbs-up"/></div>
                     <div class="civora-sais-superhote-stat-label">TAUX D'ACCEPTATION</div>
                     <div class="civora-sais-superhote-stat-value">94%</div>
-                    <div class="civora-sais-superhote-stat-hint"><i class="fa fa-check"/> demandes acceptees</div>
+                    <div class="civora-sais-superhote-stat-hint"><i class="fa fa-check"/> demandes acceptées</div>
                 </div>
                 <div class="civora-sais-superhote-stat">
                     <div class="civora-sais-superhote-stat-icon"><i class="fa fa-ban"/></div>
-                    <div class="civora-sais-superhote-stat-label">ANNULATIONS HOTE</div>
+                    <div class="civora-sais-superhote-stat-label">ANNULATIONS HÔTE</div>
                     <div class="civora-sais-superhote-stat-value">0,8%</div>
                     <div class="civora-sais-superhote-stat-hint"><i class="fa fa-check"/> 12 mois glissants</div>
                 </div>
                 <div class="civora-sais-superhote-stat">
                     <div class="civora-sais-superhote-stat-icon"><i class="fa fa-picture-o"/></div>
-                    <div class="civora-sais-superhote-stat-label">COMPLETION ANNONCES</div>
+                    <div class="civora-sais-superhote-stat-label">COMPLÉTION ANNONCES</div>
                     <div class="civora-sais-superhote-stat-value">96%</div>
-                    <div class="civora-sais-superhote-stat-hint"><i class="fa fa-check"/> photos, tags, regles</div>
+                    <div class="civora-sais-superhote-stat-hint"><i class="fa fa-check"/> photos, tags, règles</div>
                 </div>
             </div>
         </div>
@@ -139,15 +139,15 @@
             <div class="civora-filters-bar">
                 <div class="civora-pills">
                     <button t-attf-class="civora-pill {{ state.filter === 'all' ? 'active' : '' }}" t-on-click="() => this.setFilter('all')">Toutes</button>
-                    <button t-attf-class="civora-pill {{ state.filter === 'confirmed' ? 'active' : '' }}" t-on-click="() => this.setFilter('confirmed')">Confirmees</button>
-                    <button t-attf-class="civora-pill {{ state.filter === 'in_stay' ? 'active' : '' }}" t-on-click="() => this.setFilter('in_stay')">En sejour</button>
+                    <button t-attf-class="civora-pill {{ state.filter === 'confirmed' ? 'active' : '' }}" t-on-click="() => this.setFilter('confirmed')">Confirmées</button>
+                    <button t-attf-class="civora-pill {{ state.filter === 'in_stay' ? 'active' : '' }}" t-on-click="() => this.setFilter('in_stay')">En séjour</button>
                     <button t-attf-class="civora-pill {{ state.filter === 'checkin_today' ? 'active' : '' }}" t-on-click="() => this.setFilter('checkin_today')">Check-in du jour</button>
                     <button t-attf-class="civora-pill {{ state.filter === 'checkout_today' ? 'active' : '' }}" t-on-click="() => this.setFilter('checkout_today')">Check-out du jour</button>
-                    <button t-attf-class="civora-pill {{ state.filter === 'upcoming' ? 'active' : '' }}" t-on-click="() => this.setFilter('upcoming')">A venir</button>
+                    <button t-attf-class="civora-pill {{ state.filter === 'upcoming' ? 'active' : '' }}" t-on-click="() => this.setFilter('upcoming')">À venir</button>
                 </div>
                 <div class="civora-search-box">
                     <i class="fa fa-search"/>
-                    <input type="text" placeholder="Rechercher voyageur, bien, reference..." t-on-input="onSearch" t-att-value="state.search"/>
+                    <input type="text" placeholder="Rechercher voyageur, bien, référence…" t-on-input="onSearch" t-att-value="state.search"/>
                 </div>
             </div>
 
@@ -155,12 +155,12 @@
                 <table class="civora-table">
                     <thead>
                         <tr>
-                            <th>Reference</th>
+                            <th>Référence</th>
                             <th>Bien</th>
                             <th>Voyageur</th>
-                            <th>Arrivee</th>
-                            <th>Depart</th>
-                            <th>Nuitees</th>
+                            <th>Arrivée</th>
+                            <th>Départ</th>
+                            <th>Nuitées</th>
                             <th>Tarif/nuit</th>
                             <th>Total</th>
                             <th>Source</th>
@@ -187,7 +187,7 @@
                             </tr>
                         </t>
                         <t t-if="filteredReservations.length === 0">
-                            <tr><td colspan="10" class="civora-empty">Aucune reservation trouvee</td></tr>
+                            <tr><td colspan="10" class="civora-empty">Aucune réservation trouvée</td></tr>
                         </t>
                     </tbody>
                 </table>
@@ -212,16 +212,16 @@
                         </div>
                     </t>
                     <t t-if="!state.checkinsToday.length">
-                        <div class="civora-wf-empty">Aucun check-in prevu aujourd'hui</div>
+                        <div class="civora-wf-empty">Aucun check-in prévu aujourd'hui</div>
                     </t>
                 </div>
             </div>
         </t>
 
-        <!-- ============ TAB: MENAGE & MAINTENANCE ============ -->
+        <!-- ============ TAB: MÉNAGE & MAINTENANCE ============ -->
         <t t-if="state.activeTab === 'cleaning'">
             <div class="civora-sais-checkin-section">
-                <h3 class="civora-sais-section-title">Check-out &amp; menages</h3>
+                <h3 class="civora-sais-section-title">Check-out &amp; ménages</h3>
                 <div class="civora-sais-cleaning-list">
                     <t t-foreach="state.checkoutsAndCleaning" t-as="task" t-key="task.id">
                         <div class="civora-sais-cleaning-card">
@@ -237,7 +237,7 @@
                         </div>
                     </t>
                     <t t-if="!state.checkoutsAndCleaning.length">
-                        <div class="civora-wf-empty">Aucun menage planifie</div>
+                        <div class="civora-wf-empty">Aucun ménage planifié</div>
                     </t>
                 </div>
             </div>
@@ -246,7 +246,7 @@
         <!-- ============ TAB: AVIS RECENTS ============ -->
         <t t-if="state.activeTab === 'reviews'">
             <div class="civora-sais-checkin-section">
-                <h3 class="civora-sais-section-title">Avis recents</h3>
+                <h3 class="civora-sais-section-title">Avis récents</h3>
                 <div class="civora-sais-reviews-list">
                     <t t-foreach="state.recentReviews" t-as="rev" t-key="rev.id">
                         <div class="civora-sais-review-card">

@@ -1,122 +1,111 @@
 /** @odoo-module **/
+/**
+ * Fiche complete d'un workflow.
+ *
+ * A noter : sur la demo Lovable, « Ouvrir la fiche complete » pointe vers
+ * /workflows/<slug> qui re-affiche la liste (la route detail n'existe pas).
+ * On ne reproduit pas ce bug : la fiche existe reellement ici, avec le
+ * detail du graphe, le journal d'execution complet et les actions.
+ */
 import { Component, useState, onWillStart } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { CivoraStatCard } from "@civora_core/components/civora_stat_card";
-
-const STATE_LABELS = {
-    brouillon: "Brouillon",
-    en_cours: "En cours",
-    en_pause: "En pause",
-    termine: "Termine",
-    annule: "Annule",
-};
-
-const STEP_LABELS = {
-    a_faire: "A faire",
-    en_cours: "En cours",
-    termine: "Termine",
-    bloque: "Bloque",
-    annule: "Annule",
-};
-
-const ROLE_LABELS = {
-    agent: "Agent",
-    manager: "Manager",
-    admin: "Admin",
-    notaire: "Notaire",
-    externe: "Externe",
-};
-
-const CATEGORY_LABELS = {
-    vente: "Vente",
-    location: "Location",
-    gestion: "Gestion",
-    administratif: "Administratif",
-};
-
-const PRIORITY_LABELS = {
-    normal: "Normal",
-    urgent: "Urgent",
-    critique: "Critique",
-};
+import { WorkflowBuilderDialog, WorkflowTestDialog } from "../workflows/workflow_drawer";
 
 class CivoraWorkflow360 extends Component {
     static template = "civora_workflows.Workflow360";
-    static components = { CivoraStatCard };
+    static components = { CivoraStatCard, WorkflowBuilderDialog, WorkflowTestDialog };
+    static props = { "*": true };
 
     setup() {
         this.orm = useService("orm");
         this.action = useService("action");
+        this.notification = useService("notification");
         this.workflowId = this.props.action.params?.workflow_id;
         this.state = useState({
-            workflow: null,
-            steps: [],
-            activeTab: "steps",
+            loading: true,
+            wf: null,
+            history: [],
+            tab: "steps",
+            builderOpen: false,
+            testOpen: false,
+            confirmDelete: false,
         });
         onWillStart(() => this.load());
     }
 
     async load() {
-        if (!this.workflowId) return;
-        const [wf] = await this.orm.read("civora.workflow", [this.workflowId], [
-            "name", "title", "template_id", "state", "category", "priority",
-            "assigned_to", "start_date", "deadline", "completed_date",
-            "progress", "step_count", "completed_steps", "reference", "notes",
-        ]);
-        const steps = await this.orm.searchRead("civora.workflow.step", [
-            ["workflow_id", "=", this.workflowId],
-        ], [
-            "name", "description", "sequence", "state", "assigned_to",
-            "responsible_role", "deadline", "completed_date", "is_required", "notes",
-        ], { order: "sequence, id" });
-        this.state.workflow = wf;
-        this.state.steps = steps;
+        if (!this.workflowId) {
+            this.state.loading = false;
+            return;
+        }
+        const data = await this.orm.call("civora.workflow", "get_detail", [this.workflowId]);
+        this.state.wf = data.workflow;
+        this.state.history = data.history || [];
+        this.state.loading = false;
     }
+
+    get w() { return this.state.wf || {}; }
+
+    setTab(t) { this.state.tab = t; }
+    isTab(t) { return `${this.state.tab}` === `${t}`; }
 
     goBack() {
+        this.action.doAction({ type: "ir.actions.client", tag: "civora.workflows", target: "current" });
+    }
+
+    resultClass(r) { return { succes: "ok", partiel: "warn", echec: "ko" }[r] || "ok"; }
+    resultIcon(r) {
+        return { succes: "fa-check-circle", partiel: "fa-exclamation-circle", echec: "fa-times-circle" }[r]
+            || "fa-check-circle";
+    }
+
+    fmtNum(n) {
+        if (!n) return "0";
+        return `${n}`.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+    }
+
+    async toggleStatus() {
+        try {
+            await this.orm.call("civora.workflow", "action_toggle_status", [[this.workflowId]]);
+            await this.load();
+        } catch (e) {
+            this.notification.add(
+                (e && e.data && e.data.message) || "Changement de statut impossible.",
+                { type: "danger" },
+            );
+        }
+    }
+
+    openBuilder() { this.state.builderOpen = true; }
+    closeBuilder() { this.state.builderOpen = false; }
+    async onSaved() {
+        this.state.builderOpen = false;
+        await this.load();
+    }
+
+    openTest() { this.state.testOpen = true; }
+    closeTest() { this.state.testOpen = false; }
+    async onTestDone() { await this.load(); }
+
+    askDelete() { this.state.confirmDelete = true; }
+    cancelDelete() { this.state.confirmDelete = false; }
+    async doDelete() {
+        await this.orm.unlink("civora.workflow", [this.workflowId]);
+        this.notification.add("Workflow supprimé.", { type: "success" });
+        this.goBack();
+    }
+
+    async duplicate() {
+        const id = await this.orm.call("civora.workflow", "action_duplicate", [[this.workflowId]]);
+        this.notification.add("Copie créée en brouillon.", { type: "success" });
         this.action.doAction({
             type: "ir.actions.client",
-            tag: "civora.workflows",
+            tag: "civora.workflow_360",
+            params: { workflow_id: id },
+            target: "current",
         });
-    }
-
-    setTab(t) { this.state.activeTab = t; }
-
-    stateLabel(s) { return STATE_LABELS[s] || s; }
-    stateClass(s) {
-        const m = { brouillon: "muted", en_cours: "info", en_pause: "warning", termine: "success", annule: "danger" };
-        return m[s] || "";
-    }
-    stepLabel(s) { return STEP_LABELS[s] || s; }
-    stepClass(s) {
-        const m = { a_faire: "muted", en_cours: "info", termine: "success", bloque: "danger", annule: "muted" };
-        return m[s] || "";
-    }
-    stepIcon(s) {
-        const m = { a_faire: "fa-circle-o", en_cours: "fa-spinner fa-pulse", termine: "fa-check-circle", bloque: "fa-ban", annule: "fa-times-circle" };
-        return m[s] || "fa-circle-o";
-    }
-    roleLabel(s) { return ROLE_LABELS[s] || s; }
-    categoryLabel(s) { return CATEGORY_LABELS[s] || s; }
-    priorityLabel(s) { return PRIORITY_LABELS[s] || s; }
-    priorityClass(s) {
-        const m = { normal: "muted", urgent: "warning", critique: "danger" };
-        return m[s] || "";
-    }
-
-    progressPercent() {
-        return Math.round(this.state.workflow?.progress || 0);
-    }
-
-    async doAction(method) {
-        await this.orm.call("civora.workflow", method, [[this.workflowId]]);
-        await this.load();
-    }
-
-    async stepAction(stepId, method) {
-        await this.orm.call("civora.workflow.step", method, [[stepId]]);
-        await this.load();
     }
 }
 

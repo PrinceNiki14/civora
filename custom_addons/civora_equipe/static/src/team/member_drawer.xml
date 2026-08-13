@@ -1,72 +1,111 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
-<t t-name="civora_equipe.MemberDrawer">
-    <CivoraDrawer title="'Nouveau membre'" icon="'fa-user-plus'" onClose="props.onClose">
-        <div class="civora-drawer-form">
-            <div class="civora-form-section">
-                <h3>Utilisateur</h3>
-                <div class="civora-form-group">
-                    <label>Utilisateur *</label>
-                    <select class="civora-input" t-on-change="(ev) => this.updateField('user_id', ev)">
-                        <option value="">-- Choisir --</option>
-                        <t t-foreach="state.users" t-as="u" t-key="u.id">
-                            <option t-att-value="u.id"><t t-esc="u.name"/></option>
-                        </t>
+
+<t t-name="civora_equipe.MemberDialog">
+    <CivoraDrawer variant="'modal'" size="'md'" title="title" onClose="() => props.onClose()">
+        <div class="civora-mbf">
+
+            <div class="civora-mbf-field">
+                <label>Nom complet</label>
+                <input type="text" placeholder="ex: Fatou Cissé" t-att-value="state.values.name"
+                       t-on-input="(ev) => this.setField('name', ev)"/>
+            </div>
+
+            <div class="civora-mbf-grid2">
+                <div class="civora-mbf-field">
+                    <label>Poste</label>
+                    <select t-on-change="(ev) => this.setField('role_id', ev)">
+                        <option value="0" t-att-selected="!state.values.role_id">— Non défini —</option>
+                        <option t-foreach="state.roles" t-as="r" t-key="r.id"
+                                t-att-value="r.id"
+                                t-att-selected="isRole(r)"
+                                t-esc="r.name"/>
                     </select>
                 </div>
-            </div>
-
-            <div class="civora-form-section">
-                <h3>Informations</h3>
-                <div class="civora-form-row">
-                    <div class="civora-form-group">
-                        <label>Fonction</label>
-                        <select class="civora-input" t-on-change="(ev) => this.updateField('role_id', ev)">
-                            <option value="">-- Aucune --</option>
-                            <t t-foreach="state.roles" t-as="r" t-key="r.id">
-                                <option t-att-value="r.id"><t t-esc="r.name"/></option>
-                            </t>
-                        </select>
-                    </div>
-                    <div class="civora-form-group">
-                        <label>Departement</label>
-                        <select class="civora-input" t-on-change="(ev) => this.updateField('department', ev)">
-                            <option value="commercial">Commercial</option>
-                            <option value="gestion">Gestion locative</option>
-                            <option value="direction">Direction</option>
-                            <option value="support">Support</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="civora-form-row">
-                    <div class="civora-form-group">
-                        <label>Telephone</label>
-                        <input type="text" class="civora-input" placeholder="+225 ..."
-                               t-on-input="(ev) => this.updateField('phone', ev)"
-                               t-att-value="state.form.phone"/>
-                    </div>
-                    <div class="civora-form-group">
-                        <label>Date d'embauche</label>
-                        <input type="date" class="civora-input"
-                               t-on-input="(ev) => this.updateField('hire_date', ev)"
-                               t-att-value="state.form.hire_date"/>
-                    </div>
+                <div class="civora-mbf-field">
+                    <label>Bureau</label>
+                    <select t-if="!state.customOffice" t-on-change="(ev) => this.onOfficeChange(ev)">
+                        <option t-foreach="state.offices" t-as="o" t-key="o"
+                                t-att-value="o" t-att-selected="state.values.location === o" t-esc="o"/>
+                        <option value="__autre__">Autre bureau…</option>
+                    </select>
+                    <input t-else="" type="text" placeholder="Nom du bureau"
+                           t-att-value="state.values.location"
+                           t-on-input="(ev) => this.setField('location', ev)"/>
                 </div>
             </div>
 
-            <div class="civora-form-section">
-                <h3>Bio</h3>
-                <div class="civora-form-group">
-                    <textarea class="civora-input" rows="3" placeholder="Presentation, specialites..."
-                              t-on-input="(ev) => this.updateField('bio', ev)"
-                              t-att-value="state.form.bio"/>
+            <div class="civora-mbf-grid2">
+                <div class="civora-mbf-field">
+                    <label>Email professionnel</label>
+                    <input type="text" placeholder="prenom.nom@civora.ci" t-att-value="state.values.email"
+                           t-on-input="(ev) => this.setField('email', ev)"/>
+                </div>
+                <div class="civora-mbf-field">
+                    <label>Téléphone</label>
+                    <input type="text" placeholder="+225 07 00 00 00" t-att-value="state.values.phone"
+                           t-on-input="(ev) => this.setField('phone', ev)"/>
                 </div>
             </div>
 
-            <div class="civora-drawer-actions">
-                <button class="civora-btn civora-btn-accent" t-on-click="save">Ajouter le membre</button>
+            <div class="civora-mbf-grid2">
+                <div class="civora-mbf-field">
+                    <label>Statut</label>
+                    <select t-on-change="(ev) => this.setField('presence', ev)">
+                        <option t-foreach="presences" t-as="s" t-key="s.id"
+                                t-att-value="s.id" t-att-selected="state.values.presence === s.id"
+                                t-esc="s.label"/>
+                    </select>
+                </div>
+                <div class="civora-mbf-field">
+                    <label>Depuis (année)</label>
+                    <input type="number" min="1990" max="2100" t-att-value="state.values.hire_year"
+                           t-on-input="(ev) => this.setField('hire_year', ev)"/>
+                </div>
             </div>
+
+            <div class="civora-mbf-legend">Objectifs &amp; performance</div>
+            <div class="civora-mbf-field">
+                <label>Objectif de ventes / mois (FCFA)</label>
+                <input type="number" min="0" t-att-value="state.values.sales_target"
+                       t-on-input="(ev) => this.setField('sales_target', ev)"/>
+                <div class="civora-mbf-hint">Montant mensuel visé en FCFA</div>
+            </div>
+
+            <div class="civora-mbf-legend">Rémunération fixe (FCFA)</div>
+            <div class="civora-mbf-grid2">
+                <div class="civora-mbf-field">
+                    <label>Salaire fixe / mois</label>
+                    <input type="number" min="0" t-att-value="state.values.fixed_salary"
+                           t-on-input="(ev) => this.setField('fixed_salary', ev)"/>
+                </div>
+                <div class="civora-mbf-field">
+                    <label>Bonus (trimestre)</label>
+                    <input type="number" min="0" t-att-value="state.values.quarterly_bonus"
+                           t-on-input="(ev) => this.setField('quarterly_bonus', ev)"/>
+                </div>
+            </div>
+
+            <label class="civora-mbf-access">
+                <input type="checkbox" t-att-checked="state.createAccess"
+                       t-on-change="(ev) => this.toggleAccess(ev)"/>
+                <span>
+                    <strong>Créer un accès CIVORA</strong>
+                    <em>Crée le compte utilisateur à partir de l'email professionnel et
+                        prépare le lien d'invitation à transmettre.</em>
+                </span>
+            </label>
         </div>
+
+        <t t-set-slot="footer">
+            <button class="civora-btn civora-btn-outline" t-on-click="() => props.onClose()">Annuler</button>
+            <button class="civora-btn civora-btn-accent" t-att-disabled="state.saving"
+                    t-on-click="() => this.save()">
+                <i class="fa fa-user-plus"/>
+                <t t-esc="isEdit ? 'Enregistrer' : 'Ajouter le membre'"/>
+            </button>
+        </t>
     </CivoraDrawer>
 </t>
+
 </templates>

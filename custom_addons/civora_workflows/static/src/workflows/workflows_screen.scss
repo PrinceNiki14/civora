@@ -235,13 +235,13 @@
     font-weight: 600;
     white-space: nowrap;
 
-    &.civora-wf-badge-active {
+    &.civora-wf-badge-actif {
         background: rgba($civora-accent, 0.12);
         color: $civora-accent;
     }
     &.civora-wf-badge-pause {
         background: rgba($civora-warning, 0.12);
-        color: darken($civora-warning, 10%);
+        color: #c8860f;
     }
 }
 
@@ -398,4 +398,81 @@
     font-size: 1.1rem;
     flex-shrink: 0;
     margin-top: 2rem;
+}
+
+// ── Ajouts CIVORA : statuts, apercu dynamique, confirmation ──────────
+.civora-wf-badge {
+    &.civora-wf-badge-brouillon {
+        background: rgba(98, 106, 117, .12);
+        color: $civora-muted;
+    }
+}
+
+.civora-wf-builder-node {
+    &.civora-wf-node--action_ia {
+        border-color: rgba(0, 171, 104, .35);
+        background: rgba(0, 171, 104, .05);
+
+        .civora-wf-node-icon { color: $civora-accent; }
+    }
+
+    &.civora-wf-node--declencheur .civora-wf-node-icon { color: $civora-primary; }
+    &.civora-wf-node--condition .civora-wf-node-icon { color: $civora-warning; }
+    &.civora-wf-node--delai .civora-wf-node-icon { color: $civora-info; }
+    &.civora-wf-node--notification .civora-wf-node-icon { color: $civora-danger; }
+}
+
+.civora-wf-builder-pipeline {
+    flex-wrap: wrap;
+    row-gap: .75rem;
+}
+
+.civora-wf-confirm {
+    p { font-size: .9rem; color: $civora-fg; line-height: 1.5; }
+}
+
+.civora-wf-kind {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    padding: .12rem .5rem;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    background: rgba(9, 30, 64, .07);
+    color: $civora-primary;
+    white-space: nowrap;
+
+    &.civora-wf-kind--action_ia { background: rgba(0, 171, 104, .12); color: $civora-accent; }
+    &.civora-wf-kind--condition { background: rgba(239, 168, 49, .15); color: #c8860f; }
+    &.civora-wf-kind--delai { background: rgba(37, 175, 210, .14); color: #1c8ba8; }
+    &.civora-wf-kind--notification { background: rgba(230, 44, 44, .10); color: $civora-danger; }
+    &.civora-wf-kind--declencheur { background: rgba(9, 30, 64, .10); color: $civora-primary; }
+}
+
+// Variantes de boutons utilisees par le module (definies localement pour
+// que civora_workflows reste autonome vis-a-vis des autres modules).
+.civora-btn {
+    &.civora-btn-danger {
+        background: $civora-danger;
+        border-color: $civora-danger;
+        color: #fff;
+
+        &:hover { background: #cc2626; }
+    }
+
+    &.civora-btn-ghost {
+        background: transparent;
+        border-color: transparent;
+        color: $civora-muted;
+
+        &:hover { background: rgba(0, 0, 0, .04); color: $civora-fg; }
+    }
+}
+
+.civora-drawer-ico--danger {
+    background: rgba(230, 44, 44, .12) !important;
+    color: $civora-danger !important;
 }

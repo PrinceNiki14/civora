@@ -6,7 +6,7 @@
         <!-- ============ HEADER ============ -->
         <div class="civora-screen-header">
             <div class="civora-screen-title">
-                <h1>Ventes immobilieres</h1>
+                <h1>Ventes immobilières</h1>
                 <span class="civora-screen-subtitle">Pipeline transactionnel · suivi compromis, actes, commissions</span>
             </div>
             <div class="civora-screen-actions">
@@ -28,13 +28,13 @@
                 icon="'fa fa-line-chart'"
                 trend="'up'"/>
             <CivoraStatCard
-                label="'VOLUME SIGNE YTD'"
+                label="'VOLUME SIGNÉ YTD'"
                 value="fmtMoney(state.kpis.volume_signed) + ' FCFA'"
                 delta="'+18% vs 2025'"
                 icon="'fa fa-handshake-o'"
                 trend="'up'"/>
             <CivoraStatCard
-                label="'COMMISSIONS A VENIR'"
+                label="'COMMISSIONS À VENIR'"
                 value="fmtMoney(state.kpis.commission_total) + ' FCFA'"
                 hint="'moy. ' + (state.kpis.avg_commission_rate || 0) + '%'"
                 icon="'fa fa-percent'"
@@ -53,9 +53,9 @@
                 <div class="civora-insight-spark"><i class="fa fa-magic"/></div>
                 <div class="civora-insight-main">
                     <div class="civora-insight-tag">IA · INSIGHT</div>
-                    <div class="civora-insight-title">3 dossiers a risque dans les 14 prochains jours</div>
+                    <div class="civora-insight-title">3 dossiers à risque dans les 14 prochains jours</div>
                     <p class="civora-insight-body">
-                        VTE-2041 (Villa Riviera Golf) attend le deblocage bancaire depuis 18 jours. VTE-2045 necessite une relance notaire. VTE-2044 a un depot de garantie en retard de 6 jours.
+                        VTE-2041 (Villa Riviera Golf) attend le déblocage bancaire depuis 18 jours. VTE-2045 nécessite une relance notaire. VTE-2044 a un dépôt de garantie en retard de 6 jours.
                     </p>
                     <div class="civora-insight-action">
                         <button class="civora-btn civora-btn-outline">
@@ -70,7 +70,7 @@
         <div class="civora-ventes-search-row">
             <div class="civora-ventes-search-box">
                 <i class="fa fa-search"/>
-                <input type="text" placeholder="Rechercher bien, acquereur, vendeur, commercial..."
+                <input type="text" placeholder="Rechercher bien, acquéreur, vendeur, commercial..."
                        t-on-input="onSearch" t-att-value="state.search"/>
             </div>
             <button class="civora-btn civora-btn-outline">
@@ -147,7 +147,7 @@
                             <th>Ref</th>
                             <th>Bien</th>
                             <th>Vendeur</th>
-                            <th>Acquereur</th>
+                            <th>Acquéreur</th>
                             <th>Prix demande</th>
                             <th>Prix vente</th>
                             <th>Mandat</th>

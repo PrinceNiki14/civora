@@ -339,10 +339,44 @@
 }
 .civora-prg-card-actions {
     display: grid;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: minmax(0, 1fr) auto auto auto;
+    align-items: center;
     gap: 8px;
 
-    .civora-btn { justify-content: center; }
+    .civora-btn { justify-content: center; white-space: nowrap; }
+}
+
+// Boutons icone (modifier / supprimer) au pied des cartes.
+.civora-prg-cardbtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: 1px solid $civora-border;
+    background: $civora-card;
+    color: $civora-muted;
+    border-radius: $civora-radius-sm;
+    cursor: pointer;
+    transition: all .12s ease;
+
+    &:hover { color: $civora-fg; border-color: rgba(9, 30, 64, .22); }
+
+    &--danger:hover {
+        color: $civora-danger;
+        border-color: rgba(230, 44, 44, .35);
+        background: rgba(230, 44, 44, .06);
+    }
+}
+
+// Bouton d'action destructrice (absent du kit civora_core).
+.civora-btn-danger {
+    background: $civora-danger;
+    color: #fff;
+    border: 1px solid $civora-danger;
+
+    &:hover { background: darken($civora-danger, 6%); }
+    &[disabled] { opacity: .6; cursor: not-allowed; }
 }
 .civora-prg-btn-soft {
     background: rgba(0, 171, 104, .10);

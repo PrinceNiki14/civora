@@ -166,6 +166,14 @@
                         <button class="civora-btn civora-prg-btn-soft" t-on-click="() => this.openPipeline()">
                             Pipeline <i class="fa fa-arrow-right"/>
                         </button>
+                        <button class="civora-prg-cardbtn" title="Modifier"
+                                t-on-click="() => this.openEdit(p)">
+                            <i class="fa fa-pencil"/>
+                        </button>
+                        <button class="civora-prg-cardbtn civora-prg-cardbtn--danger" title="Supprimer"
+                                t-on-click="() => this.askDelete(p)">
+                            <i class="fa fa-trash-o"/>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -183,6 +191,7 @@
                         <th class="ta-r">CHANTIER</th>
                         <th class="ta-r">CA SIGNÉ</th>
                         <th class="ta-r">LIVRAISON</th>
+                        <th class="ta-r"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -206,10 +215,60 @@
                         <td class="ta-r"><strong t-esc="(p.works_progress or 0) + '%'"/></td>
                         <td class="ta-r" t-esc="signedLabel(p)"/>
                         <td class="ta-r civora-prg-td-mut" t-esc="deliveryLabel(p)"/>
+                        <td class="ta-r" t-on-click.stop="">
+                            <button class="civora-prg-iconbtn" title="Modifier"
+                                    t-on-click="() => this.openEdit(p)">
+                                <i class="fa fa-pencil"/>
+                            </button>
+                            <button class="civora-prg-iconbtn" title="Supprimer"
+                                    t-on-click="() => this.askDelete(p)">
+                                <i class="fa fa-trash-o"/>
+                            </button>
+                        </td>
                     </tr>
                 </tbody>
             </table>
         </div>
+
+        <!-- Confirmation de suppression -->
+        <t t-if="state.confirmDelete">
+            <div class="civora-drawer-overlay" t-on-click="() => this.cancelDelete()"/>
+            <div class="civora-drawer civora-drawer--modal civora-drawer--sm">
+                <div class="civora-drawer-head">
+                    <div class="civora-drawer-head-txt">
+                        <div class="civora-drawer-ico civora-drawer-ico--danger">
+                            <i class="fa fa-trash-o"/>
+                        </div>
+                        <div class="civora-drawer-head-labels">
+                            <div class="civora-drawer-title">Supprimer le programme</div>
+                            <div class="civora-drawer-sub" t-esc="state.confirmDelete.ref"/>
+                        </div>
+                    </div>
+                    <button class="civora-drawer-close" t-on-click="() => this.cancelDelete()">
+                        <i class="fa fa-times"/>
+                    </button>
+                </div>
+                <div class="civora-drawer-body">
+                    <p class="civora-prg-confirm">
+                        Confirmez-vous la suppression de
+                        <strong t-esc="state.confirmDelete.name"/> ?
+                    </p>
+                    <p class="civora-prg-muted">
+                        Les lots, phases, échéances, appels de fonds, garanties et documents
+                        rattachés à ce programme seront supprimés avec lui. Cette action est
+                        définitive.
+                    </p>
+                </div>
+                <div class="civora-drawer-foot">
+                    <button class="civora-btn civora-btn-outline"
+                            t-on-click="() => this.cancelDelete()">Annuler</button>
+                    <button class="civora-btn civora-btn-danger" t-att-disabled="state.deleting"
+                            t-on-click="() => this.confirmDelete()">
+                        <i class="fa fa-trash-o"/> Supprimer définitivement
+                    </button>
+                </div>
+            </div>
+        </t>
 
         <ProgramDialog t-if="state.dialog.open"
                        programId="state.dialog.programId"
