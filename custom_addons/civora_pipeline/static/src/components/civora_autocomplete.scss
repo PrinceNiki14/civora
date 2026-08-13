@@ -1,0 +1,157 @@
+// =====================================================================
+// CIVORA Autocomplete m2o - composant reutilisable
+// =====================================================================
+.civora-ac {
+    position: relative;
+    font-family: $civora-font;
+    width: 100%;
+
+    .civora-ac-input-wrap {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+    .civora-ac-icon {
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: $civora-muted;
+        font-size: 12px;
+        pointer-events: none;
+        z-index: 1;
+    }
+    .civora-ac-input {
+        width: 100%;
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius-sm;
+        padding: 8px 30px 8px 30px;
+        font-family: $civora-font;
+        font-size: 13px;
+        color: $civora-fg;
+        background: $civora-card;
+        outline: none;
+        &:focus { border-color: $civora-accent; box-shadow: 0 0 0 3px rgba(0, 171, 104, .15); }
+        &:disabled { opacity: .6; cursor: not-allowed; }
+        &::placeholder { color: $civora-muted; }
+    }
+    // Quand un chip couvre le champ, on rend le texte de l'input transparent
+    // pour éviter le double affichage (texte natif noir + chip vert par-dessus).
+    .civora-ac-input-hidden {
+        color: transparent !important;
+        caret-color: transparent;
+        &::placeholder { color: transparent !important; }
+    }
+
+    .civora-ac-chip {
+        position: absolute;
+        left: 28px;
+        right: 30px;
+        top: 50%;
+        transform: translateY(-50%);
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 2px 8px;
+        background: rgba(0, 171, 104, .10);
+        color: $civora-accent;
+        border-radius: 999px;
+        font-size: 12.5px;
+        font-weight: 600;
+        max-width: calc(100% - 8px);
+        pointer-events: auto;
+    }
+    .civora-ac-chip-label {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .civora-ac-chip-x {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        border: 0;
+        background: transparent;
+        color: $civora-accent;
+        cursor: pointer;
+        font-size: 10px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        &:hover { background: rgba(0, 171, 104, .18); }
+    }
+
+    .civora-ac-dropdown {
+        position: absolute;
+        top: calc(100% + 4px);
+        left: 0;
+        right: 0;
+        z-index: 30;
+        background: $civora-card;
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius-sm;
+        box-shadow: $civora-shadow-elevated;
+        max-height: 220px;
+        overflow: auto;
+    }
+    .civora-ac-state {
+        padding: 10px 12px;
+        font-size: 12.5px;
+        color: $civora-muted;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .civora-ac-list {
+        list-style: none;
+        margin: 0;
+        padding: 4px;
+    }
+    .civora-ac-item {
+        padding: 8px 10px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 13px;
+        color: $civora-fg;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        &.is-hl,
+        &:hover { background: rgba(0, 171, 104, .10); }
+    }
+    .civora-ac-item-label {
+        flex: 1;
+        min-width: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .civora-ac-item-ref {
+        display: inline-block;
+        margin-right: 8px;
+        padding: 1px 6px;
+        border-radius: 4px;
+        background: rgba(9, 26, 54, .06);
+        color: $civora-muted;
+        font-family: 'JetBrains Mono', 'Menlo', monospace;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: .01em;
+    }
+    .civora-ac-item-badge {
+        flex: 0 0 auto;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 2px 8px;
+        border-radius: 999px;
+        background: rgba(0, 171, 104, .12);
+        color: $civora-accent;
+        font-size: 10.5px;
+        font-weight: 700;
+        letter-spacing: .02em;
+        text-transform: uppercase;
+        i { font-size: 10px; }
+    }
+}

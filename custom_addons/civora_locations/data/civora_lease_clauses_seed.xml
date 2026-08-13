@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="0">
+
+    <!--
+        Jeu de clauses par défaut : Bail d'habitation longue durée
+        Société = société principale (env.company via ref base.main_company)
+        Les clauses sont créées pour la société principale ; chaque société
+        peut ensuite créer son propre jeu via l'écran Paramétrage.
+    -->
+
+    <!-- ═══ CLAUSES INDIVIDUELLES ════════════════════════════════════════ -->
+
+    <record id="clause_01" model="civora.lease.clause">
+        <field name="name">Objet du contrat</field>
+        <field name="numero">04</field>
+        <field name="sequence">10</field>
+        <field name="lease_type">residentiel</field>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="body"><![CDATA[<p>Le présent contrat est un contrat de bail à usage habitation qui sera régi selon le code de la construction et de l'habitation en vigueur dans le pays de situation du bien.</p>]]></field>
+    </record>
+
+    <record id="clause_02" model="civora.lease.clause">
+        <field name="name">Désignation et description des lieux loués</field>
+        <field name="numero">05</field>
+        <field name="sequence">20</field>
+        <field name="lease_type">residentiel</field>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="body"><![CDATA[<p>Le Bailleur loue au Locataire, qui accepte, le bien immobilier suivant : <strong>{{bien}}</strong>, {{bien_adresse}}.</p><p>La location est consentie pour usage exclusif d'habitation.</p>]]></field>
+    </record>
+
+    <record id="clause_03" model="civora.lease.clause">
+        <field name="name">Durée et Renouvellement</field>
+        <field name="numero">06</field>
+        <field name="sequence">30</field>
+        <field name="lease_type">residentiel</field>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="body"><![CDATA[<p>Le présent bail prend effet à partir du <strong>{{date_debut}}</strong> pour une durée de <strong>{{duree_texte}}</strong>, soit jusqu'au <strong>{{date_fin}}</strong>. Toutefois, le Locataire peut résilier le bail avant son terme dans les conditions prévues à l'article relatif à la résiliation.</p><p>Toute demande de renouvellement ou de prolongation doit être faite par écrit au moins trois (3) mois avant la fin de la période en cours. Le présent contrat ne se renouvelle pas tacitement. Tout renouvellement est soumis à l'accord mutuel et écrit des Parties.</p>]]></field>
+    </record>
+
+    <record id="clause_04" model="civora.lease.clause">
+        <field name="name">Paiement du Loyer</field>
+        <field name="numero">07</field>
+        <field name="sequence">40</field>
+        <field name="lease_type">residentiel</field>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="body"><![CDATA[<p>Le loyer est fixé à <strong>{{loyer_lettres}} ({{loyer}})</strong> payable <strong>{{frequence}}</strong>, d'avance, au plus tard le <strong>{{jour_paiement}}</strong> de chaque mois.</p><p>Le loyer est payable par espèce, virement bancaire, mobile money ou tout autre mode approuvé. Le Bailleur délivrera un reçu pour chaque règlement effectué.</p><p>Après signature du contrat, le locataire doit verser à la signature : <strong>{{total_entree}}</strong> (premier mois + dépôt de garantie).</p><p><strong>Défaut de paiement :</strong> Le présent bail sera résilié de plein droit, sans formalité judiciaire, en cas de non-paiement total du loyer dans un délai de trente (30) jours suivant une mise en demeure écrite demeurée sans effet.</p>]]></field>
+    </record>
+
+    <record id="clause_05" model="civora.lease.clause">
+        <field name="name">Dépôt de Garantie (Caution)</field>
+        <field name="numero">08</field>
+        <field name="sequence">50</field>
+        <field name="lease_type">residentiel</field>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="body"><![CDATA[<p>Le dépôt de garantie est fixé à <strong>{{depot_garantie}}</strong>. Il a pour objet de couvrir les éventuels manquements du Locataire à ses obligations, notamment les réparations locatives, dégradations ou manques constatés à l'inventaire.</p><p>Il sera restitué dans un délai maximal d'un (1) mois après la restitution des clés, sous réserve qu'aucun dommage au-delà de l'usure normale ne soit constaté et que l'appartement soit rendu propre et en bon état.</p>]]></field>
+    </record>
+
+    <record id="clause_06" model="civora.lease.clause">
+        <field name="name">Inventaire et état des lieux</field>
+        <field name="numero">09</field>
+        <field name="sequence">60</field>
+        <field name="lease_type">residentiel</field>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="body"><![CDATA[<p>Un inventaire détaillé du mobilier ainsi qu'un état des lieux d'entrée seront établis contradictoirement lors de la remise des clés. Un état des lieux de sortie sera effectué lors du départ.</p><p>Toute différence, détérioration ou dégradation constatée entre l'état des lieux d'entrée et de sortie, non imputable à l'usure normale, pourra entraîner une retenue totale ou partielle sur le dépôt de garantie, à hauteur des frais de remise en état dûment justifiés.</p>]]></field>
+    </record>
+
+    <record id="clause_07" model="civora.lease.clause">
+        <field name="name">Obligations du Locataire</field>
+        <field name="numero">10</field>
+        <field name="sequence">70</field>
+        <field name="lease_type">residentiel</field>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="body"><![CDATA[<p>Le Locataire s'engage à :</p><ul><li>Occuper les lieux paisiblement et en faire un usage conforme à la destination d'habitation.</li><li>Réparer ou faire réparer les dégradations ou pertes survenues de son fait, de celui de ses invités ou des personnes à sa charge.</li><li>Souscrire une assurance habitation incluant « risques locatifs » et fournir une attestation annuelle au Bailleur.</li><li>Ne procéder à aucune transformation des locaux ou équipements sans accord écrit du Bailleur.</li><li>S'acquitter des frais de gestion immobilière conformément au contrat.</li></ul>]]></field>
+    </record>
+
+    <record id="clause_08" model="civora.lease.clause">
+        <field name="name">Dommages aux meubles et installations</field>
+        <field name="numero">11</field>
+        <field name="sequence">80</field>
+        <field name="lease_type">residentiel</field>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="body"><![CDATA[<p>Le Locataire est responsable des dégradations causées aux meubles, électroménagers, installations et accessoires inventoriés. Le Locataire devra assumer les réparations nécessaires ou le remplacement à l'identique, sur justificatifs (devis ou factures).</p>]]></field>
+    </record>
+
+    <record id="clause_09" model="civora.lease.clause">
+        <field name="name">Obligations du Bailleur</field>
+        <field name="numero">12</field>
+        <field name="sequence">90</field>
+        <field name="lease_type">residentiel</field>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="body"><![CDATA[<p>Le Bailleur s'engage à :</p><ul><li>Mettre à disposition un logement décent et en bon état d'usage.</li><li>Effectuer les réparations importantes autres que locatives.</li><li>Assurer au Locataire la jouissance paisible des lieux.</li></ul>]]></field>
+    </record>
+
+    <record id="clause_10" model="civora.lease.clause">
+        <field name="name">Utilisation du bien</field>
+        <field name="numero">13</field>
+        <field name="sequence">100</field>
+        <field name="lease_type">residentiel</field>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="body"><![CDATA[<p>Le bien est loué exclusivement à des fins résidentielles par les occupants inscrits au contrat. La sous-location, les locations de courte durée (Airbnb, etc.) ou le partage sans autorisation écrite sont strictement interdits. Aucune activité commerciale n'est permise sur les lieux.</p>]]></field>
+    </record>
+
+    <record id="clause_11" model="civora.lease.clause">
+        <field name="name">Entretien et Réparations</field>
+        <field name="numero">14</field>
+        <field name="sequence">110</field>
+        <field name="lease_type">residentiel</field>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="body"><![CDATA[<p>Le Locataire doit maintenir le bien propre et en bon état. Tout dommage ou dysfonctionnement doit être signalé immédiatement au Bailleur ou son mandataire.</p>]]></field>
+    </record>
+
+    <record id="clause_12" model="civora.lease.clause">
+        <field name="name">Mobilier et Équipements</field>
+        <field name="numero">15</field>
+        <field name="sequence">120</field>
+        <field name="lease_type">residentiel</field>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="body"><![CDATA[<p>Le bien est livré conformément à l'inventaire annexé. Le Locataire ne doit pas retirer, remplacer ou vendre le mobilier ou les équipements, ni peindre, percer ou modifier le logement sans autorisation écrite. Tout dommage ou objet manquant sera déduit du dépôt de garantie ou facturé directement.</p>]]></field>
+    </record>
+
+    <record id="clause_13" model="civora.lease.clause">
+        <field name="name">Bruit et Comportement</field>
+        <field name="numero">16</field>
+        <field name="sequence">130</field>
+        <field name="lease_type">residentiel</field>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="body"><![CDATA[<p>Les Locataires doivent respecter le voisinage et les heures de calme (22h – 7h). Les fêtes, musique forte ou comportements dérangeants sont interdits. Toute activité illégale entraînera l'expulsion immédiate et la perte de la caution.</p>]]></field>
+    </record>
+
+    <record id="clause_14" model="civora.lease.clause">
+        <field name="name">Animaux</field>
+        <field name="numero">17</field>
+        <field name="sequence">140</field>
+        <field name="lease_type">residentiel</field>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="body"><![CDATA[<p>Les animaux de compagnie sont autorisés uniquement avec l'accord écrit du Bailleur. Des frais supplémentaires pour le nettoyage ou les dommages peuvent s'appliquer.</p>]]></field>
+    </record>
+
+    <record id="clause_15" model="civora.lease.clause">
+        <field name="name">Responsabilité et Assurance</field>
+        <field name="numero">18</field>
+        <field name="sequence">150</field>
+        <field name="lease_type">residentiel</field>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="body"><![CDATA[<p>Le Bailleur n'est pas responsable de la perte ou du vol des biens personnels du Locataire, ni des accidents ou blessures survenus dans le bien. Il est recommandé au Locataire de souscrire une assurance habitation personnelle couvrant les risques locatifs.</p>]]></field>
+    </record>
+
+    <record id="clause_16" model="civora.lease.clause">
+        <field name="name">Visites du Bailleur</field>
+        <field name="numero">19</field>
+        <field name="sequence">160</field>
+        <field name="lease_type">residentiel</field>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="body"><![CDATA[<p>Le Bailleur pourra accéder au logement une fois par mois au maximum, sous réserve d'un préavis minimum de soixante-douze (72) heures communiqué par écrit, d'un accord préalable du Locataire sur le créneau, et d'une visite réalisée entre 9h et 19h, hors dimanches et jours fériés. En cas d'urgence (fuite, danger), l'accès peut se faire sans préavis.</p>]]></field>
+    </record>
+
+    <record id="clause_17" model="civora.lease.clause">
+        <field name="name">Résiliation</field>
+        <field name="numero">20</field>
+        <field name="sequence">170</field>
+        <field name="lease_type">residentiel</field>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="body"><![CDATA[<p>Le bail peut être résilié à tout moment moyennant un préavis de trente (30) jours, adressé par lettre recommandée, remise en main propre contre signature ou acte d'huissier. Aucune indemnité de résiliation anticipée n'est due du seul fait de l'exercice régulier du droit de congé.</p>]]></field>
+    </record>
+
+    <record id="clause_18" model="civora.lease.clause">
+        <field name="name">Règlement des différends</field>
+        <field name="numero">21</field>
+        <field name="sequence">180</field>
+        <field name="lease_type">residentiel</field>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="body"><![CDATA[<p>En cas de différend relatif à l'interprétation ou à l'exécution du présent contrat, les Parties s'efforceront de rechercher une solution amiable. À défaut d'accord dans un délai de trente (30) jours, la juridiction compétente sera celle du lieu de situation du bien loué, conformément aux lois en vigueur.</p>]]></field>
+    </record>
+
+    <record id="clause_19" model="civora.lease.clause">
+        <field name="name">Clause résolutoire</field>
+        <field name="numero">22</field>
+        <field name="sequence">190</field>
+        <field name="lease_type">residentiel</field>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="body"><![CDATA[<p>Le présent bail pourra être résilié de plein droit en cas d'impayés de loyers ou charges, de non-versement du dépôt de garantie, de défaut d'assurance locative, de troubles du voisinage avérés, de dommages au logement, ou de violation des règles ou activité illégale.</p>]]></field>
+    </record>
+
+    <record id="clause_20" model="civora.lease.clause">
+        <field name="name">Procédure de Départ</field>
+        <field name="numero">23</field>
+        <field name="sequence">200</field>
+        <field name="lease_type">residentiel</field>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="body"><![CDATA[<p>À la fin de la location, le Locataire doit : rendre toutes les clés, retirer ses effets personnels, et laisser le bien propre et dans son état initial. Tout manquement pourra entraîner des frais supplémentaires d'entretien imputés sur le dépôt de garantie.</p>]]></field>
+    </record>
+
+    <record id="clause_21" model="civora.lease.clause">
+        <field name="name">Annexes</field>
+        <field name="numero">24</field>
+        <field name="sequence">210</field>
+        <field name="lease_type">residentiel</field>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="body"><![CDATA[<p>Doivent être annexés au présent contrat :</p><ul><li>Inventaire complet du mobilier et équipements</li><li>État des lieux d'entrée</li><li>Attestation d'assurance (à fournir sous 10 jours suivant la signature)</li></ul>]]></field>
+    </record>
+
+    <record id="clause_22" model="civora.lease.clause">
+        <field name="name">Entrée en vigueur</field>
+        <field name="numero">25</field>
+        <field name="sequence">220</field>
+        <field name="lease_type">residentiel</field>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="body"><![CDATA[<p>Le présent contrat entrera en vigueur à compter de la date de signature, sous réserve de la réception par le Bailleur du paiement correspondant à <strong>{{total_entree}}</strong> (premier mois de loyer + dépôt de garantie), conformément à l'article relatif au paiement du loyer.</p>]]></field>
+    </record>
+
+    <!-- ═══ JEU DE CLAUSES : Bail d'habitation longue durée ═════════════ -->
+
+    <record id="clause_set_habitation" model="civora.lease.clause.set">
+        <field name="name">Bail d'habitation (longue durée)</field>
+        <field name="lease_type">residentiel</field>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="description">Jeu de 22 clauses standard pour bail d'habitation longue durée. Conforme aux dispositions légales en vigueur.</field>
+        <field name="clause_ids" eval="[
+            ref('clause_01'), ref('clause_02'), ref('clause_03'),
+            ref('clause_04'), ref('clause_05'), ref('clause_06'),
+            ref('clause_07'), ref('clause_08'), ref('clause_09'),
+            ref('clause_10'), ref('clause_11'), ref('clause_12'),
+            ref('clause_13'), ref('clause_14'), ref('clause_15'),
+            ref('clause_16'), ref('clause_17'), ref('clause_18'),
+            ref('clause_19'), ref('clause_20'), ref('clause_21'),
+            ref('clause_22'),
+        ]"/>
+    </record>
+
+</odoo>

@@ -1,0 +1,710 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         Page "Contrat introuvable" ou "annulé" ou "expiré"
+         ═══════════════════════════════════════════════════════════ -->
+    <template id="portal_contract_notfound" name="CIVORA - Contrat introuvable">
+        <t t-call="web.frontend_layout">
+            <t t-set="no_header" t-value="True"/>
+            <t t-set="no_footer" t-value="True"/>
+            <div class="civora-portal">
+                <div class="civora-portal-empty">
+                    <div class="civora-portal-empty-ico">
+                        <i class="fa fa-exclamation-circle"/>
+                    </div>
+                    <h1>Contrat inaccessible</h1>
+                    <p t-if="reason == 'not_found'">
+                        Le lien que vous avez utilisé est invalide ou a expiré.
+                        Vérifiez qu'il correspond bien à celui reçu de votre bailleur.
+                    </p>
+                    <p t-elif="reason == 'cancelled'">
+                        Ce contrat a été annulé par le bailleur. Veuillez le contacter
+                        pour plus d'informations.
+                    </p>
+                    <p t-elif="reason == 'expired'">
+                        Ce contrat a expiré. Si vous souhaitez signer un renouvellement,
+                        veuillez contacter votre bailleur.
+                    </p>
+                    <p t-else="">
+                        Le contrat n'est pas disponible.
+                    </p>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         Page principale : consultation + signature
+         ═══════════════════════════════════════════════════════════ -->
+    <template id="portal_contract_sign" name="CIVORA - Signature du contrat">
+        <t t-call="web.frontend_layout">
+            <t t-set="no_header" t-value="True"/>
+            <t t-set="no_footer" t-value="True"/>
+
+            <!-- Head : polices + CSS scoped -->
+            <t t-set="head" t-value="head or ''"/>
+
+            <div class="civora-portal">
+
+                <!-- BARRE SUPÉRIEURE STICKY -->
+                <div class="civora-portal-topbar">
+                    <div class="civora-portal-topbar-inner">
+                        <div class="civora-portal-topbar-brand">
+                            <img t-if="data.get('company_logo')"
+                                 t-att-src="'data:image/png;base64,' + data['company_logo']"
+                                 class="civora-portal-topbar-logo"/>
+                            <div>
+                                <div class="civora-portal-topbar-company"
+                                     t-esc="data['company_name']"/>
+                                <div class="civora-portal-topbar-doc">
+                                    Contrat de bail
+                                    <span class="civora-portal-topbar-ref"
+                                          t-esc="data['name']"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="civora-portal-topbar-actions">
+                            <a t-att-href="'/civora/contract/' + token + '/pdf'"
+                               class="civora-portal-btn civora-portal-btn-outline">
+                                <i class="fa fa-download"/> Télécharger PDF
+                            </a>
+                            <button t-if="not already_signed"
+                                    class="civora-portal-btn civora-portal-btn-accent"
+                                    onclick="document.getElementById('civora-sign-anchor').scrollIntoView({behavior:'smooth'});">
+                                <i class="fa fa-pencil"/> Signer le contrat
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BANDEAU SIGNÉ (si déjà signé) -->
+                <div t-if="already_signed" class="civora-portal-banner-success">
+                    <i class="fa fa-check-circle"/>
+                    <div>
+                        <strong>Ce contrat est signé.</strong>
+                        Vous pouvez le télécharger ci-dessus. Une copie a également été
+                        conservée par le bailleur.
+                    </div>
+                </div>
+
+                <!-- REMARQUES DÉPOSÉES -->
+                <div t-if="remarks" class="civora-portal-remarks">
+                    <div class="civora-portal-remarks-h">
+                        <i class="fa fa-comments-o"/>
+                        <span>Vos remarques</span>
+                        <span t-if="open_remarks" class="civora-portal-remarks-badge"
+                              t-esc="str(open_remarks) + ' en attente'"/>
+                    </div>
+                    <div t-foreach="remarks" t-as="rm"
+                         t-att-class="'civora-portal-remark is-' + rm.state">
+                        <div class="civora-portal-remark-top">
+                            <span class="civora-portal-remark-art" t-esc="rm.section_label"/>
+                            <span t-att-class="'civora-portal-remark-tag is-' + rm.state">
+                                <t t-if="rm.state == 'open'">En attente de réponse</t>
+                                <t t-elif="rm.state == 'accepted'">Acceptée</t>
+                                <t t-else="">Refusée</t>
+                            </span>
+                        </div>
+                        <div class="civora-portal-remark-body" t-esc="rm.body"/>
+                        <div t-if="rm.response" class="civora-portal-remark-answer">
+                            <strong>Réponse de l'agence :</strong>
+                            <span t-esc="rm.response"/>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SIGNATURE BLOQUÉE PAR UNE REMARQUE -->
+                <div t-if="not can_sign and sign_blocked_reason"
+                     class="civora-portal-banner-warn">
+                    <i class="fa fa-hourglass-half"/>
+                    <div>
+                        <strong>Signature en attente.</strong>
+                        <span t-esc="sign_blocked_reason"/>
+                    </div>
+                </div>
+
+                <!-- CONTENU PAPIER -->
+                <div class="civora-portal-content">
+                    <div class="civora-portal-paper">
+
+                        <!-- En-tête -->
+                        <div class="civora-portal-paper-header">
+                            <div class="civora-portal-paper-logo">
+                                <img t-if="data.get('company_logo')"
+                                     t-att-src="'data:image/png;base64,' + data['company_logo']"/>
+                            </div>
+                            <div class="civora-portal-paper-companyname"
+                                 t-esc="data['company_name']"/>
+                        </div>
+                        <div class="civora-portal-paper-divider"/>
+
+                        <!-- Titre -->
+                        <h1 class="civora-portal-paper-title">
+                            Contrat de bail
+                            <t t-if="data['lease_type'] == 'residentiel'"> – Bail d'habitation</t>
+                            <t t-elif="data['lease_type'] == 'commercial'"> – Bail commercial</t>
+                        </h1>
+
+                        <div class="civora-portal-paper-meta">
+                            <span>Réf. : <b t-esc="data['name']"/></span>
+                            <span>Établi le <b t-esc="data['date_issued']"/></span>
+                        </div>
+
+                        <p class="civora-portal-paper-intro">
+                            Le présent contrat de bail est établi entre les parties soussignées,
+                            représentées ci-après, qui reconnaissent en avoir pris connaissance
+                            et en accepter sans réserve les conditions.
+                        </p>
+
+                        <!-- Article 1 : Parties -->
+                        <div class="civora-portal-paper-section">
+                            <div class="civora-portal-paper-section-title">Article 1 — Les parties<button t-if="can_sign or open_remarks" type="button" class="civora-portal-remark-btn" t-att-data-ref="'parties'" t-att-data-label="'Article 1 — Les parties'"><i class="fa fa-comment-o"/> Une remarque ?</button></div>
+                            <div class="civora-portal-paper-party civora-portal-paper-party-lessor">
+                                <div class="civora-portal-paper-party-label">LE BAILLEUR</div>
+                                <div class="civora-portal-paper-party-name"
+                                     t-esc="data['company_name']"/>
+                                <div class="civora-portal-paper-party-info">
+                                    <t t-if="data.get('company_street') or data.get('company_city')">
+                                        <span t-if="data.get('company_street')"
+                                              t-esc="data['company_street']"/>
+                                        <t t-if="data.get('company_city')">,
+                                            <span t-esc="data['company_city']"/>
+                                        </t>
+                                    </t>
+                                    <div t-if="data.get('company_phone')">
+                                        Tél. <t t-esc="data['company_phone']"/>
+                                        <t t-if="data.get('company_email')"> |
+                                            <t t-esc="data['company_email']"/>
+                                        </t>
+                                    </div>
+                                    <div t-if="data.get('company_rccm')"
+                                         t-esc="data['company_rccm']"/>
+                                </div>
+                            </div>
+                            <div class="civora-portal-paper-party civora-portal-paper-party-tenant">
+                                <div class="civora-portal-paper-party-label">LE LOCATAIRE</div>
+                                <div class="civora-portal-paper-party-name"
+                                     t-esc="data['tenant_name']"/>
+                                <div class="civora-portal-paper-party-info">
+                                    <div t-if="data.get('tenant_function')"
+                                         t-esc="data['tenant_function']"/>
+                                    <div t-if="data.get('tenant_phone')">
+                                        Tél. <t t-esc="data['tenant_phone']"/>
+                                        <t t-if="data.get('tenant_email')"> |
+                                            <t t-esc="data['tenant_email']"/>
+                                        </t>
+                                    </div>
+                                </div>
+                            </div>
+                            <p t-if="data.get('owner_name')" class="civora-portal-paper-mention">
+                                Le bien objet du présent contrat est géré par
+                                <b t-esc="data['company_name']"/> pour le compte du propriétaire :
+                                <b t-esc="data['owner_name']"/>.
+                            </p>
+                        </div>
+
+                        <!-- Article 2 : Désignation du bien -->
+                        <div class="civora-portal-paper-section">
+                            <div class="civora-portal-paper-section-title">Article 2 — Désignation du bien<button t-if="can_sign or open_remarks" type="button" class="civora-portal-remark-btn" t-att-data-ref="'bien'" t-att-data-label="'Article 2 — Désignation du bien'"><i class="fa fa-comment-o"/> Une remarque ?</button></div>
+                            <p>Le bailleur donne à bail au locataire, qui accepte, le bien immobilier suivant :
+                                <b t-esc="data['property_name']"/><t t-if="data.get('property_city')">,
+                                    <span t-esc="data['property_city']"/>
+                                </t>.</p>
+                            <p>Nature du bail : <b t-esc="data['lease_type_label']"/></p>
+                        </div>
+
+                        <!-- Article 3 : Conditions financières -->
+                        <div class="civora-portal-paper-section">
+                            <div class="civora-portal-paper-section-title">Article 3 — Conditions financières<button t-if="can_sign or open_remarks" type="button" class="civora-portal-remark-btn" t-att-data-ref="'financier'" t-att-data-label="'Article 3 — Conditions financières'"><i class="fa fa-comment-o"/> Une remarque ?</button></div>
+                            <div class="civora-portal-paper-financial-grid">
+                                <div class="civora-portal-paper-fin-cell">
+                                    <div class="civora-portal-paper-fin-label">Loyer mensuel</div>
+                                    <div class="civora-portal-paper-fin-value" t-esc="data['rent']"/>
+                                </div>
+                                <div class="civora-portal-paper-fin-cell">
+                                    <div class="civora-portal-paper-fin-label">Charges</div>
+                                    <div class="civora-portal-paper-fin-value" t-esc="data['charges']"/>
+                                </div>
+                                <div class="civora-portal-paper-fin-cell">
+                                    <div class="civora-portal-paper-fin-label">Dépôt de garantie</div>
+                                    <div class="civora-portal-paper-fin-value" t-esc="data['deposit']"/>
+                                </div>
+                                <div class="civora-portal-paper-fin-cell">
+                                    <div class="civora-portal-paper-fin-label">Fréquence</div>
+                                    <div class="civora-portal-paper-fin-value">Mensuel</div>
+                                </div>
+                                <div class="civora-portal-paper-fin-cell">
+                                    <div class="civora-portal-paper-fin-label">Date de début</div>
+                                    <div class="civora-portal-paper-fin-value" t-esc="data['date_start']"/>
+                                </div>
+                                <div class="civora-portal-paper-fin-cell">
+                                    <div class="civora-portal-paper-fin-label">Date de fin</div>
+                                    <div class="civora-portal-paper-fin-value" t-esc="data['date_end']"/>
+                                </div>
+                            </div>
+                            <p class="civora-portal-paper-fin-note">
+                                Soit un total mensuel de <b t-esc="data['total_monthly']"/>
+                                (loyer + charges), payable selon la fréquence convenue.
+                            </p>
+                        </div>
+
+                        <!-- Clauses -->
+                        <t t-foreach="data['clauses']" t-as="cl">
+                            <div class="civora-portal-paper-section">
+                                <div class="civora-portal-paper-section-title">
+                                    <t t-if="cl['numero']">Article <t t-esc="cl['numero']"/> — <t t-esc="cl['name']"/></t>
+                                    <t t-else="" t-esc="cl['name']"/>
+                                    <button t-if="can_sign or open_remarks" type="button"
+                                            class="civora-portal-remark-btn"
+                                            t-att-data-ref="'clause-' + str(cl['numero'] or '')"
+                                            t-att-data-label="(cl['numero'] and ('Article ' + str(cl['numero']) + ' — ') or '') + cl['name']">
+                                        <i class="fa fa-comment-o"/> Une remarque ?
+                                    </button>
+                                </div>
+                                <div class="civora-portal-paper-clause-body" t-out="cl['body']"/>
+                            </div>
+                        </t>
+
+                        <!-- Signatures -->
+                        <div class="civora-portal-paper-section" id="civora-sign-anchor">
+                            <div class="civora-portal-paper-section-title">Signatures des parties</div>
+                            <p class="civora-portal-paper-signatures-intro">
+                                Fait à <t t-if="data.get('company_city')">
+                                    <span t-esc="data['company_city']"/>
+                                </t><t t-else="">——</t>, le <t t-esc="data['date_issued']"/>,
+                                en deux exemplaires originaux, dont un remis à chaque partie.
+                            </p>
+                            <div class="civora-portal-paper-signatures-grid">
+
+                                <!-- Bloc bailleur -->
+                                <div class="civora-portal-paper-sign-box">
+                                    <div class="civora-portal-paper-sign-label">LE BAILLEUR</div>
+                                    <div class="civora-portal-paper-sign-name"
+                                         t-esc="data['company_name']"/>
+                                    <div t-if="data.get('signed_by_lessor')"
+                                         class="civora-portal-paper-sign-by">
+                                        Représenté(e) par <t t-esc="data['signed_by_lessor']"/>
+                                    </div>
+                                    <div class="civora-portal-paper-sign-zone">
+                                        <img t-if="data.get('sign_lessor')"
+                                             t-att-src="'data:image/png;base64,' + data['sign_lessor']"
+                                             alt="Signature bailleur"/>
+                                    </div>
+                                    <div t-if="data.get('signed_at_lessor')"
+                                         class="civora-portal-paper-sign-date">
+                                        Signé électroniquement le
+                                        <t t-esc="data['signed_at_lessor']"/>
+                                    </div>
+                                </div>
+
+                                <!-- Bloc locataire (canvas si non signé) -->
+                                <div class="civora-portal-paper-sign-box civora-portal-paper-sign-tenant">
+                                    <div class="civora-portal-paper-sign-label">LE LOCATAIRE</div>
+                                    <div class="civora-portal-paper-sign-name"
+                                         t-esc="data['tenant_name']"/>
+
+                                    <!-- Si déjà signé : image -->
+                                    <t t-if="already_signed">
+                                        <div class="civora-portal-paper-sign-zone">
+                                            <img t-if="data.get('sign_tenant')"
+                                                 t-att-src="'data:image/png;base64,' + data['sign_tenant']"
+                                                 alt="Signature locataire"/>
+                                        </div>
+                                        <div t-if="data.get('signed_at_tenant')"
+                                             class="civora-portal-paper-sign-date">
+                                            Signé électroniquement le
+                                            <t t-esc="data['signed_at_tenant']"/>
+                                        </div>
+                                    </t>
+
+                                    <!-- Signature bloquée par une remarque ouverte -->
+                                    <t t-elif="not can_sign">
+                                        <div class="civora-portal-signpad-locked">
+                                            <i class="fa fa-lock"/>
+                                            <div t-esc="sign_blocked_reason"/>
+                                        </div>
+                                    </t>
+
+                                    <!-- Sinon : zone de signature interactive -->
+                                    <t t-else="">
+                                        <p class="civora-portal-signpad-hint">
+                                            Signez dans le cadre ci-dessous (souris ou doigt),
+                                            puis validez.
+                                        </p>
+                                        <div class="civora-portal-signpad-wrap">
+                                            <canvas id="civora-signpad-canvas"
+                                                    class="civora-portal-signpad-canvas"/>
+                                            <div id="civora-signpad-placeholder"
+                                                 class="civora-portal-signpad-placeholder">
+                                                Signez ici
+                                            </div>
+                                        </div>
+                                        <div class="civora-portal-signpad-actions">
+                                            <button type="button"
+                                                    id="civora-signpad-clear"
+                                                    class="civora-portal-btn civora-portal-btn-ghost">
+                                                <i class="fa fa-eraser"/> Effacer
+                                            </button>
+                                            <button type="button"
+                                                    id="civora-signpad-submit"
+                                                    class="civora-portal-btn civora-portal-btn-accent">
+                                                <i class="fa fa-check"/> Je signe et valide
+                                            </button>
+                                        </div>
+                                        <div id="civora-signpad-msg" class="civora-portal-signpad-msg"/>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <!-- MODALE DE REMARQUE -->
+                <div id="civora-remark-modal" class="civora-portal-modal" style="display:none;">
+                    <div class="civora-portal-modal-backdrop" id="civora-remark-close-bg"/>
+                    <div class="civora-portal-modal-box">
+                        <div class="civora-portal-modal-h">
+                            <div>
+                                <div class="civora-portal-modal-title">Émettre une remarque</div>
+                                <div class="civora-portal-modal-sub" id="civora-remark-article">—</div>
+                            </div>
+                            <button type="button" class="civora-portal-modal-x"
+                                    id="civora-remark-close">
+                                <i class="fa fa-times"/>
+                            </button>
+                        </div>
+                        <div class="civora-portal-modal-body">
+                            <p class="civora-portal-modal-help">
+                                Décrivez ce qui ne vous convient pas dans cet article.
+                                L'agence en sera informée et vous répondra.
+                                <b>Tant qu'une remarque est en attente, la signature reste bloquée.</b>
+                            </p>
+                            <textarea id="civora-remark-body" rows="5"
+                                      class="civora-portal-modal-textarea"
+                                      placeholder="Exemple : le préavis de 3 mois me semble trop long, pouvons-nous convenir de 2 mois ?"/>
+                            <div id="civora-remark-error" class="civora-portal-modal-error"
+                                 style="display:none;"/>
+                        </div>
+                        <div class="civora-portal-modal-f">
+                            <button type="button" class="civora-portal-btn civora-portal-btn-ghost"
+                                    id="civora-remark-cancel">Annuler</button>
+                            <button type="button" class="civora-portal-btn civora-portal-btn-accent"
+                                    id="civora-remark-send">
+                                <i class="fa fa-paper-plane-o"/> Envoyer la remarque
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <script type="text/javascript">
+                    (function () {
+                        var token = "<t t-esc="token"/>";
+                        var modal = document.getElementById('civora-remark-modal');
+                        var artEl = document.getElementById('civora-remark-article');
+                        var bodyEl = document.getElementById('civora-remark-body');
+                        var errEl = document.getElementById('civora-remark-error');
+                        var sendBtn = document.getElementById('civora-remark-send');
+                        if (!modal) return;
+                        var current = { ref: '', label: '' };
+
+                        function open(ref, label) {
+                            current = { ref: ref || '', label: label || 'Contrat' };
+                            artEl.textContent = current.label;
+                            bodyEl.value = '';
+                            errEl.style.display = 'none';
+                            modal.style.display = 'flex';
+                            setTimeout(function () { bodyEl.focus(); }, 50);
+                        }
+                        function close() { modal.style.display = 'none'; }
+
+                        Array.prototype.forEach.call(
+                            document.querySelectorAll('.civora-portal-remark-btn'),
+                            function (b) {
+                                b.addEventListener('click', function () {
+                                    open(b.getAttribute('data-ref'), b.getAttribute('data-label'));
+                                });
+                            }
+                        );
+                        ['civora-remark-close', 'civora-remark-cancel', 'civora-remark-close-bg']
+                            .forEach(function (id) {
+                                var el = document.getElementById(id);
+                                if (el) el.addEventListener('click', close);
+                            });
+
+                        sendBtn.addEventListener('click', function () {
+                            var txt = (bodyEl.value || '').trim();
+                            if (txt.length &lt; 5) {
+                                errEl.textContent = 'Merci de détailler votre remarque.';
+                                errEl.style.display = 'block';
+                                return;
+                            }
+                            sendBtn.disabled = true;
+                            sendBtn.innerHTML = 'Envoi…';
+                            var fd = new FormData();
+                            fd.append('body', txt);
+                            fd.append('section_ref', current.ref);
+                            fd.append('section_label', current.label);
+                            fetch('/civora/contract/' + token + '/remark',
+                                  { method: 'POST', body: fd })
+                                .then(function (r) { return r.json(); })
+                                .then(function (res) {
+                                    if (res.ok) { window.location.reload(); return; }
+                                    errEl.textContent = res.error || 'Envoi impossible.';
+                                    errEl.style.display = 'block';
+                                    sendBtn.disabled = false;
+                                    sendBtn.innerHTML = 'Envoyer la remarque';
+                                })
+                                .catch(function () {
+                                    errEl.textContent = 'Connexion interrompue. Réessayez.';
+                                    errEl.style.display = 'block';
+                                    sendBtn.disabled = false;
+                                    sendBtn.innerHTML = 'Envoyer la remarque';
+                                });
+                        });
+                    })();
+                </script>
+
+            </div>
+
+            <!-- Script signature -->
+            <script t-if="not already_signed" type="text/javascript">
+                (function() {
+                    var canvas = document.getElementById('civora-signpad-canvas');
+                    var placeholder = document.getElementById('civora-signpad-placeholder');
+                    var clearBtn = document.getElementById('civora-signpad-clear');
+                    var submitBtn = document.getElementById('civora-signpad-submit');
+                    var msgEl = document.getElementById('civora-signpad-msg');
+                    if (!canvas) return;
+
+                    // Ajuster canvas au conteneur
+                    function resize() {
+                        var w = canvas.offsetWidth;
+                        var h = canvas.offsetHeight;
+                        canvas.width = w;
+                        canvas.height = h;
+                        ctx.strokeStyle = '#091a36';
+                        ctx.lineWidth = 2.5;
+                        ctx.lineCap = 'round';
+                        ctx.lineJoin = 'round';
+                    }
+                    var ctx = canvas.getContext('2d');
+                    resize();
+                    window.addEventListener('resize', resize);
+
+                    var drawing = false;
+                    var hasSignature = false;
+
+                    function getPos(e) {
+                        var rect = canvas.getBoundingClientRect();
+                        var src = e.touches ? e.touches[0] : e;
+                        return { x: src.clientX - rect.left, y: src.clientY - rect.top };
+                    }
+                    function down(e) {
+                        e.preventDefault();
+                        drawing = true;
+                        var p = getPos(e);
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y);
+                    }
+                    function move(e) {
+                        if (!drawing) return;
+                        e.preventDefault();
+                        var p = getPos(e);
+                        ctx.lineTo(p.x, p.y);
+                        ctx.stroke();
+                        if (!hasSignature) {
+                            hasSignature = true;
+                            if (placeholder) placeholder.style.display = 'none';
+                        }
+                    }
+                    function up() { drawing = false; }
+
+                    canvas.addEventListener('mousedown', down);
+                    canvas.addEventListener('mousemove', move);
+                    canvas.addEventListener('mouseup', up);
+                    canvas.addEventListener('mouseleave', up);
+                    canvas.addEventListener('touchstart', down);
+                    canvas.addEventListener('touchmove', move);
+                    canvas.addEventListener('touchend', up);
+
+                    clearBtn.addEventListener('click', function() {
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        hasSignature = false;
+                        if (placeholder) placeholder.style.display = '';
+                        msgEl.textContent = '';
+                        msgEl.className = 'civora-portal-signpad-msg';
+                    });
+
+                    submitBtn.addEventListener('click', function() {
+                        if (!hasSignature) {
+                            msgEl.textContent = 'Veuillez apposer votre signature avant de valider.';
+                            msgEl.className = 'civora-portal-signpad-msg is-warning';
+                            return;
+                        }
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML = '<i class="fa fa-circle-o-notch fa-spin"/> Enregistrement…';
+                        var dataUrl = canvas.toDataURL('image/png');
+                        var formData = new FormData();
+                        formData.append('signature', dataUrl);
+                        fetch(window.location.pathname + '/sign', {
+                            method: 'POST',
+                            body: formData,
+                        }).then(function(r) { return r.json(); })
+                          .then(function(res) {
+                              if (res.ok) {
+                                  msgEl.textContent = 'Signature enregistrée. Rechargement…';
+                                  msgEl.className = 'civora-portal-signpad-msg is-success';
+                                  setTimeout(function() {
+                                      window.location.href = res.redirect || window.location.href;
+                                  }, 800);
+                              } else {
+                                  msgEl.textContent = res.error || 'Erreur lors de la signature.';
+                                  msgEl.className = 'civora-portal-signpad-msg is-error';
+                                  submitBtn.disabled = false;
+                                  submitBtn.innerHTML = '<i class="fa fa-check"/> Je signe et valide';
+                              }
+                          }).catch(function(e) {
+                              msgEl.textContent = 'Erreur réseau : ' + e.message;
+                              msgEl.className = 'civora-portal-signpad-msg is-error';
+                              submitBtn.disabled = false;
+                              submitBtn.innerHTML = '<i class="fa fa-check"/> Je signe et valide';
+                          });
+                    });
+                })();
+            </script>
+        </t>
+
+    </template>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         Accusé de signature : /civora/contract/<token>/confirmation
+         ══════════════════════════════════════════════════════════════ -->
+    <template id="portal_contract_signed" name="CIVORA - Contrat signé">
+        <t t-call="web.frontend_layout">
+            <t t-set="no_header" t-value="True"/>
+            <t t-set="no_footer" t-value="True"/>
+
+            <div class="civora-portal">
+                <div class="civora-portal-done">
+
+                    <div class="civora-portal-done-card" id="civora-done-card">
+
+                        <!-- ÉTAT 1 : signature confirmée -->
+                        <div id="civora-done-step1">
+                            <div class="civora-portal-done-ico">
+                                <i class="fa fa-check"/>
+                            </div>
+                            <h1 class="civora-portal-done-title">Contrat signé</h1>
+                            <p class="civora-portal-done-lead">
+                                Votre signature a bien été enregistrée. Le contrat
+                                <b t-esc="data['name']"/> est désormais valide et engage
+                                les deux parties.
+                            </p>
+
+                            <div class="civora-portal-done-receipt">
+                                <div class="civora-portal-done-receipt-h">
+                                    Justificatif de signature électronique
+                                </div>
+                                <div class="civora-portal-done-row">
+                                    <span>Signataire</span><strong t-esc="tenant_name"/>
+                                </div>
+                                <div class="civora-portal-done-row">
+                                    <span>Contrat</span><strong t-esc="data['name']"/>
+                                </div>
+                                <div class="civora-portal-done-row" t-if="signed_date">
+                                    <span>Date et heure</span><strong t-esc="signed_date"/>
+                                </div>
+                                <div class="civora-portal-done-row" t-if="signed_ip">
+                                    <span>Adresse IP</span><strong t-esc="signed_ip"/>
+                                </div>
+                                <div class="civora-portal-done-row">
+                                    <span>Bailleur</span><strong t-esc="data['company_name']"/>
+                                </div>
+                            </div>
+
+                            <p class="civora-portal-done-hint">
+                                Conservez une copie de ce contrat. Une copie signée est
+                                également archivée par l'agence.
+                            </p>
+
+                            <a t-att-href="'/civora/contract/' + token + '/pdf'"
+                               id="civora-done-dl"
+                               class="civora-portal-btn civora-portal-btn-accent civora-portal-btn-lg">
+                                <i class="fa fa-download"/> Télécharger mon contrat
+                            </a>
+                        </div>
+
+                        <!-- ÉTAT 2 : téléchargement démarré -->
+                        <div id="civora-done-step2" style="display:none;">
+                            <div class="civora-portal-done-ico is-thanks">
+                                <i class="fa fa-heart"/>
+                            </div>
+                            <h1 class="civora-portal-done-title">Merci, tout est en ordre</h1>
+                            <p class="civora-portal-done-lead">
+                                Votre contrat a été téléchargé. Vous en êtes désormais
+                                détenteur, au même titre que
+                                <b t-esc="data['company_name']"/>.
+                            </p>
+                            <div class="civora-portal-done-thanks">
+                                <p>
+                                    Nous vous souhaitons une excellente installation.
+                                    Pour toute question sur votre bail, votre agence
+                                    reste votre interlocuteur.
+                                </p>
+                            </div>
+                            <a t-att-href="'/civora/contract/' + token + '/pdf'"
+                               class="civora-portal-btn civora-portal-btn-ghost">
+                                <i class="fa fa-refresh"/> Télécharger à nouveau
+                            </a>
+                        </div>
+
+                    </div>
+
+                    <div class="civora-portal-done-foot">
+                        <span t-esc="data['company_name']"/>
+                        <t t-if="data.get('company_city')"> · <span t-esc="data['company_city']"/></t>
+                    </div>
+                </div>
+            </div>
+
+            <script type="text/javascript">
+                (function () {
+                    var cookieName = "<t t-esc="dl_cookie"/>";
+                    var btn = document.getElementById('civora-done-dl');
+                    var s1 = document.getElementById('civora-done-step1');
+                    var s2 = document.getElementById('civora-done-step2');
+                    if (!btn) return;
+
+                    function hasCookie() {
+                        return document.cookie.split(';').some(function (c) {
+                            return c.trim().indexOf(cookieName + '=') === 0;
+                        });
+                    }
+                    function clearCookie() {
+                        document.cookie = cookieName + '=; Max-Age=0; path=/';
+                    }
+                    function done() {
+                        clearCookie();
+                        s1.style.display = 'none';
+                        s2.style.display = 'block';
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+
+                    btn.addEventListener('click', function () {
+                        // Le serveur pose un cookie au moment ou il envoie le
+                        // fichier : on detecte ainsi le demarrage reel du
+                        // telechargement, plutot qu'un minuteur a l'aveugle.
+                        var tries = 0;
+                        var timer = setInterval(function () {
+                            tries++;
+                            if (hasCookie()) { clearInterval(timer); done(); }
+                            else if (tries > 40) { clearInterval(timer); done(); }
+                        }, 400);
+                    });
+                })();
+            </script>
+        </t>
+    </template>
+
+</odoo>

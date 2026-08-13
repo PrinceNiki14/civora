@@ -6,6 +6,7 @@
         <field name="company_id" eval="False"/>
         <field name="name">Villa</field>
         <field name="code">villa</field>
+        <field name="reference_prefix">VIL</field>
         <field name="color">#00ab68</field>
         <field name="sequence">10</field>
     </record>
@@ -13,6 +14,7 @@
         <field name="company_id" eval="False"/>
         <field name="name">Appartement</field>
         <field name="code">appartement</field>
+        <field name="reference_prefix">APP</field>
         <field name="color">#2563eb</field>
         <field name="sequence">20</field>
     </record>
@@ -20,6 +22,7 @@
         <field name="company_id" eval="False"/>
         <field name="name">Studio</field>
         <field name="code">studio</field>
+        <field name="reference_prefix">STU</field>
         <field name="color">#25afd2</field>
         <field name="sequence">30</field>
     </record>
@@ -27,6 +30,7 @@
         <field name="company_id" eval="False"/>
         <field name="name">Bureau</field>
         <field name="code">bureau</field>
+        <field name="reference_prefix">BUR</field>
         <field name="color">#091e40</field>
         <field name="sequence">40</field>
     </record>
@@ -34,6 +38,7 @@
         <field name="company_id" eval="False"/>
         <field name="name">Local commercial</field>
         <field name="code">local_commercial</field>
+        <field name="reference_prefix">LOC</field>
         <field name="color">#efa831</field>
         <field name="sequence">50</field>
     </record>
@@ -41,8 +46,36 @@
         <field name="company_id" eval="False"/>
         <field name="name">Terrain</field>
         <field name="code">terrain</field>
+        <field name="reference_prefix">TER</field>
         <field name="color">#9260da</field>
         <field name="sequence">60</field>
+    </record>
+
+    <record id="ptype_immeuble" model="civora.property.type">
+        <field name="company_id" eval="False"/>
+        <field name="name">Immeuble</field>
+        <field name="code">immeuble</field>
+        <field name="reference_prefix">IMM</field>
+        <field name="color">#091a36</field>
+        <field name="sequence">70</field>
+    </record>
+
+    <record id="ptype_duplex" model="civora.property.type">
+        <field name="company_id" eval="False"/>
+        <field name="name">Duplex</field>
+        <field name="code">duplex</field>
+        <field name="reference_prefix">DUP</field>
+        <field name="color">#00ab68</field>
+        <field name="sequence">80</field>
+    </record>
+
+    <record id="ptype_entrepot" model="civora.property.type">
+        <field name="company_id" eval="False"/>
+        <field name="name">Entrepôt</field>
+        <field name="code">entrepot</field>
+        <field name="reference_prefix">ENT</field>
+        <field name="color">#6b7a94</field>
+        <field name="sequence">90</field>
     </record>
 
 </odoo>

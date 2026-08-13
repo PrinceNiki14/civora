@@ -146,3 +146,387 @@
         .civora-grid-4 { grid-template-columns: repeat(2, 1fr); }
     }
 }
+
+// =====================================================================
+// v10.0.0 — Toolbar filtres + Kanban + Sortable columns + Load more
+// =====================================================================
+
+.civora-contacts .civora-cc-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+.civora-contacts .civora-cc-toolbar-l {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 300px;
+}
+.civora-contacts .civora-cc-toolbar-r {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.civora-contacts .civora-cc-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 14px;
+    background: $civora-card;
+    border: 1px solid $civora-border;
+    border-radius: $civora-radius-sm;
+    height: 36px;
+    flex: 1;
+    min-width: 250px;
+    i { color: $civora-muted; font-size: 12px; }
+    input {
+        flex: 1;
+        border: 0;
+        outline: none;
+        background: transparent;
+        font-family: $civora-font;
+        font-size: 13px;
+        color: $civora-fg;
+        &::placeholder { color: $civora-muted; }
+    }
+}
+
+.civora-contacts .civora-cc-filters-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 36px;
+    padding: 0 14px;
+    background: $civora-card;
+    border: 1px solid $civora-border;
+    border-radius: $civora-radius-sm;
+    color: $civora-fg;
+    font-family: $civora-font;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .12s ease;
+    &:hover { border-color: $civora-accent; }
+    &.is-active {
+        border-color: $civora-accent;
+        color: $civora-accent;
+        background: rgba(0, 171, 104, .06);
+    }
+}
+.civora-contacts .civora-cc-filters-badge {
+    display: inline-block;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 6px;
+    line-height: 18px;
+    text-align: center;
+    background: $civora-accent;
+    color: white;
+    font-size: 10.5px;
+    font-weight: 700;
+    border-radius: 999px;
+    margin-left: 4px;
+}
+
+.civora-contacts .civora-cc-sortby {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    label {
+        font-size: 12px;
+        font-weight: 600;
+        color: $civora-muted;
+        margin: 0;
+        white-space: nowrap;
+    }
+    select {
+        height: 36px;
+        padding: 0 28px 0 12px;
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius-sm;
+        background: $civora-card;
+        font-family: $civora-font;
+        font-size: 12.5px;
+        color: $civora-fg;
+        font-weight: 600;
+        cursor: pointer;
+        outline: none;
+        appearance: none;
+        -webkit-appearance: none;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='none' stroke='%236b7a94' stroke-width='1.5' d='M1 1l4 4 4-4'/></svg>");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        &:hover { border-color: $civora-accent; }
+    }
+}
+
+.civora-contacts .civora-cc-viewtoggle {
+    display: inline-flex;
+    background: $civora-card;
+    border: 1px solid $civora-border;
+    border-radius: $civora-radius-sm;
+    padding: 3px;
+}
+.civora-contacts .civora-cc-viewbtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 30px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: $civora-muted;
+    cursor: pointer;
+    transition: all .12s ease;
+    &:hover { color: $civora-fg; }
+    &.is-active {
+        background: $civora-accent;
+        color: white;
+    }
+    i { font-size: 12px; }
+}
+
+// Panneau filtres dépliable
+.civora-contacts .civora-cc-filters-panel {
+    background: $civora-card;
+    border: 1px solid $civora-border;
+    border-radius: $civora-radius;
+    padding: 16px 18px;
+    margin-bottom: 12px;
+    box-shadow: $civora-shadow-card;
+}
+.civora-contacts .civora-cc-filters-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+}
+.civora-contacts .civora-cc-filters-panel .civora-fld {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    label {
+        font-size: 11.5px;
+        font-weight: 600;
+        color: $civora-muted;
+        margin: 0;
+    }
+    input, select {
+        height: 32px;
+        padding: 0 10px;
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius-sm;
+        background: white;
+        font-family: $civora-font;
+        font-size: 12.5px;
+        color: $civora-fg;
+        outline: none;
+        &:focus {
+            border-color: $civora-accent;
+            box-shadow: 0 0 0 2px rgba(0, 171, 104, .12);
+        }
+    }
+    select {
+        appearance: none;
+        -webkit-appearance: none;
+        padding-right: 28px;
+        cursor: pointer;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='none' stroke='%236b7a94' stroke-width='1.5' d='M1 1l4 4 4-4'/></svg>");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+    }
+}
+.civora-contacts .civora-cc-filters-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid $civora-border;
+}
+
+// Compteur résultats
+.civora-contacts .civora-cc-count {
+    margin: 4px 4px 12px;
+    font-size: 12.5px;
+    color: $civora-muted;
+    font-weight: 600;
+}
+
+// Table : colonnes triables
+.civora-contacts .civora-ct-sortable {
+    cursor: pointer;
+    user-select: none;
+    transition: color .12s ease;
+    i { margin-left: 4px; font-size: 10px; }
+    &:hover { color: $civora-accent; }
+}
+
+// Load more
+.civora-contacts .civora-cc-loadmore {
+    display: flex;
+    justify-content: center;
+    padding: 16px;
+    border-top: 1px solid $civora-border;
+}
+
+// ---- KANBAN ----
+.civora-contacts .civora-cc-kanban {
+    background: transparent;
+}
+.civora-contacts .civora-cc-kanban-cols {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    align-items: start;
+}
+.civora-contacts .civora-cc-kb-col {
+    background: $civora-card;
+    border: 1px solid $civora-border;
+    border-radius: $civora-radius;
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: $civora-shadow-card;
+}
+.civora-contacts .civora-cc-kb-h {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    border-bottom: 1px solid $civora-border;
+    border-radius: $civora-radius $civora-radius 0 0;
+    font-family: $civora-font-display;
+    font-weight: 700;
+    font-size: 13px;
+    color: $civora-fg;
+    &.civora-cc-kb-h-chaud    { background: rgba(220, 38, 38, .08); }
+    &.civora-cc-kb-h-actif    { background: rgba(0, 171, 104, .08); }
+    &.civora-cc-kb-h-qualifie { background: rgba(59, 130, 246, .08); }
+    &.civora-cc-kb-h-a_risque { background: rgba(245, 158, 11, .10); }
+    &.civora-cc-kb-h-inactif  { background: rgba(9, 26, 54, .05); }
+    &.civora-cc-kb-h-none     { background: rgba(9, 26, 54, .05); }
+    i { margin-right: 6px; }
+}
+.civora-contacts .civora-cc-kb-title {
+    display: inline-flex;
+    align-items: center;
+}
+.civora-contacts .civora-cc-kb-count {
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: rgba(9, 26, 54, .08);
+    font-size: 10.5px;
+    font-weight: 700;
+    color: $civora-fg;
+}
+.civora-contacts .civora-cc-kb-body {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+    min-height: 200px;
+}
+.civora-contacts .civora-cc-kb-body-hz {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 12px;
+}
+.civora-contacts .civora-cc-kb-card {
+    background: white;
+    border: 1px solid $civora-border;
+    border-radius: $civora-radius-sm;
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: all .15s ease;
+    &:hover {
+        border-color: $civora-accent;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, .06);
+        transform: translateY(-1px);
+    }
+    &:active {
+        cursor: grabbing;
+    }
+}
+.civora-contacts .civora-cc-kb-card-hz {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 220px;
+}
+.civora-contacts .civora-cc-kb-card-h {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+.civora-contacts .civora-cc-kb-card-txt {
+    flex: 1;
+    min-width: 0;
+}
+.civora-contacts .civora-cc-kb-name {
+    font-weight: 700;
+    font-size: 12.5px;
+    color: $civora-fg;
+    max-width: 180px;
+}
+.civora-contacts .civora-cc-kb-sub {
+    font-size: 11px;
+    color: $civora-muted;
+    max-width: 180px;
+}
+.civora-contacts .civora-cc-kb-card-score {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+    .civora-progress { flex: 1; height: 5px; }
+}
+.civora-contacts .civora-cc-kb-score-num {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: $civora-muted;
+    min-width: 22px;
+    text-align: right;
+}
+.civora-contacts .civora-cc-kb-card-action,
+.civora-contacts .civora-cc-kb-card-agent {
+    font-size: 10.5px;
+    color: $civora-muted;
+    margin-top: 3px;
+    i { margin-right: 4px; }
+}
+.civora-contacts .civora-cc-kb-empty {
+    text-align: center;
+    color: $civora-muted;
+    font-size: 12px;
+    font-style: italic;
+    padding: 20px 10px;
+}
+
+// Colonne "Sans statut" en bas (pleine largeur)
+.civora-contacts .civora-cc-kb-nostatus {
+    margin-top: 12px;
+    background: $civora-card;
+    border: 1px dashed $civora-border;
+    border-radius: $civora-radius;
+    overflow: hidden;
+}
+
+@media (max-width: 1200px) {
+    .civora-contacts .civora-cc-filters-grid { grid-template-columns: repeat(3, 1fr); }
+    .civora-contacts .civora-cc-kanban-cols { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 800px) {
+    .civora-contacts .civora-cc-filters-grid { grid-template-columns: repeat(2, 1fr); }
+    .civora-contacts .civora-cc-kanban-cols { grid-template-columns: 1fr; }
+    .civora-contacts .civora-cc-toolbar-l, .civora-contacts .civora-cc-toolbar-r {
+        width: 100%;
+    }
+}

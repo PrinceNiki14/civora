@@ -25,6 +25,15 @@
                 <button t-att-class="'civora-pl-vbtn' + (state.view === 'list' ? ' is-active' : '')"
                         t-on-click="() => this.setView('list')"><i class="fa fa-list"/> Liste</button>
             </div>
+            <button t-att-class="'civora-btn civora-btn-outline civora-pl-filtersbtn' + (activeFilterCount ? ' is-active' : '')"
+                    t-on-click="() => this.openFilters()">
+                <i class="fa fa-sliders"/> Filtres
+                <span t-if="activeFilterCount" class="civora-pl-filterbadge" t-esc="activeFilterCount"/>
+            </button>
+            <button t-if="activeFilterCount" class="civora-pl-clearfilters" title="Effacer les filtres"
+                    t-on-click="() => this.clearFilters()">
+                <i class="fa fa-times"/>
+            </button>
             <button class="civora-btn civora-btn-outline" t-on-click="() => this.goLeads()">
                 <i class="fa fa-bullseye"/> Pistes
             </button>
@@ -52,19 +61,131 @@
                  t-att-class="colClass(col)"
                  t-on-dragover="(ev) => this.onDragOver(ev)"
                  t-on-drop="() => this.onDrop(col)">
+
+                <!-- Etape repliee : bande verticale (comme le kanban Odoo) -->
+                <t t-if="col.folded">
+                    <button class="civora-pl-foldstrip"
+                            t-att-title="'Déplier « ' + col.stage.name + ' »'"
+                            t-on-click="(ev) => this.toggleFold(col, ev)">
+                        <span class="civora-pl-foldstrip-n" t-esc="col.allCount"/>
+                        <span class="civora-pl-foldstrip-t" t-esc="col.stage.name"/>
+                    </button>
+                </t>
+
+                <t t-else="">
                 <div class="civora-pl-colh">
-                    <div class="civora-pl-colname">
-                        <span class="civora-pl-dot"/>
-                        <span t-esc="col.stage.name"/>
-                        <span class="civora-pl-colcount" t-esc="col.cards.length"/>
+                    <!-- Titre : lecture ou edition inline -->
+                    <t t-if="state.editingStageId === col.stage.id">
+                        <div class="civora-pl-coledit">
+                            <input class="civora-pl-coledit-input"
+                                   type="text"
+                                   t-att-value="state.editingStageName"
+                                   t-on-input="(ev) => this.onRenameInput(ev)"
+                                   t-on-keydown="(ev) => this.onRenameKey(ev)"
+                                   autofocus="autofocus"/>
+                            <button class="civora-pl-coledit-ok" t-on-click="() => this.confirmRename()" title="Valider">
+                                <i class="fa fa-check"/>
+                            </button>
+                            <button class="civora-pl-coledit-cancel" t-on-click="() => this.cancelRename()" title="Annuler">
+                                <i class="fa fa-times"/>
+                            </button>
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <!-- Le menu est place HORS de l'element clippe : un
+                             clip-path decouperait le menu deroulant. -->
+                        <div class="civora-pl-chevwrap">
+                            <div t-att-class="col.chev">
+                                <span class="civora-pl-dot"/>
+                                <span class="civora-pl-colname-t"
+                                      t-on-dblclick="() => state.canManageStages &amp;&amp; this.startRename(col)"
+                                      t-att-title="state.canManageStages ? 'Double-clic pour renommer' : col.stage.name"
+                                      t-esc="col.stage.name"/>
+                                <span class="civora-pl-colcount" t-esc="col.allCount"/>
+                                <span t-if="col.stage.is_won" class="civora-pl-collock" t-att-title="stageLockLabel(col)">
+                                    <i class="fa fa-trophy"/>
+                                </span>
+                                <span t-if="col.stage.is_lost" class="civora-pl-collock" t-att-title="stageLockLabel(col)">
+                                    <i class="fa fa-ban"/>
+                                </span>
+                            </div>
+
+                            <div class="civora-pl-colactions">
+                                <button class="civora-pl-colfold"
+                                        title="Replier cette étape"
+                                        t-on-click="(ev) => this.toggleFold(col, ev)">
+                                    <i class="fa fa-compress"/>
+                                </button>
+                                <div t-if="state.canManageStages" class="civora-pl-colmenu-wrap">
+                                    <button class="civora-pl-colmenu-btn"
+                                            t-on-click="(ev) => this.toggleMenu(col.stage.id, ev)"
+                                            title="Options de l'etape">
+                                        <i class="fa fa-ellipsis-h"/>
+                                    </button>
+                                    <div t-if="state.menuOpenStageId === col.stage.id" class="civora-pl-colmenu">
+                                        <button class="civora-pl-colmenu-item" t-on-click="(ev) => this.startRename(col, ev)">
+                                            <i class="fa fa-pencil"/> Renommer
+                                        </button>
+                                        <button class="civora-pl-colmenu-item"
+                                                t-att-disabled="!col.canLeft"
+                                                t-on-click="(ev) => this.moveLeft(col, ev)">
+                                            <i class="fa fa-arrow-left"/> Déplacer à gauche
+                                        </button>
+                                        <button class="civora-pl-colmenu-item"
+                                                t-att-disabled="!col.canRight"
+                                                t-on-click="(ev) => this.moveRight(col, ev)">
+                                            <i class="fa fa-arrow-right"/> Déplacer à droite
+                                        </button>
+                                        <button class="civora-pl-colmenu-item"
+                                                t-on-click="(ev) => this.toggleFold(col, ev)">
+                                            <i class="fa fa-compress"/> Replier
+                                        </button>
+                                        <div class="civora-pl-colmenu-sep"/>
+                                        <button class="civora-pl-colmenu-item is-danger"
+                                                t-att-disabled="!canDelete(col)"
+                                                t-on-click="(ev) => this.askDelete(col, ev)">
+                                            <i class="fa fa-trash"/> Supprimer
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+
+                    <!-- Barre d'anciennete dans l'etape + total -->
+                    <div class="civora-pl-colbar">
+                        <div class="civora-pl-bar">
+                            <button t-if="col.seg.stale"
+                                    class="civora-pl-seg is-stale"
+                                    t-att-style="'flex:' + col.segPct.stale"
+                                    t-att-title="segTitle(col, 'stale')"
+                                    t-on-click="(ev) => this.toggleAgeFilter(col, 'stale', ev)"/>
+                            <button t-if="col.seg.watch"
+                                    class="civora-pl-seg is-watch"
+                                    t-att-style="'flex:' + col.segPct.watch"
+                                    t-att-title="segTitle(col, 'watch')"
+                                    t-on-click="(ev) => this.toggleAgeFilter(col, 'watch', ev)"/>
+                            <button t-if="col.seg.recent"
+                                    class="civora-pl-seg is-recent"
+                                    t-att-style="'flex:' + col.segPct.recent"
+                                    t-att-title="segTitle(col, 'recent')"
+                                    t-on-click="(ev) => this.toggleAgeFilter(col, 'recent', ev)"/>
+                        </div>
+                        <span class="civora-pl-coltotal" t-esc="fmtMoney(col.total) + ' FCFA'"/>
                     </div>
-                    <div class="civora-pl-coltotal" t-esc="fmtMoney(col.total) + ' FCFA'"/>
+
+                    <div t-if="col.activeBucket" class="civora-pl-segactive">
+                        <span t-esc="segTitle(col, col.activeBucket)"/>
+                        <button t-on-click="(ev) => this.toggleAgeFilter(col, col.activeBucket, ev)">
+                            <i class="fa fa-times"/>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="civora-pl-cards">
                     <div t-foreach="col.cards" t-as="o" t-key="o.id"
                          class="civora-pl-card" draggable="true"
-                         t-on-dragstart="() => this.onDragStart(o)"
+                         t-on-dragstart="(ev) => this.onOppDragStart(o, ev)"
                          t-on-click="() => this.openOpp(o)">
                         <div class="civora-pl-card-h">
                             <span class="civora-pl-card-n" t-esc="partnerLabel(o)"/>
@@ -79,9 +200,58 @@
                                 <i class="fa fa-star"/> <t t-esc="o.score"/>
                             </span>
                         </div>
+                        <div class="civora-pl-card-qa">
+                            <a t-if="hasPhone(o)" class="civora-pl-qa civora-pl-qa-call"
+                               t-att-href="callHref(o)"
+                               t-on-click="(ev) => this.quickAction(ev)"
+                               title="Appeler">
+                                <i class="fa fa-phone"/>
+                            </a>
+                            <a t-if="hasEmail(o)" class="civora-pl-qa civora-pl-qa-mail"
+                               t-att-href="mailHref(o)"
+                               t-on-click="(ev) => this.quickAction(ev)"
+                               title="Envoyer un email">
+                                <i class="fa fa-envelope"/>
+                            </a>
+                            <a t-if="hasWhatsApp(o)" class="civora-pl-qa civora-pl-qa-wa"
+                               t-att-href="waHref(o)"
+                               t-on-click="(ev) => this.quickAction(ev, waHref(o))"
+                               target="_blank" rel="noopener"
+                               title="Contacter sur WhatsApp">
+                                <i class="fa fa-whatsapp"/>
+                            </a>
+                        </div>
                     </div>
-                    <div t-if="!col.cards.length" class="civora-pl-empty">Déposez ici</div>
                 </div>
+                </t>
+            </div>
+
+            <!-- Colonne fantome : ajout d'une etape -->
+            <div t-if="state.canManageStages" class="civora-pl-col civora-pl-col-add">
+                <t t-if="state.addingStage">
+                    <div class="civora-pl-addbox">
+                        <input class="civora-pl-addinput"
+                               type="text"
+                               placeholder="Nom de l'étape"
+                               t-att-value="state.newStageName"
+                               t-on-input="(ev) => this.onAddStageInput(ev)"
+                               t-on-keydown="(ev) => this.onAddStageKey(ev)"
+                               autofocus="autofocus"/>
+                        <div class="civora-pl-addbtns">
+                            <button class="civora-btn civora-btn-accent" t-on-click="() => this.confirmAddStage()">
+                                <i class="fa fa-check"/> Ajouter
+                            </button>
+                            <button class="civora-btn civora-btn-ghost" t-on-click="() => this.cancelAddStage()">
+                                <i class="fa fa-times"/>
+                            </button>
+                        </div>
+                    </div>
+                </t>
+                <t t-else="">
+                    <button class="civora-pl-addbtn" t-on-click="() => this.startAddStage()">
+                        <i class="fa fa-plus"/> Ajouter une étape
+                    </button>
+                </t>
             </div>
         </div>
 
@@ -117,6 +287,134 @@
                     <tr t-if="!state.list.length"><td colspan="7" class="civora-pl-listempty">Aucune opportunité.</td></tr>
                 </tbody>
             </table>
+        </div>
+
+        <!-- ===== MODAL DE SUPPRESSION D'ETAPE ===== -->
+        <div t-if="state.deleteModal" class="civora-pl-modal-backdrop" t-on-click="() => this.closeDeleteModal()">
+            <div class="civora-pl-modal" t-on-click.stop="">
+                <div class="civora-pl-modal-h">
+                    <div class="civora-pl-modal-t">
+                        <i class="fa fa-exclamation-triangle"/> Supprimer « <t t-esc="state.deleteModal.stageName"/> » ?
+                    </div>
+                    <button class="civora-pl-modal-x" t-on-click="() => this.closeDeleteModal()">
+                        <i class="fa fa-times"/>
+                    </button>
+                </div>
+                <div class="civora-pl-modal-b">
+                    <t t-if="state.deleteModal.opportunityCount > 0">
+                        <p>
+                            Cette étape contient <b><t t-esc="state.deleteModal.opportunityCount"/></b> opportunité(s).
+                            Choisissez l'étape vers laquelle les déplacer avant suppression :
+                        </p>
+                        <div class="civora-fld">
+                            <label>Déplacer les opportunités vers</label>
+                            <select t-on-change="(ev) => this.onDeleteTargetChange(ev)">
+                                <option t-foreach="deleteTargetOptions" t-as="s" t-key="s.id"
+                                        t-att-value="s.id"
+                                        t-att-selected="state.deleteModal.targetStageId === s.id"
+                                        t-esc="s.name"/>
+                            </select>
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <p>Cette étape est vide. La suppression est immédiate.</p>
+                    </t>
+                </div>
+                <div class="civora-pl-modal-f">
+                    <button class="civora-btn civora-btn-outline" t-on-click="() => this.closeDeleteModal()">
+                        Annuler
+                    </button>
+                    <button class="civora-btn civora-btn-danger" t-on-click="() => this.confirmDelete()">
+                        <i class="fa fa-trash"/> Supprimer
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== MODAL DE FILTRES AVANCES ===== -->
+        <div t-if="state.filtersOpen" class="civora-pl-modal-backdrop" t-on-click="() => this.closeFilters()">
+            <div class="civora-pl-modal civora-pl-modal-lg" t-on-click.stop="">
+                <div class="civora-pl-modal-h">
+                    <div class="civora-pl-modal-t">
+                        <i class="fa fa-sliders"/> Filtres avancés
+                    </div>
+                    <button class="civora-pl-modal-x" t-on-click="() => this.closeFilters()">
+                        <i class="fa fa-times"/>
+                    </button>
+                </div>
+                <div class="civora-pl-modal-b">
+                    <div class="civora-fld">
+                        <label>Type de transaction</label>
+                        <div class="civora-pl-chips">
+                            <button t-att-class="'civora-pl-chip' + (state.filtersDraft.transactions.vente ? ' is-on' : '')"
+                                    t-on-click="() => this.toggleFilterTx('vente')">Vente</button>
+                            <button t-att-class="'civora-pl-chip' + (state.filtersDraft.transactions.location ? ' is-on' : '')"
+                                    t-on-click="() => this.toggleFilterTx('location')">Location</button>
+                            <button t-att-class="'civora-pl-chip' + (state.filtersDraft.transactions.saisonnier ? ' is-on' : '')"
+                                    t-on-click="() => this.toggleFilterTx('saisonnier')">Saisonnier</button>
+                        </div>
+                    </div>
+                    <div class="civora-pl-grid2">
+                        <div class="civora-fld">
+                            <label>Agent</label>
+                            <select t-on-change="(ev) => this.setFilterAgent(ev)">
+                                <option value="">Tous les agents</option>
+                                <option t-foreach="state.agents" t-as="u" t-key="u.id"
+                                        t-att-value="u.id"
+                                        t-att-selected="state.filtersDraft.agent_id === u.id"
+                                        t-esc="u.name"/>
+                            </select>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Ville</label>
+                            <input type="text" placeholder="Cocody, Abidjan…"
+                                   t-att-value="state.filtersDraft.city"
+                                   t-on-input="(ev) => this.setFilterField('city', ev)"/>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Valeur minimum (FCFA)</label>
+                            <input type="number" min="0" placeholder="0"
+                                   t-att-value="state.filtersDraft.min_amount"
+                                   t-on-input="(ev) => this.setFilterNumber('min_amount', ev)"/>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Ancienneté max (jours)</label>
+                            <input type="number" min="0" placeholder="0 = illimité"
+                                   t-att-value="state.filtersDraft.max_days"
+                                   t-on-input="(ev) => this.setFilterNumber('max_days', ev)"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="civora-pl-modal-f">
+                    <button class="civora-btn civora-btn-ghost" t-on-click="() => this.resetFilters()">
+                        Réinitialiser
+                    </button>
+                    <span class="civora-lf-spacer"/>
+                    <button class="civora-btn civora-btn-outline" t-on-click="() => this.closeFilters()">
+                        Annuler
+                    </button>
+                    <button class="civora-btn civora-btn-accent" t-on-click="() => this.applyFilters()">
+                        <i class="fa fa-check"/> Appliquer
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== CELEBRATION AU PASSAGE EN GAGNE ===== -->
+        <div t-if="state.celebration" class="civora-pl-celeb" t-on-click="() => this.dismissCelebration()">
+            <div class="civora-pl-celeb-card" t-on-click.stop="">
+                <div class="civora-pl-celeb-confetti">
+                    <span t-foreach="[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]" t-as="i" t-key="i"
+                          t-att-class="'civora-pl-confetti c' + i"/>
+                </div>
+                <div class="civora-pl-celeb-icon"><i class="fa fa-trophy"/></div>
+                <div class="civora-pl-celeb-t">Félicitations !</div>
+                <div class="civora-pl-celeb-name" t-esc="state.celebration.name"/>
+                <div class="civora-pl-celeb-amt" t-esc="state.celebration.amount"/>
+                <button class="civora-btn civora-btn-accent" t-on-click="() => this.dismissCelebration()">
+                    Continuer
+                </button>
+            </div>
         </div>
 
         <OpportunityDrawer t-if="state.drawerOpen" onClose="(saved) => this.closeDrawer(saved)"/>

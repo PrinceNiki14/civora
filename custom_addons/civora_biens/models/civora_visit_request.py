@@ -21,6 +21,11 @@ class CivoraVisitRequest(models.Model):
     name = fields.Char(string="Nom du visiteur", required=True, tracking=True)
     phone = fields.Char(string="Téléphone", required=True)
     email = fields.Char(string="Email")
+    preferred_date = fields.Date(
+        string="Date souhaitée",
+        help="Date de visite proposee par le prospect depuis la page publique. "
+             "Evite un aller-retour telephonique pour caler le rendez-vous.",
+    )
     message = fields.Text(string="Message")
     state = fields.Selection([
         ('new', "Nouvelle"),

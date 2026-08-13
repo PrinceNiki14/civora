@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_contacts.ScoringView">
+    <div class="civora-scoring">
+
+        <div t-if="state.loading" class="civora-an-loading">
+            <i class="fa fa-circle-o-notch fa-spin"/> Chargement des statistiques…
+        </div>
+
+        <div t-elif="state.error" class="civora-an-error">
+            <i class="fa fa-exclamation-triangle"/> <span t-esc="state.error"/>
+            <button class="civora-an-retry" t-on-click="() => this.load()">Réessayer</button>
+        </div>
+
+        <t t-else="">
+            <!-- ══════════ KPIs ══════════ -->
+            <div class="civora-an-kpis">
+                <CivoraStatCard label="'Contacts scorés'"
+                                value="state.data.kpis.scored + ''"
+                                delta="'sur ' + state.data.kpis.total + ' au total'"
+                                icon="'fa fa-users'"/>
+                <CivoraStatCard label="'Score moyen'"
+                                value="state.data.kpis.avg + ''"
+                                delta="'sur 100'"
+                                icon="'fa fa-tachometer'"/>
+                <CivoraStatCard label="'Scores verrouillés'"
+                                value="state.data.kpis.locked + ''"
+                                delta="'ajustés manuellement'"
+                                icon="'fa fa-lock'"/>
+                <CivoraStatCard label="'Dernier calcul'"
+                                value="state.data.kpis.last_update ? formatDate(state.data.kpis.last_update) : '—'"
+                                icon="'fa fa-clock-o'"/>
+            </div>
+
+            <!-- ══════════ Bandeau action ══════════ -->
+            <div class="civora-an-banner">
+                <div class="civora-an-banner-txt">
+                    <div class="civora-an-banner-title">
+                        <i class="fa fa-magic"/> Moteur de scoring CIVORA
+                    </div>
+                    <div class="civora-an-banner-sub">
+                        Le score est recalculé chaque nuit. Les contacts dont le score
+                        est verrouillé conservent leur valeur manuelle.
+                    </div>
+                </div>
+                <button class="civora-an-banner-btn"
+                        t-att-disabled="state.recomputing ? 'disabled' : false"
+                        t-on-click="() => this.recomputeAll()">
+                    <i t-att-class="state.recomputing ? 'fa fa-circle-o-notch fa-spin' : 'fa fa-refresh'"/>
+                    <span t-esc="state.recomputing ? 'Programmation…' : 'Recalculer tout'"/>
+                </button>
+            </div>
+
+            <!-- ══════════ 3 colonnes ══════════ -->
+            <div class="civora-an-cols3">
+
+                <!-- Distribution -->
+                <div class="civora-an-card">
+                    <div class="civora-an-card-h">
+                        <h3>Distribution des scores</h3>
+                        <span class="civora-an-card-hint">Cliquez pour filtrer l'annuaire</span>
+                    </div>
+                    <div class="civora-an-buckets">
+                        <button t-foreach="state.data.buckets" t-as="b" t-key="b.code"
+                                class="civora-an-bucket"
+                                t-att-disabled="b.count ? false : 'disabled'"
+                                t-on-click="() => this.onBucketClick(b)">
+                            <div class="civora-an-bucket-h">
+                                <span class="civora-an-bucket-l">
+                                    <span class="civora-an-bucket-emoji" t-esc="b.emoji"/>
+                                    <span t-esc="b.label"/>
+                                    <span class="civora-an-bucket-range" t-esc="'(' + b.range + ')'"/>
+                                </span>
+                                <span class="civora-an-bucket-v">
+                                    <strong t-esc="b.count"/>
+                                    <span class="civora-an-bucket-pct" t-esc="b.pct + '%'"/>
+                                </span>
+                            </div>
+                            <CivoraProgress value="b.pct" tone="b.tone"/>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Critères réels -->
+                <div class="civora-an-card">
+                    <div class="civora-an-card-h">
+                        <h3>Critères de scoring</h3>
+                        <span class="civora-an-card-hint" t-esc="'Total ' + weightTotal + ' pts'"/>
+                    </div>
+                    <div class="civora-an-weights">
+                        <div t-foreach="state.data.weights" t-as="w" t-key="w.code"
+                             class="civora-an-weight">
+                            <div class="civora-an-weight-h">
+                                <span class="civora-an-weight-l" t-esc="w.label"/>
+                                <CivoraBadge label="w.weight + ' pts'" variant="'info'"/>
+                            </div>
+                            <div class="civora-an-weight-d" t-esc="w.desc"/>
+                        </div>
+                    </div>
+                    <div class="civora-an-adj-title">Ajustements selon le statut CRM</div>
+                    <div class="civora-an-adjs">
+                        <div t-foreach="state.data.adjustments" t-as="a" t-key="a_index"
+                             t-att-class="'civora-an-adj is-' + a.tone">
+                            <span t-esc="a.label"/>
+                            <strong t-esc="a.effect"/>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recommandations -->
+                <div class="civora-an-card">
+                    <div class="civora-an-card-h">
+                        <h3><i class="fa fa-lightbulb-o"/> Recommandations</h3>
+                    </div>
+                    <div class="civora-an-recos">
+                        <t t-foreach="recoOrder" t-as="key" t-key="key">
+                            <div t-att-class="'civora-an-reco is-' + recoMeta[key].tone">
+                                <button class="civora-an-reco-h"
+                                        t-on-click="() => this.toggleReco(key)">
+                                    <span class="civora-an-reco-title">
+                                        <i t-att-class="'fa ' + recoMeta[key].icon"/>
+                                        <strong t-esc="state.data.reco[key].count"/>
+                                        <span t-esc="recoMeta[key].title"/>
+                                    </span>
+                                    <i t-att-class="state.expandedReco === key ? 'fa fa-chevron-up' : 'fa fa-chevron-down'"/>
+                                </button>
+                                <div class="civora-an-reco-hint" t-esc="recoMeta[key].hint"/>
+                                <div t-if="state.expandedReco === key" class="civora-an-reco-body">
+                                    <div t-if="!state.data.reco[key].items.length"
+                                         class="civora-an-empty-sm">
+                                        Aucun contact concerné.
+                                    </div>
+                                    <button t-foreach="state.data.reco[key].items" t-as="it" t-key="it.id"
+                                            class="civora-an-reco-item"
+                                            t-on-click="() => this.onContactClick(it)">
+                                        <span class="civora-an-reco-item-n" t-esc="it.name"/>
+                                        <span class="civora-an-reco-item-s" t-esc="it.score"/>
+                                    </button>
+                                    <div t-if="state.data.reco[key].count > state.data.reco[key].items.length"
+                                         class="civora-an-reco-more"
+                                         t-esc="'+ ' + (state.data.reco[key].count - state.data.reco[key].items.length) + ' autres'"/>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ══════════ Top / Flop ══════════ -->
+            <div class="civora-an-card civora-an-card-wide">
+                <div class="civora-an-card-h">
+                    <h3>Classement</h3>
+                    <div class="civora-an-seg">
+                        <button t-att-class="'civora-an-seg-b' + (state.listMode === 'top' ? ' is-active' : '')"
+                                t-on-click="() => this.setListMode('top')">
+                            <i class="fa fa-arrow-up"/> 10 meilleurs
+                        </button>
+                        <button t-att-class="'civora-an-seg-b' + (state.listMode === 'flop' ? ' is-active' : '')"
+                                t-on-click="() => this.setListMode('flop')">
+                            <i class="fa fa-arrow-down"/> 10 plus faibles
+                        </button>
+                    </div>
+                </div>
+                <table class="civora-an-table">
+                    <thead>
+                        <tr>
+                            <th>Contact</th>
+                            <th>Score</th>
+                            <th>Statut</th>
+                            <th>Agent</th>
+                            <th>Dernière interaction</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-if="!currentList.length">
+                            <td colspan="5" class="civora-an-empty">Aucun contact à afficher.</td>
+                        </tr>
+                        <tr t-foreach="currentList" t-as="c" t-key="c.id"
+                            class="civora-an-row"
+                            t-on-click="() => this.onContactClick(c)">
+                            <td class="civora-an-row-n" t-esc="c.name"/>
+                            <td>
+                                <div class="civora-an-row-score">
+                                    <span t-esc="c.score"/>
+                                    <CivoraProgress value="c.score" tone="scoreTone(c.score)"/>
+                                </div>
+                            </td>
+                            <td><CivoraBadge label="statusLabel(c.status)" variant="statusVariant(c.status)"/></td>
+                            <td class="civora-an-muted" t-esc="c.agent || '—'"/>
+                            <td class="civora-an-muted" t-esc="c.last_interaction ? formatDate(c.last_interaction) : '—'"/>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </t>
+    </div>
+</t>
+
+</templates>

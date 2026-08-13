@@ -168,6 +168,15 @@
         span { color: $civora-muted; }
         b { font-weight: 600; text-align: right; word-break: break-word; }
     }
+    .civora-l360-oppty-link {
+        color: $civora-accent !important;
+        cursor: pointer;
+        text-decoration: underline;
+        text-decoration-color: rgba(0, 171, 104, .35);
+        text-underline-offset: 3px;
+        transition: text-decoration-color .12s ease;
+        &:hover { text-decoration-color: $civora-accent; }
+    }
     .civora-l360-progress {
         margin-top: 10px;
         display: flex;
@@ -303,4 +312,127 @@
         white-space: nowrap;
         i { margin-right: 3px; }
     }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Paiements — séparation Versements initiaux vs Loyers mensuels
+// ─────────────────────────────────────────────────────────────────────────────
+.civora-l360-payhead-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.civora-l360-paytable-wrap {
+    margin-bottom: 20px;
+    border: 1px solid #e4e7ec;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #fff;
+
+    &.civora-l360-paytable-initial {
+        border-color: #d0d5dd;
+
+        .civora-l360-paytable-header {
+            background: #091e40;
+            color: #fff;
+            i { color: #f59e0b; }
+        }
+    }
+}
+
+.civora-l360-paytable-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: #16a34a;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    i { font-size: 13px; }
+
+    &-rent {
+        background: #16a34a;
+        i { color: #dcfce7; }
+    }
+}
+
+.civora-l360-typepill {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    background: #f4f6fa;
+    color: #4a5461;
+
+    &.is-advance {
+        background: #dbeafe;
+        color: #1e40af;
+    }
+    &.is-caution {
+        background: #fef3c7;
+        color: #78350f;
+    }
+    &.is-agency {
+        background: #f3e8ff;
+        color: #6b21a8;
+    }
+    &.is-other {
+        background: #f4f6fa;
+        color: #4a5461;
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Tableaux collapsables + total dans le bandeau + paiement annulé
+// ─────────────────────────────────────────────────────────────────────────────
+.civora-l360-paytable-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    &.is-clickable {
+        cursor: pointer;
+        user-select: none;
+        transition: opacity .15s;
+
+        &:hover { opacity: 0.9; }
+    }
+
+    // Chevron devant
+    > .fa-chevron-right,
+    > .fa-chevron-down {
+        font-size: 10px;
+        transition: transform .2s;
+    }
+}
+
+.civora-l360-paytable-total {
+    margin-left: auto;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 3px 10px;
+    background: rgba(255,255,255,.15);
+    border-radius: 12px;
+}
+
+.civora-l360-payactions {
+    display: flex;
+    gap: 4px;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+// Paiement annulé
+tr.is-cancelled {
+    opacity: 0.55;
+    text-decoration: line-through;
+    background: #fef2f2;
 }

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+
+    <record id="cron_civora_sms_queue" model="ir.cron">
+        <field name="name">CIVORA · Traitement de la file SMS</field>
+        <field name="model_id" ref="model_civora_sms"/>
+        <field name="state">code</field>
+        <field name="code">model.cron_civora_process_sms_queue()</field>
+        <field name="interval_number">10</field>
+        <field name="interval_type">minutes</field>
+        <field name="active" eval="True"/>
+    </record>
+
+</odoo>

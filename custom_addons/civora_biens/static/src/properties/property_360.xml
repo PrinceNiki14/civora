@@ -21,6 +21,21 @@
                 <button class="civora-p360-back" t-on-click="() => this.goBack()">
                     <i class="fa fa-arrow-left"/> <t t-esc="backLabel"/>
                 </button>
+                <div t-if="siblingIds.length > 1" class="civora-p360-nav">
+                    <button class="civora-p360-navbtn"
+                            t-att-disabled="!canGoPrev"
+                            title="Bien précédent"
+                            t-on-click="() => this.goPrev()">
+                        <i class="fa fa-chevron-left"/>
+                    </button>
+                    <span class="civora-p360-navpos" t-esc="siblingPosition"/>
+                    <button class="civora-p360-navbtn"
+                            t-att-disabled="!canGoNext"
+                            title="Bien suivant"
+                            t-on-click="() => this.goNext()">
+                        <i class="fa fa-chevron-right"/>
+                    </button>
+                </div>
                 <button class="civora-btn civora-btn-accent" t-on-click="() => this.openEdit()">
                     <i class="fa fa-pencil"/> Modifier
                 </button>
@@ -50,6 +65,25 @@
                         <CivoraBadge label="statusInfo.label" variant="statusInfo.variant"/>
                     </div>
                     <div class="civora-p360-loc"><i class="fa fa-map-marker"/> <t t-esc="locLabel()"/></div>
+
+                    <!-- Mini carte / position sur la carte -->
+                    <div class="civora-p360-mapbox">
+                        <div t-if="!hasPosition" class="civora-p360-map-empty">
+                            <i class="fa fa-map-o"/>
+                            <span>Position non renseignée</span>
+                        </div>
+                        <t t-else="">
+                            <CivoraMap latitude="state.record.latitude"
+                                       longitude="state.record.longitude"
+                                       interactive="false"
+                                       height="'180px'"/>
+                            <a class="civora-p360-map-openext"
+                               t-att-href="googleMapsLink"
+                               target="_blank" rel="noopener">
+                                <i class="fa fa-external-link"/> Ouvrir dans Google Maps
+                            </a>
+                        </t>
+                    </div>
 
                     <div class="civora-p360-kpis">
                         <t t-if="isBuilding">
@@ -216,6 +250,43 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+
+
+                    <!-- Documents juridiques (vente) -->
+                    <div class="civora-p360-card civora-p360-card-wide" t-if="isSale">
+                        <div class="civora-p360-card-h">
+                            Documents juridiques (vente)
+                            <span t-att-class="'civora-p360-docbadge ' + (saleDocsOk ? 'is-ok' : 'is-warn')">
+                                <i t-att-class="saleDocsOk ? 'fa fa-check-circle' : 'fa fa-exclamation-triangle'"/>
+                                <t t-esc="saleDocsOk ? 'Dossier suffisant' : 'Dossier incomplet'"/>
+                            </span>
+                        </div>
+
+                        <div t-if="!saleDocsProvided.length" class="civora-p360-docempty">
+                            Aucune pièce enregistrée pour ce bien.
+                        </div>
+
+                        <div t-if="saleDocsProvided.length" class="civora-p360-docs">
+                            <div t-foreach="saleDocsProvided" t-as="d" t-key="d.id"
+                                 class="civora-p360-doc is-have">
+                                <i class="fa fa-check"/>
+                                <span t-esc="d.name"/>
+                                <span t-if="d.is_essential" class="civora-p360-dockey">clé</span>
+                            </div>
+                        </div>
+
+                        <t t-if="saleDocsMissing.length">
+                            <div class="civora-p360-docsub">Pièces manquantes</div>
+                            <div class="civora-p360-docs">
+                                <div t-foreach="saleDocsMissing" t-as="d" t-key="d.id"
+                                     class="civora-p360-doc is-missing">
+                                    <i class="fa fa-times"/>
+                                    <span t-esc="d.name"/>
+                                    <span t-if="d.is_essential" class="civora-p360-dockey">clé</span>
+                                </div>
+                            </div>
+                        </t>
                     </div>
 
                     <div class="civora-p360-card civora-p360-card-wide" t-if="record.description or record.note">

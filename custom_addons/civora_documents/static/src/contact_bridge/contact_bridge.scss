@@ -1,0 +1,431 @@
+// =====================================================================
+// CIVORA Contact 360° · onglets contribués par civora_documents
+// =====================================================================
+
+// ============ PORTEFEUILLE ============
+.civora-portfolio {
+    padding: 4px 0 16px;
+    font-family: $civora-font;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    .civora-portfolio-loading,
+    .civora-portfolio-empty {
+        text-align: center;
+        padding: 40px 20px;
+        color: $civora-muted;
+        i { font-size: 30px; margin-bottom: 12px; display: block; }
+    }
+    .civora-portfolio-loading i { display: inline-block; margin-right: 8px; font-size: 14px; }
+    .civora-portfolio-empty {
+        background: $civora-card;
+        border: 1px dashed $civora-border;
+        border-radius: $civora-radius;
+    }
+    .civora-portfolio-empty-t {
+        font-family: $civora-font-display;
+        font-weight: 700;
+        font-size: 15px;
+        color: $civora-fg;
+    }
+    .civora-portfolio-empty p {
+        margin: 8px auto 0;
+        max-width: 380px;
+        font-size: 12.5px;
+        color: $civora-muted;
+    }
+
+    .civora-portfolio-kpis {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+    }
+
+    .civora-portfolio-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+    .civora-portfolio-title {
+        font-family: $civora-font-display;
+        font-weight: 700;
+        font-size: 15px;
+        color: $civora-fg;
+    }
+    .civora-portfolio-groupby {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        label {
+            font-size: 12px;
+            font-weight: 600;
+            color: $civora-muted;
+            margin: 0;
+            white-space: nowrap;
+        }
+        select {
+            height: 32px;
+            padding: 0 28px 0 12px;
+            border: 1px solid $civora-border;
+            border-radius: $civora-radius-sm;
+            background: $civora-card;
+            font-family: $civora-font;
+            font-size: 12.5px;
+            color: $civora-fg;
+            font-weight: 600;
+            cursor: pointer;
+            outline: none;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='none' stroke='%236b7a94' stroke-width='1.5' d='M1 1l4 4 4-4'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            &:hover { border-color: $civora-accent; }
+            &:focus { border-color: $civora-accent; box-shadow: 0 0 0 2px rgba(0, 171, 104, .12); }
+        }
+    }
+
+    // ---- Grille de biens ----
+    .civora-portfolio-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    .civora-portfolio-card {
+        background: $civora-card;
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius;
+        overflow: hidden;
+        cursor: pointer;
+        transition: all .15s ease;
+        display: flex;
+        flex-direction: column;
+        box-shadow: $civora-shadow-card;
+        &:hover {
+            border-color: $civora-accent;
+            transform: translateY(-2px);
+            box-shadow: $civora-shadow-elevated;
+        }
+    }
+    .civora-portfolio-card-h {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 16px;
+        border-bottom: 1px solid rgba(9, 26, 54, .04);
+    }
+    .civora-portfolio-card-ico {
+        width: 42px;
+        height: 42px;
+        border-radius: $civora-radius-sm;
+        background: rgba(59, 130, 246, .10);
+        color: #3b82f6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        flex: 0 0 auto;
+    }
+    .civora-portfolio-card-info { flex: 1; min-width: 0; }
+    .civora-portfolio-card-name {
+        font-family: $civora-font-display;
+        font-weight: 700;
+        font-size: 14px;
+        color: $civora-fg;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .civora-portfolio-card-sub {
+        margin-top: 2px;
+        font-size: 12px;
+        color: $civora-muted;
+    }
+    .civora-portfolio-card-body {
+        padding: 12px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .civora-portfolio-card-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        font-size: 12.5px;
+    }
+    .civora-portfolio-card-row-clickable {
+        cursor: pointer;
+        padding: 4px 8px;
+        margin: -4px -8px;
+        border-radius: $civora-radius-sm;
+        transition: background .12s ease;
+        &:hover { background: rgba(0, 171, 104, .06); }
+    }
+    .civora-portfolio-card-label {
+        color: $civora-muted;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        i { font-size: 11px; }
+    }
+    .civora-portfolio-card-value {
+        color: $civora-fg;
+        font-weight: 600;
+        text-align: right;
+    }
+    .civora-portfolio-card-link {
+        color: $civora-accent;
+        text-decoration: none;
+    }
+    .civora-portfolio-card-rent {
+        color: $civora-accent;
+        font-weight: 700;
+    }
+    .civora-portfolio-card-foot {
+        padding: 10px 16px;
+        border-top: 1px solid rgba(9, 26, 54, .04);
+        text-align: right;
+        background: rgba(9, 26, 54, .015);
+    }
+    .civora-portfolio-card-open {
+        font-size: 11.5px;
+        font-weight: 600;
+        color: $civora-muted;
+        i { margin-left: 4px; font-size: 10px; }
+    }
+
+    // ---- Groupes ----
+    .civora-portfolio-groups {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    .civora-portfolio-group {
+        background: $civora-card;
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius;
+        overflow: hidden;
+        box-shadow: $civora-shadow-card;
+    }
+    .civora-portfolio-group-h {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        cursor: pointer;
+        transition: background .12s ease;
+        border-bottom: 1px solid rgba(9, 26, 54, .04);
+        &:hover { background: rgba(9, 26, 54, .03); }
+    }
+    .civora-portfolio-group-chev {
+        color: $civora-muted;
+        font-size: 11px;
+        width: 12px;
+        text-align: center;
+        flex: 0 0 auto;
+    }
+    .civora-portfolio-group-name {
+        flex: 1;
+        font-family: $civora-font-display;
+        font-weight: 700;
+        font-size: 14px;
+        color: $civora-fg;
+    }
+    .civora-portfolio-group-count {
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: rgba(9, 26, 54, .06);
+        color: $civora-muted;
+        font-size: 11px;
+        font-weight: 700;
+    }
+    .civora-portfolio-group-body {
+        padding: 12px 16px;
+    }
+
+    @media (max-width: 1000px) {
+        .civora-portfolio-kpis { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 700px) {
+        .civora-portfolio-grid { grid-template-columns: 1fr; }
+    }
+}
+
+
+// ============ LOCATAIRES ============
+.civora-tenants {
+    padding: 4px 0 16px;
+    font-family: $civora-font;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    .civora-tenants-loading, .civora-tenants-empty {
+        text-align: center;
+        padding: 40px 20px;
+        color: $civora-muted;
+        i { font-size: 30px; margin-bottom: 12px; display: block; }
+    }
+    .civora-tenants-loading i { display: inline-block; margin-right: 8px; font-size: 14px; }
+    .civora-tenants-empty {
+        background: $civora-card;
+        border: 1px dashed $civora-border;
+        border-radius: $civora-radius;
+    }
+    .civora-tenants-empty-t {
+        font-family: $civora-font-display;
+        font-weight: 700;
+        font-size: 15px;
+        color: $civora-fg;
+    }
+    .civora-tenants-empty p {
+        margin: 8px auto 0;
+        max-width: 380px;
+        font-size: 12.5px;
+        color: $civora-muted;
+    }
+
+    .civora-tenants-kpis {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+    }
+
+    .civora-tenants-title {
+        font-family: $civora-font-display;
+        font-weight: 700;
+        font-size: 15px;
+        color: $civora-fg;
+    }
+
+    .civora-tenants-list {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+    .civora-tenants-card {
+        background: $civora-card;
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius;
+        overflow: hidden;
+        box-shadow: $civora-shadow-card;
+    }
+    .civora-tenants-card-h {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 18px;
+        cursor: pointer;
+        transition: background .12s ease;
+        &:hover { background: rgba(0, 171, 104, .04); }
+    }
+    .civora-tenants-card-info { flex: 1; min-width: 0; }
+    .civora-tenants-card-name {
+        font-family: $civora-font-display;
+        font-weight: 700;
+        font-size: 14.5px;
+        color: $civora-fg;
+    }
+    .civora-tenants-card-contact {
+        margin-top: 3px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        font-size: 12px;
+        color: $civora-muted;
+        i { margin-right: 3px; }
+    }
+    .civora-tenants-card-nocontact {
+        font-style: italic;
+    }
+    .civora-tenants-card-summary {
+        text-align: right;
+        flex: 0 0 auto;
+    }
+    .civora-tenants-card-count {
+        font-size: 12px;
+        color: $civora-muted;
+    }
+    .civora-tenants-card-rent {
+        font-family: $civora-font-display;
+        font-weight: 700;
+        font-size: 13.5px;
+        color: $civora-accent;
+        margin-top: 2px;
+    }
+
+    .civora-tenants-card-biens {
+        display: flex;
+        flex-direction: column;
+        border-top: 1px solid rgba(9, 26, 54, .04);
+        background: rgba(9, 26, 54, .015);
+    }
+    .civora-tenants-bien {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 18px;
+        cursor: pointer;
+        transition: background .12s ease;
+        border-bottom: 1px solid rgba(9, 26, 54, .04);
+        &:hover { background: rgba(9, 26, 54, .04); }
+        &:last-child { border-bottom: 0; }
+    }
+    .civora-tenants-bien-ico {
+        width: 32px;
+        height: 32px;
+        border-radius: $civora-radius-sm;
+        background: rgba(59, 130, 246, .10);
+        color: #3b82f6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        flex: 0 0 auto;
+    }
+    .civora-tenants-bien-body { flex: 1; min-width: 0; }
+    .civora-tenants-bien-name {
+        font-weight: 600;
+        font-size: 13px;
+        color: $civora-fg;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .civora-tenants-bien-meta {
+        margin-top: 2px;
+        font-size: 11.5px;
+        color: $civora-muted;
+    }
+    .civora-tenants-bien-rent {
+        font-size: 12.5px;
+        font-weight: 700;
+        color: $civora-accent;
+        white-space: nowrap;
+    }
+    .civora-tenants-bien-lease {
+        width: 30px;
+        height: 30px;
+        border-radius: $civora-radius-sm;
+        border: 1px solid $civora-border;
+        background: $civora-card;
+        color: $civora-muted;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        flex: 0 0 auto;
+        transition: all .12s ease;
+        &:hover { border-color: $civora-accent; color: $civora-accent; }
+    }
+
+    @media (max-width: 800px) {
+        .civora-tenants-kpis { grid-template-columns: 1fr; }
+        .civora-tenants-card-h { flex-wrap: wrap; }
+    }
+}

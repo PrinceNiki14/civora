@@ -1,0 +1,255 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// CIVORA — Résumé financier consolidé du bail
+// ─────────────────────────────────────────────────────────────────────────────
+.civora-finover {
+    background: #fff;
+    border: 1px solid #e4e7ec;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 14px;
+
+    &-header {
+        padding: 12px 16px;
+        background: #f8fafc;
+        border-bottom: 1px solid #e4e7ec;
+    }
+
+    &-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        font-weight: 700;
+        color: #091a36;
+
+        i { color: #00ab68; }
+    }
+
+    &-loading {
+        padding: 30px 20px;
+        text-align: center;
+        color: #9aa2ad;
+    }
+
+    &-body {
+        padding: 16px;
+    }
+
+    // ── KPI cards principales ───────────────────────────────────────────
+    &-kpis {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-bottom: 14px;
+
+        @media (max-width: 640px) {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    &-kpi {
+        padding: 12px 14px;
+        border-radius: 8px;
+        border: 1px solid;
+
+        &.is-success {
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+            .civora-finover-kpi-value { color: #14532d; }
+            .civora-finover-kpi-sub i { color: #16a34a; }
+        }
+
+        &.is-neutral {
+            background: #f8fafc;
+            border-color: #e4e7ec;
+            .civora-finover-kpi-value { color: #091a36; }
+            .civora-finover-kpi-sub i { color: #626a75; }
+        }
+
+        &.is-danger {
+            background: #fef2f2;
+            border-color: #fecaca;
+            .civora-finover-kpi-value { color: #7f1d1d; }
+            .civora-finover-kpi-sub { color: #7f1d1d; }
+            .civora-finover-kpi-sub i { color: #dc2626; }
+        }
+
+        &.is-info {
+            background: #ecfeff;
+            border-color: #a5f3fc;
+            .civora-finover-kpi-value { color: #164e63; }
+            .civora-finover-kpi-sub i { color: #0891b2; }
+        }
+    }
+
+    &-kpi-label {
+        font-size: 10.5px;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        color: #626a75;
+        margin-bottom: 4px;
+        font-weight: 600;
+    }
+
+    &-kpi-value {
+        font-size: 16px;
+        font-weight: 900;
+        line-height: 1.2;
+    }
+
+    &-kpi-sub {
+        font-size: 10.5px;
+        color: #626a75;
+        margin-top: 4px;
+
+        i { margin-right: 4px; }
+    }
+
+    // ── Prochaine échéance ──────────────────────────────────────────────
+    &-next {
+        display: grid;
+        grid-template-columns: 40px 1fr auto;
+        gap: 12px;
+        align-items: center;
+        padding: 12px 14px;
+        border-radius: 8px;
+        margin-bottom: 14px;
+
+        &.is-overdue {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            .civora-finover-next-ico { background: #dc2626; color: #fff; }
+            .civora-finover-next-amount { color: #7f1d1d; }
+        }
+
+        &.is-upcoming {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            .civora-finover-next-ico { background: #16a34a; color: #fff; }
+            .civora-finover-next-amount { color: #14532d; }
+        }
+    }
+
+    &-next-ico {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+    }
+
+    &-next-label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 700;
+        color: #4a5461;
+    }
+
+    &-next-details {
+        font-size: 12.5px;
+        color: #091a36;
+        margin-top: 2px;
+    }
+
+    &-next-amount {
+        font-size: 16px;
+        font-weight: 900;
+    }
+
+    // ── Tout payé ───────────────────────────────────────────────────────
+    &-allpaid {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        border-radius: 8px;
+        color: #14532d;
+        font-size: 12.5px;
+        margin-bottom: 14px;
+
+        i { color: #16a34a; font-size: 15px; }
+    }
+
+    // ── Versements initiaux ─────────────────────────────────────────────
+    &-initial {
+        border: 1px solid #e4e7ec;
+        border-radius: 8px;
+        padding: 12px 14px;
+        background: #fafbfc;
+    }
+
+    &-initial-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+
+    &-initial-title {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #091a36;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+
+        i { color: #f59e0b; }
+    }
+
+    &-initial-badge {
+        font-size: 10.5px;
+        padding: 3px 8px;
+        border-radius: 10px;
+        font-weight: 700;
+
+        &.is-done {
+            background: #dcfce7;
+            color: #14532d;
+        }
+        &.is-pending {
+            background: #fef3c7;
+            color: #78350f;
+        }
+    }
+
+    &-initial-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+
+        @media (max-width: 500px) {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    &-initial-item {
+        background: #fff;
+        padding: 8px 10px;
+        border-radius: 6px;
+        border: 1px solid #e4e7ec;
+    }
+
+    &-initial-label {
+        font-size: 10px;
+        color: #9aa2ad;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    &-initial-value {
+        font-size: 13.5px;
+        font-weight: 800;
+        color: #091a36;
+        margin-top: 2px;
+
+        &.is-received { color: #14532d; }
+        &.is-pending { color: #78350f; }
+    }
+}

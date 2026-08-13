@@ -69,6 +69,9 @@
                     <CivoraStatCard label="'Taux de paiement'" value="(lease.payment_rate || 0) + ' %'" icon="'fa fa-line-chart'"/>
                 </div>
 
+                <!-- Résumé financier consolidé -->
+                <FinanceOverview leaseId="leaseId"/>
+
                 <div class="civora-l360-grid">
                     <div class="civora-l360-card">
                         <div class="civora-l360-card-h">Conditions du bail</div>
@@ -86,6 +89,12 @@
                     <div class="civora-l360-card">
                         <div class="civora-l360-card-h">Suivi financier</div>
                         <div class="civora-l360-kv"><span>Propriétaire</span><b t-esc="ownerLabel"/></div>
+                        <div class="civora-l360-kv"><span>Agent responsable</span><b t-esc="agentLabel"/></div>
+                        <div t-if="hasOpportunity" class="civora-l360-kv">
+                            <span>Opportunité source</span>
+                            <b class="civora-l360-oppty-link" t-on-click="() => this.openOpportunity()"
+                               t-esc="opportunityLabel"/>
+                        </div>
                         <div class="civora-l360-kv"><span>Total attendu (cumul)</span><b t-esc="kpiMoney(lease.total_expected)"/></div>
                         <div class="civora-l360-kv"><span>Total encaissé (cumul)</span><b t-esc="kpiMoney(lease.total_paid)"/></div>
                         <div class="civora-l360-kv"><span>Impayés</span><b t-esc="kpiMoney(lease.arrears_amount)"/></div>
@@ -104,40 +113,81 @@
 
             <!-- ===== PAIEMENTS ===== -->
             <t t-elif="state.activeTab === 'payments'">
+
+                <!-- Wizard versement initial -->
+                <InitialPaymentWizard t-if="state.showInitialWizard"
+                                      leaseId="leaseId"
+                                      onClose="() => this.closeInitialWizard()"
+                                      onSaved="() => this.onInitialWizardSaved()"/>
+
+                <!-- Drawer restitution caution -->
+                <DepositRefund t-if="state.showDepositRefund"
+                               leaseId="leaseId"
+                               onClose="() => this.closeDepositRefund()"
+                               onSaved="() => this.onDepositRefundSaved()"/>
+
+                <!-- Échéancier (mois en cours + prochain) -->
+                <InstallmentSchedule leaseId="leaseId" compact="true"/>
+
+                <!-- Statistiques par méthode de paiement -->
+                <PaymentMethodStats leaseId="leaseId"/>
+
                 <div class="civora-l360-payhead">
                     <div class="civora-l360-payhead-t">Historique des paiements (<t t-esc="state.payments.length"/>)</div>
-                    <button class="civora-btn civora-btn-accent" t-on-click="() => this.toggleAddPayment()">
-                        <i class="fa fa-plus"/> Ajouter un paiement
-                    </button>
+                    <div class="civora-l360-payhead-actions">
+                        <button class="civora-btn civora-btn-outline"
+                                t-on-click="() => this.openInitialWizard()"
+                                title="Enregistrer un versement initial (avance + caution + agence)">
+                            <i class="fa fa-key"/> Versement initial
+                        </button>
+                        <button class="civora-btn civora-btn-outline"
+                                t-on-click="() => this.openDepositRefund()"
+                                title="Restitution de caution en fin de bail">
+                            <i class="fa fa-undo"/> Restitution caution
+                        </button>
+                        <button class="civora-btn civora-btn-accent" t-on-click="() => this.toggleAddPayment()">
+                            <i class="fa fa-plus"/> Ajouter un paiement
+                        </button>
+                    </div>
                 </div>
 
                 <div t-if="state.showPaymentForm" class="civora-l360-payform">
+                    <div class="civora-l360-payform-row">
+                        <label>Type de versement</label>
+                        <select t-on-change="(ev) => this.onPaymentInput('payment_type', ev)">
+                            <option value="rent" t-att-selected="state.paymentForm.payment_type === 'rent'">Loyer mensuel</option>
+                            <option value="advance" t-att-selected="state.paymentForm.payment_type === 'advance'">Loyer d'avance</option>
+                            <option value="caution" t-att-selected="state.paymentForm.payment_type === 'caution'">Caution</option>
+                            <option value="agency" t-att-selected="state.paymentForm.payment_type === 'agency'">Frais d'agence</option>
+                            <option value="other" t-att-selected="state.paymentForm.payment_type === 'other'">Autre</option>
+                        </select>
+                    </div>
                     <div class="civora-l360-payform-row">
                         <label>Date</label>
                         <input type="date" t-att-value="state.paymentForm.date" t-on-input="(ev) => this.onPaymentInput('date', ev)"/>
                     </div>
                     <div class="civora-l360-payform-row">
-                        <label>Montant (FCFA)</label>
+                        <label>Montant</label>
                         <input type="number" t-att-value="state.paymentForm.amount" t-on-input="(ev) => this.onPaymentInput('amount', ev)"/>
                     </div>
                     <div class="civora-l360-payform-row">
                         <label>Mode</label>
                         <select t-on-change="(ev) => this.onPaymentInput('method', ev)">
-                            <option value="virement">Virement bancaire</option>
-                            <option value="wave">Wave</option>
-                            <option value="orange_money">Orange Money</option>
-                            <option value="mtn_momo">MTN MoMo</option>
-                            <option value="cheque">Chèque</option>
-                            <option value="especes">Espèces</option>
-                            <option value="autre">Autre</option>
+                            <option value="virement" t-att-selected="state.paymentForm.method === 'virement'">Virement bancaire</option>
+                            <option value="wave" t-att-selected="state.paymentForm.method === 'wave'">Wave</option>
+                            <option value="orange_money" t-att-selected="state.paymentForm.method === 'orange_money'">Orange Money</option>
+                            <option value="mtn_momo" t-att-selected="state.paymentForm.method === 'mtn_momo'">MTN MoMo</option>
+                            <option value="cheque" t-att-selected="state.paymentForm.method === 'cheque'">Chèque</option>
+                            <option value="especes" t-att-selected="state.paymentForm.method === 'especes'">Espèces</option>
+                            <option value="autre" t-att-selected="state.paymentForm.method === 'autre'">Autre</option>
                         </select>
                     </div>
                     <div class="civora-l360-payform-row">
                         <label>Statut</label>
                         <select t-on-change="(ev) => this.onPaymentInput('status', ev)">
-                            <option value="paid">Encaissé</option>
-                            <option value="partial">Partiel</option>
-                            <option value="pending">En attente</option>
+                            <option value="paid" t-att-selected="state.paymentForm.status === 'paid'">Encaissé</option>
+                            <option value="partial" t-att-selected="state.paymentForm.status === 'partial'">Partiel</option>
+                            <option value="pending" t-att-selected="state.paymentForm.status === 'pending'">En attente</option>
                         </select>
                     </div>
                     <div class="civora-l360-payform-row">
@@ -153,43 +203,118 @@
                     </div>
                 </div>
 
+
                 <div t-if="!state.payments.length" class="civora-l360-soon">
                     <div class="civora-l360-soon-ico"><i class="fa fa-money"/></div>
                     <div class="civora-l360-soon-t">Aucun paiement enregistré</div>
                     <p>Ajoutez un paiement pour commencer le suivi d'encaissement de ce bail.</p>
                 </div>
 
-                <div t-else="" class="civora-l360-paytable-wrap">
-                    <table class="civora-l360-paytable">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Mode</th>
-                                <th>Référence</th>
-                                <th class="civora-num">Montant</th>
-                                <th>Statut</th>
-                                <th>Origine</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr t-foreach="state.payments" t-as="p" t-key="p.id">
-                                <td t-esc="fmtDate(p.date)"/>
-                                <td t-esc="payMethodLabel(p.method)"/>
-                                <td class="civora-l360-muted" t-esc="orDash(p.reference)"/>
-                                <td class="civora-num" t-esc="kpiMoney(p.amount)"/>
-                                <td><CivoraBadge label="payStatusMeta(p.status).label" variant="payStatusMeta(p.status).variant"/></td>
-                                <td class="civora-l360-muted" t-esc="p.source === 'online' ? 'En ligne' : 'Manuelle'"/>
-                                <td class="civora-num">
-                                    <button class="civora-btn civora-btn-outline civora-btn-sm"
-                                            t-on-click="() => this.generateFromPayment(p.id)"
-                                            title="Générer la quittance de ce paiement">
-                                        <i class="fa fa-file-text-o"/> Quittance
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <!-- ── VERSEMENTS INITIAUX (collapsable) ─────────────────── -->
+                <div t-if="hasInitialPayments" class="civora-l360-paytable-wrap civora-l360-paytable-initial">
+                    <div class="civora-l360-paytable-header is-clickable"
+                         t-on-click="() => this.toggleCollapse('initial')">
+                        <i t-att-class="'fa fa-chevron-' + (state.collapsed.initial ? 'right' : 'down')"/>
+                        <i class="fa fa-key"/> Versements initiaux
+                        (<t t-esc="initialPayments.length"/>)
+                        <span class="civora-l360-paytable-total"
+                              t-esc="fmtMoney(initialPaymentsTotal)"/>
+                    </div>
+                    <div t-if="!state.collapsed.initial">
+                        <table class="civora-l360-paytable">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Mode</th>
+                                    <th>Référence</th>
+                                    <th class="civora-num">Montant</th>
+                                    <th>Statut</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="initialPayments" t-as="p" t-key="p.id"
+                                    t-att-class="p.status === 'cancelled' ? 'is-cancelled' : ''">
+                                    <td t-esc="fmtDate(p.date)"/>
+                                    <td>
+                                        <span t-att-class="'civora-l360-typepill is-' + p.payment_type"
+                                              t-esc="paymentTypeLabel(p.payment_type)"/>
+                                    </td>
+                                    <td t-esc="payMethodLabel(p.method)"/>
+                                    <td class="civora-l360-muted" t-esc="orDash(p.reference)"/>
+                                    <td class="civora-num" t-esc="kpiMoney(p.amount)"/>
+                                    <td><CivoraBadge label="payStatusMeta(p.status).label" variant="payStatusMeta(p.status).variant"/></td>
+                                    <td class="civora-num civora-l360-payactions">
+                                        <button class="civora-btn civora-btn-outline civora-btn-sm"
+                                                t-on-click="() => this.generateFromPayment(p.id)"
+                                                title="Générer le reçu">
+                                            <i class="fa fa-file-text-o"/> Reçu
+                                        </button>
+                                        <button t-if="p.status !== 'cancelled'"
+                                                t-att-class="'civora-btn civora-btn-sm ' + (state.pendingCancelId === p.id ? 'civora-btn-danger' : 'civora-btn-ghost')"
+                                                t-on-click="() => this.cancelPayment(p.id)"
+                                                title="Annuler ce paiement">
+                                            <i class="fa fa-times"/>
+                                            <t t-if="state.pendingCancelId === p.id"> Confirmer</t>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ── LOYERS MENSUELS (collapsable) ─────────────────────── -->
+                <div t-if="rentPayments.length" class="civora-l360-paytable-wrap">
+                    <div class="civora-l360-paytable-header civora-l360-paytable-header-rent is-clickable"
+                         t-on-click="() => this.toggleCollapse('rent')">
+                        <i t-att-class="'fa fa-chevron-' + (state.collapsed.rent ? 'right' : 'down')"/>
+                        <i class="fa fa-home"/> Loyers mensuels
+                        (<t t-esc="rentPayments.length"/>)
+                        <span class="civora-l360-paytable-total"
+                              t-esc="fmtMoney(rentPaymentsTotal)"/>
+                    </div>
+                    <div t-if="!state.collapsed.rent">
+                        <table class="civora-l360-paytable">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Mode</th>
+                                    <th>Référence</th>
+                                    <th class="civora-num">Montant</th>
+                                    <th>Statut</th>
+                                    <th>Origine</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="rentPayments" t-as="p" t-key="p.id"
+                                    t-att-class="p.status === 'cancelled' ? 'is-cancelled' : ''">
+                                    <td t-esc="fmtDate(p.date)"/>
+                                    <td t-esc="payMethodLabel(p.method)"/>
+                                    <td class="civora-l360-muted" t-esc="orDash(p.reference)"/>
+                                    <td class="civora-num" t-esc="kpiMoney(p.amount)"/>
+                                    <td><CivoraBadge label="payStatusMeta(p.status).label" variant="payStatusMeta(p.status).variant"/></td>
+                                    <td class="civora-l360-muted" t-esc="p.source === 'online' ? 'En ligne' : 'Manuelle'"/>
+                                    <td class="civora-num civora-l360-payactions">
+                                        <button class="civora-btn civora-btn-outline civora-btn-sm"
+                                                t-on-click="() => this.generateFromPayment(p.id)"
+                                                title="Générer la quittance de ce paiement">
+                                            <i class="fa fa-file-text-o"/> Quittance
+                                        </button>
+                                        <button t-if="p.status !== 'cancelled'"
+                                                t-att-class="'civora-btn civora-btn-sm ' + (state.pendingCancelId === p.id ? 'civora-btn-danger' : 'civora-btn-ghost')"
+                                                t-on-click="() => this.cancelPayment(p.id)"
+                                                title="Annuler ce paiement">
+                                            <i class="fa fa-times"/>
+                                            <t t-if="state.pendingCancelId === p.id"> Confirmer</t>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </t>
 
@@ -262,18 +387,27 @@
                 </div>
             </t>
 
-            <!-- ===== DOCUMENTS (a venir) ===== -->
-            <div t-elif="state.activeTab === 'documents'" class="civora-l360-soon">
-                <div class="civora-l360-soon-ico"><i class="fa fa-folder-open-o"/></div>
-                <div class="civora-l360-soon-t">Documents</div>
-                <p>Contrat signé, état des lieux, quittances et avenants — à venir avec la gestion documentaire.</p>
+            <!-- ===== CONTRAT ===== -->
+            <div t-elif="state.activeTab === 'contrat'">
+                <ContractTab
+                    leaseId="leaseId"
+                    leaseType="lease.lease_type || 'residentiel'"
+                    tenantName="(lease.tenant_id &amp;&amp; lease.tenant_id[1]) || ''"/>
             </div>
 
-            <!-- ===== HISTORIQUE (a venir) ===== -->
-            <div t-else="" class="civora-l360-soon">
-                <div class="civora-l360-soon-ico"><i class="fa fa-history"/></div>
-                <div class="civora-l360-soon-t">Historique</div>
-                <p>Chronologie complète des opérations du bail (relances, renouvellements, tickets) — à venir.</p>
+            <!-- ===== DOCUMENTS (contribué par civora_documents) ===== -->
+            <div t-elif="state.activeTab === 'documents'">
+                <DocumentsTab resModel="'civora.lease'" resId="leaseId"/>
+            </div>
+
+            <!-- ===== INCIDENTS &amp; RELANCES ===== -->
+            <div t-elif="state.activeTab === 'incidents'">
+                <IncidentsTab leaseId="leaseId"/>
+            </div>
+
+            <!-- ===== HISTORIQUE (timeline unifiée) ===== -->
+            <div t-else="">
+                <LeaseTimeline leaseId="leaseId"/>
             </div>
         </t>
 

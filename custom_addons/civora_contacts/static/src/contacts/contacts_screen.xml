@@ -12,52 +12,207 @@
                     <div class="civora-cc-subtitle">Base CRM unifiée · rôles, scoring IA, sources</div>
                 </div>
                 <div class="civora-cc-actions">
-                    <button class="civora-btn civora-btn-outline"><i class="fa fa-download"/> Importer</button>
-                    <button class="civora-btn civora-btn-accent" t-on-click="openCreate"><i class="fa fa-plus"/> Nouveau contact</button>
+                    <button class="civora-btn civora-btn-outline"
+                            t-att-disabled="state.exporting"
+                            t-on-click="() => this.exportCsv()">
+                        <i t-att-class="state.exporting ? 'fa fa-circle-o-notch fa-spin' : 'fa fa-download'"/>
+                        <t t-esc="state.exporting ? 'Export…' : 'Exporter'"/>
+                    </button>
+                    <button class="civora-btn civora-btn-accent" t-on-click="openCreate">
+                        <i class="fa fa-plus"/> Nouveau contact
+                    </button>
                 </div>
             </div>
 
-            <!-- StatCards -->
+            <!-- StatCards globales -->
             <div class="civora-grid civora-grid-4 civora-mb">
                 <CivoraStatCard label="'Total contacts'" value="state.stats.total + ''" icon="'fa fa-address-book-o'"/>
                 <CivoraStatCard label="'Leads chauds'" value="state.stats.chaud + ''" icon="'fa fa-fire'"/>
-                <CivoraStatCard label="'VIP'" value="state.stats.vip + ''" icon="'fa fa-star'"/>
+                <CivoraStatCard label="'VIP (score ≥ 85)'" value="state.stats.vip + ''" icon="'fa fa-star'"/>
                 <CivoraStatCard label="'Score moyen'" value="state.stats.avg + ''" icon="'fa fa-users'"/>
             </div>
 
-            <!-- Onglets -->
-            <CivoraTabs tabs="tabs" active="state.activeTab" onChange="(id) => this.setTab(id)"/>
+            <!-- Onglets principaux (Annuaire · Imports · RGPD) -->
+            <div class="civora-cc-tabs">
+                <button t-foreach="tabs" t-as="t" t-key="t.id"
+                        t-att-class="'civora-cc-tab' + (state.activeTab === t.id ? ' is-active' : '')"
+                        t-on-click="() => this.setTab(t.id)">
+                    <span t-esc="t.label"/>
+                </button>
+            </div>
 
-            <!-- Contenu : Annuaire -->
-            <t t-if="state.activeTab === 'directory'">
-                <!-- Barre : segments + recherche -->
-                <div class="civora-ct-toolbar">
-                    <div class="civora-ct-segments">
-                        <button t-foreach="segments" t-as="seg" t-key="seg.id"
-                                class="civora-pill"
-                                t-att-class="{ 'civora-pill-active': state.segment === seg.id }"
-                                t-on-click="() => this.setSegment(seg.id)"
-                                t-esc="seg.label"/>
-                    </div>
-                    <div class="civora-ct-search">
+            <!-- ============ VUE ANNUAIRE ============ -->
+            <div t-if="state.activeTab === 'directory'">
+
+            <!-- Toolbar : recherche + filtres + view mode + tri -->
+            <div class="civora-cc-toolbar">
+                <div class="civora-cc-toolbar-l">
+                    <div class="civora-cc-search">
                         <i class="fa fa-search"/>
-                        <input type="text" placeholder="Rechercher un contact…"
+                        <input type="text" placeholder="Rechercher (nom, email, téléphone, ville, société…)"
                                t-att-value="state.search" t-on-input="(ev) => this.onSearchInput(ev)"/>
                     </div>
+                    <button class="civora-cc-filters-btn"
+                            t-att-class="{ 'is-active': activeFilterCount > 0 || state.filtersOpen }"
+                            t-on-click="() => this.toggleFilters()">
+                        <i class="fa fa-sliders"/> Filtres
+                        <span t-if="activeFilterCount" class="civora-cc-filters-badge"
+                              t-esc="activeFilterCount"/>
+                    </button>
                 </div>
-
-                <!-- Tableau annuaire -->
-                <div class="civora-card civora-ct-table-wrap">
-                    <div t-if="state.loading" class="civora-ct-empty">
-                        <i class="fa fa-circle-o-notch fa-spin me-2"/> Chargement…
+                <div class="civora-cc-toolbar-r">
+                    <div class="civora-cc-sortby">
+                        <label>Trier :</label>
+                        <select t-on-change="(ev) => this.setSortOrder(ev)">
+                            <option t-foreach="sortOptions" t-as="s" t-key="s.value"
+                                    t-att-value="s.value"
+                                    t-att-selected="state.sortOrder === s.value"
+                                    t-esc="s.label"/>
+                        </select>
                     </div>
-                    <table t-else="" class="civora-ct-table">
+                    <div class="civora-cc-viewtoggle">
+                        <button t-att-class="'civora-cc-viewbtn' + (state.viewMode === 'table' ? ' is-active' : '')"
+                                t-on-click="() => this.setViewMode('table')" title="Vue tableau">
+                            <i class="fa fa-list"/>
+                        </button>
+                        <button t-att-class="'civora-cc-viewbtn' + (state.viewMode === 'kanban' ? ' is-active' : '')"
+                                t-on-click="() => this.setViewMode('kanban')" title="Vue Kanban">
+                            <i class="fa fa-columns"/>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panneau filtres avancés (dépliable) -->
+            <div t-if="state.filtersOpen" class="civora-cc-filters-panel">
+                <div class="civora-cc-filters-grid">
+                    <div class="civora-fld">
+                        <label>Rôle</label>
+                        <select t-on-change="(ev) => this.setFilter('role_id', ev)">
+                            <option value="">Tous</option>
+                            <option t-foreach="roles" t-as="r" t-key="r.id"
+                                    t-att-value="r.id"
+                                    t-att-selected="state.filters.role_id === r.id"
+                                    t-esc="r.name"/>
+                        </select>
+                    </div>
+                    <div class="civora-fld">
+                        <label>Source</label>
+                        <select t-on-change="(ev) => this.setFilter('source_id', ev)">
+                            <option value="">Toutes</option>
+                            <option t-foreach="sources" t-as="s" t-key="s.id"
+                                    t-att-value="s.id"
+                                    t-att-selected="state.filters.source_id === s.id"
+                                    t-esc="s.name"/>
+                        </select>
+                    </div>
+                    <div class="civora-fld">
+                        <label>Agent</label>
+                        <select t-on-change="(ev) => this.setFilter('agent_id', ev)">
+                            <option value="">Tous</option>
+                            <option t-foreach="agents" t-as="a" t-key="a.id"
+                                    t-att-value="a.id"
+                                    t-att-selected="state.filters.agent_id === a.id"
+                                    t-esc="a.name"/>
+                        </select>
+                    </div>
+                    <div class="civora-fld">
+                        <label>Statut CRM</label>
+                        <select t-on-change="(ev) => this.setFilter('status', ev)">
+                            <option value="">Tous</option>
+                            <option value="chaud" t-att-selected="state.filters.status === 'chaud'">Chaud</option>
+                            <option value="actif" t-att-selected="state.filters.status === 'actif'">Actif</option>
+                            <option value="qualifie" t-att-selected="state.filters.status === 'qualifie'">Qualifié</option>
+                            <option value="a_risque" t-att-selected="state.filters.status === 'a_risque'">À risque</option>
+                            <option value="inactif" t-att-selected="state.filters.status === 'inactif'">Inactif</option>
+                        </select>
+                    </div>
+                    <div class="civora-fld">
+                        <label>Ville</label>
+                        <input type="text" list="civora-cc-cities" placeholder="Toutes"
+                               t-att-value="state.filters.city"
+                               t-on-input="(ev) => this.setFilter('city', ev)"/>
+                        <datalist id="civora-cc-cities">
+                            <option t-foreach="cities" t-as="ct" t-key="ct_index"
+                                    t-att-value="ct"/>
+                        </datalist>
+                    </div>
+                    <div class="civora-fld">
+                        <label>Score IA min</label>
+                        <input type="number" min="0" max="100"
+                               t-att-value="state.filters.score_min"
+                               t-on-change="(ev) => this.setFilter('score_min', ev)"/>
+                    </div>
+                    <div class="civora-fld">
+                        <label>Score IA max</label>
+                        <input type="number" min="0" max="100"
+                               t-att-value="state.filters.score_max"
+                               t-on-change="(ev) => this.setFilter('score_max', ev)"/>
+                    </div>
+                    <div class="civora-fld">
+                        <label>Consentement Email</label>
+                        <select t-on-change="(ev) => this.setFilter('consent_email', ev)">
+                            <option t-foreach="consentOptions" t-as="c" t-key="c.value"
+                                    t-att-value="c.value"
+                                    t-att-selected="state.filters.consent_email === c.value"
+                                    t-esc="c.label"/>
+                        </select>
+                    </div>
+                    <div class="civora-fld">
+                        <label>Consentement SMS</label>
+                        <select t-on-change="(ev) => this.setFilter('consent_sms', ev)">
+                            <option t-foreach="consentOptions" t-as="c" t-key="c.value"
+                                    t-att-value="c.value"
+                                    t-att-selected="state.filters.consent_sms === c.value"
+                                    t-esc="c.label"/>
+                        </select>
+                    </div>
+                    <div class="civora-fld">
+                        <label>Consentement WhatsApp</label>
+                        <select t-on-change="(ev) => this.setFilter('consent_whatsapp', ev)">
+                            <option t-foreach="consentOptions" t-as="c" t-key="c.value"
+                                    t-att-value="c.value"
+                                    t-att-selected="state.filters.consent_whatsapp === c.value"
+                                    t-esc="c.label"/>
+                        </select>
+                    </div>
+                </div>
+                <div class="civora-cc-filters-actions">
+                    <button class="civora-btn civora-btn-outline" t-on-click="() => this.resetFilters()">
+                        <i class="fa fa-refresh"/> Réinitialiser
+                    </button>
+                </div>
+            </div>
+
+            <!-- Compteur résultats -->
+            <div class="civora-cc-count">
+                <t t-if="state.totalFiltered === state.stats.total">
+                    <t t-esc="state.totalFiltered"/> contact<t t-if="state.totalFiltered > 1">s</t>
+                </t>
+                <t t-else="">
+                    <t t-esc="state.totalFiltered"/> sur <t t-esc="state.stats.total"/> contact<t t-if="state.stats.total > 1">s</t>
+                </t>
+            </div>
+
+            <!-- ========== VUE TABLEAU ========== -->
+            <div t-if="state.viewMode === 'table'" class="civora-card civora-ct-table-wrap">
+                <div t-if="state.loading" class="civora-ct-empty">
+                    <i class="fa fa-circle-o-notch fa-spin me-2"/> Chargement…
+                </div>
+                <t t-else="">
+                    <table class="civora-ct-table">
                         <thead>
                             <tr>
-                                <th>Contact</th>
+                                <th class="civora-ct-sortable" t-on-click="() => this.sortByColumn('name')">
+                                    Contact <i t-att-class="'fa ' + sortIndicator('name')"/>
+                                </th>
                                 <th>Rôle</th>
-                                <th>Score IA</th>
-                                <th>Statut</th>
+                                <th class="civora-ct-sortable" t-on-click="() => this.sortByColumn('civora_ai_score')">
+                                    Score IA <i t-att-class="'fa ' + sortIndicator('civora_ai_score')"/>
+                                </th>
+                                <th class="civora-ct-sortable" t-on-click="() => this.sortByColumn('civora_status')">
+                                    Statut <i t-att-class="'fa ' + sortIndicator('civora_status')"/>
+                                </th>
                                 <th>Agent</th>
                                 <th>Prochaine action</th>
                             </tr>
@@ -88,23 +243,125 @@
                                 </td>
                                 <td><CivoraBadge label="statusLabel(c)" variant="statusVariant(c)"/></td>
                                 <td class="civora-ct-muted" t-esc="agentName(c)"/>
-                                <td class="civora-ct-muted" t-esc="c.civora_next_action or '—'"/>
+                                <td class="civora-ct-muted" t-esc="c.civora_next_action || '—'"/>
                             </tr>
                         </tbody>
                     </table>
-                </div>
-            </t>
+                    <div t-if="state.hasMore" class="civora-cc-loadmore">
+                        <button class="civora-btn civora-btn-outline" t-on-click="() => this.loadMore()">
+                            <i class="fa fa-chevron-down"/> Charger plus
+                            (<t t-esc="state.contacts.length"/> / <t t-esc="state.totalFiltered"/>)
+                        </button>
+                    </div>
+                </t>
+            </div>
 
-            <!-- Autres onglets : placeholder -->
-            <t t-else="">
-                <div class="civora-card civora-ct-placeholder">
-                    <div class="civora-ct-ph-icon"><i class="fa fa-rocket"/></div>
-                    <div class="civora-ct-ph-title">Bientôt disponible</div>
-                    <div class="civora-ct-ph-text">Cet onglet sera développé dans une prochaine étape.</div>
+            <!-- ========== VUE KANBAN ========== -->
+            <div t-if="state.viewMode === 'kanban'" class="civora-cc-kanban">
+                <div t-if="state.loading" class="civora-ct-empty">
+                    <i class="fa fa-circle-o-notch fa-spin me-2"/> Chargement…
                 </div>
-            </t>
+                <t t-else="">
+                    <div class="civora-cc-kanban-cols">
+                        <div t-foreach="kanbanColumns" t-as="st" t-key="st"
+                             class="civora-cc-kb-col"
+                             t-on-dragover="(ev) => this.onDragOver(ev)"
+                             t-on-drop="(ev) => this.onDrop(st, ev)">
+                            <div t-att-class="'civora-cc-kb-h civora-cc-kb-h-' + st">
+                                <span class="civora-cc-kb-title">
+                                    <i t-att-class="'fa ' + statusMeta[st].icon"/>
+                                    <t t-esc="statusMeta[st].label"/>
+                                </span>
+                                <span class="civora-cc-kb-count"
+                                      t-esc="contactsByStatus(st).length"/>
+                            </div>
+                            <div class="civora-cc-kb-body">
+                                <div t-foreach="contactsByStatus(st)" t-as="c" t-key="c.id"
+                                     class="civora-cc-kb-card"
+                                     draggable="true"
+                                     t-on-dragstart="(ev) => this.onDragStart(c.id, ev)"
+                                     t-on-click="() => this.openContact(c)">
+                                    <div class="civora-cc-kb-card-h">
+                                        <CivoraAvatar name="c.name" size="'sm'"/>
+                                        <div class="civora-cc-kb-card-txt">
+                                            <div class="civora-cc-kb-name text-truncate" t-esc="c.name"/>
+                                            <div class="civora-cc-kb-sub text-truncate" t-esc="roleLabel(c)"/>
+                                        </div>
+                                    </div>
+                                    <div class="civora-cc-kb-card-score">
+                                        <CivoraProgress value="c.civora_ai_score" tone="scoreTone(c.civora_ai_score)"/>
+                                        <span class="civora-cc-kb-score-num" t-esc="c.civora_ai_score"/>
+                                    </div>
+                                    <div t-if="c.civora_next_action" class="civora-cc-kb-card-action">
+                                        <i class="fa fa-clock-o"/> <t t-esc="c.civora_next_action"/>
+                                    </div>
+                                    <div t-if="c.civora_agent_id" class="civora-cc-kb-card-agent">
+                                        <i class="fa fa-user-o"/> <t t-esc="agentName(c)"/>
+                                    </div>
+                                </div>
+                                <div t-if="!contactsByStatus(st).length" class="civora-cc-kb-empty">
+                                    Aucun contact
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-            <!-- Drawer : fiche 360 / creation / edition -->
+                    <!-- Colonne "Sans statut" (si présente) -->
+                    <div t-if="contactsNoStatus().length" class="civora-cc-kb-nostatus">
+                        <div class="civora-cc-kb-h civora-cc-kb-h-none">
+                            <span class="civora-cc-kb-title">
+                                <i class="fa fa-question-circle-o"/> Sans statut
+                            </span>
+                            <span class="civora-cc-kb-count"
+                                  t-esc="contactsNoStatus().length"/>
+                        </div>
+                        <div class="civora-cc-kb-body civora-cc-kb-body-hz">
+                            <div t-foreach="contactsNoStatus()" t-as="c" t-key="c.id"
+                                 class="civora-cc-kb-card civora-cc-kb-card-hz"
+                                 draggable="true"
+                                 t-on-dragstart="(ev) => this.onDragStart(c.id, ev)"
+                                 t-on-click="() => this.openContact(c)">
+                                <CivoraAvatar name="c.name" size="'sm'"/>
+                                <div class="civora-cc-kb-card-txt">
+                                    <div class="civora-cc-kb-name text-truncate" t-esc="c.name"/>
+                                    <div class="civora-cc-kb-sub text-truncate" t-esc="roleLabel(c)"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </div>
+            </div>
+            <!-- ============ FIN VUE ANNUAIRE ============ -->
+
+            <!-- ============ VUE IMPORTS ============ -->
+            <div t-if="state.activeTab === 'interactions'">
+                <ContactsInteractionsView
+                    onOpenContact.bind="openContactFromAnalytics"/>
+            </div>
+
+            <div t-if="state.activeTab === 'scoring'">
+                <ContactsScoringView
+                    onFilterScore.bind="applyScoreRange"
+                    onOpenContact.bind="openContactFromAnalytics"/>
+            </div>
+
+            <div t-if="state.activeTab === 'imports'">
+                <ContactsImportsView/>
+            </div>
+
+            <!-- ============ VUE RGPD ============ -->
+            <div t-if="state.activeTab === 'rgpd'">
+                <ContactsRgpdView/>
+            </div>
+
+            <!-- Onglets contribués par des modules externes -->
+            <div t-if="activeExternalTab">
+                <t t-component="activeExternalTab.Component"
+                   onOpenContact.bind="openContactFromAnalytics"/>
+            </div>
+
+            <!-- Drawer : création uniquement (la fiche 360 est un écran dédié) -->
             <ContactDrawer t-if="state.drawer.open"
                            mode="state.drawer.mode"
                            contactId="state.drawer.contactId"

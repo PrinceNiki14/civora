@@ -1,0 +1,216 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// CIVORA — Timeline chronologique du bail
+// ─────────────────────────────────────────────────────────────────────────────
+.civora-tl {
+    padding: 4px;
+}
+
+// Filtres
+.civora-tl-filters {
+    display: flex;
+    gap: 6px;
+    padding: 12px 4px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #e4e7ec;
+    flex-wrap: wrap;
+}
+
+.civora-tl-filter {
+    padding: 5px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    background: transparent;
+    border: 1px solid #d0d5dd;
+    border-radius: 16px;
+    color: #4a5461;
+    cursor: pointer;
+    transition: all .15s;
+
+    &:hover {
+        background: #f4f6fa;
+        border-color: #9aa2ad;
+    }
+
+    &.is-active {
+        background: #091a36;
+        color: #fff;
+        border-color: #091a36;
+    }
+}
+
+// Loading / Empty
+.civora-tl-loading, .civora-tl-empty {
+    padding: 40px 20px;
+    text-align: center;
+    color: #9aa2ad;
+    font-size: 13px;
+}
+
+.civora-tl-empty {
+    &-ico {
+        font-size: 42px;
+        color: #d0d5dd;
+        margin-bottom: 10px;
+    }
+    &-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: #4a5461;
+        margin-bottom: 6px;
+    }
+    &-text {
+        font-size: 12px;
+        color: #9aa2ad;
+        line-height: 1.6;
+        max-width: 460px;
+        margin: 0 auto;
+    }
+}
+
+// Groupes par jour
+.civora-tl-groups {
+    padding: 4px;
+}
+
+.civora-tl-group {
+    margin-bottom: 20px;
+}
+
+.civora-tl-day {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-left: 6px;
+
+    &-label {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        color: #626a75;
+        background: #f4f6fa;
+        padding: 4px 12px;
+        border-radius: 12px;
+    }
+}
+
+// Timeline events
+.civora-tl-events {
+    position: relative;
+    padding-left: 40px;
+
+    // Ligne verticale continue
+    &:before {
+        content: '';
+        position: absolute;
+        left: 15px;
+        top: 8px;
+        bottom: 8px;
+        width: 2px;
+        background: #e4e7ec;
+    }
+}
+
+.civora-tl-event {
+    position: relative;
+    margin-bottom: 14px;
+
+    &:last-child { margin-bottom: 4px; }
+
+    // Point coloré (dot)
+    .civora-tl-dot {
+        position: absolute;
+        left: -33px;
+        top: 6px;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-size: 11px;
+        box-shadow: 0 0 0 3px #fff;
+        z-index: 1;
+    }
+
+    // Variants
+    &.is-success .civora-tl-dot { background: #16a34a; }
+    &.is-info    .civora-tl-dot { background: #0891b2; }
+    &.is-warning .civora-tl-dot { background: #f59e0b; }
+    &.is-danger  .civora-tl-dot { background: #dc2626; }
+    &.is-neutral .civora-tl-dot { background: #4a5461; }
+}
+
+.civora-tl-card {
+    background: #fff;
+    border: 1px solid #e4e7ec;
+    border-radius: 8px;
+    padding: 10px 14px;
+    transition: border-color .15s;
+
+    &:hover { border-color: #d0d5dd; }
+}
+
+.civora-tl-card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+    flex-wrap: wrap;
+}
+
+.civora-tl-badge {
+    font-size: 10.5px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: #f4f6fa;
+    color: #4a5461;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.civora-tl-ref {
+    font-size: 11px;
+    color: #626a75;
+    font-family: monospace;
+}
+
+.civora-tl-time {
+    margin-left: auto;
+    font-size: 11px;
+    color: #9aa2ad;
+    font-weight: 600;
+}
+
+.civora-tl-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #091a36;
+    margin: 4px 0;
+}
+
+.civora-tl-body {
+    font-size: 12.5px;
+    color: #4a5461;
+    line-height: 1.55;
+    margin: 4px 0 6px;
+
+    b, strong { color: #091a36; }
+    div { margin-bottom: 2px; }
+    p { margin: 0 0 4px 0; }
+}
+
+.civora-tl-author {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10.5px;
+    color: #9aa2ad;
+    margin-top: 4px;
+    padding-top: 4px;
+    border-top: 1px dashed #f0f2f5;
+
+    i { font-size: 10px; }
+}

@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="civora_locations.InitialPaymentWizard">
+        <div class="civora-ipw-overlay" t-on-click.self="() => this.props.onClose()">
+            <div class="civora-ipw-modal">
+
+                <!-- Header -->
+                <div class="civora-ipw-header">
+                    <div class="civora-ipw-title">
+                        <i class="fa fa-key"/>
+                        <span>Enregistrer un versement initial</span>
+                    </div>
+                    <button class="civora-btn civora-btn-ghost civora-btn-sm"
+                            t-on-click="() => this.props.onClose()">
+                        <i class="fa fa-times"/>
+                    </button>
+                </div>
+
+                <!-- Corps -->
+                <div t-if="state.loading" class="civora-ipw-loading">
+                    <i class="fa fa-circle-o-notch fa-spin"/> Chargement…
+                </div>
+
+                <div t-else="" class="civora-ipw-body">
+
+                    <!-- Rappel des attentes -->
+                    <div t-if="state.kpis &amp;&amp; expectedTotal > 0" class="civora-ipw-expected">
+                        <div class="civora-ipw-expected-label">
+                            Attendu à la signature :
+                            <b t-esc="fmtAmount(expectedTotal)"/>
+                        </div>
+                        <div t-if="state.kpis.initial_payment_received > 0" class="civora-ipw-expected-received">
+                            Déjà reçu : <b t-esc="fmtAmount(state.kpis.initial_payment_received)"/>
+                            · Restant :
+                            <b t-esc="fmtAmount(remainingExpected)"/>
+                        </div>
+                    </div>
+
+                    <!-- Ligne 1 : Date + Mode + Réf -->
+                    <div class="civora-ipw-grid3">
+                        <div class="civora-ipw-fld">
+                            <label>Date du versement *</label>
+                            <input type="date"
+                                   t-att-value="state.form.date"
+                                   t-on-input="(ev) => this.setField('date', ev)"/>
+                        </div>
+                        <div class="civora-ipw-fld">
+                            <label>Mode de paiement *</label>
+                            <select t-on-change="(ev) => this.setField('method', ev)">
+                                <option value="virement" t-att-selected="state.form.method === 'virement'">Virement bancaire</option>
+                                <option value="wave" t-att-selected="state.form.method === 'wave'">Wave</option>
+                                <option value="orange_money" t-att-selected="state.form.method === 'orange_money'">Orange Money</option>
+                                <option value="mtn_momo" t-att-selected="state.form.method === 'mtn_momo'">MTN MoMo</option>
+                                <option value="cheque" t-att-selected="state.form.method === 'cheque'">Chèque</option>
+                                <option value="especes" t-att-selected="state.form.method === 'especes'">Espèces</option>
+                                <option value="autre" t-att-selected="state.form.method === 'autre'">Autre</option>
+                            </select>
+                        </div>
+                        <div class="civora-ipw-fld">
+                            <label>Référence commune</label>
+                            <input type="text"
+                                   placeholder="N° virement, réf. Wave…"
+                                   t-att-value="state.form.reference"
+                                   t-on-input="(ev) => this.setField('reference', ev)"/>
+                        </div>
+                    </div>
+
+                    <!-- Ventilation -->
+                    <div class="civora-ipw-section">
+                        <div class="civora-ipw-section-title">
+                            Ventilation du versement
+                        </div>
+                        <div class="civora-ipw-hint">
+                            Les montants sont pré-remplis selon la configuration du bail.
+                            Ajustez-les si le locataire verse un montant différent.
+                        </div>
+
+                        <div class="civora-ipw-lines">
+                            <div class="civora-ipw-line is-advance">
+                                <div class="civora-ipw-line-label">
+                                    <span class="civora-ipw-line-badge is-advance">Loyer d'avance</span>
+                                </div>
+                                <div class="civora-ipw-line-input">
+                                    <input type="number" min="0" step="1000"
+                                           t-att-value="state.form.advance_amount"
+                                           t-on-input="(ev) => this.setAmount('advance_amount', ev)"/>
+                                    <span class="civora-ipw-currency">FCFA</span>
+                                </div>
+                            </div>
+                            <div class="civora-ipw-line is-caution">
+                                <div class="civora-ipw-line-label">
+                                    <span class="civora-ipw-line-badge is-caution">Caution</span>
+                                </div>
+                                <div class="civora-ipw-line-input">
+                                    <input type="number" min="0" step="1000"
+                                           t-att-value="state.form.caution_amount"
+                                           t-on-input="(ev) => this.setAmount('caution_amount', ev)"/>
+                                    <span class="civora-ipw-currency">FCFA</span>
+                                </div>
+                            </div>
+                            <div class="civora-ipw-line is-agency">
+                                <div class="civora-ipw-line-label">
+                                    <span class="civora-ipw-line-badge is-agency">Frais d'agence</span>
+                                </div>
+                                <div class="civora-ipw-line-input">
+                                    <input type="number" min="0" step="1000"
+                                           t-att-value="state.form.agency_amount"
+                                           t-on-input="(ev) => this.setAmount('agency_amount', ev)"/>
+                                    <span class="civora-ipw-currency">FCFA</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Total live -->
+                        <div class="civora-ipw-total">
+                            <span class="civora-ipw-total-label">Total versement</span>
+                            <span class="civora-ipw-total-value" t-esc="fmtAmount(total)"/>
+                        </div>
+                    </div>
+
+                    <!-- Note -->
+                    <div class="civora-ipw-fld">
+                        <label>Note interne (optionnelle)</label>
+                        <textarea rows="2"
+                                  placeholder="Précisions éventuelles sur ce versement"
+                                  t-att-value="state.form.note"
+                                  t-on-input="(ev) => this.setField('note', ev)"/>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="civora-ipw-footer">
+                    <button class="civora-btn civora-btn-outline"
+                            t-on-click="() => this.props.onClose()">Annuler</button>
+                    <button class="civora-btn civora-btn-accent"
+                            t-att-disabled="!isValid || state.saving"
+                            t-on-click="() => this.save()">
+                        <i t-att-class="'fa fa-' + (state.saving ? 'circle-o-notch fa-spin' : 'check')"/>
+                        <t t-esc="state.saving ? 'Enregistrement…' : 'Enregistrer le versement'"/>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </t>
+
+</templates>

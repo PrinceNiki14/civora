@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_pipeline.CivoraAutocomplete">
+    <div class="civora-ac" t-ref="root">
+        <div class="civora-ac-input-wrap">
+            <i class="fa fa-search civora-ac-icon"/>
+            <input type="text"
+                   t-att-placeholder="showChip ? '' : props.placeholder"
+                   t-att-disabled="props.disabled"
+                   t-att-value="state.query"
+                   t-att-class="'civora-ac-input' + (showChip ? ' civora-ac-input-hidden' : '')"
+                   t-on-input="(ev) => this.onInput(ev)"
+                   t-on-focus="() => this.onFocus()"
+                   t-on-keydown="(ev) => this.onKey(ev)"/>
+            <span t-if="showChip" class="civora-ac-chip">
+                <span class="civora-ac-chip-label" t-esc="props.valueLabel"/>
+                <button t-if="!props.disabled" class="civora-ac-chip-x" t-on-click="(ev) => this.clear(ev)" title="Effacer">
+                    <i class="fa fa-times"/>
+                </button>
+            </span>
+        </div>
+        <div t-if="state.open" class="civora-ac-dropdown">
+            <div t-if="state.searching" class="civora-ac-state">
+                <i class="fa fa-circle-o-notch fa-spin"/> Recherche…
+            </div>
+            <div t-elif="!state.results.length" class="civora-ac-state">
+                Aucun résultat.
+            </div>
+            <ul t-else="" class="civora-ac-list">
+                <li t-foreach="state.results" t-as="r" t-key="r.id"
+                    t-att-class="'civora-ac-item' + (r_index === state.highlight ? ' is-hl' : '')"
+                    t-on-mousedown.prevent="() => this.pick(r)"
+                    t-on-mouseenter="() => state.highlight = r_index">
+                    <span class="civora-ac-item-label">
+                        <span t-if="r.secondary" class="civora-ac-item-ref"
+                              t-esc="(props.secondaryPrefix || '') + r.secondary"/>
+                        <t t-esc="r.label"/>
+                    </span>
+                    <span t-if="r.meta" class="civora-ac-item-badge">
+                        <i class="fa fa-check-circle"/>
+                        <t t-esc="props.metaLabel"/>
+                    </span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</t>
+
+</templates>

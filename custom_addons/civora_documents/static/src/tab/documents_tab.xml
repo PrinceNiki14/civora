@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_documents.DocumentsTab">
+    <div class="civora-doctab">
+        <div class="civora-doctab-head">
+            <div>
+                <div class="civora-doctab-title">
+                    <i class="fa fa-folder-o"/> Documents
+                </div>
+                <div class="civora-doctab-sub">
+                    <t t-if="state.total"><t t-esc="state.total"/> document(s) rattaché(s)</t>
+                    <t t-else="">Aucun document pour l'instant.</t>
+                </div>
+            </div>
+            <button class="civora-btn civora-btn-accent" t-on-click="() => this.openUpload()">
+                <i class="fa fa-cloud-upload"/> Ajouter
+            </button>
+        </div>
+
+        <div t-if="state.loading" class="civora-doctab-loading">
+            <i class="fa fa-circle-o-notch fa-spin"/> Chargement…
+        </div>
+
+        <t t-else="">
+            <div t-if="!state.documents.length" class="civora-doctab-empty">
+                <i class="fa fa-folder-open-o"/>
+                <div class="civora-doctab-empty-t">Aucun document</div>
+                <p>Cliquez sur <b>Ajouter</b> pour rattacher un premier document à cette fiche.</p>
+            </div>
+
+            <div t-else="" class="civora-doctab-list">
+                <div t-foreach="state.documents" t-as="d" t-key="d.id"
+                     class="civora-doctab-row"
+                     t-on-click="() => this.openDoc(d)">
+                    <div class="civora-doctab-row-ico">
+                        <i t-att-class="docIcon(d)"/>
+                    </div>
+                    <div class="civora-doctab-row-b">
+                        <div class="civora-doctab-row-top">
+                            <b class="civora-doctab-row-n" t-esc="d.name"/>
+                            <CivoraBadge label="docTypeMeta(d.document_type).label" variant="'neutral'"/>
+                            <CivoraBadge label="stateMeta(d.state).label" variant="stateMeta(d.state).variant"/>
+                        </div>
+                        <div class="civora-doctab-row-meta">
+                            <span><i class="fa fa-calendar"/> <t t-esc="fmtDate(d.date_uploaded)"/></span>
+                            <span><i class="fa fa-database"/> <t t-esc="fmtSize(d.file_size)"/></span>
+                            <span t-if="d.linked_property_name">
+                                <i class="fa fa-building-o"/> <t t-esc="d.linked_property_name"/>
+                            </span>
+                            <span t-if="d.linked_contact_name">
+                                <i class="fa fa-user"/> <t t-esc="d.linked_contact_name"/>
+                            </span>
+                            <span t-if="!d.linked_property_name &amp;&amp; !d.linked_contact_name &amp;&amp; d.res_display">
+                                <i class="fa fa-link"/> <t t-esc="d.res_display"/>
+                            </span>
+                        </div>
+                        <div t-if="d.tag_ids.length" class="civora-doctab-row-tags">
+                            <span t-foreach="d.tag_ids" t-as="tg" t-key="tg.id"
+                                  class="civora-doctab-tag" t-esc="tg.name"/>
+                        </div>
+                    </div>
+                    <div class="civora-doctab-row-actions" t-on-click.stop="() => {}">
+                        <a class="civora-btn civora-btn-outline civora-btn-sm"
+                           t-att-href="d.attachment_id ? '/web/content/' + d.attachment_id + '?download=true' : '#'"
+                           target="_blank" title="Télécharger">
+                            <i class="fa fa-download"/>
+                        </a>
+                        <button class="civora-btn civora-btn-outline civora-btn-sm civora-doctab-del"
+                                t-on-click.stop="(ev) => this.deleteDoc(d, ev)" title="Supprimer">
+                            <i class="fa fa-trash"/>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </t>
+
+        <DocumentDrawer t-if="state.uploadDrawer"
+                        defaultResModel="props.resModel"
+                        defaultResId="props.resId"
+                        onClose="() => this.closeUpload()"
+                        onSaved="() => this.onUploadSaved()"/>
+    </div>
+</t>
+
+</templates>

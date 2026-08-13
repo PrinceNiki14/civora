@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_documents.PropertyDocumentsTab">
+    <DocumentsTab resModel="'civora.property'"
+                  resId="props.propertyId"
+                  includeRelated="true"/>
+</t>
+
+</templates>

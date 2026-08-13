@@ -1,0 +1,28 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// CIVORA — Overrides des layouts de rapport Odoo
+// Charge : web.report_assets_common (bundle utilisé par minimal_layout pour PDFs)
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Layout Boxed (et autres qui utilisent o_company_logo_big) :
+// Odoo met 8rem par défaut (≈ 128px) — trop grand pour un contrat.
+// On ramène à une taille plus équilibrée (≈ 72px).
+.o_company_logo_big {
+    max-height: 4.5rem !important;   // 72px au lieu de 128px
+    max-width: 12rem !important;     // 192px au lieu de 256px
+}
+
+// Layout Standard/Light — logo small à ajuster légèrement pour uniformité
+.o_company_logo_small {
+    max-height: 3.5rem !important;   // 56px au lieu de 64px
+    max-width: 10rem !important;
+}
+
+// Bloc adresse société en Boxed : forcer un rendu propre sans marges parasites
+.o_report_layout_boxed {
+    .list-unstyled {
+        margin-bottom: 0;
+        li {
+            line-height: 1.5;
+        }
+    }
+}

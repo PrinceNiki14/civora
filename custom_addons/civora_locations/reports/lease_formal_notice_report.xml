@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_report_formal_notice" model="ir.actions.report">
+        <field name="name">Mise en demeure</field>
+        <field name="model">civora.lease.reminder</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">civora_locations.report_formal_notice</field>
+        <field name="report_file">civora_locations.report_formal_notice</field>
+        <field name="print_report_name">'Mise en demeure - %s' % (object.name)</field>
+        <field name="binding_model_id" ref="model_civora_lease_reminder"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="base.paperformat_euro"/>
+    </record>
+
+    <!--
+        Mise en demeure locative.
+
+        Adopte le meme layout que la quittance (web.external_layout +
+        base.paperformat_euro) : c'est le seul qui ne produit pas de cadre
+        parasite avec wkhtmltopdf, les classes header/footer etant extraites
+        dans des fichiers HTML separes rendus en hauteur fixe.
+
+        Le bandeau superieur est rouge et non ambre : ce document n'est pas
+        un rappel, il ouvre le delai au terme duquel l'agence peut engager
+        un recouvrement contentieux.
+    -->
+    <template id="report_formal_notice">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <t t-set="company" t-value="doc.company_id or env.company"/>
+                    <t t-set="lease" t-value="doc.lease_id"/>
+                    <t t-set="tenant" t-value="doc.tenant_id"/>
+                    <t t-set="lines" t-value="doc.civora_notice_lines()"/>
+                    <t t-set="deadline" t-value="doc.civora_notice_deadline()"/>
+
+                <style type="text/css">
+                    .civora-fn-body { font-family: Arial, Helvetica, sans-serif; color: #071123; }
+                    .civora-fn-body p { margin: 0 0 8px 0; font-size: 11pt; line-height: 1.6; }
+                    .civora-fn-body .table-clean { border-collapse: collapse; width: 100%; }
+                    .civora-fn-body .table-clean td { border: none; }
+                    .civora-fn-body .grid { border-collapse: collapse; width: 100%; font-size: 10pt; }
+                    .civora-fn-body .grid th {
+                        background-color: #091a36; color: #ffffff; font-weight: bold;
+                        padding: 8px 10px; text-align: left; border: none;
+                    }
+                    .civora-fn-body .grid td {
+                        padding: 7px 10px; border-bottom: 1px solid #e3e6ea;
+                    }
+                    .civora-fn-body .num { text-align: right; white-space: nowrap; }
+                </style>
+
+                <div class="page civora-fn-body">
+
+                    <div style="height:3px; line-height:0; font-size:0; background-color:#c0392b; margin-bottom:14px;">&#160;</div>
+
+                    <div style="text-align:center; margin-bottom:20px;">
+                        <div style="font-size:21pt; font-weight:900; color:#091a36; letter-spacing:1.5px;">
+                            MISE EN DEMEURE
+                        </div>
+                        <div style="font-size:10pt; color:#666; margin-top:4px;">
+                            Impayé locatif — référence <span t-field="doc.name"/>
+                        </div>
+                    </div>
+
+                    <table class="table-clean" style="background-color:#f4f5f7; margin-bottom:20px;">
+                        <tr>
+                            <td style="padding:14px 18px; width:50%; vertical-align:top;">
+                                <div style="font-size:10.5pt; color:#333; font-weight:bold; margin-bottom:6px;">
+                                    Bail :
+                                    <span style="font-weight:normal; margin-left:6px;">
+                                        <span t-field="lease.name"/>
+                                    </span>
+                                </div>
+                                <div style="font-size:10.5pt; color:#333; font-weight:bold;">
+                                    Bien loué :
+                                    <span style="font-weight:normal; margin-left:6px;">
+                                        <span t-esc="lease.property_id.name or '—'"/>
+                                    </span>
+                                </div>
+                            </td>
+                            <td style="padding:14px 18px; vertical-align:top;">
+                                <div style="font-size:10.5pt; color:#333; font-weight:bold; margin-bottom:6px;">
+                                    Établie le :
+                                    <span style="font-weight:normal; margin-left:6px;">
+                                        <span t-field="doc.date"/>
+                                    </span>
+                                </div>
+                                <div style="font-size:10.5pt; color:#333; font-weight:bold;">
+                                    Retard constaté :
+                                    <span style="font-weight:normal; margin-left:6px;">
+                                        <span t-esc="doc.arrears_days"/> jour(s)
+                                    </span>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <table class="table-clean" style="margin-bottom:20px;">
+                        <tr>
+                            <td style="width:48%; vertical-align:top; padding-right:8px;">
+                                <div style="font-size:9.5pt; text-transform:uppercase; color:#888; letter-spacing:.5px; margin-bottom:5px;">
+                                    Le bailleur / mandataire
+                                </div>
+                                <p style="margin:0;">
+                                    <b t-esc="company.name"/><br/>
+                                    <span t-esc="company.street or ''"/><br t-if="company.street"/>
+                                    <span t-esc="company.city or ''"/><br t-if="company.city"/>
+                                    <span t-if="company.phone">Tél. <span t-esc="company.phone"/></span>
+                                </p>
+                            </td>
+                            <td style="width:52%; vertical-align:top;">
+                                <div style="font-size:9.5pt; text-transform:uppercase; color:#888; letter-spacing:.5px; margin-bottom:5px;">
+                                    Le locataire
+                                </div>
+                                <p style="margin:0;">
+                                    <b t-esc="tenant.name if tenant else '—'"/><br/>
+                                    <span t-if="tenant and tenant.street"><span t-esc="tenant.street"/><br/></span>
+                                    <span t-if="tenant and tenant.city"><span t-esc="tenant.city"/><br/></span>
+                                    <span t-if="tenant and tenant.phone">Tél. <span t-esc="tenant.phone"/></span>
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <p>Madame, Monsieur,</p>
+
+                    <p>
+                        Nous constatons que malgré nos démarches, votre situation locative
+                        relative au bien désigné ci-dessus demeure débitrice. Le détail des
+                        échéances impayées est le suivant :
+                    </p>
+
+                    <table class="grid" style="margin:14px 0 18px 0;">
+                        <thead>
+                            <tr>
+                                <th>Période</th>
+                                <th>Échéance</th>
+                                <th class="num">Montant dû</th>
+                                <th class="num">Déjà réglé</th>
+                                <th class="num">Reste à payer</th>
+                                <th class="num">Retard</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="lines" t-as="l">
+                                <td><span t-esc="l['period']"/></td>
+                                <td><span t-esc="l['due_date']"/></td>
+                                <td class="num">
+                                    <span t-esc="l['amount_due']"
+                                          t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+                                </td>
+                                <td class="num">
+                                    <span t-esc="l['amount_paid']"
+                                          t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+                                </td>
+                                <td class="num" style="font-weight:bold;">
+                                    <span t-esc="l['amount_remaining']"
+                                          t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+                                </td>
+                                <td class="num"><span t-esc="l['days']"/> j</td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="4" style="padding:10px; text-align:right; font-weight:bold; border-top:2px solid #091a36;">
+                                    TOTAL DÛ
+                                </td>
+                                <td class="num" style="padding:10px; font-weight:bold; font-size:12pt; color:#c0392b; border-top:2px solid #091a36;">
+                                    <span t-esc="doc.arrears_amount"
+                                          t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+                                </td>
+                                <td style="border-top:2px solid #091a36;">&#160;</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                    <div style="background-color:#fdf0ee; border-left:4px solid #c0392b; padding:12px 16px; margin:18px 0;">
+                        <p style="margin:0;">
+                            Par la présente, nous vous mettons <b>formellement en demeure</b>
+                            de régler la somme de
+                            <b><span t-esc="doc.arrears_amount"
+                                     t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/></b>
+                            dans un délai de <b><span t-esc="doc.FORMAL_NOTICE_DELAY_DAYS"/> jours</b>
+                            à compter de la réception de ce courrier, soit au plus tard le
+                            <b><span t-esc="deadline"/></b>.
+                        </p>
+                    </div>
+
+                    <p>
+                        À défaut de règlement dans ce délai, nous serons contraints d'engager,
+                        sans nouvel avertissement, les procédures de recouvrement prévues par
+                        la loi ainsi que, le cas échéant, la résiliation du bail.
+                    </p>
+
+                    <p>
+                        Si vous avez déjà procédé au règlement ou si vous rencontrez une
+                        difficulté passagère, nous vous invitons à nous contacter sans délai
+                        afin d'examiner ensemble une solution amiable.
+                    </p>
+
+                    <p style="margin-top:18px;">
+                        Nous vous prions d'agréer, Madame, Monsieur, l'expression de nos
+                        salutations distinguées.
+                    </p>
+
+                    <table class="table-clean" style="margin-top:26px;">
+                        <tr>
+                            <td style="width:60%;">&#160;</td>
+                            <td style="width:40%; text-align:center;">
+                                <div style="font-size:10pt; color:#555; margin-bottom:38px;">
+                                    Pour <b t-esc="company.name"/>
+                                </div>
+                                <div style="border-top:1px solid #091a36; padding-top:5px; font-size:9.5pt; color:#666;">
+                                    Signature et cachet
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+
+                </div>
+                </t><!-- /web.external_layout -->
+            </t>
+        </t>
+    </template>
+
+</odoo>

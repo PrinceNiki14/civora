@@ -80,6 +80,42 @@
                 <i class="fa fa-exclamation-circle"/> <t t-esc="state.error"/>
             </div>
 
+            <!-- Détection de doublons (création uniquement) -->
+            <div t-if="state.mode === 'create' &amp;&amp; state.duplicates.length &amp;&amp; !state.forceCreateDespiteDuplicates"
+                 class="civora-dr-duplicates">
+                <div class="civora-dr-dup-h">
+                    <i class="fa fa-exclamation-triangle"/>
+                    <b><t t-esc="state.duplicates.length"/> contact<t t-if="state.duplicates.length > 1">s</t>
+                        potentiellement identique<t t-if="state.duplicates.length > 1">s</t> trouvé<t t-if="state.duplicates.length > 1">s</t></b>
+                </div>
+                <div class="civora-dr-dup-body">
+                    Vérifiez avant de créer un doublon. Cliquez sur un contact pour l'ouvrir.
+                </div>
+                <div class="civora-dr-dup-list">
+                    <div t-foreach="state.duplicates" t-as="d" t-key="d.id"
+                         class="civora-dr-dup-item"
+                         t-on-click="() => this.openExistingContact(d.id)">
+                        <div class="civora-dr-dup-name" t-esc="d.name"/>
+                        <div class="civora-dr-dup-meta">
+                            <span t-if="d.email"><i class="fa fa-envelope-o"/> <t t-esc="d.email"/></span>
+                            <span t-if="d.phone"><i class="fa fa-phone"/> <t t-esc="d.phone"/></span>
+                            <span t-if="d.city"><i class="fa fa-map-marker"/> <t t-esc="d.city"/></span>
+                            <span t-if="d.primary_role"><i class="fa fa-user-o"/> <t t-esc="d.primary_role"/></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="civora-dr-dup-actions">
+                    <button class="civora-btn civora-btn-outline civora-btn-sm"
+                            t-on-click="() => this.ignoreDuplicates()">
+                        Créer quand même
+                    </button>
+                </div>
+            </div>
+
+            <div t-if="state.duplicatesLoading" class="civora-dr-dup-checking">
+                <i class="fa fa-circle-o-notch fa-spin"/> Vérification des doublons…
+            </div>
+
             <div class="civora-dr-section">
                 <div class="civora-dr-sec-title">Identité</div>
                 <div class="civora-dr-grid">

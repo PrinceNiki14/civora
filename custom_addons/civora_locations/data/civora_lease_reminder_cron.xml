@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        Detection quotidienne des impayes.
+
+        Ce cron ne fait qu'ALIMENTER une file de brouillons. Aucun message
+        ne part sans validation humaine : voir _cron_detect_arrears().
+
+        Odoo 19 : les champs 'doall' et 'numbercall' n'existent plus sur
+        ir.cron, ne pas les reintroduire.
+    -->
+    <record id="ir_cron_detect_arrears" model="ir.cron">
+        <field name="name">CIVORA — Détecter les impayés locatifs</field>
+        <field name="model_id" ref="model_civora_lease_reminder"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_detect_arrears()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active" eval="True"/>
+    </record>
+
+</odoo>

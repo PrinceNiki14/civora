@@ -1,0 +1,205 @@
+.civora-bulk {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    .civora-bulk-loading {
+        padding: 30px;
+        text-align: center;
+        color: $civora-muted;
+        font-size: 13px;
+        i { margin-right: 6px; }
+    }
+
+    .civora-bulk-error,
+    .civora-bulk-warn {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 10px 13px;
+        border-radius: $civora-radius-sm;
+        font-size: 12.5px;
+        line-height: 1.5;
+    }
+    .civora-bulk-error {
+        background: rgba(220, 38, 38, .07);
+        border: 1px solid rgba(220, 38, 38, .22);
+        color: $civora-danger;
+    }
+    .civora-bulk-warn {
+        background: rgba(234, 88, 12, .08);
+        border: 1px solid rgba(234, 88, 12, .24);
+        color: #b45309;
+    }
+
+    // ── Champs ─────────────────────────────────────────────────────────
+    .civora-bulk-field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+
+        > label {
+            font-size: 11.5px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            color: $civora-muted;
+            margin: 0;
+        }
+        select {
+            width: 100%;
+            padding: 8px 11px;
+            border: 1px solid $civora-border;
+            border-radius: $civora-radius-sm;
+            background: $civora-card;
+            color: $civora-fg;
+            font-size: 13px;
+            outline: none;
+
+            &:focus { border-color: $civora-accent; }
+        }
+    }
+    .civora-bulk-hint {
+        font-size: 11.5px;
+        color: $civora-muted;
+        line-height: 1.5;
+    }
+
+    .civora-bulk-channels {
+        display: flex;
+        gap: 8px;
+    }
+    .civora-bulk-chan {
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        padding: 9px 12px;
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius-sm;
+        background: $civora-card;
+        color: $civora-muted;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all .15s ease;
+
+        &:hover { border-color: $civora-accent; color: $civora-fg; }
+        &.is-active {
+            background: rgba(0, 171, 104, .09);
+            border-color: $civora-accent;
+            color: $civora-accent;
+            font-weight: 600;
+        }
+    }
+
+    // ── Recapitulatif ──────────────────────────────────────────────────
+    .civora-bulk-recap {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+    }
+    .civora-bulk-recap-i {
+        background: rgba(0, 0, 0, .025);
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius-sm;
+        padding: 11px 12px;
+        text-align: center;
+
+        &.is-ok {
+            background: rgba(0, 171, 104, .07);
+            border-color: rgba(0, 171, 104, .22);
+            .civora-bulk-recap-v { color: $civora-accent; }
+        }
+        &.is-muted .civora-bulk-recap-v { color: $civora-muted; }
+    }
+    .civora-bulk-recap-v {
+        font-family: $civora-font-display;
+        font-size: 17px;
+        font-weight: 700;
+        color: $civora-fg;
+        line-height: 1.2;
+    }
+    .civora-bulk-recap-l {
+        font-size: 11px;
+        color: $civora-muted;
+        margin-top: 2px;
+    }
+
+    // ── Blocs de listes ────────────────────────────────────────────────
+    .civora-bulk-block {
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius-sm;
+        overflow: hidden;
+    }
+    .civora-bulk-block-t {
+        padding: 9px 12px;
+        background: rgba(0, 0, 0, .02);
+        border-bottom: 1px solid $civora-border;
+        font-size: 11.5px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .4px;
+        color: $civora-muted;
+    }
+    .civora-bulk-toggle {
+        cursor: pointer;
+        user-select: none;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+
+        &:hover { color: $civora-fg; }
+        i { width: 9px; }
+    }
+    .civora-bulk-scroll {
+        max-height: 210px;
+        overflow-y: auto;
+    }
+    .civora-bulk-line {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 9px 12px;
+        border-bottom: 1px solid $civora-border;
+        font-size: 12.5px;
+
+        &:last-child { border-bottom: none; }
+        &.is-excluded { opacity: .72; }
+    }
+    .civora-bulk-line-n {
+        min-width: 0;
+        b {
+            display: block;
+            font-weight: 600;
+            color: $civora-fg;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        span {
+            font-size: 11.5px;
+            color: $civora-muted;
+        }
+    }
+    .civora-bulk-line-v {
+        text-align: right;
+        font-weight: 600;
+        color: $civora-fg;
+        white-space: nowrap;
+    }
+    .civora-bulk-line-d {
+        display: block;
+        font-size: 11px;
+        font-weight: 400;
+        color: $civora-danger;
+    }
+    .civora-bulk-line-r {
+        font-size: 11.5px;
+        color: $civora-warning;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+}

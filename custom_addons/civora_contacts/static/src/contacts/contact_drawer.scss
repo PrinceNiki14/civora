@@ -135,3 +135,81 @@
     white-space: pre-wrap;
     line-height: 1.5;
 }
+
+// =====================================================================
+// v10.0.0 — Panneau détection de doublons
+// =====================================================================
+
+.civora-dr-duplicates {
+    background: rgba(245, 158, 11, .08);
+    border: 1px solid rgba(245, 158, 11, .35);
+    border-radius: $civora-radius;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+}
+.civora-dr-dup-h {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #b45309;
+    font-family: $civora-font-display;
+    font-size: 13px;
+    margin-bottom: 6px;
+    i { font-size: 15px; }
+}
+.civora-dr-dup-body {
+    font-size: 12px;
+    color: $civora-muted;
+    margin-bottom: 10px;
+}
+.civora-dr-dup-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+.civora-dr-dup-item {
+    background: white;
+    border: 1px solid $civora-border;
+    border-radius: $civora-radius-sm;
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: all .12s ease;
+    &:hover {
+        border-color: $civora-accent;
+        box-shadow: 0 1px 3px rgba(0, 171, 104, .12);
+    }
+}
+.civora-dr-dup-name {
+    font-weight: 700;
+    font-size: 13px;
+    color: $civora-fg;
+    margin-bottom: 3px;
+}
+.civora-dr-dup-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 11.5px;
+    color: $civora-muted;
+    i { margin-right: 3px; }
+}
+.civora-dr-dup-actions {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 8px;
+    border-top: 1px solid rgba(245, 158, 11, .2);
+}
+.civora-dr-dup-checking {
+    font-size: 12px;
+    color: $civora-muted;
+    padding: 8px 12px;
+    background: $civora-bg;
+    border-radius: $civora-radius-sm;
+    margin-bottom: 12px;
+    i { margin-right: 6px; }
+}
+.civora-btn-sm {
+    padding: 4px 10px !important;
+    font-size: 11.5px !important;
+}

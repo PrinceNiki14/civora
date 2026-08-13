@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Client actions -->
+    <record id="action_civora_documents_home" model="ir.actions.client">
+        <field name="name">Documents CIVORA</field>
+        <field name="tag">civora.documents_home</field>
+        <field name="target">current</field>
+    </record>
+
+    <record id="action_civora_documents_folder" model="ir.actions.client">
+        <field name="name">Dossier Documents</field>
+        <field name="tag">civora.documents_folder</field>
+        <field name="target">current</field>
+    </record>
+
+    <record id="action_civora_document_detail" model="ir.actions.client">
+        <field name="name">Détail document</field>
+        <field name="tag">civora.document_detail</field>
+        <field name="target">current</field>
+    </record>
+
+    <!-- Menu racine OPÉRATIONS -->
+    <menuitem id="menu_civora_operations_root"
+              name="OPÉRATIONS"
+              sequence="20"
+              web_icon="civora_documents,static/description/icon.png"/>
+
+    <menuitem id="menu_civora_documents"
+              name="Documents"
+              parent="menu_civora_operations_root"
+              action="action_civora_documents_home"
+              sequence="10"/>
+
+</odoo>

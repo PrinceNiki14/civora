@@ -9,3 +9,9 @@ access_civora_interaction_user,civora.interaction user,model_civora_interaction,
 access_civora_interaction_admin,civora.interaction admin,model_civora_interaction,base.group_system,1,1,1,1
 access_civora_agent_role_user,civora.agent.role user,model_civora_agent_role,base.group_user,1,0,0,0
 access_civora_agent_role_admin,civora.agent.role admin,model_civora_agent_role,base.group_system,1,1,1,1
+access_civora_role_history_user,civora.contact.role.history user,model_civora_contact_role_history,base.group_user,1,0,0,0
+access_civora_role_history_admin,civora.contact.role.history admin,model_civora_contact_role_history,base.group_system,1,1,1,1
+access_civora_consent_log_user,civora.consent.log user,model_civora_consent_log,base.group_user,1,0,0,0
+access_civora_consent_log_admin,civora.consent.log admin,model_civora_consent_log,base.group_system,1,1,1,1
+access_civora_contact_import_user,civora.contact.import user,model_civora_contact_import,base.group_user,1,1,1,0
+access_civora_contact_import_admin,civora.contact.import admin,model_civora_contact_import,base.group_system,1,1,1,1

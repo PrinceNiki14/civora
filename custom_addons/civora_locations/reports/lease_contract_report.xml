@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_report_lease_contract" model="ir.actions.report">
+        <field name="name">Contrat de bail</field>
+        <field name="model">civora.lease.contract</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">civora_locations.report_lease_contract</field>
+        <field name="report_file">civora_locations.report_lease_contract</field>
+        <field name="print_report_name">'Contrat - %s' % (object.name)</field>
+        <field name="binding_model_id" ref="model_civora_lease_contract"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="base.paperformat_euro"/>
+    </record>
+
+    <template id="report_lease_contract">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <t t-set="company" t-value="doc.company_id or env.company"/>
+                    <t t-set="lease"   t-value="doc.lease_id"/>
+                    <t t-set="tenant"  t-value="lease.tenant_id"/>
+                    <t t-set="prop"    t-value="lease.property_id"/>
+                    <t t-set="owner"   t-value="lease.owner_id"/>
+
+                <!-- CSS global : tailles renforcées + espacement clauses -->
+                <style type="text/css">
+                    .civora-contract-body p { margin: 0 0 8px 0; font-size: 13pt; line-height: 1.55; }
+                    .civora-contract-body ul { margin: 4px 0 10px 0; padding-left: 22px; }
+                    .civora-contract-body li { margin-bottom: 4px; font-size: 13pt; line-height: 1.55; }
+                    .civora-contract-body strong, .civora-contract-body b { color: #071123; }
+                    .civora-clause-body strong,
+                    .civora-clause-body b { display: inline; padding: 0 2px; }
+                </style>
+
+                <!-- ═══ BANDEAU TITRE CIVORA (dans le corps, sous le header Odoo) ═════════ -->
+                <div style="margin-top:4px; margin-bottom:14px;">
+                    <!-- Trait bicolore : SVG data-URI -->
+                    <div style="height:5px; line-height:0; font-size:0;">
+                        <img alt=""
+                             style="display:block; width:100%; height:5px;"
+                             src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 5' preserveAspectRatio='none' width='100%25' height='5'%3E%3Crect x='0' y='0' width='60' height='5' fill='%2300ab68'/%3E%3Crect x='60' y='0' width='40' height='5' fill='%23f59e0b'/%3E%3C/svg%3E"/>
+                    </div>
+                </div>
+
+                <!-- ═══ CORPS ═══════════════════════════════════════════════ -->
+                <div class="page civora-contract-body" style="font-family: 'Times New Roman', Times, serif; color:#071123;">
+
+                        <!-- TITRE PRINCIPAL -->
+                        <div style="margin-bottom:20px;">
+                            <h1 style="font-size:22pt; font-weight:900; color:#071123; text-transform:uppercase;
+                                        letter-spacing:1px; margin:0 0 4px 0; line-height:1.2;">
+                                Contrat de bail
+                                <t t-if="lease.lease_type == 'residentiel'"> – Bail d'habitation</t>
+                                <t t-elif="lease.lease_type == 'commercial'"> – Bail commercial</t>
+                            </h1>
+                        </div>
+
+                        <!-- MÉTA : Réf + Date -->
+                        <table style="width:100%; border-collapse:collapse; margin-bottom:16px;">
+                            <tr>
+                                <td style="font-size:13pt; color:#4a5461;">
+                                    Réf. : <strong><span t-field="doc.name"/></strong>
+                                </td>
+                                <td style="font-size:13pt; color:#4a5461; text-align:right;">
+                                    Établi le <strong><span t-field="doc.date_issued"/></strong>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- INTRO -->
+                        <p style="font-size:13pt; color:#4a5461; font-style:italic; margin-bottom:18px; line-height:1.6;">
+                            Le présent contrat de bail est établi entre les parties soussignées, représentées
+                            ci-après, qui reconnaissent en avoir pris connaissance et en accepter sans réserve
+                            les conditions.
+                        </p>
+
+                        <!-- ══ ARTICLE 1 — LES PARTIES ═══════════════════ -->
+                        <div style="margin-bottom:18px;">
+                            <div style="font-size:14pt; font-weight:700; color:#00ab68; text-transform:uppercase;
+                                        letter-spacing:0.5px; padding-bottom:4px; border-bottom:2px solid #00ab68;
+                                        margin-bottom:12px;">
+                                Article 1 — Les parties
+                            </div>
+
+                            <!-- Bailleur -->
+                            <div style="border-left:3px solid #091a36; padding:10px 14px; margin-bottom:10px; background:#f8fafc;">
+                                <div style="font-size:11pt; font-weight:700; color:#091a36; text-transform:uppercase;
+                                            letter-spacing:1px; margin-bottom:4px;">LE BAILLEUR</div>
+                                <div style="font-size:14pt; font-weight:bold; color:#071123; margin-bottom:3px;">
+                                    <span t-field="company.name"/>
+                                </div>
+                                <div style="font-size:13pt; color:#4a5461; line-height:1.7;">
+                                    <t t-if="company.street or company.city">
+                                        <span t-if="company.street"><span t-field="company.street"/></span>
+                                        <t t-if="company.city">, <span t-field="company.city"/></t><br/>
+                                    </t>
+                                    <t t-if="company.phone">Tél. <span t-field="company.phone"/></t>
+                                    <t t-if="company.email"> | <span t-field="company.email"/></t>
+                                    <t t-if="company.phone or company.email"><br/></t>
+                                    <t t-if="company.company_registry">
+                                        <span t-field="company.company_registry"/>
+                                    </t>
+                                </div>
+                            </div>
+
+                            <!-- Locataire -->
+                            <div style="border-left:3px solid #00ab68; padding:10px 14px; margin-bottom:10px; background:#f8fafc;">
+                                <div style="font-size:11pt; font-weight:700; color:#00ab68; text-transform:uppercase;
+                                            letter-spacing:1px; margin-bottom:4px;">LE LOCATAIRE</div>
+                                <div style="font-size:14pt; font-weight:bold; color:#071123; margin-bottom:3px;">
+                                    <span t-field="tenant.name"/>
+                                </div>
+                                <div style="font-size:13pt; color:#4a5461; line-height:1.7;">
+                                    <t t-if="tenant.function">
+                                        <span t-field="tenant.function"/><br/>
+                                    </t>
+                                    <t t-if="tenant.phone">Tél. <span t-field="tenant.phone"/></t>
+                                    <t t-if="tenant.email"> | <span t-field="tenant.email"/></t>
+                                </div>
+                            </div>
+
+                            <!-- Mention propriétaire gérant -->
+                            <p t-if="owner" style="font-size:13pt; color:#4a5461; font-style:italic; margin:8px 0 0 0;">
+                                Le bien objet du présent contrat est géré par <span t-field="company.name"/>
+                                pour le compte du propriétaire : <strong><span t-field="owner.name"/></strong>.
+                            </p>
+                        </div>
+
+                        <!-- ══ ARTICLE 2 — DÉSIGNATION DU BIEN ══════════ -->
+                        <div style="margin-bottom:18px;">
+                            <div style="font-size:14pt; font-weight:700; color:#00ab68; text-transform:uppercase;
+                                        letter-spacing:0.5px; padding-bottom:4px; border-bottom:2px solid #00ab68;
+                                        margin-bottom:12px;">
+                                Article 2 — Désignation du bien
+                            </div>
+                            <p style="font-size:13pt; color:#4a5461; line-height:1.7; margin:0 0 8px 0;">
+                                Le bailleur donne à bail au locataire, qui accepte, le bien immobilier suivant :
+                                <strong><span t-field="prop.name"/></strong>
+                                <t t-if="prop.city">, <span t-field="prop.city"/></t>.
+                            </p>
+                            <p style="font-size:13pt; color:#4a5461; margin:0;">
+                                Nature du bail :
+                                <strong>
+                                    <t t-if="lease.lease_type == 'residentiel'">Bail d'habitation (longue durée)</t>
+                                    <t t-elif="lease.lease_type == 'commercial'">Bail commercial</t>
+                                    <t t-else=""><span t-field="lease.lease_type"/></t>
+                                </strong>
+                            </p>
+                        </div>
+
+                        <!-- ══ ARTICLE 3 — CONDITIONS FINANCIÈRES ═══════ -->
+                        <div style="margin-bottom:18px;">
+                            <div style="font-size:14pt; font-weight:700; color:#00ab68; text-transform:uppercase;
+                                        letter-spacing:0.5px; padding-bottom:4px; border-bottom:2px solid #00ab68;
+                                        margin-bottom:12px;">
+                                Article 3 — Conditions financières
+                            </div>
+
+                            <!-- Grille 3 colonnes -->
+                            <table style="width:100%; border-collapse:collapse; border:1px solid #e4e7ec; margin-bottom:12px;">
+                                <tr>
+                                    <td style="width:33%; padding:14px 16px; border-right:1px solid #e4e7ec; vertical-align:top;">
+                                        <div style="font-size:11pt; color:#9aa2ad; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:6px;">Loyer mensuel</div>
+                                        <div style="font-size:17pt; font-weight:900; color:#071123;">
+                                            <span t-field="lease.rent" t-options='{"widget": "monetary", "display_currency": lease.currency_id}'/>
+                                        </div>
+                                    </td>
+                                    <td style="width:33%; padding:14px 16px; border-right:1px solid #e4e7ec; vertical-align:top;">
+                                        <div style="font-size:11pt; color:#9aa2ad; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:6px;">Charges</div>
+                                        <div style="font-size:17pt; font-weight:900; color:#071123;">
+                                            <span t-field="lease.charges" t-options='{"widget": "monetary", "display_currency": lease.currency_id}'/>
+                                        </div>
+                                    </td>
+                                    <td style="width:33%; padding:14px 16px; vertical-align:top;">
+                                        <div style="font-size:11pt; color:#9aa2ad; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:6px;">Dépôt de garantie</div>
+                                        <div style="font-size:17pt; font-weight:900; color:#071123;">
+                                            <span t-field="lease.deposit" t-options='{"widget": "monetary", "display_currency": lease.currency_id}'/>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr style="border-top:1px solid #e4e7ec;">
+                                    <td style="padding:14px 16px; border-right:1px solid #e4e7ec; vertical-align:top;">
+                                        <div style="font-size:11pt; color:#9aa2ad; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:6px;">Fréquence de paiement</div>
+                                        <div style="font-size:15pt; font-weight:700; color:#071123;">Mensuel</div>
+                                    </td>
+                                    <td style="padding:14px 16px; border-right:1px solid #e4e7ec; vertical-align:top;">
+                                        <div style="font-size:11pt; color:#9aa2ad; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:6px;">Date de début</div>
+                                        <div style="font-size:15pt; font-weight:700; color:#071123;">
+                                            <span t-field="lease.date_start"/>
+                                        </div>
+                                    </td>
+                                    <td style="padding:14px 16px; vertical-align:top;">
+                                        <div style="font-size:11pt; color:#9aa2ad; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:6px;">Date de fin</div>
+                                        <div style="font-size:15pt; font-weight:700; color:#071123;">
+                                            <t t-if="lease.date_end"><span t-field="lease.date_end"/></t>
+                                            <t t-else="">Indéterminée</t>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <p style="font-size:12pt; color:#4a5461; font-style:italic; margin:0;">
+                                Soit un total mensuel de
+                                <strong>
+                                    <span t-field="lease.total_monthly" t-options='{"widget": "monetary", "display_currency": lease.currency_id}'/>
+                                </strong>
+                                (loyer + charges), payable selon la fréquence convenue.
+                            </p>
+                        </div>
+
+                        <!-- ══ CLAUSES PARAMÉTRÉES ════════════════════════ -->
+                        <t t-set="clauses" t-value="doc._render_clauses()"/>
+                        <t t-foreach="clauses" t-as="cl">
+                            <div style="margin-bottom:16px; page-break-inside:avoid;">
+                                <div style="font-size:14pt; font-weight:700; color:#00ab68; text-transform:uppercase;
+                                            letter-spacing:0.5px; padding-bottom:4px; border-bottom:2px solid #00ab68;
+                                            margin-bottom:10px;">
+                                    <t t-if="cl['numero']">
+                                        <span t-esc="'Article ' + cl['numero'] + ' — ' + cl['name']"/>
+                                    </t>
+                                    <t t-else="">
+                                        <span t-esc="cl['name']"/>
+                                    </t>
+                                </div>
+                                <div class="civora-clause-body"
+                                     style="font-size:13pt; color:#4a5461; line-height:1.7;"
+                                     t-out="cl['body']"/>
+                            </div>
+                        </t>
+
+                        <!-- ══ SIGNATURES ═════════════════════════════════ -->
+                        <div style="margin-top:30px; page-break-inside:avoid;">
+                            <div style="font-size:14pt; font-weight:700; color:#00ab68; text-transform:uppercase;
+                                        letter-spacing:0.5px; padding-bottom:4px; border-bottom:2px solid #00ab68;
+                                        margin-bottom:16px;">
+                                Signatures des parties
+                            </div>
+
+                            <p style="font-size:13pt; color:#4a5461; font-style:italic; margin-bottom:20px;">
+                                Fait à
+                                <t t-if="company.city"><span t-field="company.city"/></t>
+                                <t t-else="">——</t>, le <span t-field="doc.date_issued"/>,
+                                en deux exemplaires originaux, dont un remis à chaque partie.
+                            </p>
+
+                            <!-- Blocs signatures côte à côte -->
+                            <table style="width:100%; border-collapse:collapse;">
+                                <tr style="vertical-align:top;">
+
+                                    <!-- Signature Bailleur -->
+                                    <td style="width:48%; border:1px solid #e4e7ec; background:#f8fafc; padding:14px; vertical-align:top;">
+                                        <div style="font-size:11pt; font-weight:700; color:#091a36;
+                                                    text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">
+                                            LE BAILLEUR
+                                        </div>
+                                        <div style="font-size:14pt; font-weight:bold; color:#071123; margin-bottom:2px;">
+                                            <span t-field="company.name"/>
+                                        </div>
+                                        <t t-if="doc.signed_by_lessor">
+                                            <div style="font-size:13pt; color:#4a5461; margin-bottom:10px;">
+                                                Représenté(e) par <span t-field="doc.signed_by_lessor"/>
+                                            </div>
+                                        </t>
+                                        <!-- Zone signature bailleur -->
+                                        <div style="min-height:70px; margin:10px 0; text-align:center; background:#fff;">
+                                            <t t-if="doc.sign_lessor">
+                                                <img t-att-src="'data:image/png;base64,' + doc.sign_lessor.decode()"
+                                                     style="max-height:65px; max-width:200px;"/>
+                                            </t>
+                                        </div>
+                                        <t t-if="doc.signed_at_lessor">
+                                            <div style="font-size:11pt; color:#9aa2ad; font-style:italic;">
+                                                Signé électroniquement le
+                                                <span t-field="doc.signed_at_lessor"
+                                                      t-options='{"widget": "datetime"}'/>
+                                            </div>
+                                        </t>
+                                    </td>
+
+                                    <td style="width:4%;"/>
+
+                                    <!-- Signature Locataire -->
+                                    <td style="width:48%; border:1px solid #e4e7ec; background:#f8fafc; padding:14px; vertical-align:top;">
+                                        <div style="font-size:11pt; font-weight:700; color:#00ab68;
+                                                    text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">
+                                            LE LOCATAIRE
+                                        </div>
+                                        <div style="font-size:14pt; font-weight:bold; color:#071123; margin-bottom:2px;">
+                                            <span t-field="tenant.name"/>
+                                        </div>
+                                        <div style="min-height:70px; margin:10px 0; text-align:center; background:#fff;">
+                                            <t t-if="doc.sign_tenant">
+                                                <img t-att-src="'data:image/png;base64,' + doc.sign_tenant.decode()"
+                                                     style="max-height:65px; max-width:200px;"/>
+                                            </t>
+                                        </div>
+                                        <t t-if="doc.signed_at_tenant">
+                                            <div style="font-size:11pt; color:#9aa2ad; font-style:italic;">
+                                                Signé électroniquement le
+                                                <span t-field="doc.signed_at_tenant"
+                                                      t-options='{"widget": "datetime"}'/>
+                                            </div>
+                                        </t>
+                                    </td>
+
+                                </tr>
+                            </table>
+                        </div>
+
+                </div><!-- /.page -->
+                </t><!-- /web.external_layout -->
+            </t>
+        </t>
+    </template>
+
+</odoo>

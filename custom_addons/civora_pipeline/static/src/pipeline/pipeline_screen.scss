@@ -3,9 +3,14 @@
 // =====================================================================
 
 .civora-pl {
-    padding: 24px 28px 40px;
+    padding: 24px 28px 24px;
     background: $civora-bg;
+    // L'ecran occupe exactement la hauteur disponible et ne defile pas
+    // lui-meme : c'est le tableau qui gere le defilement, sur les deux
+    // axes. L'en-tete, les KPI et les filtres restent ainsi toujours
+    // visibles pendant qu'on parcourt les colonnes.
     height: 100%;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     font-family: $civora-font;
@@ -84,70 +89,273 @@
     }
 
     // ---- Board ----
+
+    // Blocs fixes : ils ne doivent jamais etre comprimes quand le tableau
+    // reclame de la place. Sans flex-shrink: 0, un enfant flex se laisse
+    // ecraser avant que le defilement ne s'engage.
+    .civora-pl-head,
+    .civora-pl-toolbar,
+    .civora-pl-kpis,
+    .civora-pl-filters {
+        flex-shrink: 0;
+    }
+
     .civora-pl-board {
         display: flex;
         gap: 14px;
-        overflow-x: auto;
-        padding-bottom: 12px;
-        flex: 1;
-        align-items: flex-start;
+        align-items: stretch;
+        padding-bottom: 6px;
+
+        flex: 1 1 auto;
+
+        // ⚠ Sans min-height: 0, rien ne defile.
+        // Un enfant flex a min-height: auto par defaut, ce qui l'empeche de
+        // devenir plus petit que son contenu : overflow reste alors sans
+        // effet et le contenu deborde silencieusement du parent.
+        min-height: 0;
+
+        // Defilement sur les DEUX axes, en un seul conteneur : la barre
+        // horizontale reste ainsi accessible en bas de fenetre, quelle que
+        // soit la position verticale.
+        overflow: auto;
+        overscroll-behavior: contain;
     }
+    // Plus de conteneur : les cartes reposent directement sur le fond de page,
+    // comme dans le kanban natif d'Odoo. Gain de densite et de legerete.
     .civora-pl-col {
-        flex: 0 0 260px;
-        width: 260px;
-        background: rgba(9, 26, 54, .035);
-        border: 1px solid $civora-border;
-        border-radius: $civora-radius;
+        flex: 0 0 272px;
+        width: 272px;
+        background: transparent;
+        border: 0;
         display: flex;
         flex-direction: column;
-        max-height: 100%;
-        &.is-won { background: rgba(0, 171, 104, .07); border-color: rgba(0, 171, 104, .3); }
-        &.is-lost { background: rgba(230, 44, 44, .05); border-color: rgba(230, 44, 44, .25); }
+        padding: 0 6px;
+
+        // Etape repliee : bande verticale etroite.
+        &.is-folded {
+            flex: 0 0 46px;
+            width: 46px;
+            padding: 0 3px;
+        }
     }
     .civora-pl-colh {
-        padding: 12px 14px;
-        border-bottom: 1px solid $civora-border;
+        padding: 0 0 10px;
+        border-bottom: 0;
     }
+    // ---- En-tete en chevron (entonnoir), repris du front CIVORA ----
+    .civora-pl-chevwrap {
+        position: relative;
+    }
+    .civora-pl-chev {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        min-height: 38px;
+        padding: 8px 46px 8px 15px;
+        font-family: $civora-font-display;
+        font-weight: 600;
+        font-size: 13.5px;
+        color: $civora-fg;
+        line-height: 1.3;
+        background: mix($civora-accent, $civora-card, 8%);
+
+        // Encoche de 12px a gauche, pointe de 12px a droite.
+        clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 0 100%, 12px 50%);
+
+        &.is-first {
+            border-radius: $civora-radius-sm 0 0 $civora-radius-sm;
+            clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 0 100%);
+        }
+        &.is-last {
+            border-radius: 0 $civora-radius-sm $civora-radius-sm 0;
+            padding-right: 40px;
+            clip-path: polygon(12px 0, 100% 0, 100% 100%, 12px 100%, 0 50%);
+        }
+        &.is-first.is-last {
+            border-radius: $civora-radius-sm;
+            clip-path: none;
+        }
+    }
+
+    // Intensite croissante le long de l'entonnoir : 8% + 6% par etape.
+    @for $i from 0 through 9 {
+        .civora-pl-chev.lvl-#{$i} {
+            background: mix($civora-accent, $civora-card, 8% + $i * 6%);
+        }
+    }
+    // Une etape « Perdue » ne doit pas etre verte.
+    .civora-pl-col.is-lost .civora-pl-chev {
+        background: mix($civora-danger, $civora-card, 9%);
+    }
+
     .civora-pl-dot {
         width: 8px;
         height: 8px;
         border-radius: 50%;
         background: $civora-accent;
-        display: inline-block;
+        flex-shrink: 0;
     }
-    .civora-pl-col.is-won .civora-pl-dot { background: $civora-success; }
+    .civora-pl-col.is-won  .civora-pl-dot { background: $civora-success; }
     .civora-pl-col.is-lost .civora-pl-dot { background: $civora-danger; }
-    .civora-pl-colname {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-family: $civora-font-display;
-        font-weight: 700;
-        font-size: 13.5px;
+
+    .civora-pl-colname-t {
+        cursor: text;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
     .civora-pl-colcount {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 20px;
-        height: 20px;
-        padding: 0 6px;
+        flex-shrink: 0;
+        background: rgba(255, 255, 255, .72);
         border-radius: 999px;
-        background: $civora-card;
-        border: 1px solid $civora-border;
+        padding: 1px 7px;
         font-size: 11px;
         font-weight: 700;
         color: $civora-muted;
     }
-    .civora-pl-coltotal { font-size: 11.5px; color: $civora-accent; font-weight: 600; margin-top: 3px; }
+    .civora-pl-collock {
+        font-size: 11px;
+        color: $civora-muted;
+        flex-shrink: 0;
+        .civora-pl-col.is-won & { color: $civora-success; }
+        .civora-pl-col.is-lost & { color: $civora-danger; }
+    }
+
+    // Actions revelees au survol de la colonne (comportement Odoo).
+    .civora-pl-colactions {
+        position: absolute;
+        top: 50%;
+        right: 15px;
+        transform: translateY(-50%);
+        z-index: 3;
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        opacity: 0;
+        transition: opacity .12s ease;
+        flex-shrink: 0;
+    }
+    .civora-pl-col:hover .civora-pl-colactions,
+    .civora-pl-colactions:focus-within { opacity: 1; }
+    .civora-pl-chev.is-last ~ .civora-pl-colactions { right: 9px; }
+
+    .civora-pl-colfold {
+        background: transparent;
+        border: 0;
+        padding: 3px 5px;
+        border-radius: 5px;
+        color: $civora-muted;
+        cursor: pointer;
+        font-size: 12px;
+        &:hover { background: rgba(9, 26, 54, .07); color: $civora-fg; }
+    }
+
+    // ---- Barre d'anciennete dans l'etape ----
+    .civora-pl-colbar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 10px;
+        padding: 0 3px;
+    }
+    .civora-pl-bar {
+        flex: 1;
+        display: flex;
+        gap: 2px;
+        height: 5px;
+        min-width: 0;
+        background: rgba(9, 26, 54, .07);
+        border-radius: 3px;
+        overflow: hidden;
+    }
+    .civora-pl-seg {
+        border: 0;
+        padding: 0;
+        min-width: 3px;
+        cursor: pointer;
+        transition: opacity .12s ease;
+        &:hover { opacity: .75; }
+        &.is-stale  { background: $civora-danger; }
+        &.is-watch  { background: $civora-warning; }
+        &.is-recent { background: rgba(9, 26, 54, .22); }
+    }
+    .civora-pl-coltotal {
+        font-size: 12.5px;
+        color: $civora-fg;
+        font-weight: 600;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+    .civora-pl-col.is-won .civora-pl-coltotal { color: $civora-success; }
+
+    .civora-pl-segactive {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 7px;
+        padding: 3px 8px;
+        border-radius: 999px;
+        background: rgba(9, 26, 54, .06);
+        font-size: 10.5px;
+        color: $civora-muted;
+        span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        button {
+            margin-left: auto;
+            background: transparent;
+            border: 0;
+            color: $civora-muted;
+            cursor: pointer;
+            padding: 0 2px;
+            &:hover { color: $civora-danger; }
+        }
+    }
+
+    // ---- Bande verticale d'une etape repliee ----
+    .civora-pl-foldstrip {
+        width: 100%;
+        height: 100%;
+        min-height: 180px;
+        background: rgba(9, 26, 54, .04);
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 0;
+        transition: background .12s ease;
+        &:hover { background: rgba(9, 26, 54, .08); }
+    }
+    .civora-pl-foldstrip-n {
+        font-size: 12px;
+        font-weight: 700;
+        color: $civora-muted;
+    }
+    .civora-pl-foldstrip-t {
+        writing-mode: vertical-rl;
+        font-family: $civora-font-display;
+        font-size: 13px;
+        font-weight: 500;
+        color: $civora-fg;
+        white-space: nowrap;
+    }
+    .civora-pl-col.is-lost .civora-pl-foldstrip-t { color: $civora-danger; }
 
     .civora-pl-cards {
-        padding: 10px;
+        flex: 1;
+        // Aucune hauteur maximale ni overflow : la colonne prend sa hauteur
+        // naturelle, comme dans le front de reference. min-height conserve
+        // une zone de depot utilisable quand la colonne est vide.
+        min-height: 120px;
+        padding: 0 0 8px;
         display: flex;
         flex-direction: column;
         gap: 10px;
-        overflow-y: auto;
-        min-height: 60px;
     }
     .civora-pl-card {
         background: $civora-card;
@@ -246,12 +454,457 @@
         color: $civora-muted;
         i { margin-right: 3px; }
     }
-    .civora-pl-empty {
-        text-align: center;
-        padding: 18px;
-        font-size: 12px;
+
+    // ---- En-tete de colonne enrichi (renommage, menu kebab, verrous) ----
+    .civora-pl-colname-t {
+        cursor: text;
+        user-select: none;
+        &:hover { color: $civora-accent; }
+    }
+    .civora-pl-collock {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
+        border-radius: 999px;
+        background: rgba(9, 30, 64, .06);
         color: $civora-muted;
-        border: 1px dashed $civora-border;
+        font-size: 10px;
+    }
+    .civora-pl-col.is-won .civora-pl-collock { color: $civora-success; background: rgba(21, 187, 119, .12); }
+    .civora-pl-col.is-lost .civora-pl-collock { color: $civora-danger; background: rgba(230, 44, 44, .10); }
+
+    .civora-pl-colmenu-wrap {
+        position: relative;
+        margin-left: auto;
+    }
+    .civora-pl-colmenu-btn {
+        width: 26px;
+        height: 26px;
         border-radius: $civora-radius-sm;
+        border: 0;
+        background: transparent;
+        color: $civora-muted;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        &:hover { background: rgba(9, 30, 64, .07); color: $civora-fg; }
+    }
+    .civora-pl-colmenu {
+        position: absolute;
+        top: calc(100% + 4px);
+        right: 0;
+        z-index: 20;
+        min-width: 190px;
+        background: $civora-card;
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius-sm;
+        box-shadow: $civora-shadow-elevated;
+        padding: 4px;
+        display: flex;
+        flex-direction: column;
+    }
+    .civora-pl-colmenu-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 10px;
+        border: 0;
+        background: transparent;
+        border-radius: 6px;
+        font-size: 12.5px;
+        font-family: $civora-font;
+        color: $civora-fg;
+        text-align: left;
+        cursor: pointer;
+        i { width: 14px; color: $civora-muted; }
+        &:hover:not(:disabled) { background: rgba(9, 30, 64, .06); }
+        &:disabled { opacity: .4; cursor: not-allowed; }
+        &.is-danger { color: $civora-danger; i { color: $civora-danger; } }
+    }
+    .civora-pl-colmenu-sep {
+        height: 1px;
+        background: $civora-border;
+        margin: 4px 2px;
+    }
+
+    // ---- Renommage inline ----
+    .civora-pl-coledit {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .civora-pl-coledit-input {
+        flex: 1;
+        min-width: 0;
+        border: 1px solid $civora-accent;
+        border-radius: $civora-radius-sm;
+        padding: 5px 8px;
+        font-size: 13px;
+        font-family: $civora-font-display;
+        font-weight: 700;
+        outline: none;
+        background: $civora-card;
+        color: $civora-fg;
+        &:focus { box-shadow: 0 0 0 3px rgba(0, 171, 104, .15); }
+    }
+    .civora-pl-coledit-ok,
+    .civora-pl-coledit-cancel {
+        width: 26px;
+        height: 26px;
+        border-radius: $civora-radius-sm;
+        border: 0;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+    }
+    .civora-pl-coledit-ok { background: $civora-accent; color: #fff; &:hover { filter: brightness(1.05); } }
+    .civora-pl-coledit-cancel { background: transparent; color: $civora-muted; &:hover { background: rgba(9, 30, 64, .06); color: $civora-fg; } }
+
+    // ---- Colonne d'ajout d'etape ----
+    .civora-pl-col-add {
+        background: transparent;
+        border: 1px dashed $civora-border;
+        min-height: 100px;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 12px;
+    }
+    .civora-pl-addbtn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border: 0;
+        background: transparent;
+        color: $civora-muted;
+        font-family: $civora-font;
+        font-size: 12.5px;
+        font-weight: 600;
+        padding: 8px 14px;
+        border-radius: $civora-radius-sm;
+        cursor: pointer;
+        &:hover { background: rgba(0, 171, 104, .08); color: $civora-accent; }
+    }
+    .civora-pl-addbox {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .civora-pl-addinput {
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius-sm;
+        padding: 8px 10px;
+        font-size: 13px;
+        font-family: $civora-font;
+        outline: none;
+        &:focus { border-color: $civora-accent; box-shadow: 0 0 0 3px rgba(0, 171, 104, .15); }
+    }
+    .civora-pl-addbtns {
+        display: flex;
+        gap: 6px;
+        .civora-btn { flex: 0 0 auto; }
+    }
+
+    // ---- Modal de suppression d'etape ----
+    .civora-pl-modal-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 1050;
+        background: rgba(7, 17, 35, .45);
+        backdrop-filter: blur(2px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+    }
+    .civora-pl-modal {
+        width: 100%;
+        max-width: 460px;
+        background: $civora-card;
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius;
+        box-shadow: $civora-shadow-elevated;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+    .civora-pl-modal-h {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 18px;
+        border-bottom: 1px solid $civora-border;
+    }
+    .civora-pl-modal-t {
+        font-family: $civora-font-display;
+        font-weight: 700;
+        font-size: 15px;
+        color: $civora-fg;
+        i { color: $civora-danger; margin-right: 6px; }
+    }
+    .civora-pl-modal-x {
+        width: 28px;
+        height: 28px;
+        border-radius: $civora-radius-sm;
+        border: 0;
+        background: transparent;
+        color: $civora-muted;
+        cursor: pointer;
+        &:hover { background: rgba(9, 30, 64, .06); color: $civora-fg; }
+    }
+    .civora-pl-modal-b {
+        padding: 18px;
+        font-size: 13.5px;
+        color: $civora-fg;
+        p { margin: 0 0 12px; }
+        .civora-fld {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            label {
+                font-size: 11.5px;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: .03em;
+                color: $civora-muted;
+            }
+            select {
+                border: 1px solid $civora-border;
+                border-radius: $civora-radius-sm;
+                padding: 8px 10px;
+                font-size: 13px;
+                font-family: $civora-font;
+                background: $civora-card;
+                color: $civora-fg;
+                outline: none;
+                &:focus { border-color: $civora-accent; box-shadow: 0 0 0 3px rgba(0, 171, 104, .15); }
+            }
+        }
+    }
+    .civora-pl-modal-f {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        padding: 12px 18px 18px;
+    }
+    .civora-btn-danger {
+        background: $civora-danger;
+        color: #fff;
+        border: 0;
+        padding: 8px 14px;
+        border-radius: $civora-radius-sm;
+        font-family: $civora-font;
+        font-weight: 600;
+        font-size: 13px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        &:hover { filter: brightness(1.05); }
+        i { font-size: 12px; }
+    }
+
+    // ---- Bouton Filtres + badge ----
+    .civora-pl-filtersbtn {
+        position: relative;
+        &.is-active { border-color: $civora-accent; color: $civora-accent; }
+    }
+    .civora-pl-filterbadge {
+        min-width: 18px;
+        height: 18px;
+        padding: 0 5px;
+        border-radius: 9px;
+        background: $civora-accent;
+        color: #fff;
+        font-size: 11px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: 6px;
+    }
+    .civora-pl-clearfilters {
+        width: 32px;
+        height: 32px;
+        border-radius: $civora-radius-sm;
+        border: 1px solid $civora-border;
+        background: $civora-card;
+        color: $civora-muted;
+        cursor: pointer;
+        &:hover { border-color: $civora-danger; color: $civora-danger; }
+    }
+
+    // ---- Chips filtres transactions ----
+    .civora-pl-chips {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    .civora-pl-chip {
+        padding: 7px 14px;
+        border-radius: 999px;
+        border: 1px solid $civora-border;
+        background: $civora-card;
+        color: $civora-fg;
+        font-family: $civora-font;
+        font-size: 12.5px;
+        font-weight: 600;
+        cursor: pointer;
+        &:hover { border-color: $civora-accent; }
+        &.is-on {
+            background: rgba(0, 171, 104, .10);
+            border-color: $civora-accent;
+            color: $civora-accent;
+        }
+    }
+    .civora-pl-grid2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px 16px;
+        margin-top: 12px;
+    }
+    .civora-pl-modal-lg { max-width: 560px; }
+
+    // ---- Quick actions sur cartes ----
+    .civora-pl-card-qa {
+        display: flex;
+        gap: 6px;
+        margin-top: 8px;
+        padding-top: 8px;
+        border-top: 1px dashed $civora-border;
+    }
+    .civora-pl-qa {
+        width: 28px;
+        height: 28px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: $civora-radius-sm;
+        background: rgba(9, 30, 64, .05);
+        color: $civora-muted;
+        font-size: 12px;
+        text-decoration: none;
+        transition: background .12s ease, color .12s ease;
+        &:hover { color: #fff; text-decoration: none; }
+    }
+    .civora-pl-qa-call:hover { background: $civora-accent; }
+    .civora-pl-qa-mail:hover { background: $civora-info; }
+    .civora-pl-qa-wa:hover   { background: #25D366; }
+}
+
+// ==================== SCOPE GLOBAL : CELEBRATION ====================
+.civora-pl-celeb {
+    position: fixed;
+    inset: 0;
+    z-index: 1100;
+    background: rgba(7, 17, 35, .55);
+    backdrop-filter: blur(3px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    animation: civora-celeb-fadein .18s ease;
+}
+.civora-pl-celeb-card {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    background: $civora-card;
+    border: 1px solid $civora-border;
+    border-radius: 24px;
+    padding: 36px 28px 24px;
+    text-align: center;
+    box-shadow: 0 24px 60px rgba(9, 30, 64, .35);
+    overflow: hidden;
+}
+.civora-pl-celeb-icon {
+    width: 68px;
+    height: 68px;
+    margin: 0 auto 12px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(0, 171, 104, .18), rgba(0, 171, 104, .06));
+    color: $civora-accent;
+    font-size: 28px;
+    animation: civora-celeb-pop .5s cubic-bezier(.34, 1.56, .64, 1);
+}
+.civora-pl-celeb-t {
+    font-family: $civora-font-display;
+    font-weight: 800;
+    font-size: 22px;
+    color: $civora-fg;
+    margin-bottom: 4px;
+}
+.civora-pl-celeb-name { font-size: 14px; color: $civora-muted; }
+.civora-pl-celeb-amt {
+    font-family: $civora-font-display;
+    font-weight: 700;
+    font-size: 22px;
+    color: $civora-accent;
+    margin: 12px 0 18px;
+}
+.civora-pl-celeb-confetti {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+.civora-pl-confetti {
+    position: absolute;
+    top: -12px;
+    width: 8px;
+    height: 12px;
+    border-radius: 2px;
+    opacity: 0;
+    animation: civora-confetti-fall 2.6s ease-in forwards;
+}
+$confetti-colors: #00ab68, #091a36, #efa831, #e62c2c, #25afd2, #ffffff;
+@for $i from 1 through 20 {
+    .civora-pl-confetti.c#{$i} {
+        left: percentage(($i * 5) / 100);
+        background: nth($confetti-colors, ($i % length($confetti-colors)) + 1);
+        transform: rotate(#{($i * 37) % 360}deg);
+        animation-delay: #{($i * 60)}ms;
+    }
+}
+@keyframes civora-confetti-fall {
+    0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(560px) rotate(720deg); opacity: 0; }
+}
+@keyframes civora-celeb-fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+@keyframes civora-celeb-pop {
+    0%   { transform: scale(0.4); opacity: 0; }
+    100% { transform: scale(1);   opacity: 1; }
+}
+
+// =====================================================================
+// Densification du kanban — barres de defilement fines
+// Le bandeau gris epais par defaut alourdit visuellement le tableau.
+// =====================================================================
+.civora-pl {
+    // Seul le tableau defile (horizontalement) : les colonnes n'ont plus
+    // de scroll interne.
+    .civora-pl-board {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(9, 26, 54, .22) transparent;
+
+        &::-webkit-scrollbar { height: 8px; width: 8px; }
+        &::-webkit-scrollbar-track { background: transparent; }
+        &::-webkit-scrollbar-thumb {
+            background: rgba(9, 26, 54, .20);
+            border-radius: 4px;
+            &:hover { background: rgba(9, 26, 54, .32); }
+        }
     }
 }

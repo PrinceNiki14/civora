@@ -1,6 +1,7 @@
 import { Component, onWillStart, useState } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 import { CivoraDrawer } from "@civora_core/components/civora_drawer";
+import { CivoraAutocomplete } from "../components/civora_autocomplete";
 
 const TRANSACTIONS = [
     { value: "", label: "—" },
@@ -11,7 +12,7 @@ const TRANSACTIONS = [
 
 export class OpportunityDrawer extends Component {
     static template = "civora_pipeline.OpportunityDrawer";
-    static components = { CivoraDrawer };
+    static components = { CivoraDrawer, CivoraAutocomplete };
     static props = {
         opportunityId: { type: [Number, Boolean], optional: true },
         onClose: Function,
@@ -19,10 +20,8 @@ export class OpportunityDrawer extends Component {
 
     setup() {
         this.orm = useService("orm");
+        this.notification = useService("notification");
         this.transactions = TRANSACTIONS;
-        this.partners = [];
-        this.properties = [];
-        this.propertyMap = {};
         this.users = [];
         this.stages = [];
         this.state = useState({
@@ -30,27 +29,26 @@ export class OpportunityDrawer extends Component {
             saving: false,
             error: "",
             form: this.emptyForm(),
+            // Suppression 2-clic
+            confirmingDelete: false,
+            deleting: false,
         });
+        this._deleteTimer = null;
         onWillStart(() => this.load());
     }
 
     emptyForm() {
         return {
-            name: "", partner_id: false, property_id: false, transaction: false,
-            stage_id: false, expected_amount: 0, probability: 0, score: 0,
+            name: "", partner_id: false, partner_name: "",
+            property_id: false, property_name: "",
+            transaction: false, stage_id: false,
+            expected_amount: 0, probability: 0, score: 0,
             agent_id: false, date_close: false, description: "",
         };
     }
 
     async load() {
         this.state.loading = true;
-        this.partners = await this.orm.searchRead(
-            "res.partner", [["civora_is_contact", "=", true]], ["name"], { limit: 500, order: "name" }
-        );
-        this.properties = await this.orm.searchRead(
-            "civora.property", [], ["name", "price", "monthly_revenue", "transaction"], { limit: 500, order: "name" }
-        );
-        for (const p of this.properties) this.propertyMap[p.id] = p;
         this.users = await this.orm.searchRead("res.users", [["share", "=", false]], ["name"], { order: "name" });
         this.stages = await this.orm.searchRead(
             "civora.pipeline.stage", [], ["name"], { order: "sequence, id" }
@@ -58,6 +56,7 @@ export class OpportunityDrawer extends Component {
 
         if (this.props.opportunityId) {
             const m2o = (v) => (v ? v[0] : false);
+            const m2oLabel = (v) => (v ? v[1] : "");
             const [rec] = await this.orm.read("civora.opportunity", [this.props.opportunityId], [
                 "name", "partner_id", "property_id", "transaction", "stage_id",
                 "expected_amount", "probability", "score", "agent_id", "date_close", "description",
@@ -66,7 +65,9 @@ export class OpportunityDrawer extends Component {
                 this.state.form = {
                     name: rec.name || "",
                     partner_id: m2o(rec.partner_id),
+                    partner_name: m2oLabel(rec.partner_id),
                     property_id: m2o(rec.property_id),
+                    property_name: m2oLabel(rec.property_id),
                     transaction: rec.transaction || false,
                     stage_id: m2o(rec.stage_id),
                     expected_amount: rec.expected_amount || 0,
@@ -96,22 +97,43 @@ export class OpportunityDrawer extends Component {
     setM2O(field, ev) {
         this.state.form[field] = ev.target.value ? parseInt(ev.target.value) : false;
     }
-    onPropertyChange(ev) {
-        const id = ev.target.value ? parseInt(ev.target.value) : false;
-        this.state.form.property_id = id;
-        const p = id ? this.propertyMap[id] : null;
-        if (p) {
-            if (!this.state.form.transaction && p.transaction) this.state.form.transaction = p.transaction;
-            if (!this.state.form.expected_amount) {
-                this.state.form.expected_amount = p.transaction === "vente"
-                    ? (p.price || 0) : (p.monthly_revenue || p.price || 0);
+
+    // ---- Callbacks Autocomplete --------------------------------------
+    pickPartner(id, label) {
+        this.state.form.partner_id = id || false;
+        this.state.form.partner_name = label || "";
+    }
+    async pickProperty(id, label) {
+        this.state.form.property_id = id || false;
+        this.state.form.property_name = label || "";
+        // Auto-fill transaction/montant/nom depuis le bien.
+        if (!id) return;
+        try {
+            const [p] = await this.orm.read("civora.property", [id], [
+                "name", "price", "monthly_revenue", "transaction",
+            ]);
+            if (p) {
+                if (!this.state.form.transaction && p.transaction) {
+                    this.state.form.transaction = p.transaction;
+                }
+                if (!this.state.form.expected_amount) {
+                    this.state.form.expected_amount = p.transaction === "vente"
+                        ? (p.price || 0) : (p.monthly_revenue || p.price || 0);
+                }
+                if (!this.state.form.name.trim()) {
+                    this.state.form.name = p.name;
+                }
             }
-            if (!this.state.form.name.trim()) {
-                this.state.form.name = p.name;
-            }
+        } catch (e) {
+            // Silencieux : on garde la selection, on n'auto-remplit pas.
         }
     }
 
+    // ---- Domaines pour l'autocomplete --------------------------------
+    get partnerDomain() { return []; }
+    get propertyDomain() { return []; }
+
+    // ---- CRUD --------------------------------------------------------
     buildVals() {
         const f = this.state.form;
         return {
@@ -147,6 +169,35 @@ export class OpportunityDrawer extends Component {
         } catch (e) {
             this.state.error = "Enregistrement impossible.";
             this.state.saving = false;
+        }
+    }
+
+    // ---- Suppression 2-clic ------------------------------------------
+    onDeleteClick() {
+        if (!this.props.opportunityId) return;
+        if (!this.state.confirmingDelete) {
+            this.state.confirmingDelete = true;
+            // Retour automatique a l'etat initial apres 4s.
+            if (this._deleteTimer) clearTimeout(this._deleteTimer);
+            this._deleteTimer = setTimeout(() => {
+                this.state.confirmingDelete = false;
+            }, 4000);
+            return;
+        }
+        this.confirmDelete();
+    }
+    async confirmDelete() {
+        if (!this.props.opportunityId || this.state.deleting) return;
+        this.state.deleting = true;
+        if (this._deleteTimer) clearTimeout(this._deleteTimer);
+        try {
+            await this.orm.unlink("civora.opportunity", [this.props.opportunityId]);
+            this.notification.add("Opportunité supprimée.", { type: "success" });
+            this.props.onClose(true);
+        } catch (e) {
+            this.state.deleting = false;
+            this.state.confirmingDelete = false;
+            this.notification.add("Suppression impossible.", { type: "danger" });
         }
     }
 }

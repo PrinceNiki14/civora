@@ -7,3 +7,5 @@ access_civora_property_image_user,civora.property.image user,model_civora_proper
 access_civora_property_image_admin,civora.property.image admin,model_civora_property_image,base.group_system,1,1,1,1
 access_civora_visit_request_user,civora.visit.request user,model_civora_visit_request,base.group_user,1,1,1,0
 access_civora_visit_request_admin,civora.visit.request admin,model_civora_visit_request,base.group_system,1,1,1,1
+access_civora_sale_doc_type_user,civora.sale.doc.type user,model_civora_sale_doc_type,base.group_user,1,0,0,0
+access_civora_sale_doc_type_admin,civora.sale.doc.type admin,model_civora_sale_doc_type,base.group_system,1,1,1,1

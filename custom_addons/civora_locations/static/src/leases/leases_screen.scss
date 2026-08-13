@@ -134,6 +134,53 @@
         &.is-active { background: $civora-card; color: $civora-fg; box-shadow: $civora-shadow-card; }
     }
 
+    // ---- Filtres avancés (agent / propriétaire / ville) ----
+    .civora-lsc-filters {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+    .civora-lsc-filter-group {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: $civora-card;
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius-sm;
+        padding: 0 10px 0 8px;
+        height: 34px;
+        i {
+            color: $civora-muted;
+            font-size: 12px;
+            flex: 0 0 auto;
+        }
+        select {
+            border: 0;
+            background: transparent;
+            font-size: 12.5px;
+            color: $civora-fg;
+            font-family: $civora-font;
+            cursor: pointer;
+            outline: none;
+            padding: 0;
+            max-width: 180px;
+            &:focus { color: $civora-accent; }
+        }
+    }
+    .civora-lsc-filter-active {
+        font-size: 11.5px;
+        font-weight: 600;
+        color: $civora-accent;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 10px;
+        border-radius: $civora-radius-sm;
+        background: rgba(0, 171, 104, .10);
+    }
+
     // ---- Sous-onglets statut ----
     .civora-lsc-statustabs {
         display: flex;

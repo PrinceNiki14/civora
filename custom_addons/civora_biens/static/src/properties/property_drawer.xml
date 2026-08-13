@@ -24,16 +24,24 @@
                     <div class="civora-pf-title">Identité</div>
                     <div class="civora-pf-grid">
                         <div class="civora-fld civora-col2">
-                            <label>Nom du bien *</label>
-                            <input type="text" t-att-value="state.form.name"
-                                   t-on-input="(ev) => this.setField('name', ev)"
-                                   placeholder="Villa Cocody 5P"/>
+                            <label>Nom du bien</label>
+                            <input type="text" class="civora-fld-auto"
+                                   t-att-value="autoName"
+                                   readonly="readonly" tabindex="-1"
+                                   placeholder="Renseignez le type, les pièces et le quartier"/>
+                            <small class="civora-fld-hint">
+                                Composé automatiquement : type + pièces + quartier.
+                            </small>
                         </div>
                         <div class="civora-fld">
                             <label>Référence</label>
-                            <input type="text" t-att-value="state.form.ref"
-                                   t-on-input="(ev) => this.setField('ref', ev)"
-                                   placeholder="BIEN-001"/>
+                            <input type="text" class="civora-fld-auto"
+                                   t-att-value="state.form.ref"
+                                   readonly="readonly" tabindex="-1"
+                                   placeholder="Générée à l'enregistrement"/>
+                            <small class="civora-fld-hint">
+                                Générée automatiquement à partir du type du bien.
+                            </small>
                         </div>
                         <div class="civora-fld">
                             <label>Type</label>
@@ -117,15 +125,42 @@
                             <input type="text" t-att-value="state.form.street"
                                    t-on-input="(ev) => this.setField('street', ev)"/>
                         </div>
-                        <div class="civora-fld">
-                            <label>Latitude</label>
-                            <input type="number" step="0.0000001" t-att-value="state.form.latitude"
-                                   t-on-input="(ev) => this.setNumber('latitude', ev)" placeholder="5.3599"/>
+                        <div class="civora-fld civora-col2">
+                            <label>Lien Google Maps</label>
+                            <input type="text" t-att-value="state.form.maps_url"
+                                   t-on-input="(ev) => this.onMapsUrlInput(ev)"
+                                   placeholder="Collez un lien Google Maps ou OpenStreetMap…"/>
+                            <small t-if="state.mapsUrlHint" class="civora-fld-hint" t-esc="state.mapsUrlHint"/>
+                            <small t-else="" class="civora-fld-hint">Astuce : les liens raccourcis (goo.gl) doivent être ouverts d'abord pour obtenir l'URL complète.</small>
                         </div>
-                        <div class="civora-fld">
-                            <label>Longitude</label>
-                            <input type="number" step="0.0000001" t-att-value="state.form.longitude"
-                                   t-on-input="(ev) => this.setNumber('longitude', ev)" placeholder="-4.0083"/>
+                        <div class="civora-fld civora-col2">
+                            <label>Position sur la carte</label>
+                            <div class="civora-pf-map-tools">
+                                <button type="button" class="civora-btn civora-btn-outline civora-btn-sm"
+                                        t-att-disabled="state.locating"
+                                        t-on-click="() => this.useMyLocation()">
+                                    <i t-if="state.locating" class="fa fa-circle-o-notch fa-spin"/>
+                                    <i t-else="" class="fa fa-crosshairs"/>
+                                    Ma position
+                                </button>
+                                <button type="button" class="civora-btn civora-btn-ghost civora-btn-sm"
+                                        t-att-disabled="!hasPosition"
+                                        t-on-click="() => this.clearPosition()">
+                                    <i class="fa fa-times"/> Effacer
+                                </button>
+                                <span t-if="hasPosition" class="civora-pf-coords">
+                                    <i class="fa fa-map-marker"/>
+                                    <t t-esc="state.form.latitude"/>, <t t-esc="state.form.longitude"/>
+                                </span>
+                                <span t-else="" class="civora-pf-coords civora-pf-coords-empty">
+                                    <i class="fa fa-info-circle"/> Cliquez sur la carte pour poser un point.
+                                </span>
+                            </div>
+                            <CivoraMap latitude="state.form.latitude"
+                                       longitude="state.form.longitude"
+                                       interactive="true"
+                                       height="'260px'"
+                                       onPositionChange="(lat, lng) => this.onMapPositionChange(lat, lng)"/>
                         </div>
                     </div>
                 </div>
@@ -176,6 +211,44 @@
                             <input type="number" min="0" t-att-value="state.form.monthly_revenue"
                                    t-on-input="(ev) => this.setNumber('monthly_revenue', ev)" placeholder="450000"/>
                         </div>
+                    </div>
+                </div>
+
+
+                <!-- Documents juridiques (vente) -->
+                <div class="civora-pf-section" t-if="transactionIsSale">
+                    <div class="civora-pf-title">
+                        Documents juridiques (vente)
+                        <span class="civora-sdoc-count"
+                              t-esc="saleDocCount + ' sélectionné' + (saleDocCount > 1 ? 's' : '')"/>
+                    </div>
+                    <p class="civora-sdoc-help">
+                        Cochez les documents disponibles pour ce bien.
+                    </p>
+
+                    <div class="civora-sdoc-grid">
+                        <label t-foreach="saleDocTypes" t-as="d" t-key="d.id"
+                               t-att-class="'civora-sdoc' + (hasSaleDoc(d.id) ? ' is-on' : '')">
+                            <input type="checkbox"
+                                   t-att-checked="hasSaleDoc(d.id) ? 'checked' : false"
+                                   t-on-change="() => this.toggleSaleDoc(d.id)"/>
+                            <span t-esc="d.name"/>
+                            <span t-if="d.is_essential" class="civora-sdoc-key"
+                                  title="Pièce maîtresse : sans elle, la vente est juridiquement fragile.">clé</span>
+                        </label>
+                    </div>
+
+                    <div t-if="!saleDocsOk" class="civora-sdoc-warn">
+                        <i class="fa fa-exclamation-triangle"/>
+                        <span>
+                            Dossier incomplet : il faut au moins deux pièces,
+                            dont une pièce maîtresse (ACD, Titre Foncier ou
+                            Certificat de propriété).
+                        </span>
+                    </div>
+                    <div t-else="" class="civora-sdoc-ok">
+                        <i class="fa fa-check-circle"/>
+                        <span>Dossier juridique suffisant pour engager une vente.</span>
                     </div>
                 </div>
 
@@ -317,9 +390,34 @@
             </t>
         </div>
 
+        <!-- Bandeau de blocage suppression (baux/opps/unites bloquants) -->
+        <div t-if="state.deleteBlock" class="civora-pf-delblock">
+            <div class="civora-pf-delblock-h">
+                <i class="fa fa-exclamation-triangle"/> Suppression impossible
+            </div>
+            <p t-esc="state.deleteBlock.reason"/>
+            <div class="civora-pf-delblock-f">
+                <button class="civora-btn civora-btn-ghost" t-on-click="() => this.cancelDeleteBlock()">Annuler</button>
+                <button class="civora-btn civora-btn-outline" t-on-click="() => this.archiveInstead()">
+                    <i class="fa fa-archive"/> Archiver a la place
+                </button>
+            </div>
+        </div>
+
         <t t-set-slot="footer">
+            <button t-if="props.mode === 'edit'"
+                    t-att-class="'civora-btn ' + (state.confirmingDelete ? 'civora-btn-danger civora-btn-confirm' : 'civora-btn-ghost civora-btn-delete')"
+                    t-att-disabled="state.deleting || state.saving"
+                    t-on-click="() => this.onDeleteClick()">
+                <i t-if="state.deleting" class="fa fa-circle-o-notch fa-spin"/>
+                <i t-elif="state.confirmingDelete" class="fa fa-exclamation-triangle"/>
+                <i t-else="" class="fa fa-trash"/>
+                <t t-if="state.confirmingDelete"> Confirmer la suppression</t>
+                <t t-else=""> Supprimer</t>
+            </button>
+            <span class="civora-pf-footer-spacer"/>
             <button class="civora-btn civora-btn-outline" t-on-click="() => props.onClose()">Annuler</button>
-            <button class="civora-btn civora-btn-accent" t-att-disabled="state.saving" t-on-click="save">
+            <button class="civora-btn civora-btn-accent" t-att-disabled="state.saving || state.deleting" t-on-click="save">
                 <t t-esc="state.saving ? 'Enregistrement…' : 'Enregistrer'"/>
             </button>
         </t>

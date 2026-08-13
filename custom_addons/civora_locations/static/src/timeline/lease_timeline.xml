@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="civora_locations.LeaseTimeline">
+        <div class="civora-tl">
+
+            <!-- Barre de filtres -->
+            <div class="civora-tl-filters">
+                <t t-foreach="filterOptions" t-as="f" t-key="f.key">
+                    <button t-att-class="'civora-tl-filter ' + (state.filter === f.key ? 'is-active' : '')"
+                            t-on-click="() => this.setFilter(f.key)"
+                            t-esc="f.label"/>
+                </t>
+            </div>
+
+            <!-- Loading -->
+            <div t-if="state.loading" class="civora-tl-loading">
+                <i class="fa fa-circle-o-notch fa-spin"/> Chargement…
+            </div>
+
+            <!-- Empty -->
+            <div t-elif="isEmpty" class="civora-tl-empty">
+                <div class="civora-tl-empty-ico">
+                    <i class="fa fa-history"/>
+                </div>
+                <div class="civora-tl-empty-title">Aucun événement pour l'instant</div>
+                <div class="civora-tl-empty-text">
+                    L'historique se remplira automatiquement au fil des actions
+                    (signature du contrat, paiements, rupture, restitution de caution…).
+                </div>
+            </div>
+
+            <!-- Timeline groupée par jour -->
+            <div t-else="" class="civora-tl-groups">
+                <div t-foreach="groupedEvents" t-as="grp" t-key="grp.dayIso"
+                     class="civora-tl-group">
+
+                    <div class="civora-tl-day">
+                        <span class="civora-tl-day-label" t-esc="grp.label"/>
+                    </div>
+
+                    <div class="civora-tl-events">
+                        <div t-foreach="grp.items" t-as="ev" t-key="ev.id"
+                             t-att-class="'civora-tl-event is-' + ev.variant">
+
+                            <!-- Point + ligne verticale -->
+                            <div class="civora-tl-dot">
+                                <i t-att-class="'fa fa-' + ev.icon"/>
+                            </div>
+
+                            <!-- Contenu -->
+                            <div class="civora-tl-card">
+                                <div class="civora-tl-card-header">
+                                    <span class="civora-tl-badge" t-esc="ev.model_label"/>
+                                    <span t-if="ev.ref" class="civora-tl-ref" t-esc="ev.ref"/>
+                                    <span class="civora-tl-time" t-esc="fmtTime(ev.date)"/>
+                                </div>
+                                <div t-if="ev.title" class="civora-tl-title" t-esc="ev.title"/>
+                                <div t-if="ev.body" class="civora-tl-body" t-out="renderBody(ev.body)"/>
+                                <div class="civora-tl-author">
+                                    <i class="fa fa-user-o"/>
+                                    <span t-esc="ev.author"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </t>
+
+</templates>

@@ -1,0 +1,688 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="civora_locations.ContractTab">
+<div class="civora-ctab">
+
+    <!-- CHARGEMENT -->
+    <div t-if="state.loading" class="civora-ctab-state">
+        <i class="fa fa-circle-o-notch fa-spin"/> Chargement du contrat…
+    </div>
+
+    <!-- PAS DE CONTRAT — CTA création -->
+    <div t-elif="!state.contract" class="civora-ctab-empty">
+        <div class="civora-ctab-empty-ico"><i class="fa fa-file-text-o"/></div>
+        <div class="civora-ctab-empty-title">Aucun contrat généré</div>
+        <p>Générez le contrat de bail numérique pour ce locataire. Les clauses seront pré-remplies automatiquement selon le type de bail.</p>
+        <button class="civora-btn civora-btn-accent"
+                t-att-disabled="state.creating"
+                t-on-click="() => this.createContract()">
+            <i t-att-class="'fa fa-' + (state.creating ? 'circle-o-notch fa-spin' : 'file-text-o')"/>
+            <t t-esc="state.creating ? 'Génération…' : 'Générer le contrat'"/>
+        </button>
+    </div>
+
+    <!-- CONTRAT EXISTANT -->
+    <t t-else="">
+
+        <!-- BANDEAU HISTORIQUE (collapsible) -->
+        <div t-if="state.history.length > 0" class="civora-ctab-history">
+            <div class="civora-ctab-history-header" t-on-click="() => this.toggleHistory()">
+                <i class="fa fa-clock-o"/>
+                <span>Contrats précédents (<t t-esc="state.history.length + ''"/>)</span>
+                <i t-att-class="'fa fa-chevron-' + (state.historyOpen ? 'up' : 'down') + ' civora-ctab-history-chev'"/>
+            </div>
+            <div t-if="state.historyOpen" class="civora-ctab-history-body">
+                <div t-foreach="state.history" t-as="h" t-key="h.id" class="civora-ctab-history-item">
+                    <div class="civora-ctab-history-ico">
+                        <i class="fa fa-file-text-o"/>
+                    </div>
+                    <div class="civora-ctab-history-info">
+                        <div class="civora-ctab-history-name" t-esc="h.name"/>
+                        <div class="civora-ctab-history-period">
+                            <t t-if="h.date_start">
+                                Du <t t-esc="h.date_start"/>
+                                <t t-if="h.date_end"> au <t t-esc="h.date_end"/></t>
+                            </t>
+                            <t t-else="">Émis le <t t-esc="h.date_issued || '—'"/></t>
+                        </div>
+                    </div>
+                    <span t-att-class="'civora-badge civora-badge-' + this.stateVariant(h.state)"
+                          t-esc="this.stateLabel(h.state)"/>
+                </div>
+            </div>
+        </div>
+        <!-- TOOLBAR -->
+        <div class="civora-ctab-toolbar">
+            <div class="civora-ctab-meta">
+                <span class="civora-ctab-ref" t-esc="state.contract.name"/>
+                <span t-att-class="'civora-badge civora-badge-' + stateMeta.variant"
+                      t-esc="stateMeta.label"/>
+            </div>            <div class="civora-ctab-actions">
+                <!-- Soumettre pour signature bailleur -->
+                <button t-if="state.contract.state === 'draft'"
+                        class="civora-btn civora-btn-outline"
+                        t-on-click="() => this.submitForSignature()">
+                    <i class="fa fa-paper-plane-o"/> Soumettre à signature
+                </button>
+                <!-- Signer (bailleur) -->
+                <button t-if="canSign"
+                        class="civora-btn civora-btn-accent"
+                        t-on-click="() => this.openSignPad()">
+                    <i class="fa fa-pencil"/> Signer le contrat
+                </button>
+                <!-- Copier lien locataire -->
+                <button t-if="canSend"
+                        class="civora-btn civora-btn-outline"
+                        t-on-click="() => this.copySignLink()">
+                    <i class="fa fa-link"/> Copier le lien
+                </button>
+                <!-- WhatsApp -->
+                <button t-if="canSend"
+                        class="civora-btn civora-btn-whatsapp"
+                        t-on-click="() => this.openWhatsapp()">
+                    <i class="fa fa-whatsapp"/> Envoyer via WhatsApp
+                </button>
+                <!-- Email -->
+                <button t-if="canSend"
+                        t-att-class="'civora-btn civora-btn-outline' + (channelInfo('email').ok ? '' : ' is-disabled')"
+                        t-att-title="channelTitle('email')"
+                        t-att-disabled="state.sending ? 'disabled' : false"
+                        t-on-click="() => this.sendLink('email')">
+                    <i t-att-class="state.sending === 'email' ? 'fa fa-circle-o-notch fa-spin' : 'fa fa-envelope-o'"/>
+                    Envoyer par email
+                </button>
+                <!-- SMS -->
+                <button t-if="canSend"
+                        t-att-class="'civora-btn civora-btn-outline' + (channelInfo('sms').ok ? '' : ' is-disabled')"
+                        t-att-title="channelTitle('sms')"
+                        t-att-disabled="state.sending ? 'disabled' : false"
+                        t-on-click="() => this.sendLink('sms')">
+                    <i t-att-class="state.sending === 'sms' ? 'fa fa-circle-o-notch fa-spin' : 'fa fa-comment-o'"/>
+                    Envoyer par SMS
+                </button>
+                <!-- Aperçu façon PDF (toujours dispo si contrat existe) -->
+                <button class="civora-btn civora-btn-outline"
+                        t-on-click="() => this.openPreview()">
+                    <i class="fa fa-eye"/> Aperçu
+                </button>
+                <!-- Modifier les dates (draft ou avant signature locataire) -->
+                <button t-if="canEditDates"
+                        class="civora-btn civora-btn-outline"
+                        t-on-click="() => this.openEditDates()">
+                    <i class="fa fa-calendar"/> Dates
+                </button>
+                <!-- Imprimer PDF -->
+                <button class="civora-btn civora-btn-outline"
+                        t-on-click="() => this.printContract()">
+                    <i class="fa fa-print"/> PDF
+                </button>
+                <!-- Renouveler (si expiré) -->
+                <button t-if="state.contract.state === 'expired'"
+                        class="civora-btn civora-btn-accent"
+                        t-att-disabled="state.creating"
+                        t-on-click="() => this.renewContract()">
+                    <i t-att-class="'fa fa-' + (state.creating ? 'circle-o-notch fa-spin' : 'refresh')"/>
+                    <t t-esc="state.creating ? 'Génération…' : 'Renouveler le contrat'"/>
+                </button>
+                <!-- Nouveau contrat (si annulé, expiré ou rompu) -->
+                <button t-if="state.contract.state === 'cancelled' || state.contract.state === 'terminated'"
+                        class="civora-btn civora-btn-accent"
+                        t-att-disabled="state.creating"
+                        t-on-click="() => this.createNewContract()">
+                    <i t-att-class="'fa fa-' + (state.creating ? 'circle-o-notch fa-spin' : 'file-text-o')"/>
+                    <t t-esc="state.creating ? 'Génération…' : 'Nouveau contrat'"/>
+                </button>
+                <!-- Recharger clauses si vide -->
+                <button t-if="state.contract.state === 'draft' &amp;&amp; state.clauses.length === 0"
+                        class="civora-btn civora-btn-outline"
+                        t-on-click="() => this.reloadClauses()">
+                    <i class="fa fa-refresh"/> Charger les clauses
+                </button>
+                <!-- Rompre le contrat (uniquement si signé) -->
+                <button t-if="canTerminate"
+                        class="civora-btn civora-btn-outline civora-btn-danger-outline"
+                        t-on-click="() => this.openTerminate()">
+                    <i class="fa fa-times-circle-o"/> Rompre
+                </button>
+                <!-- Annuler (brouillon ou avant signature complète) -->
+                <button t-if="state.contract.state === 'draft' || state.contract.state === 'pending_lessor' || state.contract.state === 'signed_lessor'"
+                        class="civora-btn civora-btn-ghost"
+                        t-on-click="() => this.requestCancel()">
+                    <i class="fa fa-ban"/> Annuler
+                </button>
+            </div>
+        </div>
+
+        <!-- LIEN ENVOI (quand bailleur a signé) -->
+        <div t-if="canSend" class="civora-ctab-link-banner">
+            <i class="fa fa-send"/> Lien de signature locataire :
+            <span class="civora-ctab-link-url" t-esc="signUrl"/>
+        </div>
+
+        <!-- REMARQUES DU LOCATAIRE -->
+        <div t-if="state.remarks.length" class="civora-ctab-remarks">
+            <div class="civora-ctab-remarks-h">
+                <i class="fa fa-comments-o"/>
+                <span>Remarques du locataire</span>
+                <span t-if="state.remarksOpen" class="civora-ctab-remarks-badge"
+                      t-esc="state.remarksOpen + ' en attente'"/>
+            </div>
+
+            <div t-if="state.remarksOpen" class="civora-ctab-remarks-warn">
+                <i class="fa fa-lock"/>
+                La signature du locataire est bloquée tant que ces remarques
+                n'ont pas reçu de réponse.
+            </div>
+
+            <div t-foreach="state.remarks" t-as="rm" t-key="rm.id"
+                 t-att-class="'civora-ctab-remark is-' + rm.state">
+                <div class="civora-ctab-remark-top">
+                    <span class="civora-ctab-remark-art" t-esc="rm.section_label"/>
+                    <span t-att-class="'civora-ctab-remark-tag is-' + rm.state"
+                          t-esc="rm.state_label"/>
+                    <span class="civora-ctab-remark-meta"
+                          t-esc="rm.author_name + ' · ' + rm.created"/>
+                </div>
+                <div class="civora-ctab-remark-body" t-esc="rm.body"/>
+
+                <div t-if="rm.response" class="civora-ctab-remark-answer">
+                    <strong>Votre réponse :</strong>
+                    <span t-esc="rm.response"/>
+                    <div class="civora-ctab-remark-answer-meta"
+                         t-esc="rm.responded_by + ' · ' + rm.responded_at"/>
+                </div>
+
+                <!-- Traitement -->
+                <t t-if="rm.state === 'open'">
+                    <div t-if="state.answering !== rm.id" class="civora-ctab-remark-actions">
+                        <button class="civora-ctab-btn civora-ctab-btn-sm"
+                                t-on-click="() => this.startAnswer(rm)">
+                            <i class="fa fa-reply"/> Répondre
+                        </button>
+                    </div>
+                    <div t-else="" class="civora-ctab-remark-form">
+                        <textarea class="civora-ctab-remark-textarea" rows="3"
+                                  placeholder="Expliquez votre décision au locataire…"
+                                  t-att-value="state.answerText"
+                                  t-on-input="(ev) => this.setAnswerText(ev)"/>
+                        <div class="civora-ctab-remark-form-actions">
+                            <button class="civora-ctab-btn civora-ctab-btn-sm civora-ctab-btn-ghost"
+                                    t-on-click="() => this.cancelAnswer()">Annuler</button>
+                            <button class="civora-ctab-btn civora-ctab-btn-sm civora-ctab-btn-danger"
+                                    t-att-disabled="state.answerSaving ? 'disabled' : false"
+                                    t-on-click="() => this.answerRemark(rm, 'rejected')">
+                                <i class="fa fa-times"/> Refuser
+                            </button>
+                            <button class="civora-ctab-btn civora-ctab-btn-sm civora-ctab-btn-accent"
+                                    t-att-disabled="state.answerSaving ? 'disabled' : false"
+                                    t-on-click="() => this.answerRemark(rm, 'accepted')">
+                                <i class="fa fa-check"/> Accepter
+                            </button>
+                        </div>
+                    </div>
+                </t>
+                <div t-else="" class="civora-ctab-remark-actions">
+                    <button class="civora-ctab-btn civora-ctab-btn-sm civora-ctab-btn-ghost"
+                            t-on-click="() => this.reopenRemark(rm)">
+                        <i class="fa fa-undo"/> Remettre en attente
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- BANDEAU INFO RUPTURE -->
+        <div t-if="state.contract.state === 'terminated'"
+             class="civora-ctab-terminated-banner">
+            <div class="civora-ctab-terminated-ico">
+                <i class="fa fa-times-circle"/>
+            </div>
+            <div class="civora-ctab-terminated-info">
+                <div class="civora-ctab-terminated-title">
+                    Contrat rompu
+                    <t t-if="state.contract.date_terminated">
+                        le <span t-esc="state.contract.date_terminated"/>
+                    </t>
+                </div>
+                <div class="civora-ctab-terminated-details">
+                    <t t-if="state.contract.termination_reason">
+                        Motif : <b t-esc="terminationReasonLabel(state.contract.termination_reason)"/>
+                    </t>
+                    <t t-if="state.contract.terminated_by">
+                        · Prononcé par <span t-esc="state.contract.terminated_by"/>
+                    </t>
+                </div>
+                <div t-if="state.contract.termination_note"
+                     class="civora-ctab-terminated-note"
+                     t-esc="state.contract.termination_note"/>
+            </div>
+        </div>
+
+        <!-- INDICATEUR SIGNATURES -->
+        <div class="civora-ctab-signs">
+            <!-- Bailleur -->
+            <div t-att-class="'civora-ctab-sign-block' + (state.contract.sign_lessor ? ' is-done' : '')">
+                <div class="civora-ctab-sign-ico">
+                    <i t-att-class="'fa fa-' + (state.contract.sign_lessor ? 'check-circle' : 'circle-o')"/>
+                </div>
+                <div class="civora-ctab-sign-body">
+                    <div class="civora-ctab-sign-label">Signature bailleur</div>
+                    <div t-if="state.contract.signed_at_lessor" class="civora-ctab-sign-date"
+                         t-esc="state.contract.signed_by_lessor + ' — ' + (state.contract.signed_at_lessor || '')"/>
+                    <div t-else="" class="civora-ctab-sign-pending">En attente</div>
+                </div>
+                <div t-if="state.contract.sign_lessor" class="civora-ctab-sign-preview">
+                    <img t-att-src="'data:image/png;base64,' + state.contract.sign_lessor"
+                         alt="Signature bailleur"/>
+                </div>
+            </div>
+            <!-- Locataire -->
+            <div t-att-class="'civora-ctab-sign-block' + (state.contract.sign_tenant ? ' is-done' : '')">
+                <div class="civora-ctab-sign-ico">
+                    <i t-att-class="'fa fa-' + (state.contract.sign_tenant ? 'check-circle' : 'circle-o')"/>
+                </div>
+                <div class="civora-ctab-sign-body">
+                    <div class="civora-ctab-sign-label">Signature locataire</div>
+                    <div t-if="state.contract.signed_at_tenant" class="civora-ctab-sign-date"
+                         t-esc="state.contract.signed_at_tenant"/>
+                    <div t-else="" class="civora-ctab-sign-pending">En attente</div>
+                </div>
+                <div t-if="state.contract.sign_tenant" class="civora-ctab-sign-preview">
+                    <img t-att-src="'data:image/png;base64,' + state.contract.sign_tenant"
+                         alt="Signature locataire"/>
+                </div>
+            </div>
+        </div>
+
+        <!-- APERÇU CONTRAT -->
+        <div class="civora-ctab-preview">
+            <div class="civora-ctab-preview-header">
+                <i class="fa fa-eye"/> Aperçu du contrat
+                <span class="civora-ctab-preview-count">
+                    <t t-esc="state.clauses.length + ''"/> articles
+                </span>
+            </div>
+
+            <!-- Clauses rendues -->
+            <div class="civora-ctab-clauses">
+                <div t-if="state.clauses.length === 0" class="civora-ctab-no-clauses">
+                    <i class="fa fa-exclamation-circle"/> Aucune clause attachée à ce contrat.
+                    Ajoutez des clauses depuis le paramétrage.
+                </div>
+                <div t-foreach="state.clauses" t-as="cl" t-key="cl_index"
+                     class="civora-ctab-clause">
+                    <div class="civora-ctab-clause-header">
+                        <span class="civora-ctab-clause-num" t-esc="cl.numero ? 'Art. ' + cl.numero : ''"/>
+                        <span class="civora-ctab-clause-title" t-esc="cl.name"/>
+                    </div>
+                    <div class="civora-ctab-clause-body" t-out="cl.body"/>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONFIRM ANNULATION -->
+        <div t-if="state.cancelConfirm" class="civora-ctab-overlay">
+            <div class="civora-ctab-confirm">
+                <div class="civora-ctab-confirm-ico"><i class="fa fa-ban"/></div>
+                <div class="civora-ctab-confirm-title">Annuler ce contrat ?</div>
+                <p>Le contrat passera en statut « Annulé ».</p>
+                <div class="civora-ctab-confirm-btns">
+                    <button class="civora-btn civora-btn-outline"
+                            t-on-click="() => this.cancelConfirmCancel()">Retour</button>
+                    <button class="civora-btn civora-btn-danger"
+                            t-on-click="() => this.confirmCancel()">
+                        <i class="fa fa-ban"/> Confirmer l'annulation
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </t><!-- fin contrat existant -->
+
+    <!-- ══ DRAWER ÉDITION DATES ═════════════════════════════════════ -->
+    <div t-if="state.editDatesOpen" class="civora-ctab-editdates-overlay"
+         t-on-click.self="() => this.closeEditDates()">
+        <div class="civora-ctab-editdates">
+            <div class="civora-ctab-editdates-header">
+                <span><i class="fa fa-calendar"/> Période du contrat</span>
+                <button class="civora-cls-drawer-close" t-on-click="() => this.closeEditDates()">
+                    <i class="fa fa-times"/>
+                </button>
+            </div>
+            <div class="civora-ctab-editdates-body">
+                <p class="civora-ctab-editdates-hint">
+                    Ces dates représentent la période contractuelle. Elles sont initialement
+                    reprises depuis le bail, mais peuvent être ajustées jusqu'à la signature
+                    du locataire.
+                </p>
+                <div class="civora-cls-field">
+                    <label>Date de début <span class="civora-cls-req">*</span></label>
+                    <input type="date" class="civora-cls-input"
+                           t-att-value="state.editDatesForm.date_start"
+                           t-on-input="(e) => { state.editDatesForm.date_start = e.target.value; }"/>
+                </div>
+                <div class="civora-cls-field">
+                    <label>Date de fin</label>
+                    <input type="date" class="civora-cls-input"
+                           t-att-value="state.editDatesForm.date_end"
+                           t-on-input="(e) => { state.editDatesForm.date_end = e.target.value; }"/>
+                    <div class="civora-cls-hint-sm">Laisser vide pour un bail à durée indéterminée.</div>
+                </div>
+            </div>
+            <div class="civora-ctab-editdates-footer">
+                <button class="civora-btn civora-btn-outline"
+                        t-on-click="() => this.closeEditDates()">Annuler</button>
+                <button class="civora-btn civora-btn-accent"
+                        t-att-disabled="state.editDatesSaving"
+                        t-on-click="() => this.saveDates()">
+                    <i t-att-class="'fa fa-' + (state.editDatesSaving ? 'circle-o-notch fa-spin' : 'check')"/>
+                    <t t-esc="state.editDatesSaving ? 'Enregistrement…' : 'Enregistrer'"/>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ DRAWER RUPTURE DE CONTRAT ═════════════════════════════════ -->
+    <div t-if="state.terminateOpen" class="civora-ctab-editdates-overlay"
+         t-on-click.self="() => this.closeTerminate()">
+        <div class="civora-ctab-editdates">
+            <div class="civora-ctab-editdates-header">
+                <span><i class="fa fa-times-circle-o"/> Rompre le contrat</span>
+                <button class="civora-cls-drawer-close" t-on-click="() => this.closeTerminate()">
+                    <i class="fa fa-times"/>
+                </button>
+            </div>
+            <div class="civora-ctab-editdates-body">
+                <p class="civora-ctab-editdates-hint" style="border-left-color:#dc2626; background:#fef2f2;">
+                    ⚠ La rupture d'un contrat est une action définitive.
+                    Le contrat rompu sera archivé dans l'historique et un
+                    nouveau contrat devra être établi si vous souhaitez
+                    relouer le bien à ce même locataire.
+                </p>
+                <div class="civora-cls-field">
+                    <label>Date effective de rupture <span class="civora-cls-req">*</span></label>
+                    <input type="date" class="civora-cls-input"
+                           t-att-value="state.terminateForm.date_terminated"
+                           t-on-input="(e) => { state.terminateForm.date_terminated = e.target.value; }"/>
+                </div>
+                <div class="civora-cls-field">
+                    <label>Motif de rupture <span class="civora-cls-req">*</span></label>
+                    <select class="civora-cls-input"
+                            t-on-change="(e) => { state.terminateForm.reason = e.target.value; }">
+                        <option value="">— Sélectionner un motif —</option>
+                        <t t-foreach="state.terminateReasons" t-as="r" t-key="r.key">
+                            <option t-att-value="r.key"
+                                    t-att-selected="state.terminateForm.reason === r.key"
+                                    t-esc="r.label"/>
+                        </t>
+                    </select>
+                </div>
+                <div class="civora-cls-field">
+                    <label>Détails / précisions (optionnel)</label>
+                    <textarea class="civora-cls-input" rows="4"
+                              placeholder="Circonstances, référence à un courrier, mise en demeure, etc."
+                              t-on-input="(e) => { state.terminateForm.note = e.target.value; }"
+                              t-esc="state.terminateForm.note"/>
+                </div>
+            </div>
+            <div class="civora-ctab-editdates-footer">
+                <button class="civora-btn civora-btn-outline"
+                        t-on-click="() => this.closeTerminate()">Annuler</button>
+                <button class="civora-btn civora-btn-danger"
+                        t-att-disabled="state.terminateSaving"
+                        t-on-click="() => this.saveTerminate()">
+                    <i t-att-class="'fa fa-' + (state.terminateSaving ? 'circle-o-notch fa-spin' : 'times-circle-o')"/>
+                    <t t-esc="state.terminateSaving ? 'Enregistrement…' : 'Confirmer la rupture'"/>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ MODALE APERÇU FAÇON PDF ═══════════════════════════════════ -->
+    <div t-if="state.previewOpen" class="civora-ctab-preview-overlay"
+         t-on-click.self="() => this.closePreview()">
+        <div class="civora-ctab-preview-modal">
+            <!-- Barre supérieure -->
+            <div class="civora-ctab-preview-toolbar">
+                <div class="civora-ctab-preview-title">
+                    <i class="fa fa-eye"/> Aperçu du contrat
+                    <span t-if="state.previewData" class="civora-ctab-preview-ref"
+                          t-esc="state.previewData.name"/>
+                </div>
+                <div class="civora-ctab-preview-toolbar-actions">
+                    <button class="civora-btn civora-btn-outline"
+                            t-on-click="() => this.printContract()">
+                        <i class="fa fa-download"/> Télécharger PDF
+                    </button>
+                    <button class="civora-btn civora-btn-outline"
+                            t-on-click="() => this.closePreview()">
+                        <i class="fa fa-times"/> Fermer
+                    </button>
+                </div>
+            </div>
+
+            <!-- Contenu papier -->
+            <div class="civora-ctab-preview-content">
+                <div t-if="state.previewLoading" class="civora-ctab-preview-loading">
+                    <i class="fa fa-circle-o-notch fa-spin"/> Génération de l'aperçu…
+                </div>
+
+                <div t-elif="state.previewData" class="civora-ctab-paper">
+                    <t t-set="d" t-value="state.previewData"/>
+
+                    <!-- En-tête -->
+                    <div class="civora-ctab-paper-header">
+                        <div class="civora-ctab-paper-logo">
+                            <img t-if="d.company_logo"
+                                 t-att-src="'data:image/png;base64,' + d.company_logo"
+                                 alt="Logo"/>
+                        </div>
+                        <div class="civora-ctab-paper-companyname" t-esc="d.company_name"/>
+                    </div>
+                    <div class="civora-ctab-paper-divider"/>
+
+                    <!-- Titre -->
+                    <h1 class="civora-ctab-paper-title">
+                        Contrat de bail
+                        <t t-if="d.lease_type === 'residentiel'"> – Bail d'habitation</t>
+                        <t t-elif="d.lease_type === 'commercial'"> – Bail commercial</t>
+                    </h1>
+
+                    <!-- Méta ref + date -->
+                    <div class="civora-ctab-paper-meta">
+                        <span>Réf. : <b t-esc="d.name"/></span>
+                        <span>Établi le <b t-esc="d.date_issued"/></span>
+                    </div>
+
+                    <p class="civora-ctab-paper-intro">
+                        Le présent contrat de bail est établi entre les parties soussignées,
+                        représentées ci-après, qui reconnaissent en avoir pris connaissance et
+                        en accepter sans réserve les conditions.
+                    </p>
+
+                    <!-- Article 1 : Les parties -->
+                    <div class="civora-ctab-paper-section">
+                        <div class="civora-ctab-paper-section-title">Article 1 — Les parties</div>
+                        <div class="civora-ctab-paper-party civora-ctab-paper-party-lessor">
+                            <div class="civora-ctab-paper-party-label">LE BAILLEUR</div>
+                            <div class="civora-ctab-paper-party-name" t-esc="d.company_name"/>
+                            <div class="civora-ctab-paper-party-info">
+                                <t t-if="d.company_street or d.company_city">
+                                    <span t-if="d.company_street" t-esc="d.company_street"/>
+                                    <t t-if="d.company_city">, <span t-esc="d.company_city"/></t>
+                                </t>
+                                <div t-if="d.company_phone">Tél. <t t-esc="d.company_phone"/>
+                                    <t t-if="d.company_email"> | <t t-esc="d.company_email"/></t>
+                                </div>
+                                <div t-if="d.company_rccm" t-esc="d.company_rccm"/>
+                            </div>
+                        </div>
+                        <div class="civora-ctab-paper-party civora-ctab-paper-party-tenant">
+                            <div class="civora-ctab-paper-party-label">LE LOCATAIRE</div>
+                            <div class="civora-ctab-paper-party-name" t-esc="d.tenant_name"/>
+                            <div class="civora-ctab-paper-party-info">
+                                <div t-if="d.tenant_function" t-esc="d.tenant_function"/>
+                                <div t-if="d.tenant_phone">Tél. <t t-esc="d.tenant_phone"/>
+                                    <t t-if="d.tenant_email"> | <t t-esc="d.tenant_email"/></t>
+                                </div>
+                            </div>
+                        </div>
+                        <p t-if="d.owner_name" class="civora-ctab-paper-mention">
+                            Le bien objet du présent contrat est géré par <b t-esc="d.company_name"/>
+                            pour le compte du propriétaire : <b t-esc="d.owner_name"/>.
+                        </p>
+                    </div>
+
+                    <!-- Article 2 : Désignation du bien -->
+                    <div class="civora-ctab-paper-section">
+                        <div class="civora-ctab-paper-section-title">Article 2 — Désignation du bien</div>
+                        <p>Le bailleur donne à bail au locataire, qui accepte, le bien immobilier suivant :
+                            <b t-esc="d.property_name"/><t t-if="d.property_city">, <span t-esc="d.property_city"/></t>.</p>
+                        <p>Nature du bail : <b t-esc="d.lease_type_label"/></p>
+                    </div>
+
+                    <!-- Article 3 : Conditions financières -->
+                    <div class="civora-ctab-paper-section">
+                        <div class="civora-ctab-paper-section-title">Article 3 — Conditions financières</div>
+                        <div class="civora-ctab-paper-financial-grid">
+                            <div class="civora-ctab-paper-fin-cell">
+                                <div class="civora-ctab-paper-fin-label">Loyer mensuel</div>
+                                <div class="civora-ctab-paper-fin-value" t-esc="d.rent"/>
+                            </div>
+                            <div class="civora-ctab-paper-fin-cell">
+                                <div class="civora-ctab-paper-fin-label">Charges</div>
+                                <div class="civora-ctab-paper-fin-value" t-esc="d.charges"/>
+                            </div>
+                            <div class="civora-ctab-paper-fin-cell">
+                                <div class="civora-ctab-paper-fin-label">Dépôt de garantie</div>
+                                <div class="civora-ctab-paper-fin-value" t-esc="d.deposit"/>
+                            </div>
+                            <div class="civora-ctab-paper-fin-cell">
+                                <div class="civora-ctab-paper-fin-label">Fréquence</div>
+                                <div class="civora-ctab-paper-fin-value">Mensuel</div>
+                            </div>
+                            <div class="civora-ctab-paper-fin-cell">
+                                <div class="civora-ctab-paper-fin-label">Date de début</div>
+                                <div class="civora-ctab-paper-fin-value" t-esc="d.date_start"/>
+                            </div>
+                            <div class="civora-ctab-paper-fin-cell">
+                                <div class="civora-ctab-paper-fin-label">Date de fin</div>
+                                <div class="civora-ctab-paper-fin-value" t-esc="d.date_end"/>
+                            </div>
+                        </div>
+                        <p class="civora-ctab-paper-fin-note">
+                            Soit un total mensuel de <b t-esc="d.total_monthly"/>
+                            (loyer + charges), payable selon la fréquence convenue.
+                        </p>
+                    </div>
+
+                    <!-- Article 4+ : clauses paramétrées -->
+                    <t t-foreach="d.clauses" t-as="cl" t-key="cl_index">
+                        <div class="civora-ctab-paper-section">
+                            <div class="civora-ctab-paper-section-title">
+                                <t t-if="cl.numero">Article <t t-esc="cl.numero"/> — <t t-esc="cl.name"/></t>
+                                <t t-else="" t-esc="cl.name"/>
+                            </div>
+                            <div class="civora-ctab-paper-clause-body" t-out="cl.body"/>
+                        </div>
+                    </t>
+
+                    <!-- Signatures -->
+                    <div class="civora-ctab-paper-section">
+                        <div class="civora-ctab-paper-section-title">Signatures des parties</div>
+                        <p class="civora-ctab-paper-signatures-intro">
+                            Fait à <t t-if="d.company_city"><span t-esc="d.company_city"/></t>
+                            <t t-else="">——</t>, le <t t-esc="d.date_issued"/>,
+                            en deux exemplaires originaux, dont un remis à chaque partie.
+                        </p>
+                        <div class="civora-ctab-paper-signatures-grid">
+                            <div class="civora-ctab-paper-sign-box">
+                                <div class="civora-ctab-paper-sign-label">LE BAILLEUR</div>
+                                <div class="civora-ctab-paper-sign-name" t-esc="d.company_name"/>
+                                <div t-if="d.signed_by_lessor" class="civora-ctab-paper-sign-by">
+                                    Représenté(e) par <t t-esc="d.signed_by_lessor"/>
+                                </div>
+                                <div class="civora-ctab-paper-sign-zone">
+                                    <img t-if="d.sign_lessor"
+                                         t-att-src="'data:image/png;base64,' + d.sign_lessor"
+                                         alt="Signature bailleur"/>
+                                    <span t-else="" class="civora-ctab-paper-sign-placeholder">Signature</span>
+                                </div>
+                                <div t-if="d.signed_at_lessor" class="civora-ctab-paper-sign-date">
+                                    Signé électroniquement le <t t-esc="d.signed_at_lessor"/>
+                                </div>
+                            </div>
+                            <div class="civora-ctab-paper-sign-box">
+                                <div class="civora-ctab-paper-sign-label">LE LOCATAIRE</div>
+                                <div class="civora-ctab-paper-sign-name" t-esc="d.tenant_name"/>
+                                <div class="civora-ctab-paper-sign-zone">
+                                    <img t-if="d.sign_tenant"
+                                         t-att-src="'data:image/png;base64,' + d.sign_tenant"
+                                         alt="Signature locataire"/>
+                                    <span t-else="" class="civora-ctab-paper-sign-placeholder">Signature</span>
+                                </div>
+                                <div t-if="d.signed_at_tenant" class="civora-ctab-paper-sign-date">
+                                    Signé électroniquement le <t t-esc="d.signed_at_tenant"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ PAD DE SIGNATURE BAILLEUR ════════════════════════════════ -->
+    <div t-if="state.signing" class="civora-ctab-signpad-overlay">
+        <div class="civora-ctab-signpad">
+            <div class="civora-ctab-signpad-header">
+                <span><i class="fa fa-pencil"/> Signature du bailleur</span>
+                <button class="civora-cls-drawer-close" t-on-click="() => this.closeSignPad()">
+                    <i class="fa fa-times"/>
+                </button>
+            </div>
+            <div class="civora-ctab-signpad-body">
+                <p class="civora-ctab-signpad-hint">
+                    Dessinez votre signature dans le cadre ci-dessous (souris ou doigt).
+                </p>
+                <div class="civora-ctab-signpad-canvas-wrap">
+                    <canvas
+                        t-ref="signCanvas"
+                        class="civora-ctab-signpad-canvas"
+                        t-on-mousedown="onPointerDown"
+                        t-on-mousemove="onPointerMove"
+                        t-on-mouseup="onPointerUp"
+                        t-on-mouseleave="onPointerUp"
+                        t-on-touchstart="onPointerDown"
+                        t-on-touchmove="onPointerMove"
+                        t-on-touchend="onPointerUp"
+                    />
+                    <div t-if="!state.hasSignature" class="civora-ctab-signpad-placeholder">
+                        Signez ici
+                    </div>
+                </div>
+                <div class="civora-ctab-signpad-footer">
+                    <button class="civora-btn civora-btn-ghost"
+                            t-on-click="() => this.clearCanvas()">
+                        <i class="fa fa-eraser"/> Effacer
+                    </button>
+                    <div style="display:flex; gap:8px;">
+                        <button class="civora-btn civora-btn-outline"
+                                t-on-click="() => this.closeSignPad()">Annuler</button>
+                        <button class="civora-btn civora-btn-accent"
+                                t-att-disabled="state.saving"
+                                t-on-click="() => this.saveSignature()">
+                            <i t-att-class="'fa fa-' + (state.saving ? 'circle-o-notch fa-spin' : 'check')"/>
+                            <t t-esc="state.saving ? 'Enregistrement…' : 'Valider ma signature'"/>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+</t>
+
+</templates>

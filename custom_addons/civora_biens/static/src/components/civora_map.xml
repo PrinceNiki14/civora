@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_biens.CivoraMap">
+    <div class="civora-map" t-att-style="'height: ' + props.height + ';'" t-ref="map"/>
+</t>
+
+</templates>

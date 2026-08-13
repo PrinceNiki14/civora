@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+
+    <record id="civora_sms_company_rule" model="ir.rule">
+        <field name="name">civora.sms : multi-societe</field>
+        <field name="model_id" ref="model_civora_sms"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        <field name="global" eval="True"/>
+    </record>
+
+    <record id="civora_short_link_company_rule" model="ir.rule">
+        <field name="name">civora.short.link : multi-societe</field>
+        <field name="model_id" ref="model_civora_short_link"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        <field name="global" eval="True"/>
+    </record>
+
+</odoo>

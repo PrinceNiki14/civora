@@ -113,3 +113,166 @@
         .civora-lf-grid, .civora-lf-grid3 { grid-template-columns: 1fr; }
     }
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Bandeau avertissement : bien déjà loué (règle : un seul bail actif par bien)
+// ─────────────────────────────────────────────────────────────────────────────
+.civora-lf-availability-warn {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 8px;
+    padding: 10px 12px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-left: 3px solid #dc2626;
+    border-radius: 6px;
+}
+
+.civora-lf-availability-ico {
+    color: #dc2626;
+    font-size: 16px;
+    line-height: 1.4;
+    flex-shrink: 0;
+}
+
+.civora-lf-availability-msg {
+    flex: 1;
+    min-width: 0;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.civora-lf-availability-title {
+    font-weight: 700;
+    color: #7f1d1d;
+    margin-bottom: 2px;
+}
+
+.civora-lf-availability-details {
+    color: #7f1d1d;
+    margin-bottom: 3px;
+}
+
+.civora-lf-availability-help {
+    color: #4a5461;
+    font-style: italic;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Section "Versements à la signature" — hint + récap
+// ─────────────────────────────────────────────────────────────────────────────
+.civora-lf-hint {
+    font-size: 12px;
+    color: #626a75;
+    margin-bottom: 12px;
+    line-height: 1.5;
+    padding: 8px 10px;
+    background: #f4f6fa;
+    border-left: 3px solid #00ab68;
+    border-radius: 4px;
+}
+
+.civora-lf-field-hint {
+    font-size: 11px;
+    color: #9aa2ad;
+    margin-top: 3px;
+    font-style: italic;
+}
+
+.civora-lf-recap {
+    margin-top: 14px;
+    padding: 14px 16px;
+    background: linear-gradient(to right, #f0fdf4, #ecfdf5);
+    border: 1px solid #bbf7d0;
+    border-radius: 10px;
+
+    &-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12.5px;
+        font-weight: 700;
+        color: #14532d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 12px;
+
+        i { color: #16a34a; }
+    }
+
+    &-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-bottom: 12px;
+
+        @media (max-width: 600px) {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    &-item {
+        background: #fff;
+        padding: 10px 12px;
+        border-radius: 8px;
+        border: 1px solid #d1fae5;
+    }
+
+    &-label {
+        font-size: 11px;
+        color: #666;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+    }
+
+    &-value {
+        font-size: 15px;
+        font-weight: 800;
+        color: #14532d;
+    }
+
+    &-sub {
+        font-size: 10.5px;
+        color: #9aa2ad;
+        margin-top: 2px;
+        font-style: italic;
+    }
+
+    &-total {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 14px;
+        background: #14532d;
+        border-radius: 8px;
+        color: #fff;
+        margin-top: 4px;
+
+        &-label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        &-value {
+            font-size: 17px;
+            font-weight: 900;
+        }
+    }
+
+    &-first-due {
+        margin-top: 10px;
+        padding: 8px 12px;
+        background: #fff;
+        border: 1px dashed #86efac;
+        border-radius: 6px;
+        font-size: 12px;
+        color: #14532d;
+
+        i { color: #16a34a; margin-right: 6px; }
+        b { color: #052e16; }
+    }
+}

@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_civora_sms_user,civora.sms user,model_civora_sms,base.group_user,1,0,1,0
+access_civora_sms_admin,civora.sms admin,model_civora_sms,base.group_system,1,1,1,1
+access_civora_short_link_user,civora.short.link user,model_civora_short_link,base.group_user,1,0,1,0
+access_civora_short_link_admin,civora.short.link admin,model_civora_short_link,base.group_system,1,1,1,1

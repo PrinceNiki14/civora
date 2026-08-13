@@ -29,21 +29,24 @@
                         </div>
                         <div class="civora-fld">
                             <label>Contact</label>
-                            <select t-on-change="(ev) => this.setM2O('partner_id', ev)">
-                                <option value="">—</option>
-                                <option t-foreach="partners" t-as="p" t-key="p.id"
-                                        t-att-value="p.id" t-att-selected="state.form.partner_id === p.id"
-                                        t-esc="p.name"/>
-                            </select>
+                            <CivoraAutocomplete model="'res.partner'"
+                                                value="state.form.partner_id"
+                                                valueLabel="state.form.partner_name"
+                                                domain="partnerDomain"
+                                                metaField="'civora_is_contact'"
+                                                metaLabel="'CIVORA'"
+                                                placeholder="'Rechercher un contact…'"
+                                                onSelect="(id, label) => this.pickPartner(id, label)"/>
                         </div>
                         <div class="civora-fld">
                             <label>Bien</label>
-                            <select t-on-change="(ev) => this.onPropertyChange(ev)">
-                                <option value="">—</option>
-                                <option t-foreach="properties" t-as="pr" t-key="pr.id"
-                                        t-att-value="pr.id" t-att-selected="state.form.property_id === pr.id"
-                                        t-esc="pr.name"/>
-                            </select>
+                            <CivoraAutocomplete model="'civora.property'"
+                                                value="state.form.property_id"
+                                                valueLabel="state.form.property_name"
+                                                domain="propertyDomain"
+                                                secondaryField="'ref'"
+                                                placeholder="'Rechercher un bien…'"
+                                                onSelect="(id, label) => this.pickProperty(id, label)"/>
                         </div>
                     </div>
                 </div>
@@ -113,8 +116,20 @@
         </div>
 
         <t t-set-slot="footer">
+            <!-- Bouton Supprimer a gauche, disponible uniquement en edition -->
+            <button t-if="props.opportunityId"
+                    t-att-class="'civora-btn ' + (state.confirmingDelete ? 'civora-btn-danger civora-btn-confirm' : 'civora-btn-ghost civora-btn-delete')"
+                    t-att-disabled="state.deleting || state.saving"
+                    t-on-click="() => this.onDeleteClick()">
+                <i t-if="state.deleting" class="fa fa-circle-o-notch fa-spin"/>
+                <i t-elif="state.confirmingDelete" class="fa fa-exclamation-triangle"/>
+                <i t-else="" class="fa fa-trash"/>
+                <t t-if="state.confirmingDelete"> Confirmer la suppression</t>
+                <t t-else=""> Supprimer</t>
+            </button>
+            <span class="civora-lf-spacer"/>
             <button class="civora-btn civora-btn-outline" t-on-click="() => props.onClose(false)">Annuler</button>
-            <button class="civora-btn civora-btn-accent" t-att-disabled="state.saving" t-on-click="() => this.save()">
+            <button class="civora-btn civora-btn-accent" t-att-disabled="state.saving || state.deleting" t-on-click="() => this.save()">
                 <i t-if="state.saving" class="fa fa-circle-o-notch fa-spin"/> Enregistrer
             </button>
         </t>

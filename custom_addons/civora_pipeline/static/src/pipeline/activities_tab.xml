@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_pipeline.ActivitiesTab">
+    <div class="civora-act">
+        <div class="civora-act-head">
+            <h3 class="civora-act-title">Activités prévues</h3>
+            <button class="civora-btn civora-btn-accent" t-on-click="() => this.openNew()">
+                <i class="fa fa-plus"/> Nouvelle activité
+            </button>
+        </div>
+
+        <div t-if="state.loading" class="civora-act-state">
+            <i class="fa fa-circle-o-notch fa-spin"/> Chargement…
+        </div>
+
+        <div t-elif="!state.activities.length" class="civora-act-empty">
+            <i class="fa fa-check-circle-o"/>
+            <div class="civora-act-empty-t">Aucune activité planifiée</div>
+            <p>Créez un appel, un email, une visite ou une tâche pour cette opportunité.</p>
+        </div>
+
+        <div t-else="" class="civora-act-list">
+            <div t-foreach="state.activities" t-as="a" t-key="a.id" class="civora-act-item">
+                <button class="civora-act-check"
+                        t-on-click="() => this.complete(a)"
+                        title="Marquer comme terminée">
+                    <i class="fa fa-circle-thin"/>
+                </button>
+                <div class="civora-act-ico"><i t-att-class="'fa ' + typeIcon(a)"/></div>
+                <div class="civora-act-b" t-on-click="() => this.openEdit(a)">
+                    <div class="civora-act-h">
+                        <span class="civora-act-t" t-esc="a.summary || typeName(a)"/>
+                        <CivoraBadge label="stateLabel(a)" variant="stateVariant(a)"/>
+                    </div>
+                    <div class="civora-act-m">
+                        <span><i class="fa fa-clock-o"/> <t t-esc="dueLabel(a)"/></span>
+                        <span><i class="fa fa-user-o"/> <t t-esc="userName(a)"/></span>
+                        <span class="civora-act-type"><i class="fa fa-tag"/> <t t-esc="typeName(a)"/></span>
+                    </div>
+                    <p t-if="a.note and stripHtml(a.note)" class="civora-act-note" t-esc="stripHtml(a.note)"/>
+                </div>
+                <button class="civora-act-x" t-on-click="() => this.remove(a)" title="Supprimer">
+                    <i class="fa fa-times"/>
+                </button>
+            </div>
+        </div>
+
+        <!-- Editeur d'activite (modal simple) -->
+        <div t-if="state.editor" class="civora-act-modal-backdrop" t-on-click="() => this.closeEditor()">
+            <div class="civora-act-modal" t-on-click.stop="">
+                <div class="civora-act-modal-h">
+                    <div class="civora-act-modal-t">
+                        <i class="fa fa-calendar-plus-o"/>
+                        <t t-if="state.editor.activityId">Modifier l'activité</t>
+                        <t t-else="">Nouvelle activité</t>
+                    </div>
+                    <button class="civora-act-modal-x" t-on-click="() => this.closeEditor()">
+                        <i class="fa fa-times"/>
+                    </button>
+                </div>
+                <div class="civora-act-modal-b">
+                    <div class="civora-fld">
+                        <label>Type</label>
+                        <select t-on-change="(ev) => this.setM2O('activity_type_id', ev)">
+                            <option t-foreach="state.types" t-as="t" t-key="t.id"
+                                    t-att-value="t.id"
+                                    t-att-selected="state.editor.activity_type_id === t.id"
+                                    t-esc="t.name"/>
+                        </select>
+                    </div>
+                    <div class="civora-fld">
+                        <label>Résumé</label>
+                        <input type="text"
+                               t-att-value="state.editor.summary"
+                               t-on-input="(ev) => this.setField('summary', ev)"
+                               placeholder="Ex. Rappeler pour visite"/>
+                    </div>
+                    <div class="civora-act-grid">
+                        <div class="civora-fld">
+                            <label>Échéance</label>
+                            <input type="date"
+                                   t-att-value="state.editor.date_deadline"
+                                   t-on-input="(ev) => this.setField('date_deadline', ev)"/>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Assigné à</label>
+                            <select t-on-change="(ev) => this.setM2O('user_id', ev)">
+                                <option value="">—</option>
+                                <option t-foreach="state.users" t-as="u" t-key="u.id"
+                                        t-att-value="u.id"
+                                        t-att-selected="state.editor.user_id === u.id"
+                                        t-esc="u.name"/>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="civora-fld">
+                        <label>Notes</label>
+                        <textarea rows="3"
+                                  t-att-value="state.editor.note"
+                                  t-on-input="(ev) => this.setField('note', ev)"
+                                  placeholder="Détails, contexte, points à aborder…"/>
+                    </div>
+                </div>
+                <div class="civora-act-modal-f">
+                    <button class="civora-btn civora-btn-outline" t-on-click="() => this.closeEditor()">
+                        Annuler
+                    </button>
+                    <button class="civora-btn civora-btn-accent"
+                            t-att-disabled="state.saving || !state.editor.activity_type_id"
+                            t-on-click="() => this.saveEditor()">
+                        <i t-if="state.saving" class="fa fa-circle-o-notch fa-spin"/>
+                        <i t-else="" class="fa fa-check"/> Enregistrer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</t>
+
+</templates>

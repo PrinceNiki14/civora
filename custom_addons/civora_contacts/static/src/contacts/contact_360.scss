@@ -525,3 +525,163 @@
         .civora-tl-stats { grid-template-columns: 1fr 1fr; }
     }
 }
+
+// =====================================================================
+// v10.0.0 — Navigation prev/next entre contacts (◀ 1/20 ▶)
+// =====================================================================
+
+.civora-c360 .civora-c360-topbar-l {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.civora-c360 .civora-c360-nav {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 4px;
+    background: $civora-card;
+    border: 1px solid $civora-border;
+    border-radius: $civora-radius-sm;
+}
+.civora-c360 .civora-c360-nav-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: $civora-fg;
+    cursor: pointer;
+    transition: all .12s ease;
+    font-size: 12px;
+    &:hover:not(.is-disabled) {
+        background: $civora-accent;
+        color: white;
+    }
+    &.is-disabled {
+        color: $civora-muted;
+        cursor: not-allowed;
+        opacity: .5;
+    }
+}
+.civora-c360 .civora-c360-nav-counter {
+    display: inline-block;
+    padding: 0 10px;
+    font-family: $civora-font-display;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: $civora-fg;
+    min-width: 60px;
+    text-align: center;
+    user-select: none;
+}
+
+// =====================================================================
+// v10.1.0 — Score IA interactif : dépliage + décomposition + verrou
+// =====================================================================
+
+.civora-c360 .civora-c360-score {
+    cursor: pointer;
+    transition: transform .12s ease;
+    &:hover { transform: scale(1.03); }
+}
+.civora-c360 .civora-c360-score-lock {
+    margin-left: 5px;
+    font-size: 10px;
+    color: $civora-warning;
+}
+
+.civora-c360 .civora-c360-score-panel {
+    background: $civora-card;
+    border: 1px solid $civora-border;
+    border-radius: $civora-radius;
+    padding: 16px 18px;
+    margin-bottom: 16px;
+    box-shadow: $civora-shadow-card;
+    animation: civora-slide-in .2s ease;
+}
+@keyframes civora-slide-in {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.civora-c360 .civora-c360-score-panel-h {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid $civora-border;
+    flex-wrap: wrap;
+    b { font-family: $civora-font-display; font-size: 14px; color: $civora-fg; }
+}
+.civora-c360 .civora-c360-score-updated {
+    font-size: 11.5px;
+    color: $civora-muted;
+    margin-left: 6px;
+    font-weight: 500;
+}
+.civora-c360 .civora-c360-score-actions {
+    display: inline-flex;
+    gap: 8px;
+}
+
+.civora-c360 .civora-c360-score-bars {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px 20px;
+}
+.civora-c360 .civora-c360-score-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.civora-c360 .civora-c360-score-bar-h {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 12.5px;
+    color: $civora-fg;
+    b { font-weight: 700; font-size: 12.5px; }
+}
+.civora-c360 .civora-c360-score-bar-track {
+    height: 6px;
+    background: rgba(9, 26, 54, .06);
+    border-radius: 999px;
+    overflow: hidden;
+}
+.civora-c360 .civora-c360-score-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, $civora-accent, lighten($civora-accent, 8%));
+    border-radius: 999px;
+    transition: width .3s ease;
+}
+.civora-c360 .civora-c360-score-bar-hint {
+    font-size: 10.5px;
+    color: $civora-muted;
+    font-style: italic;
+    margin-top: 1px;
+}
+.civora-c360 .civora-c360-score-adj {
+    grid-column: 1 / -1;
+    padding-top: 8px;
+    border-top: 1px dashed $civora-border;
+    .text-success { color: $civora-success !important; }
+    .text-danger { color: $civora-danger !important; }
+}
+
+.civora-c360 .civora-btn-sm {
+    padding: 6px 12px !important;
+    font-size: 11.5px !important;
+}
+
+@media (max-width: 800px) {
+    .civora-c360 .civora-c360-score-bars { grid-template-columns: 1fr; }
+    .civora-c360 .civora-c360-score-panel-h { flex-direction: column; align-items: stretch; }
+}

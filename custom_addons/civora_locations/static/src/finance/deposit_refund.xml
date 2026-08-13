@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="civora_locations.DepositRefund">
+        <div class="civora-dr-overlay" t-on-click.self="() => this.props.onClose()">
+            <div class="civora-dr-modal">
+
+                <!-- Header -->
+                <div class="civora-dr-header">
+                    <div class="civora-dr-title">
+                        <i class="fa fa-undo"/>
+                        <span>Restitution de caution</span>
+                        <span t-if="state.exists"
+                              t-att-class="'civora-badge civora-badge-' + stateMeta(state.refund.state).variant"
+                              t-esc="stateMeta(state.refund.state).label"/>
+                    </div>
+                    <button class="civora-btn civora-btn-ghost civora-btn-sm"
+                            t-on-click="() => this.props.onClose()">
+                        <i class="fa fa-times"/>
+                    </button>
+                </div>
+
+                <!-- Loading -->
+                <div t-if="state.loading" class="civora-dr-loading">
+                    <i class="fa fa-circle-o-notch fa-spin"/> Chargement…
+                </div>
+
+                <!-- Body -->
+                <div t-else="" class="civora-dr-body">
+
+                    <!-- Récap caution -->
+                    <div class="civora-dr-recap">
+                        <div class="civora-dr-recap-item">
+                            <div class="civora-dr-recap-label">Caution reçue</div>
+                            <div class="civora-dr-recap-value" t-esc="fmtAmount(state.cautionReceived)"/>
+                        </div>
+                        <div class="civora-dr-recap-arrow">
+                            <i class="fa fa-arrow-right"/>
+                        </div>
+                        <div class="civora-dr-recap-item">
+                            <div class="civora-dr-recap-label">Total retenues</div>
+                            <div class="civora-dr-recap-value is-warning" t-esc="fmtAmount(deductionsTotal)"/>
+                        </div>
+                        <div class="civora-dr-recap-arrow">
+                            <i class="fa fa-equals"/>
+                        </div>
+                        <div class="civora-dr-recap-item is-net">
+                            <div class="civora-dr-recap-label">Net à restituer</div>
+                            <div class="civora-dr-recap-value" t-esc="fmtAmount(netAmount)"/>
+                        </div>
+                    </div>
+
+                    <!-- Bandeau si caution reçue nulle -->
+                    <div t-if="state.cautionReceived &lt;= 0" class="civora-dr-warn">
+                        <i class="fa fa-exclamation-triangle"/>
+                        <span>
+                            Aucune caution enregistrée pour ce bail.
+                            Vérifiez les paiements de type "Caution" dans l'onglet Paiements.
+                        </span>
+                    </div>
+
+                    <!-- Formulaire principal -->
+                    <div class="civora-dr-grid2">
+                        <div class="civora-dr-fld">
+                            <label>Date de restitution *</label>
+                            <input type="date"
+                                   t-att-disabled="!isEditable"
+                                   t-att-value="state.form.date"
+                                   t-on-input="(ev) => this.setField('date', ev)"/>
+                        </div>
+                        <div class="civora-dr-fld">
+                            <label>Motif *</label>
+                            <select t-att-disabled="!isEditable"
+                                    t-on-change="(ev) => this.setField('reason', ev)">
+                                <option value="end_of_contract"  t-att-selected="state.form.reason === 'end_of_contract'">Fin normale de contrat</option>
+                                <option value="mutual_agreement" t-att-selected="state.form.reason === 'mutual_agreement'">Résiliation à l'amiable</option>
+                                <option value="terminated_early" t-att-selected="state.form.reason === 'terminated_early'">Résiliation anticipée</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Retenues -->
+                    <div class="civora-dr-section">
+                        <div class="civora-dr-section-head">
+                            <div class="civora-dr-section-title">
+                                Retenues (<t t-esc="state.form.lines.length + ''"/>)
+                            </div>
+                            <button t-if="isEditable"
+                                    class="civora-btn civora-btn-outline civora-btn-sm"
+                                    t-on-click="() => this.addLine()">
+                                <i class="fa fa-plus"/> Ajouter une retenue
+                            </button>
+                        </div>
+
+                        <div t-if="!state.form.lines.length" class="civora-dr-empty">
+                            Aucune retenue. La caution sera intégralement restituée.
+                        </div>
+
+                        <div t-else="" class="civora-dr-lines">
+                            <div t-foreach="state.form.lines" t-as="line" t-key="line_index"
+                                 class="civora-dr-line">
+                                <div class="civora-dr-line-fields">
+                                    <select t-att-disabled="!isEditable"
+                                            t-on-change="(ev) => this.setLineField(line_index, 'category', ev)">
+                                        <option value="damages"   t-att-selected="line.category === 'damages'">Dégradations</option>
+                                        <option value="cleaning"  t-att-selected="line.category === 'cleaning'">Ménage / remise en état</option>
+                                        <option value="arrears"   t-att-selected="line.category === 'arrears'">Arriérés de loyer</option>
+                                        <option value="utilities" t-att-selected="line.category === 'utilities'">Charges impayées</option>
+                                        <option value="other"     t-att-selected="line.category === 'other'">Autre</option>
+                                    </select>
+                                    <input type="text"
+                                           placeholder="Motif détaillé (ex: fenêtre cassée)"
+                                           t-att-disabled="!isEditable"
+                                           t-att-value="line.label"
+                                           t-on-input="(ev) => this.setLineField(line_index, 'label', ev)"/>
+                                    <div class="civora-dr-line-amount">
+                                        <input type="number" min="0" step="1000"
+                                               t-att-disabled="!isEditable"
+                                               t-att-value="line.amount"
+                                               t-on-input="(ev) => this.setLineAmount(line_index, ev)"/>
+                                        <span class="civora-dr-currency">FCFA</span>
+                                    </div>
+                                    <button t-if="isEditable"
+                                            class="civora-btn civora-btn-ghost civora-btn-sm"
+                                            t-on-click="() => this.removeLine(line_index)"
+                                            title="Supprimer cette retenue">
+                                        <i class="fa fa-trash"/>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Note -->
+                    <div class="civora-dr-fld">
+                        <label>Note interne</label>
+                        <textarea rows="2"
+                                  t-att-disabled="!isEditable"
+                                  t-att-value="state.form.note"
+                                  t-on-input="(ev) => this.setField('note', ev)"/>
+                    </div>
+                </div>
+
+                <!-- Footer avec actions selon l'état -->
+                <div class="civora-dr-footer">
+                    <button class="civora-btn civora-btn-outline"
+                            t-on-click="() => this.props.onClose()">Fermer</button>
+
+                    <!-- État Brouillon : Save + Validate -->
+                    <t t-if="!state.exists || state.refund.state === 'draft'">
+                        <button class="civora-btn civora-btn-accent"
+                                t-att-disabled="state.saving"
+                                t-on-click="() => this.save()">
+                            <i t-att-class="'fa fa-' + (state.saving ? 'circle-o-notch fa-spin' : 'save')"/>
+                            <t t-esc="state.saving ? 'Enregistrement…' : 'Enregistrer'"/>
+                        </button>
+                        <button t-if="state.exists"
+                                class="civora-btn civora-btn-primary"
+                                t-on-click="() => this.validateRefund()">
+                            <i class="fa fa-check"/> Valider la restitution
+                        </button>
+                    </t>
+
+                    <!-- État Validée : Marquer restituée / Annuler -->
+                    <t t-if="state.exists &amp;&amp; state.refund.state === 'validated'">
+                        <button class="civora-btn civora-btn-ghost"
+                                t-on-click="() => this.resetToDraft()">
+                            <i class="fa fa-undo"/> Retour brouillon
+                        </button>
+                        <button class="civora-btn civora-btn-accent"
+                                t-on-click="() => this.markRefunded()">
+                            <i class="fa fa-check-circle"/> Marquer restituée
+                        </button>
+                    </t>
+
+                    <!-- État Restituée : rien à faire -->
+                    <t t-if="state.exists &amp;&amp; state.refund.state === 'refunded'">
+                        <div class="civora-dr-final">
+                            <i class="fa fa-check-circle"/>
+                            Restitution effectuée
+                            <span t-if="state.refund.signed_at_lessor">
+                                — <t t-esc="state.refund.signed_at_lessor"/>
+                            </span>
+                        </div>
+                    </t>
+                </div>
+
+            </div>
+        </div>
+    </t>
+
+</templates>

@@ -16,7 +16,7 @@
     <record id="civora_pipeline_stage_company_rule" model="ir.rule">
         <field name="name">civora.pipeline.stage : multi-societe</field>
         <field name="model_id" ref="model_civora_pipeline_stage"/>
-        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
     </record>
 
 </odoo>

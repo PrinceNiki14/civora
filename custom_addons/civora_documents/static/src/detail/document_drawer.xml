@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_documents.DocumentDrawer">
+    <CivoraDrawer variant="'side'"
+                  title="drawerTitle"
+                  subtitle="drawerSubtitle"
+                  onClose="props.onClose">
+        <div class="civora-docdrw">
+            <div t-if="state.loading" class="civora-docdrw-loading">
+                <i class="fa fa-circle-o-notch fa-spin"/> Chargement…
+            </div>
+
+            <t t-else="">
+                <div t-if="state.error" class="civora-docdrw-error">
+                    <i class="fa fa-exclamation-triangle"/> <t t-esc="state.error"/>
+                </div>
+
+                <!-- ========== MODE NOUVELLE VERSION ========== -->
+                <t t-if="isNewVersion">
+                    <div t-if="!state.newVersionFile" class="civora-docdrw-dropzone"
+                         t-on-click="() => this.openFilePicker()"
+                         t-on-drop="(ev) => this.onDrop(ev)"
+                         t-on-dragover="(ev) => this.onDragOver(ev)">
+                        <i class="fa fa-cloud-upload"/>
+                        <div class="civora-docdrw-dropzone-t">
+                            Glissez le nouveau fichier ici, ou cliquez pour parcourir
+                        </div>
+                        <div class="civora-docdrw-dropzone-hint">
+                            L'ancienne version restera accessible dans l'historique
+                        </div>
+                        <input type="file" t-ref="fileInput"
+                               t-on-change="(ev) => this.onFileInputChange(ev)"
+                               style="display: none;"/>
+                    </div>
+                    <div t-else="" class="civora-docdrw-file">
+                        <div class="civora-docdrw-file-head">
+                            <div class="civora-docdrw-file-name">
+                                <i class="fa fa-file-o"/>
+                                <b t-esc="state.newVersionFile.name"/>
+                                <span class="civora-docdrw-file-size" t-esc="fmtSize(state.newVersionFile.size)"/>
+                            </div>
+                            <button class="civora-docdrw-file-remove"
+                                    t-on-click="() => state.newVersionFile = null">
+                                <i class="fa fa-times"/>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="civora-fld">
+                        <label>Note de modification (optionnel)</label>
+                        <input type="text"
+                               t-att-value="state.newVersionNote"
+                               t-on-input="(ev) => this.setNewVersionNote(ev)"
+                               placeholder="Ex: correction clause 4, ajout signature bailleur…"/>
+                    </div>
+                </t>
+
+                <!-- ========== MODE UPLOAD MULTI ========== -->
+                <t t-if="isUpload">
+                    <div class="civora-docdrw-dropzone"
+                         t-on-click="() => this.openFilePicker()"
+                         t-on-drop="(ev) => this.onDrop(ev)"
+                         t-on-dragover="(ev) => this.onDragOver(ev)">
+                        <i class="fa fa-cloud-upload"/>
+                        <div class="civora-docdrw-dropzone-t">
+                            Glissez vos fichiers ici, ou cliquez pour parcourir
+                        </div>
+                        <div class="civora-docdrw-dropzone-hint">
+                            PDF, images, Word, Excel · Max 25 Mo par fichier
+                        </div>
+                        <input type="file" multiple="multiple" t-ref="fileInput"
+                               t-on-change="(ev) => this.onFileInputChange(ev)"
+                               style="display: none;"/>
+                    </div>
+
+                    <div t-if="state.files.length" class="civora-docdrw-files">
+                        <div t-foreach="state.files" t-as="f" t-key="f_index"
+                             class="civora-docdrw-file">
+                            <div class="civora-docdrw-file-head">
+                                <div class="civora-docdrw-file-name">
+                                    <i class="fa fa-file-o"/>
+                                    <b t-esc="f.name"/>
+                                    <span class="civora-docdrw-file-size" t-esc="fmtSize(f.size)"/>
+                                </div>
+                                <button class="civora-docdrw-file-remove"
+                                        t-on-click="() => this.removeFile(f_index)">
+                                    <i class="fa fa-times"/>
+                                </button>
+                            </div>
+                            <div class="civora-docdrw-file-body">
+                                <div class="civora-docdrw-file-grid">
+                                    <div class="civora-fld">
+                                        <label>Type</label>
+                                        <select t-on-change="(ev) => this.setFileField(f_index, 'document_type', ev)">
+                                            <option t-foreach="docTypes" t-as="t" t-key="t.value"
+                                                    t-att-value="t.value"
+                                                    t-att-selected="f.document_type === t.value"
+                                                    t-esc="t.label"/>
+                                        </select>
+                                    </div>
+                                    <div class="civora-fld">
+                                        <label>Dossier</label>
+                                        <select t-on-change="(ev) => this.setFileField(f_index, 'folder', ev)">
+                                            <option value="">— Auto (selon type) —</option>
+                                            <option t-foreach="folders" t-as="fo" t-key="fo.value"
+                                                    t-att-value="fo.value"
+                                                    t-att-selected="f.folder === fo.value"
+                                                    t-esc="fo.label"/>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="civora-fld">
+                                    <label>Lié à</label>
+                                    <select t-on-change="(ev) => this.onSelectResModelForFile(f_index, ev)">
+                                        <option value="">— Aucun —</option>
+                                        <option t-foreach="resModels" t-as="r" t-key="r.value"
+                                                t-att-value="r.value"
+                                                t-att-selected="f.res_model === r.value"
+                                                t-esc="r.label"/>
+                                    </select>
+                                </div>
+                                <div t-if="f.res_model" class="civora-fld">
+                                    <label>Entité</label>
+                                    <div t-if="f.res_id" class="civora-docdrw-chip">
+                                        <span t-esc="f.res_display || ('#' + f.res_id)"/>
+                                        <button t-on-click="() => this.clearEntityFile(f_index)">
+                                            <i class="fa fa-times"/>
+                                        </button>
+                                    </div>
+                                    <input t-else="" type="text" placeholder="Rechercher…"
+                                           t-on-input="(ev) => this.onEntityQueryInputFile(f_index, ev)"/>
+                                    <div t-if="!f.res_id &amp;&amp; state.entityChoices.length" class="civora-docdrw-choices">
+                                        <div t-foreach="state.entityChoices" t-as="c" t-key="c.id"
+                                             class="civora-docdrw-choice"
+                                             t-on-click="() => this.pickEntityFile(f_index, c)"
+                                             t-esc="c.label"/>
+                                    </div>
+                                </div>
+                                <div t-if="state.allTags.length" class="civora-fld">
+                                    <label>Tags</label>
+                                    <div class="civora-docdrw-tags">
+                                        <span t-foreach="state.allTags" t-as="tg" t-key="tg.id"
+                                              t-att-class="'civora-docdrw-tag' + (isTagSelectedFile(f_index, tg.id) ? ' is-selected' : '')"
+                                              t-on-click="() => this.toggleTagOnFile(f_index, tg.id)"
+                                              t-esc="tg.name"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+
+                <!-- ========== MODE ÉDITION ========== -->
+                <t t-if="isEdit">
+                    <div class="civora-fld">
+                        <label>Nom du document *</label>
+                        <input type="text" t-att-value="state.form.name"
+                               t-on-input="(ev) => this.setFormField('name', ev)"/>
+                    </div>
+                    <div class="civora-docdrw-file-grid">
+                        <div class="civora-fld">
+                            <label>Type *</label>
+                            <select t-on-change="(ev) => this.setFormField('document_type', ev)">
+                                <option t-foreach="docTypes" t-as="t" t-key="t.value"
+                                        t-att-value="t.value"
+                                        t-att-selected="state.form.document_type === t.value"
+                                        t-esc="t.label"/>
+                            </select>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Dossier *</label>
+                            <select t-on-change="(ev) => this.setFormField('folder', ev)">
+                                <option t-foreach="folders" t-as="fo" t-key="fo.value"
+                                        t-att-value="fo.value"
+                                        t-att-selected="state.form.folder === fo.value"
+                                        t-esc="fo.label"/>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="civora-docdrw-file-grid">
+                        <div class="civora-fld">
+                            <label>Confidentialité</label>
+                            <select t-on-change="(ev) => this.setFormField('confidentiality', ev)">
+                                <option t-foreach="confidentialities" t-as="co" t-key="co.value"
+                                        t-att-value="co.value"
+                                        t-att-selected="state.form.confidentiality === co.value"
+                                        t-esc="co.label"/>
+                            </select>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Auteur</label>
+                            <input type="text" t-att-value="state.form.author"
+                                   t-on-input="(ev) => this.setFormField('author', ev)"
+                                   placeholder="Auteur du document"/>
+                        </div>
+                    </div>
+                    <div class="civora-fld">
+                        <label>Lié à</label>
+                        <select t-on-change="(ev) => this.onSelectResModelForForm(ev)">
+                            <option value="">— Aucun —</option>
+                            <option t-foreach="resModels" t-as="r" t-key="r.value"
+                                    t-att-value="r.value"
+                                    t-att-selected="state.form.res_model === r.value"
+                                    t-esc="r.label"/>
+                        </select>
+                    </div>
+                    <div t-if="state.form.res_model" class="civora-fld">
+                        <label>Entité</label>
+                        <div t-if="state.form.res_id" class="civora-docdrw-chip">
+                            <span t-esc="state.form.res_display || ('#' + state.form.res_id)"/>
+                            <button t-on-click="() => this.clearEntityForm()">
+                                <i class="fa fa-times"/>
+                            </button>
+                        </div>
+                        <input t-else="" type="text" placeholder="Rechercher…"
+                               t-on-input="(ev) => this.onEntityQueryInputForm(ev)"/>
+                        <div t-if="!state.form.res_id &amp;&amp; state.entityChoices.length"
+                             class="civora-docdrw-choices">
+                            <div t-foreach="state.entityChoices" t-as="c" t-key="c.id"
+                                 class="civora-docdrw-choice"
+                                 t-on-click="() => this.pickEntityForm(c)"
+                                 t-esc="c.label"/>
+                        </div>
+                    </div>
+                    <div t-if="state.allTags.length" class="civora-fld">
+                        <label>Tags</label>
+                        <div class="civora-docdrw-tags">
+                            <span t-foreach="state.allTags" t-as="tg" t-key="tg.id"
+                                  t-att-class="'civora-docdrw-tag' + (isTagSelectedForm(tg.id) ? ' is-selected' : '')"
+                                  t-on-click="() => this.toggleTagOnForm(tg.id)"
+                                  t-esc="tg.name"/>
+                        </div>
+                    </div>
+                    <div class="civora-fld">
+                        <label>Description</label>
+                        <textarea rows="4"
+                                  t-on-input="(ev) => this.setFormField('description', ev)"
+                                  placeholder="Note interne, contexte, mots-clés…"
+                                  t-esc="state.form.description"/>
+                    </div>
+                </t>
+
+                <div class="civora-docdrw-actions">
+                    <button class="civora-btn civora-btn-outline"
+                            t-on-click="() => this.props.onClose()"
+                            t-att-disabled="state.saving">
+                        Annuler
+                    </button>
+                    <button class="civora-btn civora-btn-accent"
+                            t-on-click="() => this.save()"
+                            t-att-disabled="state.saving">
+                        <i t-att-class="state.saving ? 'fa fa-circle-o-notch fa-spin' : (isEdit ? 'fa fa-save' : 'fa fa-cloud-upload')"/>
+                        <t t-if="isEdit">Enregistrer</t>
+                        <t t-elif="isNewVersion">Créer nouvelle version</t>
+                        <t t-else="">Uploader (<t t-esc="state.files.length"/>)</t>
+                    </button>
+                </div>
+            </t>
+        </div>
+    </CivoraDrawer>
+</t>
+
+</templates>

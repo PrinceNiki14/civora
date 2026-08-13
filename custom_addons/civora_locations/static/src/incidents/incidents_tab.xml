@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_locations.IncidentsTab">
+    <div class="civora-incidents">
+        <div t-if="state.loading" class="civora-incidents-loading">
+            <i class="fa fa-circle-o-notch fa-spin"/> Chargement…
+        </div>
+        <div t-elif="state.error" class="civora-incidents-error">
+            <i class="fa fa-exclamation-triangle"/> <t t-esc="state.error"/>
+        </div>
+
+        <t t-else="">
+            <!-- ============ Bandeau Score Risque ============ -->
+            <div class="civora-incidents-risk" t-att-style="scoreGradientStyle">
+                <div class="civora-incidents-risk-main">
+                    <div class="civora-incidents-risk-score">
+                        <span class="civora-incidents-risk-value" t-esc="state.risk.score"/>
+                        <span class="civora-incidents-risk-outof">/100</span>
+                    </div>
+                    <div class="civora-incidents-risk-body">
+                        <div class="civora-incidents-risk-label">
+                            Risque impayé : <b t-esc="state.risk.level_label"/>
+                        </div>
+                        <div class="civora-incidents-risk-hint">
+                            Score calculé à partir des retards actuels, ancienneté,
+                            historique et taux de paiement.
+                        </div>
+                    </div>
+                </div>
+                <div class="civora-incidents-risk-breakdown">
+                    <div class="civora-incidents-risk-item">
+                        <span class="civora-incidents-risk-item-label">Retards actuels</span>
+                        <b t-esc="state.risk.breakdown.overdue_count + ' échéance(s)'"/>
+                    </div>
+                    <div class="civora-incidents-risk-item">
+                        <span class="civora-incidents-risk-item-label">Ancienneté max</span>
+                        <b t-esc="state.risk.breakdown.max_days_overdue + ' jour(s)'"/>
+                    </div>
+                    <div class="civora-incidents-risk-item">
+                        <span class="civora-incidents-risk-item-label">Taux de paiement</span>
+                        <b t-esc="(state.risk.breakdown.payment_rate || 0) + ' %'"/>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============ Tableau des retards ============ -->
+            <div class="civora-incidents-section">
+                <div class="civora-incidents-section-head">
+                    <div>
+                        <h3 class="civora-incidents-section-title">
+                            <i class="fa fa-exclamation-triangle"/> Échéances en retard
+                        </h3>
+                        <div class="civora-incidents-section-sub">
+                            <t t-if="hasIncidents">
+                                <t t-esc="state.incidents.length"/> échéance(s) impayée(s) ·
+                                Total dû : <b t-esc="fmtMoney(totalOverdue)"/>
+                            </t>
+                            <t t-else="">Aucun retard à ce jour.</t>
+                        </div>
+                    </div>
+                    <button t-if="hasIncidents" class="civora-btn civora-btn-accent"
+                            t-on-click="() => this.openReminderDrawer(null)">
+                        <i class="fa fa-paper-plane"/> Préparer une relance
+                    </button>
+                </div>
+
+                <div t-if="!hasIncidents" class="civora-incidents-empty">
+                    <i class="fa fa-check-circle"/>
+                    <div class="civora-incidents-empty-t">Aucune échéance en retard</div>
+                    <p>Ce bail est à jour. Continuez le bon travail.</p>
+                </div>
+
+                <div t-else="" class="civora-incidents-table-wrap">
+                    <table class="civora-incidents-table">
+                        <thead>
+                            <tr>
+                                <th>Période</th>
+                                <th>Échéance</th>
+                                <th class="civora-incidents-num">Montant dû</th>
+                                <th class="civora-incidents-num">Restant</th>
+                                <th class="civora-incidents-num">Jours retard</th>
+                                <th>Sévérité</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="state.incidents" t-as="inc" t-key="inc.id"
+                                t-att-class="'civora-incidents-row civora-incidents-sev-' + inc.severity">
+                                <td><b t-esc="inc.period_label"/></td>
+                                <td t-esc="fmtDate(inc.due_date)"/>
+                                <td class="civora-incidents-num" t-esc="fmtMoney(inc.amount_due)"/>
+                                <td class="civora-incidents-num civora-incidents-remaining"
+                                    t-esc="fmtMoney(inc.amount_remaining)"/>
+                                <td class="civora-incidents-num">
+                                    <span class="civora-incidents-days"
+                                          t-att-style="'background:' + severityMeta(inc.severity).color + '15; color:' + severityMeta(inc.severity).color"
+                                          t-esc="inc.days_overdue + ' j'"/>
+                                </td>
+                                <td>
+                                    <CivoraBadge label="severityMeta(inc.severity).label"
+                                                 variant="severityMeta(inc.severity).variant"/>
+                                </td>
+                                <td class="civora-incidents-num">
+                                    <button class="civora-btn civora-btn-outline civora-btn-sm"
+                                            t-on-click="() => this.openReminderDrawer(inc)"
+                                            title="Préparer une relance pour cette échéance">
+                                        <i class="fa fa-paper-plane"/>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ============ Historique des relances ============ -->
+            <div class="civora-incidents-section">
+                <div class="civora-incidents-section-head">
+                    <div>
+                        <h3 class="civora-incidents-section-title">
+                            <i class="fa fa-history"/> Historique des relances
+                        </h3>
+                        <div class="civora-incidents-section-sub">
+                            <t t-if="hasReminders">
+                                <t t-esc="state.reminders.length"/> relance(s) enregistrée(s)
+                            </t>
+                            <t t-else="">Aucune relance enregistrée pour l'instant.</t>
+                        </div>
+                    </div>
+                </div>
+
+                <div t-if="!hasReminders" class="civora-incidents-empty">
+                    <i class="fa fa-inbox"/>
+                    <div class="civora-incidents-empty-t">Pas de relance</div>
+                    <p>Les relances envoyées apparaîtront ici.</p>
+                </div>
+
+                <div t-else="" class="civora-incidents-reminders">
+                    <div t-foreach="state.reminders" t-as="rem" t-key="rem.id"
+                         t-att-class="'civora-incidents-reminder civora-incidents-reminder-' + rem.state">
+                        <div class="civora-incidents-reminder-ico">
+                            <i t-att-class="channelIcon(rem.channel)"/>
+                        </div>
+                        <div class="civora-incidents-reminder-body">
+                            <div class="civora-incidents-reminder-top">
+                                <b class="civora-incidents-reminder-subject" t-esc="rem.subject || '—'"/>
+                                <CivoraBadge label="rem.state_label"
+                                             variant="rem.state === 'sent' ? 'success' : rem.state === 'cancelled' ? 'neutral' : 'warning'"/>
+                                <CivoraBadge label="rem.severity_label"
+                                             variant="severityMeta(rem.severity).variant"/>
+                            </div>
+                            <div class="civora-incidents-reminder-meta">
+                                <span><i class="fa fa-calendar"/> <t t-esc="fmtDate(rem.date)"/></span>
+                                <span><i class="fa fa-user"/> <t t-esc="rem.sent_by || '—'"/></span>
+                                <span><i class="fa fa-hashtag"/> <t t-esc="rem.name"/></span>
+                                <span t-if="rem.arrears_amount">
+                                    <i class="fa fa-money"/> <t t-esc="fmtMoney(rem.arrears_amount)"/>
+                                    <t t-if="rem.arrears_days"> · <t t-esc="rem.arrears_days"/>j de retard</t>
+                                </span>
+                            </div>
+                            <div t-if="rem.body" class="civora-incidents-reminder-preview" t-esc="rem.body"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+
+        <!-- Reminder Drawer -->
+        <ReminderDrawer t-if="state.drawer.open"
+                        leaseId="props.leaseId"
+                        preselectedInstallmentIds="state.drawer.preselectedIds"
+                        defaultContext="state.drawer.defaultContext"
+                        onClose="() => this.closeReminderDrawer()"
+                        onSaved="() => this.onReminderSaved()"/>
+    </div>
+</t>
+
+</templates>

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_locations.OpportunityLeaseTab">
+    <div class="civora-oppty-lease">
+        <div t-if="state.loading" class="civora-oppty-lease-loading">
+            <i class="fa fa-circle-o-notch fa-spin"/> Chargement…
+        </div>
+        <div t-elif="state.error" class="civora-oppty-lease-error">
+            <i class="fa fa-exclamation-triangle"/> <t t-esc="state.error"/>
+        </div>
+
+        <t t-else="">
+            <!-- Avertissement si opportunité n'est pas de type location -->
+            <div t-if="shouldWarnNotLocation" class="civora-oppty-lease-warn">
+                <i class="fa fa-info-circle"/>
+                <div>
+                    <b>Cette opportunité n'est pas de type Location.</b>
+                    Les baux ne peuvent être créés qu'à partir d'opportunités de type
+                    <b>Location</b>. Modifiez le type de transaction pour activer cette fonctionnalité.
+                </div>
+            </div>
+
+            <!-- Bandeau incitatif si opportunité gagnée + location + pas de bail -->
+            <div t-if="shouldPromptCreate" class="civora-oppty-lease-prompt">
+                <div class="civora-oppty-lease-prompt-ico">
+                    <i class="fa fa-check-circle"/>
+                </div>
+                <div class="civora-oppty-lease-prompt-body">
+                    <div class="civora-oppty-lease-prompt-t">
+                        Opportunité gagnée · prête pour le bail
+                    </div>
+                    <p>
+                        Toutes les conditions sont réunies pour créer le bail à partir
+                        de cette opportunité. Les données seront préfillées automatiquement.
+                    </p>
+                </div>
+                <button class="civora-btn civora-btn-accent"
+                        t-on-click="() => this.openCreateLease()">
+                    <i class="fa fa-plus"/> Créer le bail
+                </button>
+            </div>
+
+            <!-- En-tête récap -->
+            <div t-if="isLocation" class="civora-oppty-lease-head">
+                <div>
+                    <div class="civora-oppty-lease-title">Baux liés à cette opportunité</div>
+                    <div class="civora-oppty-lease-sub">
+                        <t t-if="state.leases.length">
+                            <t t-esc="state.leases.length"/> bail(s) généré(s)
+                        </t>
+                        <t t-else="">Aucun bail créé pour l'instant.</t>
+                    </div>
+                </div>
+                <button t-if="canCreateLease" class="civora-btn civora-btn-outline"
+                        t-on-click="() => this.openCreateLease()">
+                    <i class="fa fa-plus"/> Nouveau bail
+                </button>
+            </div>
+
+            <!-- Liste des baux existants -->
+            <div t-if="state.leases.length" class="civora-oppty-lease-list">
+                <div t-foreach="state.leases" t-as="l" t-key="l.id"
+                     class="civora-oppty-lease-row"
+                     t-on-click="() => this.openLease(l.id)">
+                    <div class="civora-oppty-lease-row-ico"><i class="fa fa-key"/></div>
+                    <div class="civora-oppty-lease-row-b">
+                        <div class="civora-oppty-lease-row-top">
+                            <b t-esc="l.property_id ? l.property_id[1] : '—'"/>
+                            <CivoraBadge label="statusBadge(l.status).label"
+                                         variant="statusBadge(l.status).variant"/>
+                            <span class="civora-oppty-lease-row-ref" t-esc="l.name"/>
+                        </div>
+                        <div class="civora-oppty-lease-row-meta">
+                            <span><i class="fa fa-user"/> <t t-esc="l.tenant_id ? l.tenant_id[1] : '—'"/></span>
+                            <span><i class="fa fa-calendar"/>
+                                <t t-esc="fmtDate(l.date_start)"/> — <t t-esc="fmtDate(l.date_end)"/>
+                            </span>
+                            <span><i class="fa fa-money"/> <t t-esc="fmtMoney(l.rent)"/></span>
+                        </div>
+                    </div>
+                    <i class="fa fa-chevron-right civora-oppty-lease-row-arrow"/>
+                </div>
+            </div>
+
+            <!-- État vide (mais location, pas encore de bail, pas gagné) -->
+            <div t-if="isLocation &amp;&amp; !shouldPromptCreate &amp;&amp; state.leases.length === 0"
+                 class="civora-oppty-lease-empty">
+                <i class="fa fa-key"/>
+                <div class="civora-oppty-lease-empty-t">Aucun bail</div>
+                <p>
+                    Vous pourrez créer un bail à partir de cette opportunité une fois
+                    qu'elle sera passée au stage <b>Gagné</b>. Vous pouvez toutefois
+                    créer un bail dès maintenant si vous le souhaitez.
+                </p>
+            </div>
+        </t>
+
+        <!-- Lease Drawer prefillé depuis l'opportunité -->
+        <LeaseDrawer t-if="state.drawer.open"
+                     mode="'create'"
+                     defaultOpportunityId="state.drawer.opportunityId"
+                     onClose="() => this.closeDrawer()"
+                     onSaved="() => this.onDrawerSaved()"/>
+    </div>
+</t>
+
+</templates>

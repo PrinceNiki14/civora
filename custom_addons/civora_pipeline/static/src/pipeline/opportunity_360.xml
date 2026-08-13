@@ -50,7 +50,7 @@
                 <CivoraStatCard label="'Montant estimé'" value="amountLabel()" icon="'fa fa-money'"/>
                 <CivoraStatCard label="'Probabilité'" value="(opp.probability || 0) + ' %'" icon="'fa fa-percent'"/>
                 <CivoraStatCard label="'Score IA'" value="(opp.score || 0) + ''" icon="'fa fa-star'"/>
-                <CivoraStatCard label="'Ancienneté'" value="daysOld() + ' j'" icon="'fa fa-clock-o'"/>
+                <CivoraStatCard label="'Ancienneté'" value="daysLabel" icon="'fa fa-clock-o'"/>
             </div>
 
             <div class="civora-op360-tabbar">
@@ -92,6 +92,14 @@
                         <i class="fa fa-times"/> Marquer perdue
                     </button>
                 </div>
+            </t>
+
+            <t t-elif="state.activeTab === 'history'">
+                <HistoryTab opportunityId="opportunityId"/>
+            </t>
+
+            <t t-elif="state.activeTab === 'activities'">
+                <ActivitiesTab opportunityId="opportunityId"/>
             </t>
 
             <t t-elif="activeContrib">

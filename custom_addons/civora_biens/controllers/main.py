@@ -1,8 +1,23 @@
 # -*- coding: utf-8 -*-
 from werkzeug.exceptions import NotFound
 
-from odoo import http
+import json
+
+from odoo import fields, http
 from odoo.http import request
+
+
+def _json_ok(**extra):
+    payload = {'ok': True}
+    payload.update(extra)
+    return request.make_response(
+        json.dumps(payload), headers=[('Content-Type', 'application/json')])
+
+
+def _json_err(message):
+    return request.make_response(
+        json.dumps({'ok': False, 'error': message}),
+        headers=[('Content-Type', 'application/json')])
 
 
 class CivoraBienPublic(http.Controller):
@@ -93,6 +108,12 @@ class CivoraBienPublic(http.Controller):
             'price_str': _fmt(prop.price),
             'revenue_str': _fmt(prop.monthly_revenue) if prop.monthly_revenue else "",
             'loc': loc,
+            # Carte : on n'affiche rien si les coordonnees sont absentes ou a
+            # zero. Un (0, 0) place le marqueur dans le golfe de Guinee — mieux
+            # vaut pas de carte du tout qu'une carte fausse.
+            'has_geo': bool(prop.latitude and prop.longitude),
+            'latitude': prop.latitude or 0.0,
+            'longitude': prop.longitude or 0.0,
             'type_label': prop.property_type_id.name or "",
             'is_rental': prop.transaction in ('location', 'saisonnier'),
             'is_sale': prop.transaction == 'vente',
@@ -102,6 +123,8 @@ class CivoraBienPublic(http.Controller):
             'units_available': len([u for u in units if u['status'] == 'disponible']),
             'parent_info': parent_info,
             'siblings': siblings,
+            # Nom de l'agence, pas 'CIVORA' : la page est en marque blanche.
+            'company_name': prop.company_id.name or '',
             'sent': kw.get('sent') == '1',
             'form_error': kw.get('error') == '1',
         }
@@ -130,26 +153,52 @@ class CivoraBienPublic(http.Controller):
             raise NotFound()
         # Anti-spam : champ appat cache (rempli seulement par des bots).
         if (post.get('website') or '').strip():
-            return request.redirect('/civora/bien/%s?sent=1' % token)
+            # Pot de miel rempli : on simule un succes pour ne rien apprendre
+            # au robot.
+            return _json_ok() if post.get('ajax') else request.redirect(
+                '/civora/bien/%s?sent=1' % token)
         name = (post.get('name') or '').strip()
         phone = (post.get('phone') or '').strip()
         if not name or not phone:
+            if post.get('ajax'):
+                return _json_err("Merci d'indiquer au minimum votre nom et votre téléphone.")
             return request.redirect('/civora/bien/%s?error=1' % token)
+
+        # Date souhaitee : on ne fait jamais echouer une demande a cause d'un
+        # format de date. Une date illisible est simplement ignoree.
+        preferred = False
+        raw_date = (post.get('preferred_date') or '').strip()
+        if raw_date:
+            try:
+                preferred = fields.Date.to_date(raw_date)
+            except (ValueError, TypeError):
+                preferred = False
 
         vr = request.env['civora.visit.request'].sudo().create({
             'property_id': prop.id,
             'name': name,
             'phone': phone,
             'email': (post.get('email') or '').strip() or False,
+            'preferred_date': preferred,
             'message': (post.get('message') or '').strip() or False,
         })
+
         # Notifie l'agent referent (activite "a faire").
         agent = prop.agent_id
         if agent:
+            note = "%s (%s) souhaite visiter ce bien." % (name, phone)
+            if preferred:
+                note += " Date souhaitee : %s." % preferred.strftime('%d/%m/%Y')
             vr.sudo().activity_schedule(
                 'mail.mail_activity_data_todo',
                 user_id=agent.id,
                 summary="Demande de visite : %s" % prop.name,
-                note="%s (%s) souhaite visiter ce bien." % (name, phone),
+                note=note,
             )
+
+        # Le formulaire est envoye en fetch() : on repond en JSON pour
+        # afficher l'accuse sans recharger la page ni perdre la position
+        # de defilement du visiteur.
+        if post.get('ajax'):
+            return _json_ok()
         return request.redirect('/civora/bien/%s?sent=1' % token)

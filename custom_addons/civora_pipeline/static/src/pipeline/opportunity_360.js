@@ -5,17 +5,19 @@ import { standardActionServiceProps } from "@web/webclient/actions/action_servic
 import { CivoraStatCard } from "@civora_core/components/civora_stat_card";
 import { CivoraAvatar, CivoraBadge } from "@civora_core/components/civora_kit";
 import { OpportunityDrawer } from "./opportunity_drawer";
+import { HistoryTab } from "./history_tab";
+import { ActivitiesTab } from "./activities_tab";
 
 const TRANSACTION_LABEL = { vente: "Vente", location: "Location", saisonnier: "Saisonnier" };
 const FIELDS = [
     "name", "partner_id", "property_id", "transaction", "stage_id", "expected_amount",
     "probability", "score", "agent_id", "date_close", "description", "lead_id",
-    "is_won", "is_lost", "create_date",
+    "is_won", "is_lost", "create_date", "date_stage_updated", "date_won", "date_lost",
 ];
 
 export class CivoraOpportunity360 extends Component {
     static template = "civora_pipeline.Opportunity360";
-    static components = { CivoraStatCard, CivoraAvatar, CivoraBadge, OpportunityDrawer };
+    static components = { CivoraStatCard, CivoraAvatar, CivoraBadge, OpportunityDrawer, HistoryTab, ActivitiesTab };
     static props = { ...standardActionServiceProps };
 
     setup() {
@@ -181,8 +183,18 @@ export class CivoraOpportunity360 extends Component {
     }
     daysOld() {
         if (!this.opp.create_date) return 0;
-        const d = new Date(this.opp.create_date.replace(" ", "T")).getTime();
-        return Math.max(0, Math.floor((Date.now() - d) / (24 * 3600 * 1000)));
+        const start = new Date(this.opp.create_date.replace(" ", "T")).getTime();
+        // Pour une opportunite close, on borne la duree a la date de gain/perte.
+        let end = Date.now();
+        const closeDate = this.opp.date_won || this.opp.date_lost;
+        if (closeDate) {
+            end = new Date(closeDate.replace(" ", "T")).getTime();
+        }
+        return Math.max(0, Math.floor((end - start) / (24 * 3600 * 1000)));
+    }
+    get daysLabel() {
+        // Suffixe explicite pour les opportunites closes.
+        return this.daysOld() + " j" + (this.isClosed ? " (clôt.)" : "");
     }
     get isClosed() {
         return this.opp.is_won || this.opp.is_lost;
@@ -190,6 +202,8 @@ export class CivoraOpportunity360 extends Component {
     get tabList() {
         return [
             { id: "details", label: "Détails" },
+            { id: "history", label: "Historique" },
+            { id: "activities", label: "Activités" },
             ...this.contribTabs.map((t) => ({ id: t.id, label: t.label })),
         ];
     }

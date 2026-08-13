@@ -52,12 +52,19 @@ export class ContactDrawer extends Component {
             error: "",
             form: emptyForm(),
             record: null,   // pour la vue 360 (valeurs affichables)
+            // Détection de doublons (uniquement en mode création)
+            duplicates: [],
+            duplicatesChecked: false,
+            duplicatesLoading: false,
+            forceCreateDespiteDuplicates: false,
         });
 
         this.roles = [];
         this.sources = [];
         this.segments = [];
         this.users = [];
+        // Debounce pour la détection de doublons
+        this._duplicateTimer = null;
         // Societes autorisees (source fiable, comme le selecteur de la sidebar).
         this.companies = Object.values(user.allowedCompanies || {})
             .sort((a, b) => (a.sequence || 0) - (b.sequence || 0));
@@ -117,12 +124,62 @@ export class ContactDrawer extends Component {
     // --- Setters (binding explicite, robuste) -------------------------
     setField(field, ev) {
         this.state.form[field] = ev.target.value;
+        // Déclencher détection de doublons pour les champs sensibles en création
+        if (this.state.mode === "create" && ["name", "email", "phone"].includes(field)) {
+            this._scheduleDuplicateCheck();
+        }
     }
     setNumber(field, ev) {
         this.state.form[field] = ev.target.value === "" ? 0 : Number(ev.target.value);
     }
     setM2O(field, ev) {
         this.state.form[field] = ev.target.value ? parseInt(ev.target.value) : false;
+    }
+
+    // --- Détection de doublons -----------------------------------------
+    _scheduleDuplicateCheck() {
+        if (this._duplicateTimer) clearTimeout(this._duplicateTimer);
+        this._duplicateTimer = setTimeout(() => this._checkDuplicates(), 500);
+    }
+    async _checkDuplicates() {
+        const f = this.state.form;
+        const nameLen = (f.name || "").trim().length;
+        const emailLen = (f.email || "").trim().length;
+        const phoneLen = (f.phone || "").trim().length;
+        // Requiert au moins 3 caractères sur un des champs pertinents
+        if (nameLen < 3 && emailLen < 3 && phoneLen < 4) {
+            this.state.duplicates = [];
+            this.state.duplicatesChecked = false;
+            return;
+        }
+        this.state.duplicatesLoading = true;
+        try {
+            const results = await this.orm.call(
+                "res.partner", "civora_find_duplicates",
+                [], { name: f.name, email: f.email, phone: f.phone }
+            );
+            this.state.duplicates = results || [];
+            this.state.duplicatesChecked = true;
+        } catch (e) {
+            console.error("[CIVORA-DUP] error", e);
+            this.state.duplicates = [];
+        } finally {
+            this.state.duplicatesLoading = false;
+        }
+    }
+    ignoreDuplicates() {
+        this.state.forceCreateDespiteDuplicates = true;
+    }
+    openExistingContact(contactId) {
+        // Ouvrir directement la fiche 360° d'un doublon existant
+        this.props.onClose();
+        // Attendre la fermeture puis naviguer
+        setTimeout(() => {
+            window.location.hash = `#action=civora.contact_360&contactId=${contactId}`;
+            // Fallback : recharger via action.doAction
+            const evt = new CustomEvent("civora-open-contact", { detail: { contactId } });
+            window.dispatchEvent(evt);
+        }, 100);
     }
 
     // --- Titre du drawer ----------------------------------------------
@@ -225,6 +282,13 @@ export class ContactDrawer extends Component {
         const err = this.validate();
         if (err) {
             this.state.error = err;
+            return;
+        }
+        // En création, bloquer si des doublons ont été détectés et pas ignorés
+        if (this.state.mode === "create"
+                && this.state.duplicates.length > 0
+                && !this.state.forceCreateDespiteDuplicates) {
+            this.state.error = "Des doublons potentiels ont été détectés. Vérifiez la liste ci-dessus, puis cliquez sur \"Créer quand même\" pour continuer.";
             return;
         }
         this.state.error = "";

@@ -19,11 +19,30 @@
         </div>
 
         <t t-else="">
-            <!-- Barre haute : retour + actions -->
+            <!-- Barre haute : retour + navigation prev/next + actions -->
             <div class="civora-c360-topbar">
-                <button class="civora-c360-back" t-on-click="() => this.goBack()">
-                    <i class="fa fa-arrow-left"/> <t t-esc="backLabel"/>
-                </button>
+                <div class="civora-c360-topbar-l">
+                    <button class="civora-c360-back" t-on-click="() => this.goBack()">
+                        <i class="fa fa-arrow-left"/> <t t-esc="backLabel"/>
+                    </button>
+                    <div t-if="hasSiblings" class="civora-c360-nav">
+                        <button class="civora-c360-nav-btn"
+                                t-att-disabled="!hasPrev"
+                                t-att-class="{ 'is-disabled': !hasPrev }"
+                                title="Précédent (←)"
+                                t-on-click="() => this.goPrev()">
+                            <i class="fa fa-chevron-left"/>
+                        </button>
+                        <span class="civora-c360-nav-counter" t-esc="siblingCounterLabel"/>
+                        <button class="civora-c360-nav-btn"
+                                t-att-disabled="!hasNext"
+                                t-att-class="{ 'is-disabled': !hasNext }"
+                                title="Suivant (→)"
+                                t-on-click="() => this.goNext()">
+                            <i class="fa fa-chevron-right"/>
+                        </button>
+                    </div>
+                </div>
                 <div class="civora-c360-actions">
                     <button class="civora-btn civora-btn-accent" t-on-click="() => this.openEdit()">
                         <i class="fa fa-pencil"/> Modifier
@@ -49,10 +68,114 @@
                         <span t-if="record.civora_whatsapp"><i class="fa fa-whatsapp"/> <t t-esc="record.civora_whatsapp"/></span>
                     </div>
                 </div>
-                <div class="civora-c360-score">
+                <div class="civora-c360-score" t-on-click="() => this.toggleScoreBreakdown()"
+                     title="Cliquer pour voir la composition du score">
                     <div class="civora-c360-score-val" t-esc="(record.civora_ai_score || 0) + ''"/>
-                    <div class="civora-c360-score-lbl">Score IA</div>
+                    <div class="civora-c360-score-lbl">
+                        Score IA
+                        <i t-if="record.civora_ai_score_manual" class="fa fa-lock civora-c360-score-lock"
+                           title="Score verrouillé (recalcul auto désactivé)"/>
+                    </div>
                     <CivoraProgress value="record.civora_ai_score || 0" tone="scoreTone(record.civora_ai_score || 0)"/>
+                </div>
+            </div>
+
+            <!-- Panneau de décomposition du score (dépliable) -->
+            <div t-if="state.showBreakdown &amp;&amp; scoreBreakdown" class="civora-c360-score-panel">
+                <div class="civora-c360-score-panel-h">
+                    <div>
+                        <b>Composition du score IA</b>
+                        <span t-if="scoreUpdatedLabel" class="civora-c360-score-updated">
+                            · Recalculé le <t t-esc="scoreUpdatedLabel"/>
+                        </span>
+                    </div>
+                    <div class="civora-c360-score-actions">
+                        <button class="civora-btn civora-btn-outline civora-btn-sm"
+                                t-att-disabled="state.scoreRecomputing"
+                                t-on-click="(ev) => { ev.stopPropagation(); this.recomputeScore(); }">
+                            <i t-att-class="state.scoreRecomputing ? 'fa fa-circle-o-notch fa-spin' : 'fa fa-refresh'"/>
+                            <t t-esc="state.scoreRecomputing ? 'Calcul…' : 'Recalculer'"/>
+                        </button>
+                        <button class="civora-btn civora-btn-outline civora-btn-sm"
+                                t-on-click="(ev) => { ev.stopPropagation(); this.toggleScoreLock(); }">
+                            <i t-att-class="record.civora_ai_score_manual ? 'fa fa-unlock' : 'fa fa-lock'"/>
+                            <t t-esc="record.civora_ai_score_manual ? 'Déverrouiller' : 'Verrouiller'"/>
+                        </button>
+                    </div>
+                </div>
+                <div class="civora-c360-score-bars">
+                    <div class="civora-c360-score-bar">
+                        <div class="civora-c360-score-bar-h">
+                            <span>Activité récente</span>
+                            <b><t t-esc="scoreBreakdown.activity"/> / 30</b>
+                        </div>
+                        <div class="civora-c360-score-bar-track">
+                            <div class="civora-c360-score-bar-fill"
+                                 t-attf-style="width: {{ (scoreBreakdown.activity / 30 * 100).toFixed(0) }}%;"/>
+                        </div>
+                        <div class="civora-c360-score-bar-hint">
+                            <t t-esc="scoreBreakdown.details.interactions_30d"/> interaction(s) sur 30j
+                        </div>
+                    </div>
+                    <div class="civora-c360-score-bar">
+                        <div class="civora-c360-score-bar-h">
+                            <span>Engagement financier</span>
+                            <b><t t-esc="scoreBreakdown.engagement"/> / 25</b>
+                        </div>
+                        <div class="civora-c360-score-bar-track">
+                            <div class="civora-c360-score-bar-fill"
+                                 t-attf-style="width: {{ (scoreBreakdown.engagement / 25 * 100).toFixed(0) }}%;"/>
+                        </div>
+                        <div class="civora-c360-score-bar-hint">
+                            <span t-if="scoreBreakdown.details.has_property">✓ Propriétaire </span>
+                            <span t-if="scoreBreakdown.details.has_active_lease">✓ Bail actif </span>
+                            <span t-if="scoreBreakdown.details.has_budget">✓ Budget renseigné</span>
+                            <span t-if="!scoreBreakdown.details.has_property &amp;&amp; !scoreBreakdown.details.has_active_lease &amp;&amp; !scoreBreakdown.details.has_budget">
+                                Aucun engagement financier connu
+                            </span>
+                        </div>
+                    </div>
+                    <div class="civora-c360-score-bar">
+                        <div class="civora-c360-score-bar-h">
+                            <span>Complétude des données</span>
+                            <b><t t-esc="scoreBreakdown.completeness"/> / 15</b>
+                        </div>
+                        <div class="civora-c360-score-bar-track">
+                            <div class="civora-c360-score-bar-fill"
+                                 t-attf-style="width: {{ (scoreBreakdown.completeness / 15 * 100).toFixed(0) }}%;"/>
+                        </div>
+                    </div>
+                    <div class="civora-c360-score-bar">
+                        <div class="civora-c360-score-bar-h">
+                            <span>Consentements RGPD</span>
+                            <b><t t-esc="scoreBreakdown.consent"/> / 10</b>
+                        </div>
+                        <div class="civora-c360-score-bar-track">
+                            <div class="civora-c360-score-bar-fill"
+                                 t-attf-style="width: {{ (scoreBreakdown.consent / 10 * 100).toFixed(0) }}%;"/>
+                        </div>
+                    </div>
+                    <div class="civora-c360-score-bar">
+                        <div class="civora-c360-score-bar-h">
+                            <span>Ancienneté / fidélité</span>
+                            <b><t t-esc="scoreBreakdown.seniority"/> / 20</b>
+                        </div>
+                        <div class="civora-c360-score-bar-track">
+                            <div class="civora-c360-score-bar-fill"
+                                 t-attf-style="width: {{ (scoreBreakdown.seniority / 20 * 100).toFixed(0) }}%;"/>
+                        </div>
+                        <div class="civora-c360-score-bar-hint">
+                            Client depuis <t t-esc="scoreBreakdown.details.years_since_create"/> an(s)
+                        </div>
+                    </div>
+                    <div t-if="scoreBreakdown.status_adj" class="civora-c360-score-bar civora-c360-score-adj">
+                        <div class="civora-c360-score-bar-h">
+                            <span>Ajustement statut CRM</span>
+                            <b t-att-class="scoreBreakdown.status_adj > 0 ? 'text-success' : 'text-danger'">
+                                <t t-if="scoreBreakdown.status_adj > 0">+</t><t t-esc="scoreBreakdown.status_adj"/>
+                            </b>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -98,7 +221,27 @@
                         <div class="civora-c360-kv"><span>WhatsApp</span><b t-esc="consentLabel(record.civora_consent_whatsapp)"/></div>
                     </div>
 
-                    <div class="civora-c360-card civora-c360-card-wide" t-if="record.civora_next_action or record.comment">
+                    <div class="civora-c360-card">
+                        <div class="civora-c360-card-h">Chronologie</div>
+                        <div class="civora-c360-kv">
+                            <span>Créé le</span>
+                            <b t-esc="formatDate(record.create_date)"/>
+                        </div>
+                        <div class="civora-c360-kv">
+                            <span>Dernière modification</span>
+                            <b t-esc="formatDate(record.write_date)"/>
+                        </div>
+                        <div class="civora-c360-kv">
+                            <span>Dernière interaction</span>
+                            <b t-esc="formatRelativeDate(record.civora_last_interaction_date)"/>
+                        </div>
+                        <div class="civora-c360-kv" t-if="record.civora_ai_score_updated">
+                            <span>Score recalculé</span>
+                            <b t-esc="formatRelativeDate(record.civora_ai_score_updated)"/>
+                        </div>
+                    </div>
+
+                    <div class="civora-c360-card civora-c360-card-wide" t-if="record.civora_next_action || record.comment">
                         <div class="civora-c360-card-h">Suivi</div>
                         <div t-if="record.civora_next_action" class="civora-c360-kv"><span>Prochaine action</span><b t-esc="record.civora_next_action"/></div>
                         <div t-if="record.comment" class="civora-c360-notes" t-esc="record.comment"/>

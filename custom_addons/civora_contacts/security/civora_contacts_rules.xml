@@ -41,6 +41,24 @@
         <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
     </record>
 
+    <record id="civora_role_history_company_rule" model="ir.rule">
+        <field name="name">civora.contact.role.history : multi-societe</field>
+        <field name="model_id" ref="model_civora_contact_role_history"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="civora_consent_log_company_rule" model="ir.rule">
+        <field name="name">civora.consent.log : multi-societe</field>
+        <field name="model_id" ref="model_civora_consent_log"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="civora_contact_import_company_rule" model="ir.rule">
+        <field name="name">civora.contact.import : multi-societe</field>
+        <field name="model_id" ref="model_civora_contact_import"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
     <!--
         Cloisonnement strict des CONTACTS CIVORA sur res.partner.
         "Contact CIVORA" = flag civora_is_contact OU au moins un role CIVORA

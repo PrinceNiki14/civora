@@ -1,0 +1,446 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_documents.DocumentDetail">
+    <div class="civora-docdet">
+        <div t-if="state.loading" class="civora-docdet-loading">
+            <i class="fa fa-circle-o-notch fa-spin"/> Chargement…
+        </div>
+
+        <div t-elif="!state.doc" class="civora-docdet-error">
+            <i class="fa fa-exclamation-triangle"/> Document introuvable.
+            <button class="civora-btn civora-btn-accent" t-on-click="() => this.goHome()">
+                <i class="fa fa-arrow-left"/> Retour Documents
+            </button>
+        </div>
+
+        <t t-else="">
+            <!-- ========== HEADER (fil d'ariane + profil) ========== -->
+            <nav class="civora-docdet-crumbs">
+                <span class="civora-docdet-crumb-link" t-on-click="() => this.goHome()">Documents</span>
+                <i class="fa fa-chevron-right"/>
+                <t t-if="fromFolder">
+                    <span class="civora-docdet-crumb-link" t-on-click="() => this.goFolder()"
+                          t-esc="folderMeta().name"/>
+                    <i class="fa fa-chevron-right"/>
+                </t>
+                <span class="civora-docdet-crumb-cur" t-esc="state.doc.name"/>
+            </nav>
+
+            <div class="civora-docdet-profile">
+                <div class="civora-docdet-profile-l">
+                    <div class="civora-docdet-avatar">
+                        <i t-att-class="docIcon()"/>
+                    </div>
+                    <div class="civora-docdet-profile-body">
+                        <div class="civora-docdet-name" t-esc="state.doc.name"/>
+                        <div class="civora-docdet-sub">
+                            <t t-esc="fmtSize(state.doc.file_size)"/> ·
+                            <t t-esc="(state.doc.file_extension || '—').toUpperCase()"/> ·
+                            <t t-esc="state.doc.version_label"/>
+                            · modifié le <t t-esc="fmtDate(state.doc.date_uploaded)"/>
+                            <t t-if="state.doc.uploaded_by"> par <t t-esc="state.doc.uploaded_by"/></t>
+                        </div>
+                        <div class="civora-docdet-badges">
+                            <CivoraBadge label="stateMeta().label" variant="stateMeta().variant"/>
+                            <CivoraBadge label="confMeta().label" variant="confMeta().variant"/>
+                            <CivoraBadge label="docTypeMeta().label" variant="'neutral'"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="civora-docdet-actions">
+                    <a class="civora-btn civora-btn-outline" t-att-href="downloadUrl()"
+                       target="_blank" t-on-click="() => this.onDownload()">
+                        <i class="fa fa-download"/> Télécharger
+                    </a>
+                    <button class="civora-btn civora-btn-outline" t-on-click="() => this.openEdit()">
+                        <i class="fa fa-pencil"/> Éditer
+                    </button>
+                    <button class="civora-btn civora-btn-outline" t-on-click="() => this.openNewVersion()">
+                        <i class="fa fa-clone"/> Nouvelle version
+                    </button>
+                    <button t-if="state.doc.state !== 'validated'" class="civora-btn civora-btn-accent"
+                            t-on-click="() => this.validate()">
+                        <i class="fa fa-check"/> Valider
+                    </button>
+                </div>
+            </div>
+
+            <!-- ========== TABS ========== -->
+            <div class="civora-docdet-tabs">
+                <button t-foreach="tabList" t-as="t" t-key="t.id"
+                        t-att-class="'civora-docdet-tab' + (state.activeTab === t.id ? ' is-active' : '')"
+                        t-on-click="() => this.setTab(t.id)">
+                    <t t-esc="t.label"/>
+                    <span t-if="t.count" class="civora-docdet-tab-count" t-esc="t.count"/>
+                </button>
+            </div>
+
+            <!-- ========== KPIs communs ========== -->
+            <div class="civora-docdet-kpis">
+                <CivoraStatCard label="'Statut'" value="state.doc.state_label"
+                                delta="state.doc.signer_count ? (state.doc.signer_signed_count + '/' + state.doc.signer_count + ' signataires') : '—'"
+                                icon="'fa fa-check-circle-o'"/>
+                <CivoraStatCard label="'Vues'" value="state.doc.views_count + ''"
+                                delta="'total'" icon="'fa fa-eye'"/>
+                <CivoraStatCard label="'Téléchargements'" value="state.doc.downloads_count + ''"
+                                delta="'total'" icon="'fa fa-download'"/>
+                <CivoraStatCard label="'Dernière activité'" value="fmtDate(state.doc.date_uploaded)"
+                                delta="state.doc.uploaded_by || '—'" icon="'fa fa-clock-o'"/>
+            </div>
+
+            <!-- ========== ONGLET VUE D'ENSEMBLE ========== -->
+            <t t-if="state.activeTab === 'overview'">
+                <div class="civora-docdet-overview">
+                    <div class="civora-docdet-overview-l">
+
+                        <div class="civora-docdet-card">
+                            <h3 class="civora-docdet-card-h">Aperçu</h3>
+                            <div class="civora-docdet-preview-wrap">
+                                <DocumentPreview attachmentId="state.doc.attachment_id"
+                                                 mimetype="state.doc.mimetype"
+                                                 name="state.doc.name"/>
+                            </div>
+                            <div t-if="state.doc.summary" class="civora-docdet-summary" t-esc="state.doc.summary"/>
+                        </div>
+
+                        <div class="civora-docdet-card">
+                            <h3 class="civora-docdet-card-h">Métadonnées</h3>
+                            <div class="civora-docdet-kv">
+                                <span>Type</span><b t-esc="docTypeMeta().label"/>
+                            </div>
+                            <div class="civora-docdet-kv">
+                                <span>Dossier</span><b t-esc="folderMeta().name"/>
+                            </div>
+                            <div class="civora-docdet-kv">
+                                <span>Taille</span><b t-esc="fmtSize(state.doc.file_size)"/>
+                            </div>
+                            <div class="civora-docdet-kv">
+                                <span>Format</span><b t-esc="(state.doc.file_extension || '—').toUpperCase()"/>
+                            </div>
+                            <div class="civora-docdet-kv">
+                                <span>Référence</span><b t-esc="state.doc.reference"/>
+                            </div>
+                            <div class="civora-docdet-kv">
+                                <span>Version</span><b t-esc="state.doc.version_label"/>
+                            </div>
+                            <div class="civora-docdet-kv">
+                                <span>Créé le</span><b t-esc="fmtDateTime(state.doc.date_uploaded)"/>
+                            </div>
+                            <div t-if="state.doc.author" class="civora-docdet-kv">
+                                <span>Auteur</span><b t-esc="state.doc.author"/>
+                            </div>
+                            <div class="civora-docdet-kv">
+                                <span>Uploadé par</span><b t-esc="state.doc.uploaded_by"/>
+                            </div>
+                            <div t-if="state.doc.amount" class="civora-docdet-kv">
+                                <span>Montant</span><b t-esc="state.doc.amount + ' FCFA'"/>
+                            </div>
+                            <div class="civora-docdet-kv">
+                                <span>Confidentialité</span><b t-esc="confMeta().label"/>
+                            </div>
+                        </div>
+
+                        <div t-if="state.doc.description" class="civora-docdet-card">
+                            <h3 class="civora-docdet-card-h">Description</h3>
+                            <p class="civora-docdet-desc" t-esc="state.doc.description"/>
+                        </div>
+
+                    </div>
+
+                    <div class="civora-docdet-overview-r">
+
+                        <!-- Navigation contextuelle : Bien / Propriétaire / Locataire -->
+                        <div t-if="state.doc.linked_property_id || state.doc.linked_contact_id || state.doc.property_owner_id || state.doc.property_tenant_id"
+                             class="civora-docdet-card">
+                            <h3 class="civora-docdet-card-h">Navigation contextuelle</h3>
+                            <div t-if="state.doc.linked_property_id" class="civora-docdet-nav-link"
+                                 t-on-click="() => this.openEntity()">
+                                <div class="civora-docdet-nav-ico"><i class="fa fa-building-o"/></div>
+                                <div class="civora-docdet-nav-body">
+                                    <div class="civora-docdet-nav-name" t-esc="state.doc.linked_property_name"/>
+                                    <div class="civora-docdet-nav-meta">Bien concerné</div>
+                                </div>
+                                <i class="fa fa-chevron-right"/>
+                            </div>
+                            <div t-if="state.doc.property_owner_id" class="civora-docdet-nav-link"
+                                 t-on-click="() => this.openOwner()">
+                                <div class="civora-docdet-nav-ico civora-docdet-nav-ico-owner"><i class="fa fa-user-circle-o"/></div>
+                                <div class="civora-docdet-nav-body">
+                                    <div class="civora-docdet-nav-name" t-esc="state.doc.property_owner_name"/>
+                                    <div class="civora-docdet-nav-meta">Propriétaire du bien</div>
+                                </div>
+                                <i class="fa fa-chevron-right"/>
+                            </div>
+                            <div t-if="state.doc.property_tenant_id" class="civora-docdet-nav-link"
+                                 t-on-click="() => this.openTenant()">
+                                <div class="civora-docdet-nav-ico civora-docdet-nav-ico-tenant"><i class="fa fa-user"/></div>
+                                <div class="civora-docdet-nav-body">
+                                    <div class="civora-docdet-nav-name" t-esc="state.doc.property_tenant_name"/>
+                                    <div class="civora-docdet-nav-meta">Locataire actuel</div>
+                                </div>
+                                <i class="fa fa-chevron-right"/>
+                            </div>
+                            <div t-if="state.doc.linked_contact_id &amp;&amp; !state.doc.property_owner_id &amp;&amp; !state.doc.property_tenant_id"
+                                 class="civora-docdet-nav-link"
+                                 t-on-click="() => this.openEntity()">
+                                <div class="civora-docdet-nav-ico"><i class="fa fa-user-circle-o"/></div>
+                                <div class="civora-docdet-nav-body">
+                                    <div class="civora-docdet-nav-name" t-esc="state.doc.linked_contact_name"/>
+                                    <div class="civora-docdet-nav-meta">Contact concerné</div>
+                                </div>
+                                <i class="fa fa-chevron-right"/>
+                            </div>
+                        </div>
+
+                        <div t-if="state.doc.tag_ids.length" class="civora-docdet-card">
+                            <h3 class="civora-docdet-card-h">Tags</h3>
+                            <div class="civora-docdet-tags">
+                                <span t-foreach="state.doc.tag_ids" t-as="tg" t-key="tg.id"
+                                      class="civora-docdet-tag" t-esc="tg.name"/>
+                            </div>
+                        </div>
+
+                        <div class="civora-docdet-card civora-docdet-card-info">
+                            <div class="civora-docdet-card-info-t">
+                                <i class="fa fa-lock"/> Accès <t t-esc="confMeta().label.toLowerCase()"/>
+                            </div>
+                            <div class="civora-docdet-card-info-b">
+                                Journal d'accès conservé · <t t-esc="state.auditEvents.length"/> événement(s) enregistré(s).
+                            </div>
+                        </div>
+
+                        <div class="civora-docdet-card">
+                            <h3 class="civora-docdet-card-h">Actions</h3>
+                            <div class="civora-docdet-quick-actions">
+                                <button class="civora-docdet-quick" t-on-click="() => this.openNewVersion()">
+                                    <i class="fa fa-clone"/> Nouvelle version
+                                </button>
+                                <button t-if="state.doc.state !== 'archived'" class="civora-docdet-quick"
+                                        t-on-click="() => this.archive()">
+                                    <i class="fa fa-archive"/> Archiver
+                                </button>
+                                <button class="civora-docdet-quick civora-docdet-quick-danger"
+                                        t-on-click="() => this.delete_()">
+                                    <i class="fa fa-trash"/> Supprimer
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </t>
+
+            <!-- ========== ONGLET VERSIONS ========== -->
+            <t t-elif="state.activeTab === 'versions'">
+                <div class="civora-docdet-card">
+                    <div class="civora-docdet-card-head">
+                        <h3 class="civora-docdet-card-h">Historique des versions</h3>
+                        <CivoraBadge label="state.versions.length + ' version(s)'" variant="'info'"/>
+                    </div>
+                    <div t-if="!state.versions.length" class="civora-docdet-empty-inline">
+                        Aucune version enregistrée.
+                    </div>
+                    <div t-else="" class="civora-docdet-versions">
+                        <div t-foreach="state.versions" t-as="v" t-key="v.id"
+                             class="civora-docdet-version-row">
+                            <div t-att-class="'civora-docdet-version-ico ' + (v.is_current ? 'is-current' : '')">
+                                <i class="fa fa-history"/>
+                            </div>
+                            <div class="civora-docdet-version-b">
+                                <div class="civora-docdet-version-top">
+                                    <b t-esc="v.version_label"/>
+                                    <CivoraBadge t-if="v.is_current" label="'Courante'" variant="'success'"/>
+                                </div>
+                                <div class="civora-docdet-version-meta">
+                                    <t t-esc="v.change_note || '—'"/> · <t t-esc="v.author_name"/>
+                                </div>
+                            </div>
+                            <div class="civora-docdet-version-date" t-esc="fmtDate(v.date)"/>
+                            <a t-if="v.attachment_id" class="civora-btn civora-btn-outline civora-btn-sm"
+                               t-att-href="'/web/content/' + v.attachment_id + '?download=true'" target="_blank">
+                                <i class="fa fa-download"/>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="civora-docdet-card civora-docdet-card-info">
+                    <div class="civora-docdet-card-info-t">
+                        <i class="fa fa-info-circle"/> À propos des versions
+                    </div>
+                    <div class="civora-docdet-card-info-b">
+                        Chaque modification génère une nouvelle version horodatée. Les versions antérieures
+                        restent accessibles et téléchargeables.
+                    </div>
+                </div>
+            </t>
+
+            <!-- ========== ONGLET SIGNATURES ========== -->
+            <t t-elif="state.activeTab === 'signatures'">
+                <!-- KPIs toujours visibles -->
+                <div class="civora-docdet-signs-kpis">
+                    <CivoraStatCard label="'Signataires'" value="state.signers.length + ''"
+                                    delta="state.signers.length ? 'requis' : 'à ajouter'"
+                                    icon="'fa fa-user'"/>
+                    <CivoraStatCard label="'Signés'" value="signedCount + ''"
+                                    delta="signedRatio" icon="'fa fa-check-circle-o'"/>
+                    <CivoraStatCard label="'En attente'" value="pendingCount + ''"
+                                    delta="pendingCount > 0 ? 'à relancer' : 'aucun'"
+                                    icon="'fa fa-clock-o'"/>
+                </div>
+
+                <div t-if="!state.signers.length" class="civora-docdet-card">
+                    <div class="civora-docdet-signs-empty">
+                        <i class="fa fa-pencil-square-o"/>
+                        <div class="civora-docdet-signs-empty-t">Aucun signataire ajouté</div>
+                        <p t-if="canBeSigned">
+                            Ce document (<t t-esc="docTypeMeta().label"/>) nécessite généralement des signatures.
+                            Ajoutez les signataires pour lancer un circuit.
+                        </p>
+                        <p t-else="">
+                            Ajoutez des signataires si ce document doit être signé.
+                        </p>
+                        <div class="civora-docdet-signs-empty-actions">
+                            <button class="civora-btn civora-btn-accent" t-on-click="() => this.openAddSigner()">
+                                <i class="fa fa-plus"/> Ajouter un signataire
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div t-else="" class="civora-docdet-card">
+                    <div class="civora-docdet-card-head">
+                        <h3 class="civora-docdet-card-h">Circuit de signature</h3>
+                        <div class="civora-docdet-signs-head-right">
+                            <CivoraBadge
+                                label="pendingCount === 0 ? 'Complet' : (pendingCount + ' en attente')"
+                                variant="pendingCount === 0 ? 'success' : 'warning'"/>
+                            <button class="civora-btn civora-btn-outline civora-btn-sm"
+                                    t-on-click="() => this.openAddSigner()">
+                                <i class="fa fa-plus"/> Ajouter
+                            </button>
+                        </div>
+                    </div>
+                    <div class="civora-docdet-signers">
+                        <div t-foreach="state.signers" t-as="s" t-key="s.id"
+                             class="civora-docdet-signer">
+                            <div t-att-class="'civora-docdet-signer-ico civora-docdet-signer-ico-' + s.state">
+                                <i t-att-class="s.state === 'signed' ? 'fa fa-check-circle' : 'fa fa-clock-o'"/>
+                            </div>
+                            <div class="civora-docdet-signer-b">
+                                <b t-esc="s.name"/>
+                                <div class="civora-docdet-signer-meta">
+                                    <t t-esc="s.role_label"/>
+                                    <t t-if="s.email"> · <t t-esc="s.email"/></t>
+                                    <t t-if="s.state === 'signed' &amp;&amp; s.date_signed">
+                                        · signé le <t t-esc="fmtDate(s.date_signed)"/>
+                                    </t>
+                                </div>
+                            </div>
+                            <CivoraBadge label="s.state_label" variant="signerStateVariant(s.state)"/>
+                            <button t-if="s.state === 'pending'" class="civora-btn civora-btn-accent civora-btn-sm"
+                                    t-on-click="() => this.markSigned(s.id)"
+                                    title="Marquer comme signé">
+                                <i class="fa fa-check"/> Signé
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </t>
+
+            <!-- ========== ONGLET AUDIT ========== -->
+            <t t-elif="state.activeTab === 'audit'">
+                <div class="civora-docdet-card">
+                    <div class="civora-docdet-card-head">
+                        <h3 class="civora-docdet-card-h">Journal d'audit</h3>
+                        <CivoraBadge label="state.auditEvents.length + ' événements'" variant="'info'"/>
+                    </div>
+                    <div t-if="!state.auditEvents.length" class="civora-docdet-empty-inline">
+                        Aucun événement enregistré pour l'instant.
+                    </div>
+                    <div t-else="" class="civora-docdet-audit">
+                        <div t-foreach="state.auditEvents" t-as="e" t-key="e.id"
+                             class="civora-docdet-audit-row">
+                            <div t-att-class="'civora-docdet-audit-dot ' + auditToneClass(e.action)"/>
+                            <div class="civora-docdet-audit-b">
+                                <div class="civora-docdet-audit-top">
+                                    <b t-esc="e.action_label"/> —
+                                    <span class="civora-docdet-audit-user" t-esc="e.user_name"/>
+                                </div>
+                                <div class="civora-docdet-audit-detail" t-esc="e.detail"/>
+                            </div>
+                            <div class="civora-docdet-audit-date" t-esc="fmtDateTime(e.date)"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="civora-docdet-card civora-docdet-card-info">
+                    <div class="civora-docdet-card-info-t">
+                        <i class="fa fa-shield"/> Traçabilité
+                    </div>
+                    <div class="civora-docdet-card-info-b">
+                        Toutes les actions sur ce document sont enregistrées : consultation, téléchargement,
+                        modifications de statut, versions, signatures. Le journal est immuable.
+                    </div>
+                </div>
+            </t>
+
+        </t>
+
+        <!-- ========== Drawer édition ========== -->
+        <DocumentDrawer t-if="state.editDrawer"
+                        doc="state.doc"
+                        onClose="() => state.editDrawer = false"
+                        onSaved="() => this.onEditSaved()"/>
+
+        <!-- ========== Drawer nouvelle version ========== -->
+        <DocumentDrawer t-if="state.newVersionMode"
+                        doc="null"
+                        newVersionForDoc="documentId"
+                        onClose="() => this.closeNewVersion()"
+                        onSaved="() => this.onNewVersionSaved()"/>
+
+        <!-- ========== Modal ajout signataire ========== -->
+        <div t-if="state.addSignerOpen" class="civora-docdet-modal-overlay"
+             t-on-click="() => this.closeAddSigner()">
+            <div class="civora-docdet-modal" t-on-click.stop="() => {}">
+                <h3 class="civora-docdet-modal-t">Ajouter un signataire</h3>
+                <div class="civora-fld">
+                    <label>Nom *</label>
+                    <input type="text" t-att-value="state.newSignerForm.name"
+                           t-on-input="(ev) => this.setSignerField('name', ev)"
+                           placeholder="Nom complet"/>
+                </div>
+                <div class="civora-fld">
+                    <label>Email</label>
+                    <input type="text" t-att-value="state.newSignerForm.email"
+                           t-on-input="(ev) => this.setSignerField('email', ev)"
+                           placeholder="email@exemple.ci"/>
+                </div>
+                <div class="civora-fld">
+                    <label>Rôle</label>
+                    <select t-on-change="(ev) => this.setSignerField('role', ev)">
+                        <option value="bailleur">Bailleur</option>
+                        <option value="locataire" selected="selected">Locataire</option>
+                        <option value="proprietaire">Propriétaire</option>
+                        <option value="agence">Agence</option>
+                        <option value="mandant">Mandant</option>
+                        <option value="mandataire">Mandataire</option>
+                        <option value="caution">Caution</option>
+                        <option value="temoin">Témoin</option>
+                        <option value="autre">Autre</option>
+                    </select>
+                </div>
+                <div class="civora-docdet-modal-actions">
+                    <button class="civora-btn civora-btn-outline" t-on-click="() => this.closeAddSigner()">
+                        Annuler
+                    </button>
+                    <button class="civora-btn civora-btn-accent" t-on-click="() => this.submitAddSigner()">
+                        <i class="fa fa-check"/> Ajouter
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</t>
+
+</templates>

@@ -23,7 +23,11 @@ class CivoraProperty(models.Model):
     _order = 'name'
     _check_company_auto = True
 
-    name = fields.Char(string="Nom", required=True, index=True)
+    name = fields.Char(
+        string="Nom", required=True, index=True,
+        compute='_compute_name', store=True, readonly=True, precompute=True,
+        help="Composé automatiquement : type + nombre de pièces + quartier.",
+    )
     ref = fields.Char(string="Référence", copy=False, index=True, help="Référence interne (ex: BIEN-001).")
     property_type_id = fields.Many2one('civora.property.type', string="Type", index=True)
     transaction = fields.Selection([
@@ -50,6 +54,11 @@ class CivoraProperty(models.Model):
     street = fields.Char(string="Adresse")
     latitude = fields.Float(string="Latitude", digits=(10, 7))
     longitude = fields.Float(string="Longitude", digits=(10, 7))
+    maps_url = fields.Char(
+        string="Lien Google Maps",
+        help="Lien Google Maps ou OpenStreetMap complet. La position (lat/long) "
+             "est extraite automatiquement quand le lien est colle dans le formulaire.",
+    )
 
     # --- Caracteristiques ---
     surface = fields.Float(string="Surface (m²)")
@@ -175,6 +184,72 @@ class CivoraProperty(models.Model):
         default=lambda self: self.env.company,
         help="Societe proprietaire du bien (isolation multi-societe).",
     )
+
+    # ── Documents juridiques (vente) ────────────────────────────────────
+    sale_doc_ids = fields.Many2many(
+        'civora.sale.doc.type', 'civora_property_sale_doc_rel',
+        'property_id', 'doc_type_id', string="Documents juridiques",
+        help="Pieces disponibles pour ce bien. Ne concerne que les biens en vente.",
+    )
+    sale_doc_count = fields.Integer(
+        string="Documents fournis", compute='_compute_sale_docs', store=True)
+    sale_docs_ok = fields.Boolean(
+        string="Dossier juridique suffisant", compute='_compute_sale_docs', store=True,
+        help="Au moins deux pieces, dont une piece maitresse (ACD, Titre Foncier "
+             "ou Certificat de propriete). Un dossier incomplet expose l'agence "
+             "autant que l'acquereur.",
+    )
+
+    @api.depends('sale_doc_ids', 'sale_doc_ids.is_essential', 'transaction')
+    def _compute_sale_docs(self):
+        for p in self:
+            docs = p.sale_doc_ids
+            p.sale_doc_count = len(docs)
+            if p.transaction != 'vente':
+                p.sale_docs_ok = False
+                continue
+            p.sale_docs_ok = bool(
+                len(docs) >= 2 and any(d.is_essential for d in docs))
+
+    # ══════════════════════════════════════════════════════════════════
+    # Designation automatique
+    # ══════════════════════════════════════════════════════════════════
+    def _civora_build_name(self):
+        """Compose le titre : type + nombre de pieces + quartier.
+
+        On privilegie le QUARTIER a la ville : a Abidjan, la ville est la
+        meme pour tout le portefeuille, et « Villa 5 pieces Abidjan » ne
+        distingue rien. On retombe sur la ville si le quartier est absent.
+
+        Cas particulier des unites d'immeuble : le numero d'appartement est
+        conserve, sans quoi toutes les unites d'un meme batiment porteraient
+        un titre identique et deviendraient impossibles a distinguer.
+        """
+        self.ensure_one()
+        parts = []
+        if self.property_type_id:
+            parts.append(self.property_type_id.name or '')
+        if self.rooms:
+            parts.append("%d pièce%s" % (self.rooms, "s" if self.rooms > 1 else ""))
+
+        unit_no = (self.unit_number or '').strip()
+        if self.parent_id and unit_no:
+            parts.append("Apt %s" % unit_no)
+        else:
+            place = (self.neighborhood or '').strip() or (self.city or '').strip()
+            if place:
+                parts.append(place)
+
+        title = " ".join(p for p in parts if p).strip()
+        # Le champ est requis : il ne doit jamais rester vide, meme sur un
+        # bien tout juste esquisse.
+        return title or "Bien à qualifier"
+
+    @api.depends('property_type_id', 'property_type_id.name', 'rooms',
+                 'neighborhood', 'city', 'unit_number', 'parent_id')
+    def _compute_name(self):
+        for prop in self:
+            prop.name = prop._civora_build_name()
 
     @api.depends('monthly_revenue', 'price')
     def _compute_yield_rate(self):
@@ -310,9 +385,8 @@ class CivoraProperty(models.Model):
         unit_number = (vals.get('unit_number') or "").strip()
         payload = building._inherited_unit_vals()
         payload.update({
-            'name': vals.get('name') or (
-                "%s — Apt %s" % (building.name, unit_number) if unit_number else building.name
-            ),
+            # 'name' n'est plus ecrit ici : il est calcule a partir du type,
+            # du nombre de pieces et du numero d'unite.
             'ref': vals.get('ref') or (
                 "%s-%s" % (building.ref, unit_number) if building.ref and unit_number else False
             ),
@@ -354,7 +428,7 @@ class CivoraProperty(models.Model):
             floor = (num // 100) if per_floor > 0 else template.floor
             payload = building._inherited_unit_vals()
             payload.update({
-                'name': "%s — Apt %s" % (building.name, unit_number),
+                # 'name' est calcule (cf. _compute_name)
                 'ref': "%s-%s" % (building.ref, unit_number) if building.ref else False,
                 'unit_number': unit_number,
                 'floor': floor,
@@ -378,3 +452,143 @@ class CivoraProperty(models.Model):
         'check (monthly_revenue >= 0)',
         "Le revenu mensuel ne peut pas etre negatif.",
     )
+    _ref_uniq = models.Constraint(
+        'unique (ref, company_id)',
+        "La reference du bien doit etre unique par societe.",
+    )
+
+    # ------------------------------------------------------------------
+    # Reference automatique : PREFIX-00001 (padding 5)
+    # ------------------------------------------------------------------
+    _REF_PADDING = 5
+
+    @api.model
+    def _get_or_create_ref_sequence(self, ptype, company):
+        """Retourne l'ir.sequence a utiliser pour generer la reference d'un bien
+        du type et de la societe donnes. Cree la sequence si elle n'existe pas.
+        """
+        if not ptype or not company:
+            return False
+        code = 'civora.property.%s.%s' % (ptype.code or ptype.id, company.id)
+        Seq = self.env['ir.sequence'].sudo()
+        seq = Seq.with_context(active_test=False).search([('code', '=', code)], limit=1)
+        prefix = (ptype.reference_prefix or 'REF').upper()
+        if not seq:
+            seq = Seq.create({
+                'name': "CIVORA Bien - %s - %s" % (ptype.name or ptype.code or 'Type', company.name),
+                'code': code,
+                'prefix': '%s-' % prefix,
+                'padding': self._REF_PADDING,
+                'number_increment': 1,
+                'number_next_actual': 1,
+                'implementation': 'standard',
+                'company_id': company.id,
+            })
+        else:
+            # Assure la coherence du prefixe si l'agence a renomme.
+            expected = '%s-' % prefix
+            if seq.prefix != expected:
+                seq.prefix = expected
+            if seq.padding != self._REF_PADDING:
+                seq.padding = self._REF_PADDING
+        return seq
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        Type = self.env['civora.property.type'].sudo()
+        Company = self.env['res.company'].sudo()
+        for vals in vals_list:
+            if vals.get('ref'):
+                continue
+            type_id = vals.get('property_type_id')
+            company_id = vals.get('company_id') or self.env.company.id
+            if not type_id:
+                # Sans type, on ne peut pas generer : on laisse vide, l'utilisateur
+                # pourra saisir manuellement ou re-editer le bien avec un type.
+                continue
+            ptype = Type.browse(type_id)
+            company = Company.browse(company_id)
+            if not ptype.exists() or not company.exists():
+                continue
+            seq = self._get_or_create_ref_sequence(ptype, company)
+            if seq:
+                vals['ref'] = seq.next_by_id()
+        return super().create(vals_list)
+
+    # ------------------------------------------------------------------
+    # Suppression protegee (baux actifs / opportunites actives / unites-enfants)
+    # ------------------------------------------------------------------
+    def _get_blocking_counts(self):
+        """Retourne pour chaque bien un dict des references bloquantes.
+
+        Les modeles verifies ne sont pas dans les depends de civora_biens : on
+        interroge dynamiquement pour ne pas creer de cycle de dependance.
+        """
+        self.ensure_one()
+        counts = {'leases': 0, 'opportunities': 0, 'child_units': 0}
+
+        # Baux actifs (civora_locations optionnel).
+        if 'civora.lease' in self.env:
+            Lease = self.env['civora.lease'].sudo()
+            # Un bail est considere actif s'il n'est pas termine/annule.
+            counts['leases'] = Lease.search_count([
+                ('property_id', '=', self.id),
+                ('state', 'not in', ['done', 'cancelled', 'termine', 'annule']),
+            ])
+
+        # Opportunites actives (civora_pipeline optionnel).
+        if 'civora.opportunity' in self.env:
+            Opp = self.env['civora.opportunity'].sudo()
+            counts['opportunities'] = Opp.search_count([
+                ('property_id', '=', self.id),
+                ('is_won', '=', False),
+                ('is_lost', '=', False),
+            ])
+
+        # Unites-enfants (immeuble contenant des lots).
+        counts['child_units'] = self.search_count([('parent_id', '=', self.id)])
+        return counts
+
+    def action_delete_check(self):
+        """Appele par l'ecran avant la suppression : renvoie un rapport clair.
+
+        Retourne un dict :
+          {
+            'deletable': bool,
+            'reason': str (message si non supprimable),
+            'blocking': {'leases': N, 'opportunities': N, 'child_units': N}
+          }
+        """
+        self.ensure_one()
+        counts = self._get_blocking_counts()
+        total = counts['leases'] + counts['opportunities'] + counts['child_units']
+        if total == 0:
+            return {'deletable': True, 'reason': '', 'blocking': counts}
+        parts = []
+        if counts['leases']:
+            parts.append("%s bail(x) actif(s)" % counts['leases'])
+        if counts['opportunities']:
+            parts.append("%s opportunite(s) active(s)" % counts['opportunities'])
+        if counts['child_units']:
+            parts.append("%s unite(s) rattachee(s)" % counts['child_units'])
+        reason = (
+            "Ce bien ne peut pas etre supprime : "
+            + ", ".join(parts)
+            + ". Vous pouvez l'archiver a la place (le bien restera consultable mais "
+            "sera masque des listes actives)."
+        )
+        return {'deletable': False, 'reason': reason, 'blocking': counts}
+
+    def action_archive_property(self):
+        """Archive un ou plusieurs biens (raccourci pour le drawer)."""
+        for prop in self:
+            prop.active = False
+        return True
+
+    def unlink(self):
+        for prop in self:
+            report = prop.action_delete_check()
+            if not report['deletable']:
+                from odoo.exceptions import UserError
+                raise UserError(report['reason'])
+        return super().unlink()

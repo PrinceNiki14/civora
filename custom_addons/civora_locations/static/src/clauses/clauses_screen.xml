@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="civora_locations.ClausesScreen">
+<div class="civora-cls">
+
+    <!-- TOPBAR -->
+    <div class="civora-cls-topbar">
+        <div class="civora-cls-topbar-left">
+            <div class="civora-cls-title">
+                <i class="fa fa-file-text-o"/> Paramétrage des contrats
+            </div>
+            <div class="civora-cls-subtitle">Clauses et jeux de clauses par type de bail</div>
+        </div>
+        <div class="civora-cls-topbar-right">
+            <div class="civora-cls-type-filter">
+                <button t-att-class="'civora-cls-type-btn' + (state.filterType === 'residentiel' ? ' is-active' : '')"
+                        t-on-click="() => this.setFilter('residentiel')">
+                    <i class="fa fa-home"/> Résidentiel
+                </button>
+                <button t-att-class="'civora-cls-type-btn' + (state.filterType === 'commercial' ? ' is-active' : '')"
+                        t-on-click="() => this.setFilter('commercial')">
+                    <i class="fa fa-building"/> Commercial
+                </button>
+            </div>
+            <button t-if="state.tab === 'clauses'"
+                    class="civora-btn civora-btn-accent"
+                    t-on-click="() => this.openCreateClause()">
+                <i class="fa fa-plus"/> Nouvelle clause
+            </button>
+            <button t-if="state.tab === 'sets'"
+                    class="civora-btn civora-btn-accent"
+                    t-on-click="() => this.openCreateSet()">
+                <i class="fa fa-plus"/> Nouveau jeu
+            </button>
+        </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="civora-cls-tabbar">
+        <button t-att-class="'civora-cls-tab' + (state.tab === 'clauses' ? ' is-active' : '')"
+                t-on-click="() => this.setTab('clauses')">
+            <i class="fa fa-list-ul"/> Clauses
+            <span class="civora-cls-tabcount" t-esc="filteredClauses.length + ''"/>
+        </button>
+        <button t-att-class="'civora-cls-tab' + (state.tab === 'sets' ? ' is-active' : '')"
+                t-on-click="() => this.setTab('sets')">
+            <i class="fa fa-th-list"/> Jeux de clauses
+            <span class="civora-cls-tabcount" t-esc="filteredSets.length + ''"/>
+        </button>
+    </div>
+
+    <!-- LOADING -->
+    <div t-if="state.loading" class="civora-cls-state">
+        <i class="fa fa-circle-o-notch fa-spin"/> Chargement…
+    </div>
+
+    <t t-else="">
+
+        <!-- ONGLET CLAUSES -->
+        <div t-if="state.tab === 'clauses'" class="civora-cls-body">
+            <div class="civora-cls-hint">
+                <i class="fa fa-info-circle"/> Utilisez <code>{{locataire}}</code>, <code>{{bailleur}}</code>, <code>{{bien}}</code>, <code>{{loyer}}</code>, <code>{{date_debut}}</code>, <code>{{date_fin}}</code>, <code>{{duree_mois}}</code> dans le corps des clauses.
+            </div>
+            <div class="civora-cls-list">
+                <div t-if="filteredClauses.length === 0" class="civora-cls-empty">
+                    <i class="fa fa-file-o"/> Aucune clause pour ce type de bail.
+                    <button class="civora-btn civora-btn-outline" t-on-click="() => this.openCreateClause()">
+                        <i class="fa fa-plus"/> Créer la première clause
+                    </button>
+                </div>
+                <div t-foreach="filteredClauses" t-as="clause" t-key="clause.id"
+                     t-att-class="'civora-cls-item' + (!clause.active ? ' is-inactive' : '')">
+                    <div class="civora-cls-item-drag"><i class="fa fa-bars"/></div>
+                    <div class="civora-cls-item-num"><span t-esc="clause.numero || '#'"/></div>
+                    <div class="civora-cls-item-body">
+                        <div class="civora-cls-item-title" t-esc="clause.name"/>
+                        <div class="civora-cls-item-preview"
+                             t-out="this.bodyPreview(clause.body)"/>
+                    </div>
+                    <div class="civora-cls-item-actions">
+                        <span t-if="!clause.active" class="civora-badge civora-badge-neutral">Inactif</span>
+                        <button class="civora-cls-btn-icon" title="Modifier"
+                                t-on-click="() => this.openEditClause(clause)">
+                            <i class="fa fa-pencil"/>
+                        </button>
+                        <button class="civora-cls-btn-icon"
+                                t-att-title="clause.active ? 'Désactiver' : 'Activer'"
+                                t-on-click="() => this.toggleActive(clause)">
+                            <i t-att-class="'fa fa-' + (clause.active ? 'eye-slash' : 'eye')"/>
+                        </button>
+                        <button class="civora-cls-btn-icon civora-cls-btn-danger"
+                                title="Supprimer"
+                                t-on-click="() => this.requestDelete(clause.id)">
+                            <i class="fa fa-trash"/>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div t-if="state.deleteConfirm" class="civora-cls-overlay">
+                <div class="civora-cls-confirm">
+                    <div class="civora-cls-confirm-ico"><i class="fa fa-trash"/></div>
+                    <div class="civora-cls-confirm-title">Supprimer cette clause ?</div>
+                    <p>Cette action est irréversible.</p>
+                    <div class="civora-cls-confirm-btns">
+                        <button class="civora-btn civora-btn-outline" t-on-click="() => this.cancelDelete()">Annuler</button>
+                        <button class="civora-btn civora-btn-danger" t-on-click="() => this.confirmDelete()">
+                            <i class="fa fa-trash"/> Supprimer
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ONGLET JEUX -->
+        <div t-if="state.tab === 'sets'" class="civora-cls-body">
+            <div class="civora-cls-list">
+                <div t-if="filteredSets.length === 0" class="civora-cls-empty">
+                    <i class="fa fa-th-list"/> Aucun jeu de clauses pour ce type.
+                    <button class="civora-btn civora-btn-outline" t-on-click="() => this.openCreateSet()">
+                        <i class="fa fa-plus"/> Créer le premier jeu
+                    </button>
+                </div>
+                <div t-foreach="filteredSets" t-as="set" t-key="set.id" class="civora-cls-set-item">
+                    <div class="civora-cls-set-ico"><i class="fa fa-th-list"/></div>
+                    <div class="civora-cls-set-body">
+                        <div class="civora-cls-set-name" t-esc="set.name"/>
+                        <div class="civora-cls-set-desc" t-esc="set.description || 'Aucune description'"/>
+                    </div>
+                    <div class="civora-cls-set-count">
+                        <span t-esc="set.clause_count + ''"/> clauses
+                    </div>
+                    <div class="civora-cls-item-actions">
+                        <button class="civora-cls-btn-icon" title="Modifier"
+                                t-on-click="() => this.openEditSet(set)">
+                            <i class="fa fa-pencil"/>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </t>
+
+    <!-- DRAWER CLAUSE -->
+    <div t-if="state.drawerOpen &amp;&amp; state.drawerTarget === 'clause'"
+         class="civora-cls-drawer-overlay" t-on-click.self="() => this.closeDrawer()">
+        <div class="civora-cls-drawer">
+            <div class="civora-cls-drawer-header">
+                <span t-esc="state.drawerMode === 'edit' ? 'Modifier la clause' : 'Nouvelle clause'"/>
+                <button class="civora-cls-drawer-close" t-on-click="() => this.closeDrawer()">
+                    <i class="fa fa-times"/>
+                </button>
+            </div>
+            <div class="civora-cls-drawer-body">
+                <div class="civora-cls-field">
+                    <label>Titre <span class="civora-cls-req">*</span></label>
+                    <input type="text" class="civora-cls-input"
+                           t-att-value="state.form.name"
+                           t-on-input="(e) => { state.form.name = e.target.value; }"
+                           placeholder="Ex : Obligations du Locataire"/>
+                </div>
+                <div class="civora-cls-field-row">
+                    <div class="civora-cls-field">
+                        <label>N° article</label>
+                        <input type="text" class="civora-cls-input"
+                               t-att-value="state.form.numero"
+                               t-on-input="(e) => { state.form.numero = e.target.value; }"
+                               placeholder="Ex : 07"/>
+                    </div>
+                    <div class="civora-cls-field">
+                        <label>Ordre</label>
+                        <input type="number" class="civora-cls-input"
+                               t-att-value="state.form.sequence"
+                               t-on-input="(e) => { state.form.sequence = parseInt(e.target.value) || 10; }"
+                               min="1" step="10"/>
+                    </div>
+                </div>
+                <div class="civora-cls-field">
+                    <label>Type de bail</label>
+                    <select class="civora-cls-input"
+                            t-on-change="(e) => { state.form.lease_type = e.target.value; }">
+                        <option value="residentiel" t-att-selected="state.form.lease_type === 'residentiel'">Résidentiel</option>
+                        <option value="commercial" t-att-selected="state.form.lease_type === 'commercial'">Commercial</option>
+                    </select>
+                </div>
+                <div class="civora-cls-field">
+                    <label>Contenu <span class="civora-cls-req">*</span></label>
+                    <div class="civora-cls-hint-sm">
+                        Placeholders : <code>{{locataire}}</code> <code>{{bailleur}}</code>
+                        <code>{{bien}}</code> <code>{{loyer}}</code> <code>{{date_debut}}</code>
+                        <code>{{date_fin}}</code> <code>{{duree_mois}}</code>
+                        <code>{{total_mensuel}}</code> <code>{{depot_garantie}}</code>
+                    </div>
+                    <textarea class="civora-cls-textarea" rows="10"
+                              t-on-input="(e) => { state.form.body = e.target.value; }"
+                              placeholder="Saisissez le contenu de la clause. Vous pouvez utiliser du HTML simple.">
+                        <t t-esc="state.form.body"/>
+                    </textarea>
+                </div>
+                <div class="civora-cls-field-check">
+                    <input type="checkbox" id="clause-active"
+                           t-att-checked="state.form.active"
+                           t-on-change="(e) => { state.form.active = e.target.checked; }"/>
+                    <label for="clause-active">Clause active</label>
+                </div>
+            </div>
+            <div class="civora-cls-drawer-footer">
+                <button class="civora-btn civora-btn-outline" t-on-click="() => this.closeDrawer()">Annuler</button>
+                <button class="civora-btn civora-btn-accent"
+                        t-att-disabled="state.saving"
+                        t-on-click="() => this.saveClause()">
+                    <i t-att-class="'fa fa-' + (state.saving ? 'circle-o-notch fa-spin' : 'check')"/>
+                    <t t-esc="state.saving ? 'Enregistrement…' : 'Enregistrer'"/>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DRAWER JEU -->
+    <div t-if="state.drawerOpen &amp;&amp; state.drawerTarget === 'set'"
+         class="civora-cls-drawer-overlay" t-on-click.self="() => this.closeDrawer()">
+        <div class="civora-cls-drawer">
+            <div class="civora-cls-drawer-header">
+                <span t-esc="state.drawerMode === 'edit' ? 'Modifier le jeu' : 'Nouveau jeu de clauses'"/>
+                <button class="civora-cls-drawer-close" t-on-click="() => this.closeDrawer()">
+                    <i class="fa fa-times"/>
+                </button>
+            </div>
+            <div class="civora-cls-drawer-body">
+                <div class="civora-cls-field">
+                    <label>Nom du jeu <span class="civora-cls-req">*</span></label>
+                    <input type="text" class="civora-cls-input"
+                           t-att-value="state.setForm.name"
+                           t-on-input="(e) => { state.setForm.name = e.target.value; }"
+                           placeholder="Ex : Bail d'habitation longue durée"/>
+                </div>
+                <div class="civora-cls-field">
+                    <label>Type de bail</label>
+                    <select class="civora-cls-input"
+                            t-on-change="(e) => { state.setForm.lease_type = e.target.value; }">
+                        <option value="residentiel" t-att-selected="state.setForm.lease_type === 'residentiel'">Résidentiel</option>
+                        <option value="commercial" t-att-selected="state.setForm.lease_type === 'commercial'">Commercial</option>
+                    </select>
+                </div>
+                <div class="civora-cls-field">
+                    <label>Description</label>
+                    <textarea class="civora-cls-textarea" rows="3"
+                              t-on-input="(e) => { state.setForm.description = e.target.value; }"
+                              placeholder="Description du jeu de clauses…">
+                        <t t-esc="state.setForm.description"/>
+                    </textarea>
+                </div>
+                <div class="civora-cls-field">
+                    <p class="civora-cls-hint-sm">
+                        <i class="fa fa-info-circle"/>
+                        Pour ajouter ou retirer des clauses de ce jeu, utilisez l'interface
+                        d'administration Odoo (menu Technique).
+                    </p>
+                </div>
+            </div>
+            <div class="civora-cls-drawer-footer">
+                <button class="civora-btn civora-btn-outline" t-on-click="() => this.closeDrawer()">Annuler</button>
+                <button class="civora-btn civora-btn-accent"
+                        t-att-disabled="state.saving"
+                        t-on-click="() => this.saveSet()">
+                    <i t-att-class="'fa fa-' + (state.saving ? 'circle-o-notch fa-spin' : 'check')"/>
+                    <t t-esc="state.saving ? 'Enregistrement…' : 'Enregistrer'"/>
+                </button>
+            </div>
+        </div>
+    </div>
+
+</div>
+</t>
+
+</templates>

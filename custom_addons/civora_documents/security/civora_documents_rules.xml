@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="civora_document_company_rule" model="ir.rule">
+        <field name="name">civora.document : multi-societe</field>
+        <field name="model_id" ref="model_civora_document"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="civora_document_version_company_rule" model="ir.rule">
+        <field name="name">civora.document.version : multi-societe</field>
+        <field name="model_id" ref="model_civora_document_version"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="civora_document_signer_company_rule" model="ir.rule">
+        <field name="name">civora.document.signer : multi-societe</field>
+        <field name="model_id" ref="model_civora_document_signer"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="civora_document_audit_company_rule" model="ir.rule">
+        <field name="name">civora.document.audit : multi-societe</field>
+        <field name="model_id" ref="model_civora_document_audit"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+</odoo>

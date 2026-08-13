@@ -1,4 +1,4 @@
-import { Component, onWillStart, useState } from "@odoo/owl";
+import { Component, onWillStart, onMounted, onWillUnmount, useState } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { standardActionServiceProps } from "@web/webclient/actions/action_service";
@@ -26,8 +26,9 @@ const KIND_META = {
     visite: { label: "Visite", icon: "fa-building-o" },
     note: { label: "Note", icon: "fa-sticky-note-o" },
     document: { label: "Document", icon: "fa-file-o" },
+    role_change: { label: "Changement de rôle", icon: "fa-tag" },
 };
-const KIND_ORDER = ["appel", "email", "whatsapp", "sms", "rdv", "visite", "note", "document"];
+const KIND_ORDER = ["appel", "email", "whatsapp", "sms", "rdv", "visite", "note", "document", "role_change"];
 
 // Regroupements pour la barre de filtres (aligne sur le front).
 const KIND_GROUPS = [
@@ -37,6 +38,7 @@ const KIND_GROUPS = [
     { key: "rdv", label: "Rendez-vous", kinds: ["rdv", "visite"] },
     { key: "notes", label: "Notes", kinds: ["note"] },
     { key: "documents", label: "Documents", kinds: ["document"] },
+    { key: "systeme", label: "Système", kinds: ["role_change"] },
 ];
 const PERIODS = [
     { key: "7", label: "7j" },
@@ -49,9 +51,12 @@ const FIELDS = [
     "city", "civora_neighborhood", "street",
     "civora_role_ids", "civora_primary_role_id", "civora_role_names",
     "civora_source_id", "civora_agent_id", "civora_status",
-    "civora_ai_score", "civora_budget", "civora_next_action", "comment",
+    "civora_ai_score", "civora_ai_score_manual", "civora_ai_score_breakdown",
+    "civora_ai_score_updated",
+    "civora_budget", "civora_next_action", "comment",
     "civora_consent_email", "civora_consent_sms", "civora_consent_whatsapp",
-    "civora_interaction_count",
+    "civora_interaction_count", "civora_last_interaction_date",
+    "create_date", "write_date",
 ];
 
 /**
@@ -68,6 +73,7 @@ export class CivoraContact360 extends Component {
     setup() {
         this.orm = useService("orm");
         this.action = useService("action");
+        this.notification = useService("notification");
 
         // Onglets contribues par d'autres modules (biens, pipeline, GED...).
         this.contribTabs = registry
@@ -80,6 +86,10 @@ export class CivoraContact360 extends Component {
         const params = (this.props.action && this.props.action.params) || {};
         this.contactId = Number(params.contactId) || false;
         this.origin = params.origin || null;
+        // Navigation prev/next : liste ordonnee d'ids fournie par l'ecran de depart.
+        this.siblingIds = Array.isArray(params.siblingIds)
+            ? params.siblingIds.map(Number).filter(Boolean)
+            : [];
         this.users = [];
 
         this.state = useState({
@@ -97,9 +107,29 @@ export class CivoraContact360 extends Component {
             // Filtres timeline
             filterKind: "all",
             filterPeriod: "all",
+            // v10.1.0 — Score IA
+            scoreRecomputing: false,
+            showBreakdown: false,
         });
 
         onWillStart(() => this.load());
+
+        // Raccourcis clavier ← → pour naviguer entre siblings
+        this._onKeyDown = (ev) => {
+            // Ignore si focus sur input/textarea/select ou modale d'édition ouverte
+            const tag = (ev.target.tagName || "").toLowerCase();
+            if (["input", "textarea", "select"].includes(tag)) return;
+            if (this.state.edit && this.state.edit.open) return;
+            if (ev.key === "ArrowLeft" && this.hasPrev) {
+                ev.preventDefault();
+                this.goPrev();
+            } else if (ev.key === "ArrowRight" && this.hasNext) {
+                ev.preventDefault();
+                this.goNext();
+            }
+        };
+        onMounted(() => window.addEventListener("keydown", this._onKeyDown));
+        onWillUnmount(() => window.removeEventListener("keydown", this._onKeyDown));
     }
 
     async load() {
@@ -155,6 +185,51 @@ export class CivoraContact360 extends Component {
     }
     get backLabel() {
         return this.origin && this.origin.label ? this.origin.label : "Annuaire";
+    }
+
+    // --- Navigation prev/next entre contacts (siblings) --------------
+    get siblingPosition() {
+        if (!this.siblingIds.length) return -1;
+        return this.siblingIds.indexOf(this.contactId);
+    }
+    get siblingCount() {
+        return this.siblingIds.length;
+    }
+    get hasSiblings() {
+        return this.siblingIds.length > 1 && this.siblingPosition >= 0;
+    }
+    get hasPrev() {
+        return this.hasSiblings && this.siblingPosition > 0;
+    }
+    get hasNext() {
+        return this.hasSiblings && this.siblingPosition < this.siblingCount - 1;
+    }
+    get siblingCounterLabel() {
+        if (!this.hasSiblings) return "";
+        return (this.siblingPosition + 1) + " / " + this.siblingCount;
+    }
+    goPrev() {
+        if (!this.hasPrev) return;
+        const prevId = this.siblingIds[this.siblingPosition - 1];
+        this._navigateToSibling(prevId);
+    }
+    goNext() {
+        if (!this.hasNext) return;
+        const nextId = this.siblingIds[this.siblingPosition + 1];
+        this._navigateToSibling(nextId);
+    }
+    _navigateToSibling(newId) {
+        this.action.doAction({
+            type: "ir.actions.client",
+            tag: "civora.contact_360",
+            params: {
+                contactId: newId,
+                siblingIds: this.siblingIds,
+                origin: this.origin,
+                tab: this.state.activeTab,  // préserver l'onglet actif
+            },
+            target: "current",
+        });
     }
 
     // --- Onglets -------------------------------------------------------
@@ -395,6 +470,105 @@ export class CivoraContact360 extends Component {
             },
             cancel: () => {},
         });
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    // v10.1.0 — Score IA : recalcul + verrou + décomposition
+    // ═══════════════════════════════════════════════════════════════════
+    get scoreBreakdown() {
+        const r = this.state.record;
+        if (!r || !r.civora_ai_score_breakdown) return null;
+        try {
+            return JSON.parse(r.civora_ai_score_breakdown);
+        } catch (e) {
+            return null;
+        }
+    }
+    get scoreUpdatedLabel() {
+        const r = this.state.record;
+        if (!r || !r.civora_ai_score_updated) return "";
+        return this.formatDateTime(r.civora_ai_score_updated);
+    }
+    async recomputeScore() {
+        if (this.state.scoreRecomputing) return;
+        this.state.scoreRecomputing = true;
+        try {
+            const res = await this.orm.call(
+                "res.partner", "civora_recompute_score",
+                [], { contact_id: this.contactId }
+            );
+            if (res && res.success) {
+                this.state.record.civora_ai_score = res.score;
+                this.state.record.civora_ai_score_breakdown = res.breakdown;
+                this.state.record.civora_ai_score_updated = res.updated;
+                this.notification.add(`Score recalculé : ${res.score}/100`, {
+                    type: "success", sticky: false,
+                });
+            } else {
+                this.notification.add("Impossible de recalculer le score.", {
+                    type: "danger",
+                });
+            }
+        } catch (e) {
+            console.error("[CIVORA-SCORE] recompute", e);
+            this.notification.add("Erreur lors du recalcul.", { type: "danger" });
+        } finally {
+            this.state.scoreRecomputing = false;
+        }
+    }
+    async toggleScoreLock() {
+        const wasLocked = !!this.state.record.civora_ai_score_manual;
+        const newLocked = !wasLocked;
+        try {
+            const res = await this.orm.call(
+                "res.partner", "civora_toggle_score_lock",
+                [], { contact_id: this.contactId, locked: newLocked }
+            );
+            if (res && res.success) {
+                this.state.record.civora_ai_score_manual = res.locked;
+                this.notification.add(
+                    res.locked
+                        ? "Score verrouillé (ne sera pas recalculé automatiquement)."
+                        : "Score déverrouillé (recalcul auto réactivé).",
+                    { type: "success", sticky: false }
+                );
+            }
+        } catch (e) {
+            console.error("[CIVORA-SCORE] lock", e);
+            this.notification.add("Erreur lors du verrouillage.", { type: "danger" });
+        }
+    }
+    toggleScoreBreakdown() {
+        this.state.showBreakdown = !this.state.showBreakdown;
+    }
+
+    // --- Formatage des dates -------------------------------------------
+    formatDate(dtStr) {
+        if (!dtStr) return "—";
+        const d = new Date(dtStr);
+        if (isNaN(d)) return dtStr;
+        return d.toLocaleDateString("fr-FR");
+    }
+    formatDateTime(dtStr) {
+        if (!dtStr) return "—";
+        const d = new Date(dtStr);
+        if (isNaN(d)) return dtStr;
+        return d.toLocaleDateString("fr-FR") + " à "
+             + String(d.getHours()).padStart(2, "0") + ":"
+             + String(d.getMinutes()).padStart(2, "0");
+    }
+    formatRelativeDate(dtStr) {
+        if (!dtStr) return "Jamais";
+        const d = new Date(dtStr);
+        if (isNaN(d)) return dtStr;
+        const now = new Date();
+        const diff = Math.floor((now - d) / (1000 * 60 * 60 * 24));
+        if (diff === 0) return "Aujourd'hui";
+        if (diff === 1) return "Hier";
+        if (diff < 7) return `Il y a ${diff} jours`;
+        if (diff < 30) return `Il y a ${Math.floor(diff / 7)} semaines`;
+        if (diff < 365) return `Il y a ${Math.floor(diff / 30)} mois`;
+        return `Il y a ${Math.floor(diff / 365)} an${Math.floor(diff / 365) > 1 ? 's' : ''}`;
     }
 }
 

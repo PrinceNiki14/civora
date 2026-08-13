@@ -1,0 +1,475 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// CIVORA — Paramétrage des clauses de bail
+// ─────────────────────────────────────────────────────────────────────────────
+
+.civora-cls {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: #f4f6fa;
+    font-family: 'Inter', 'Plus Jakarta Sans', sans-serif;
+
+    // ── Topbar ─────────────────────────────────────────────────────────
+    &-topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 16px 24px;
+        background: #fff;
+        border-bottom: 1px solid #e4e7ec;
+        flex-wrap: wrap;
+
+        &-left {}
+        &-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+    }
+
+    &-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #091a36;
+        i { margin-right: 8px; color: #00ab68; }
+    }
+
+    &-subtitle {
+        font-size: 12px;
+        color: #9aa2ad;
+        margin-top: 2px;
+    }
+
+    // ── Filtre type ─────────────────────────────────────────────────────
+    &-type-filter {
+        display: flex;
+        gap: 4px;
+        background: #f4f6fa;
+        border: 1px solid #e4e7ec;
+        border-radius: 8px;
+        padding: 3px;
+    }
+
+    &-type-btn {
+        padding: 5px 14px;
+        font-size: 12px;
+        font-weight: 600;
+        border: none;
+        border-radius: 6px;
+        background: transparent;
+        color: #626a75;
+        cursor: pointer;
+        transition: all .15s;
+
+        &.is-active {
+            background: #091a36;
+            color: #fff;
+        }
+
+        i { margin-right: 5px; }
+    }
+
+    // ── Tabs ────────────────────────────────────────────────────────────
+    &-tabbar {
+        display: flex;
+        gap: 0;
+        background: #fff;
+        border-bottom: 1px solid #e4e7ec;
+        padding: 0 24px;
+    }
+
+    &-tab {
+        padding: 12px 18px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #626a75;
+        background: transparent;
+        border: none;
+        border-bottom: 2px solid transparent;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        transition: all .15s;
+
+        &.is-active {
+            color: #091a36;
+            border-bottom-color: #00ab68;
+        }
+    }
+
+    &-tabcount {
+        background: #f4f6fa;
+        color: #626a75;
+        font-size: 10px;
+        font-weight: 700;
+        padding: 2px 6px;
+        border-radius: 10px;
+    }
+
+    // ── Body ────────────────────────────────────────────────────────────
+    &-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px 24px;
+    }
+
+    &-state {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 60px;
+        color: #9aa2ad;
+        font-size: 14px;
+        i { font-size: 18px; }
+    }
+
+    // ── Hint ────────────────────────────────────────────────────────────
+    &-hint {
+        background: #eafaf3;
+        border: 1px solid #b8ecd6;
+        border-radius: 8px;
+        padding: 10px 14px;
+        font-size: 12px;
+        color: #065f46;
+        margin-bottom: 16px;
+        code {
+            background: #d1fae5;
+            padding: 1px 5px;
+            border-radius: 4px;
+            font-size: 11px;
+            margin: 0 2px;
+        }
+        i { margin-right: 6px; }
+    }
+
+    &-hint-sm {
+        font-size: 11px;
+        color: #9aa2ad;
+        margin-bottom: 6px;
+        code {
+            background: #f4f6fa;
+            padding: 1px 4px;
+            border-radius: 3px;
+            font-size: 10.5px;
+            margin: 0 2px;
+        }
+    }
+
+    // ── Liste clauses ───────────────────────────────────────────────────
+    &-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    &-empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 14px;
+        padding: 60px 20px;
+        color: #9aa2ad;
+        font-size: 14px;
+        i { font-size: 32px; opacity: .4; }
+    }
+
+    &-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: #fff;
+        border: 1px solid #e4e7ec;
+        border-radius: 10px;
+        padding: 12px 14px;
+        transition: box-shadow .15s;
+
+        &:hover { box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+
+        &.is-inactive {
+            opacity: .55;
+            background: #f8fafc;
+        }
+
+        &-drag {
+            color: #d0d5dd;
+            cursor: grab;
+            font-size: 13px;
+        }
+
+        &-num {
+            min-width: 28px;
+            height: 28px;
+            background: #091a36;
+            color: #fff;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        &-body { flex: 1; min-width: 0; }
+
+        &-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #071123;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        &-preview {
+            font-size: 11.5px;
+            color: #9aa2ad;
+            margin-top: 2px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        &-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+    }
+
+    // ── Jeux de clauses ─────────────────────────────────────────────────
+    &-set-item {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        background: #fff;
+        border: 1px solid #e4e7ec;
+        border-radius: 10px;
+        padding: 14px 16px;
+    }
+
+    &-set-ico {
+        width: 40px;
+        height: 40px;
+        background: #eafaf3;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #00ab68;
+        font-size: 16px;
+    }
+
+    &-set-body { flex: 1; }
+    &-set-name { font-size: 14px; font-weight: 600; color: #071123; }
+    &-set-desc { font-size: 12px; color: #9aa2ad; margin-top: 2px; }
+    &-set-count {
+        font-size: 12px;
+        font-weight: 600;
+        color: #626a75;
+        white-space: nowrap;
+    }
+
+    // ── Boutons icônes ──────────────────────────────────────────────────
+    &-btn-icon {
+        width: 30px;
+        height: 30px;
+        border: 1px solid #e4e7ec;
+        border-radius: 6px;
+        background: #fff;
+        color: #626a75;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        transition: all .15s;
+
+        &:hover { background: #f4f6fa; color: #071123; }
+        &.civora-cls-btn-danger:hover { background: #fee2e2; border-color: #fca5a5; color: #dc2626; }
+    }
+
+    // ── Confirm overlay ─────────────────────────────────────────────────
+    &-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(9,26,54,.45);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    &-confirm {
+        background: #fff;
+        border-radius: 14px;
+        padding: 28px 32px;
+        text-align: center;
+        max-width: 360px;
+        width: 90%;
+
+        &-ico {
+            width: 48px;
+            height: 48px;
+            background: #fee2e2;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 14px;
+            color: #dc2626;
+            font-size: 20px;
+        }
+
+        &-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #071123;
+            margin-bottom: 8px;
+        }
+
+        p { font-size: 13px; color: #626a75; margin-bottom: 20px; }
+
+        &-btns {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+    }
+
+    // ── Drawer ──────────────────────────────────────────────────────────
+    &-drawer-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(9,26,54,.35);
+        z-index: 1050;
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    &-drawer {
+        width: 520px;
+        max-width: 96vw;
+        height: 100%;
+        background: #fff;
+        display: flex;
+        flex-direction: column;
+        box-shadow: -4px 0 24px rgba(0,0,0,.14);
+
+        &-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 22px;
+            border-bottom: 1px solid #e4e7ec;
+            font-size: 15px;
+            font-weight: 700;
+            color: #091a36;
+        }
+
+        &-close {
+            width: 30px;
+            height: 30px;
+            border: none;
+            background: #f4f6fa;
+            border-radius: 6px;
+            cursor: pointer;
+            color: #626a75;
+            font-size: 13px;
+            &:hover { background: #e4e7ec; }
+        }
+
+        &-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        &-footer {
+            padding: 14px 22px;
+            border-top: 1px solid #e4e7ec;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+    }
+
+    // ── Champs formulaire ───────────────────────────────────────────────
+    &-field {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+
+        label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #4a5461;
+        }
+
+        &-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        &-check {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+
+            input[type=checkbox] { width: 16px; height: 16px; }
+            label { font-size: 13px; font-weight: 500; color: #4a5461; cursor: pointer; }
+        }
+    }
+
+    &-req { color: #ef4444; margin-left: 2px; }
+
+    &-input {
+        width: 100%;
+        padding: 8px 11px;
+        border: 1px solid #d0d5dd;
+        border-radius: 7px;
+        font-size: 13px;
+        color: #071123;
+        background: #fff;
+        outline: none;
+        box-sizing: border-box;
+        transition: border-color .15s;
+
+        &:focus { border-color: #00ab68; box-shadow: 0 0 0 3px rgba(0,171,104,.1); }
+    }
+
+    &-textarea {
+        @extend .civora-cls-input;
+        resize: vertical;
+        min-height: 80px;
+        font-family: 'Courier New', monospace;
+        font-size: 12px;
+        line-height: 1.6;
+    }
+}
+
+// ── Boutons réutilisés ────────────────────────────────────────────────────────
+.civora-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all .15s;
+
+    &-accent  { background: #00ab68; color: #fff; &:hover { background: #008f57; } }
+    &-outline { background: #fff; color: #091a36; border: 1px solid #d0d5dd; &:hover { background: #f4f6fa; } }
+    &-danger  { background: #dc2626; color: #fff; &:hover { background: #b91c1c; } }
+
+    &:disabled { opacity: .55; cursor: not-allowed; }
+}

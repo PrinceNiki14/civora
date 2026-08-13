@@ -1,0 +1,186 @@
+// =====================================================================
+// CIVORA Locations - Onglet Bail contribué à la fiche Opportunité 360°
+// =====================================================================
+
+.civora-oppty-lease {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 4px 0;
+    font-family: $civora-font;
+
+    .civora-oppty-lease-loading,
+    .civora-oppty-lease-error {
+        padding: 40px;
+        text-align: center;
+        color: $civora-muted;
+        font-size: 14px;
+        i { margin-right: 8px; }
+    }
+    .civora-oppty-lease-error { color: $civora-danger; }
+
+    // Avertissement (opp pas de type location)
+    .civora-oppty-lease-warn {
+        display: flex;
+        gap: 12px;
+        padding: 14px 16px;
+        background: rgba(59, 130, 246, .08);
+        border: 1px solid rgba(59, 130, 246, .25);
+        border-radius: $civora-radius-sm;
+        color: $civora-fg;
+        font-size: 13px;
+        line-height: 1.5;
+        i {
+            color: #3b82f6;
+            font-size: 18px;
+            flex: 0 0 auto;
+            margin-top: 2px;
+        }
+    }
+
+    // Prompt vert : opportunité gagnée, prête pour bail
+    .civora-oppty-lease-prompt {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 18px 20px;
+        background: rgba(0, 171, 104, .08);
+        border: 1.5px solid rgba(0, 171, 104, .35);
+        border-radius: $civora-radius;
+        box-shadow: $civora-shadow-card;
+    }
+    .civora-oppty-lease-prompt-ico {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: $civora-accent;
+        color: white;
+        font-size: 20px;
+        flex: 0 0 auto;
+    }
+    .civora-oppty-lease-prompt-body { flex: 1; min-width: 0; }
+    .civora-oppty-lease-prompt-t {
+        font-family: $civora-font-display;
+        font-weight: 700;
+        font-size: 15px;
+        color: $civora-fg;
+        margin-bottom: 3px;
+    }
+    .civora-oppty-lease-prompt-body p {
+        margin: 0;
+        font-size: 12.5px;
+        color: $civora-muted;
+        line-height: 1.5;
+    }
+
+    // Head
+    .civora-oppty-lease-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+    .civora-oppty-lease-title {
+        font-family: $civora-font-display;
+        font-weight: 700;
+        font-size: 15px;
+        color: $civora-fg;
+    }
+    .civora-oppty-lease-sub {
+        font-size: 12.5px;
+        color: $civora-muted;
+        margin-top: 2px;
+    }
+
+    // Liste des baux
+    .civora-oppty-lease-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .civora-oppty-lease-row {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 16px;
+        background: $civora-card;
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius;
+        box-shadow: $civora-shadow-card;
+        cursor: pointer;
+        transition: border-color .12s ease, transform .12s ease;
+        &:hover {
+            border-color: $civora-accent;
+            transform: translateY(-1px);
+            box-shadow: $civora-shadow-elevated;
+        }
+    }
+    .civora-oppty-lease-row-ico {
+        flex: 0 0 auto;
+        width: 40px;
+        height: 40px;
+        border-radius: $civora-radius-sm;
+        background: rgba(9, 26, 54, .06);
+        color: $civora-fg;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+    }
+    .civora-oppty-lease-row-b { flex: 1; min-width: 0; }
+    .civora-oppty-lease-row-top {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        b {
+            font-family: $civora-font-display;
+            font-weight: 700;
+            font-size: 14px;
+            color: $civora-fg;
+        }
+    }
+    .civora-oppty-lease-row-ref {
+        font-size: 11px;
+        color: $civora-muted;
+        font-family: monospace;
+    }
+    .civora-oppty-lease-row-meta {
+        margin-top: 5px;
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        font-size: 12.5px;
+        color: $civora-muted;
+        i { margin-right: 4px; }
+    }
+    .civora-oppty-lease-row-arrow { color: $civora-muted; }
+
+    // Empty state
+    .civora-oppty-lease-empty {
+        text-align: center;
+        padding: 40px 20px;
+        background: $civora-card;
+        border: 1px dashed $civora-border;
+        border-radius: $civora-radius;
+        i { font-size: 26px; color: $civora-muted; }
+    }
+    .civora-oppty-lease-empty-t {
+        font-family: $civora-font-display;
+        font-weight: 700;
+        font-size: 15px;
+        margin-top: 10px;
+        color: $civora-fg;
+    }
+    .civora-oppty-lease-empty p {
+        margin: 8px auto 0;
+        max-width: 380px;
+        font-size: 12.5px;
+        color: $civora-muted;
+        line-height: 1.5;
+    }
+}

@@ -72,6 +72,12 @@
             font-size: 12.5px;
             background: $civora-card;
         }
+        .civora-fld-hint {
+            font-size: 11px;
+            color: $civora-muted;
+            line-height: 1.35;
+            margin-top: 2px;
+        }
     }
     .civora-pf-check {
         display: inline-flex;
@@ -116,7 +122,197 @@
         &:hover { background: $civora-danger; }
     }
 
+    // ---- Position sur carte : outils au dessus de la carte ----
+    .civora-pf-map-tools {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        padding: 6px 0 8px;
+    }
+    .civora-pf-coords {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 12px;
+        color: $civora-fg;
+        background: rgba(0, 171, 104, .08);
+        color: $civora-accent;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-weight: 600;
+        i { font-size: 11px; }
+    }
+    .civora-pf-coords-empty {
+        background: transparent;
+        color: $civora-muted;
+        font-weight: 500;
+        padding: 4px 0;
+    }
+    .civora-btn-sm {
+        padding: 5px 10px;
+        font-size: 12px;
+        border-radius: $civora-radius-sm;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        i { font-size: 11px; }
+    }
+
+    // ---- Bandeau de blocage de suppression ----
+    .civora-pf-delblock {
+        margin: 12px 20px 0;
+        padding: 14px 16px;
+        border-radius: $civora-radius-sm;
+        background: rgba(230, 44, 44, .08);
+        border: 1px solid rgba(230, 44, 44, .25);
+        color: $civora-fg;
+    }
+    .civora-pf-delblock-h {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 700;
+        color: $civora-danger;
+        margin-bottom: 6px;
+        i { font-size: 14px; }
+    }
+    .civora-pf-delblock p { margin: 0 0 10px; font-size: 13px; line-height: 1.45; }
+    .civora-pf-delblock-f {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+    }
+
+    // ---- Footer helpers ----
+    .civora-pf-footer-spacer { flex: 1; }
+
     @media (max-width: 640px) {
         .civora-pf-grid, .civora-pf-grid3 { grid-template-columns: 1fr; }
     }
+}
+
+// ==================== BOUTONS GLOBAUX (drawer utilise ces classes hors scope) ====================
+.civora-btn-ghost {
+    background: transparent;
+    color: $civora-muted;
+    border: 1px solid transparent;
+    padding: 8px 14px;
+    border-radius: $civora-radius-sm;
+    font-family: $civora-font;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    i { font-size: 12px; }
+}
+.civora-btn-delete:hover {
+    background: rgba(230, 44, 44, .10);
+    color: $civora-danger;
+}
+.civora-btn-danger {
+    background: $civora-danger;
+    color: #fff;
+    border: 0;
+    padding: 8px 14px;
+    border-radius: $civora-radius-sm;
+    font-family: $civora-font;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    &:hover { filter: brightness(1.05); }
+    i { font-size: 12px; }
+}
+.civora-btn-confirm {
+    animation: civora-btn-confirm-pulse 1.6s ease-in-out infinite;
+}
+@keyframes civora-btn-confirm-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(230, 44, 44, .35); }
+    50%      { box-shadow: 0 0 0 6px rgba(230, 44, 44, 0); }
+}
+
+// Champ alimenté automatiquement : visuellement inerte, mais lisible.
+// On garde un contraste de texte suffisant — un champ grisé ne doit pas
+// devenir illisible, c'est souvent la donnée que l'agent vient vérifier.
+.civora-fld-auto {
+    background: rgba(9, 26, 54, .05) !important;
+    border-style: dashed !important;
+    color: #3d4757 !important;
+    cursor: default;
+}
+
+// ── Documents juridiques de vente ────────────────────────────────────────
+.civora-sdoc-count {
+    margin-left: 8px;
+    font-weight: 400;
+    font-size: 12px;
+    color: #6b7a94;
+}
+.civora-sdoc-help {
+    font-size: 11.5px;
+    color: #6b7a94;
+    margin: -4px 0 10px;
+}
+.civora-sdoc-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 12px;
+
+    @media (max-width: 620px) { grid-template-columns: 1fr; }
+}
+.civora-sdoc {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 9px;
+    border-radius: 8px;
+    font-size: 12.5px;
+    color: #1c2b45;
+    cursor: pointer;
+    transition: background .12s ease;
+
+    &:hover { background: rgba(9, 26, 54, .05); }
+    &.is-on { background: rgba(0, 171, 104, .09); font-weight: 600; }
+
+    input { flex-shrink: 0; cursor: pointer; }
+    > span:first-of-type { flex: 1; }
+}
+// Pièce sans laquelle la vente est juridiquement fragile
+.civora-sdoc-key {
+    flex-shrink: 0;
+    background: rgba(214, 158, 46, .16);
+    color: #92400e;
+    border-radius: 999px;
+    padding: 1px 7px;
+    font-size: 9.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+.civora-sdoc-warn,
+.civora-sdoc-ok {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    margin-top: 12px;
+    padding: 10px 13px;
+    border-radius: 9px;
+    font-size: 12.5px;
+    line-height: 1.5;
+}
+.civora-sdoc-warn {
+    background: #fffbeb;
+    border: 1px solid #fcd34d;
+    color: #92400e;
+}
+.civora-sdoc-ok {
+    background: rgba(0, 171, 104, .09);
+    border: 1px solid rgba(0, 171, 104, .28);
+    color: #15803d;
 }

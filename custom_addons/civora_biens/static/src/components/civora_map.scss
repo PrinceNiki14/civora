@@ -1,0 +1,19 @@
+// =====================================================================
+// CIVORA Map - conteneur Leaflet
+// =====================================================================
+.civora-map {
+    width: 100%;
+    min-height: 120px;
+    border-radius: $civora-radius-sm;
+    overflow: hidden;
+    border: 1px solid $civora-border;
+    background: #f2f5fb;
+    // Isole le z-index de Leaflet du reste (les modales OWL ont z-index > 100).
+    z-index: 0;
+    position: relative;
+}
+
+// Assure que les controles Leaflet restent en dessous des modales CIVORA.
+.civora-map .leaflet-container { z-index: 0; }
+.civora-map .leaflet-top,
+.civora-map .leaflet-bottom { z-index: 1; }

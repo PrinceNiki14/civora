@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_documents.ContactTenantsTab">
+    <div class="civora-tenants">
+        <div t-if="state.loading" class="civora-tenants-loading">
+            <i class="fa fa-circle-o-notch fa-spin"/> Chargement des locataires…
+        </div>
+
+        <div t-elif="!state.data" class="civora-tenants-empty">
+            <i class="fa fa-exclamation-triangle"/>
+            <div class="civora-tenants-empty-t">Impossible de charger les locataires</div>
+            <p>Ouvrez la console (F12) pour voir le détail de l'erreur.</p>
+        </div>
+
+        <div t-elif="state.backendError" class="civora-tenants-empty" style="text-align:left;">
+            <div style="text-align:center;">
+                <i class="fa fa-bug"/>
+                <div class="civora-tenants-empty-t">Erreur backend détectée</div>
+            </div>
+            <p style="margin-top:14px;"><b>Message :</b></p>
+            <pre style="background:#f7f8fa;padding:10px;border-radius:8px;font-size:11px;overflow-x:auto;white-space:pre-wrap;" t-esc="state.backendError"/>
+            <p t-if="state.backendTrace.length"><b>Trace (5 dernières lignes) :</b></p>
+            <pre t-if="state.backendTrace.length" style="background:#f7f8fa;padding:10px;border-radius:8px;font-size:11px;overflow-x:auto;">
+                <t t-foreach="state.backendTrace" t-as="l" t-key="l_index"><t t-esc="l"/><br/></t>
+            </pre>
+        </div>
+
+        <t t-else="">
+            <!-- KPIs -->
+            <div class="civora-tenants-kpis">
+                <CivoraStatCard label="'Locataires actuels'"
+                                value="totalTenants + ''"
+                                delta="totalTenants ? 'personnes' : 'aucun'"
+                                icon="'fa fa-users'"/>
+                <CivoraStatCard label="'Biens loués'"
+                                value="totalBiensLoues + ''"
+                                delta="'occupés'"
+                                icon="'fa fa-key'"/>
+                <CivoraStatCard label="'Revenu mensuel'"
+                                value="fmtMoney(totalRentAll)"
+                                delta="'cumulé'"
+                                icon="'fa fa-money'"/>
+            </div>
+
+            <!-- Empty -->
+            <div t-if="!totalTenants" class="civora-tenants-empty">
+                <i class="fa fa-users"/>
+                <div class="civora-tenants-empty-t">Aucun locataire actuel</div>
+                <p>Les biens du portefeuille de ce propriétaire n'ont pas encore de locataires actifs.</p>
+            </div>
+
+            <!-- Liste des locataires -->
+            <div t-else="" class="civora-tenants-title">Locataires actifs</div>
+            <div class="civora-tenants-list">
+                <div t-foreach="state.data.tenants" t-as="t" t-key="t.id"
+                     class="civora-tenants-card">
+                    <div class="civora-tenants-card-h" t-on-click="() => this.openTenant(t.id)">
+                        <CivoraAvatar name="t.name" size="'md'"/>
+                        <div class="civora-tenants-card-info">
+                            <div class="civora-tenants-card-name" t-esc="t.name"/>
+                            <div class="civora-tenants-card-contact">
+                                <span t-if="t.phone"><i class="fa fa-phone"/> <t t-esc="t.phone"/></span>
+                                <span t-if="t.email"><i class="fa fa-envelope-o"/> <t t-esc="t.email"/></span>
+                                <span t-if="!t.phone &amp;&amp; !t.email" class="civora-tenants-card-nocontact">
+                                    Aucun contact renseigné
+                                </span>
+                            </div>
+                        </div>
+                        <div class="civora-tenants-card-summary">
+                            <div class="civora-tenants-card-count">
+                                <t t-esc="t.biens.length"/> bien<t t-if="t.biens.length > 1">s</t>
+                            </div>
+                            <div class="civora-tenants-card-rent" t-esc="fmtMoney(t.total_rent) + ' / mois'"/>
+                        </div>
+                    </div>
+
+                    <div class="civora-tenants-card-biens">
+                        <div t-foreach="t.biens" t-as="b" t-key="b.id"
+                             class="civora-tenants-bien"
+                             t-on-click="(ev) => this.openProperty(b.id, ev)">
+                            <div class="civora-tenants-bien-ico"><i class="fa fa-building-o"/></div>
+                            <div class="civora-tenants-bien-body">
+                                <div class="civora-tenants-bien-name" t-esc="b.name"/>
+                                <div class="civora-tenants-bien-meta">
+                                    <span t-if="b.ref"><t t-esc="b.ref"/></span>
+                                    <span t-if="b.city"> · <t t-esc="b.city"/></span>
+                                    <span t-if="b.lease_start"> · Depuis <t t-esc="fmtDate(b.lease_start)"/></span>
+                                </div>
+                            </div>
+                            <div class="civora-tenants-bien-rent" t-if="b.monthly_rent"
+                                 t-esc="fmtMoney(b.monthly_rent)"/>
+                            <button t-if="b.lease_id" class="civora-tenants-bien-lease"
+                                    t-on-click="(ev) => this.openLease(b.lease_id, ev)"
+                                    title="Ouvrir le bail">
+                                <i class="fa fa-file-text-o"/>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </div>
+</t>
+
+</templates>

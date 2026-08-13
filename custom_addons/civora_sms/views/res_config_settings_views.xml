@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="res_config_settings_view_form_civora_sms" model="ir.ui.view">
+        <field name="name">res.config.settings.form.civora.sms</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app string="CIVORA SMS" name="civora_sms"
+                     logo="/civora_sms/static/description/icon.png">
+
+                    <block title="Passerelle SMS" name="civora_sms_gateway">
+                        <setting help="Tant que cette option est désactivée, aucun SMS n'est expédié : les messages restent en file et peuvent être relancés.">
+                            <field name="civora_sms_enabled"/>
+                        </setting>
+                    </block>
+
+                    <block title="Identifiants HSMS" name="civora_sms_creds"
+                           invisible="not civora_sms_enabled">
+                        <setting string="Email du compte">
+                            <field name="civora_sms_email"/>
+                        </setting>
+                        <setting string="Mot de passe">
+                            <field name="civora_sms_password" password="True"/>
+                        </setting>
+                        <setting string="Client ID">
+                            <field name="civora_sms_client_id"/>
+                        </setting>
+                        <setting string="Client Secret">
+                            <field name="civora_sms_client_secret" password="True"/>
+                        </setting>
+                    </block>
+
+                    <block title="Message" name="civora_sms_message"
+                           invisible="not civora_sms_enabled">
+                        <setting string="Nom d'expéditeur"
+                                 help="Affiché sur le téléphone du destinataire. 11 caractères maximum, sans espace ni accent.">
+                            <field name="civora_sms_sender_id"/>
+                        </setting>
+                        <setting help="Un seul caractère accentué fait passer le SMS en codage UCS-2 : la limite tombe de 160 à 70 caractères par segment et la facture double.">
+                            <field name="civora_sms_deaccent"/>
+                        </setting>
+                    </block>
+
+                </app>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

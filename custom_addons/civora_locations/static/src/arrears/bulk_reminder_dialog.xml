@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_locations.BulkReminderDialog">
+    <CivoraDrawer title="'Relance groupée'"
+                  subtitle="'Vérifiez la sélection avant envoi'"
+                  icon="'fa-bell'"
+                  variant="'modal'"
+                  size="'lg'"
+                  onClose="() => this.props.onClose()">
+
+        <div class="civora-bulk">
+
+            <div t-if="state.loading" class="civora-bulk-loading">
+                <i class="fa fa-circle-o-notch fa-spin"/> Préparation de l'envoi…
+            </div>
+
+            <t t-if="!state.loading">
+
+                <div t-if="state.error" class="civora-bulk-error">
+                    <i class="fa fa-exclamation-circle"/> <span t-esc="state.error"/>
+                </div>
+
+                <!-- ===== CANAL ===== -->
+                <div class="civora-bulk-field">
+                    <label>Canal d'envoi</label>
+                    <div class="civora-bulk-channels">
+                        <button t-foreach="channels" t-as="c" t-key="c.value"
+                                t-att-class="'civora-bulk-chan' + (state.channel === c.value ? ' is-active' : '')"
+                                t-on-click="() => this.setChannel(c.value)">
+                            <i t-att-class="'fa ' + c.icon"/> <t t-esc="c.label"/>
+                        </button>
+                    </div>
+                </div>
+
+                <div t-if="state.preview &amp;&amp; !state.preview.channel_ready"
+                     class="civora-bulk-warn">
+                    <i class="fa fa-exclamation-triangle"/>
+                    <span t-esc="state.preview.channel_error"/>
+                </div>
+
+                <!-- ===== TON ===== -->
+                <div class="civora-bulk-field">
+                    <label>Ton du message</label>
+                    <select class="civora-input" t-att-value="state.severity"
+                            t-on-change="setSeverity">
+                        <option t-foreach="severities" t-as="s" t-key="s.value"
+                                t-att-value="s.value"
+                                t-att-selected="state.severity === s.value"
+                                t-esc="s.label"/>
+                    </select>
+                    <div class="civora-bulk-hint">
+                        En automatique, chaque bail reçoit le ton correspondant à
+                        l'ancienneté réelle de son retard.
+                    </div>
+                </div>
+
+                <t t-if="state.preview">
+
+                    <!-- ===== RECAP ===== -->
+                    <div class="civora-bulk-recap">
+                        <div class="civora-bulk-recap-i is-ok">
+                            <div class="civora-bulk-recap-v" t-esc="state.preview.eligible_count"/>
+                            <div class="civora-bulk-recap-l">destinataire(s)</div>
+                        </div>
+                        <div class="civora-bulk-recap-i">
+                            <div class="civora-bulk-recap-v" t-esc="fmtMoney(state.preview.total_amount)"/>
+                            <div class="civora-bulk-recap-l">à recouvrer</div>
+                        </div>
+                        <div class="civora-bulk-recap-i is-muted">
+                            <div class="civora-bulk-recap-v" t-esc="state.preview.excluded_count"/>
+                            <div class="civora-bulk-recap-l">exclu(s)</div>
+                        </div>
+                    </div>
+
+                    <!-- ===== DESTINATAIRES ===== -->
+                    <div t-if="state.preview.eligible_count" class="civora-bulk-block">
+                        <div class="civora-bulk-block-t">Seront relancés</div>
+                        <div class="civora-bulk-scroll">
+                            <div t-foreach="state.preview.eligible" t-as="e" t-key="e.lease_id"
+                                 class="civora-bulk-line">
+                                <div class="civora-bulk-line-n">
+                                    <b t-esc="e.tenant_name"/>
+                                    <span t-esc="e.property_name"/>
+                                </div>
+                                <div class="civora-bulk-line-v">
+                                    <t t-esc="fmtMoney(e.amount)"/>
+                                    <span class="civora-bulk-line-d">J+<t t-esc="e.days"/></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== EXCLUSIONS ===== -->
+                    <div t-if="state.preview.excluded_count" class="civora-bulk-block">
+                        <div class="civora-bulk-block-t civora-bulk-toggle"
+                             t-on-click="toggleExcluded">
+                            <i t-att-class="'fa ' + (state.showExcluded ? 'fa-caret-down' : 'fa-caret-right')"/>
+                            <t t-esc="state.preview.excluded_count"/> bail(s) exclu(s) de l'envoi
+                        </div>
+                        <div t-if="state.showExcluded" class="civora-bulk-scroll">
+                            <div t-foreach="state.preview.excluded" t-as="x" t-key="x.lease_id"
+                                 class="civora-bulk-line is-excluded">
+                                <div class="civora-bulk-line-n">
+                                    <b t-esc="x.tenant_name"/>
+                                    <span t-esc="x.property_name"/>
+                                </div>
+                                <div class="civora-bulk-line-r" t-esc="x.reason"/>
+                            </div>
+                        </div>
+                    </div>
+
+                </t>
+
+            </t>
+        </div>
+
+        <t t-set-slot="footer">
+            <button class="civora-btn civora-btn-ghost"
+                    t-att-disabled="state.sending"
+                    t-on-click="() => this.props.onClose()">
+                Annuler
+            </button>
+            <button t-att-class="'civora-btn ' + (state.confirming ? 'civora-btn-danger' : 'civora-btn-accent')"
+                    t-att-disabled="!canSend"
+                    t-on-click="onSendClick">
+                <i t-if="state.sending" class="fa fa-circle-o-notch fa-spin"/>
+                <t t-if="state.sending">Envoi en cours…</t>
+                <t t-elif="state.confirming">
+                    Confirmer l'envoi de <t t-esc="state.preview.eligible_count"/> relance(s)
+                </t>
+                <t t-else="">
+                    <i class="fa fa-paper-plane"/>
+                    Envoyer
+                    <t t-if="state.preview"> (<t t-esc="state.preview.eligible_count"/>)</t>
+                </t>
+            </button>
+        </t>
+
+    </CivoraDrawer>
+</t>
+
+</templates>

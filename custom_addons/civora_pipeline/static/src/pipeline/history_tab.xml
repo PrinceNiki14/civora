@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_pipeline.HistoryTab">
+    <div class="civora-hist">
+        <div class="civora-hist-composer">
+            <div class="civora-hist-composer-h">
+                <i class="fa fa-comment"/> Ajouter une note interne
+            </div>
+            <textarea class="civora-hist-composer-t"
+                      rows="2"
+                      placeholder="Décrire un appel, une visite, un échange…"
+                      t-att-value="state.newNote"
+                      t-on-input="(ev) => this.onNoteInput(ev)"/>
+            <div class="civora-hist-composer-f">
+                <button class="civora-btn civora-btn-accent"
+                        t-att-disabled="state.posting || !state.newNote.trim()"
+                        t-on-click="() => this.postNote()">
+                    <i t-if="state.posting" class="fa fa-circle-o-notch fa-spin"/>
+                    <i t-else="" class="fa fa-paper-plane"/> Publier
+                </button>
+            </div>
+        </div>
+
+        <div t-if="state.loading" class="civora-hist-state">
+            <i class="fa fa-circle-o-notch fa-spin"/> Chargement de l'historique…
+        </div>
+
+        <div t-elif="!state.events.length" class="civora-hist-empty">
+            <i class="fa fa-history"/>
+            <div class="civora-hist-empty-t">Aucun événement</div>
+            <p>L'historique se construit automatiquement au fil des interactions.</p>
+        </div>
+
+        <div t-else="" class="civora-hist-timeline">
+            <div t-foreach="state.events" t-as="e" t-key="e_index" class="civora-hist-item">
+                <div t-att-class="'civora-hist-ico tone-' + e.tone">
+                    <i t-att-class="'fa ' + e.icon"/>
+                </div>
+                <div class="civora-hist-body">
+                    <div class="civora-hist-h">
+                        <span class="civora-hist-t" t-esc="e.title"/>
+                        <span class="civora-hist-when" t-esc="e.when"/>
+                    </div>
+                    <div class="civora-hist-who">par <t t-esc="e.who"/></div>
+                    <p t-if="e.note" class="civora-hist-note" t-esc="e.note"/>
+                </div>
+            </div>
+        </div>
+    </div>
+</t>
+
+</templates>

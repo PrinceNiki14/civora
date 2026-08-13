@@ -24,4 +24,49 @@
         <field name="domain_force">[('company_id', 'in', company_ids)]</field>
     </record>
 
+    <record id="civora_lease_clause_company_rule" model="ir.rule">
+        <field name="name">civora.lease.clause : multi-societe</field>
+        <field name="model_id" ref="model_civora_lease_clause"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="civora_lease_clause_set_company_rule" model="ir.rule">
+        <field name="name">civora.lease.clause.set : multi-societe</field>
+        <field name="model_id" ref="model_civora_lease_clause_set"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="civora_lease_contract_company_rule" model="ir.rule">
+        <field name="name">civora.lease.contract : multi-societe</field>
+        <field name="model_id" ref="model_civora_lease_contract"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="civora_lease_installment_company_rule" model="ir.rule">
+        <field name="name">civora.lease.installment : multi-societe</field>
+        <field name="model_id" ref="model_civora_lease_installment"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="civora_deposit_refund_company_rule" model="ir.rule">
+        <field name="name">civora.deposit.refund : multi-societe</field>
+        <field name="model_id" ref="model_civora_deposit_refund"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="civora_lease_reminder_company_rule" model="ir.rule">
+        <field name="name">civora.lease.reminder : multi-societe</field>
+        <field name="model_id" ref="model_civora_lease_reminder"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="civora_contract_remark_company_rule" model="ir.rule">
+        <field name="name">civora.contract.remark : multi-societe</field>
+        <field name="model_id" ref="model_civora_contract_remark"/>
+        <field name="domain_force">
+            ['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]
+        </field>
+        <field name="global" eval="True"/>
+    </record>
+
 </odoo>

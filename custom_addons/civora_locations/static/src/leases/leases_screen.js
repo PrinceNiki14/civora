@@ -5,6 +5,7 @@ import { standardActionServiceProps } from "@web/webclient/actions/action_servic
 import { CivoraStatCard } from "@civora_core/components/civora_stat_card";
 import { CivoraAvatar, CivoraBadge, CivoraProgress } from "@civora_core/components/civora_kit";
 import { LeaseDrawer } from "./lease_drawer";
+import { ArrearsView } from "@civora_locations/arrears/arrears_view";
 
 const STATUS_META = {
     actif: { label: "Actif", variant: "success" },
@@ -17,7 +18,8 @@ const TYPE_LABEL = {
     commercial: "Commercial",
 };
 const LEASE_FIELDS = [
-    "name", "property_id", "tenant_id", "owner_id", "rent", "charges", "deposit",
+    "name", "property_id", "tenant_id", "owner_id", "agent_id", "property_city",
+    "rent", "charges", "deposit",
     "date_start", "date_end", "payday", "lease_type", "status", "payment_rate",
     "total_monthly", "arrears_amount",
 ];
@@ -30,7 +32,7 @@ const LEASE_FIELDS = [
  */
 export class CivoraLeasesScreen extends Component {
     static template = "civora_locations.Leases";
-    static components = { CivoraStatCard, CivoraAvatar, CivoraBadge, CivoraProgress, LeaseDrawer };
+    static components = { CivoraStatCard, CivoraAvatar, CivoraBadge, CivoraProgress, LeaseDrawer, ArrearsView };
     static props = { ...standardActionServiceProps };
 
     setup() {
@@ -44,6 +46,9 @@ export class CivoraLeasesScreen extends Component {
             search: "",
             statusFilter: "all",
             typeFilter: "all",
+            agentFilter: "all",
+            ownerFilter: "all",
+            cityFilter: "all",
             leases: [],
             stats: {
                 activeCount: 0, totalRent: 0, collected: 0, collectionRate: 0,
@@ -98,6 +103,11 @@ export class CivoraLeasesScreen extends Component {
                 propertyName: r.property_id ? r.property_id[1] : "—",
                 tenantId: r.tenant_id ? r.tenant_id[0] : false,
                 tenantName: r.tenant_id ? r.tenant_id[1] : "—",
+                ownerId: r.owner_id ? r.owner_id[0] : false,
+                ownerName: r.owner_id ? r.owner_id[1] : "—",
+                agentId: r.agent_id ? r.agent_id[0] : false,
+                agentName: r.agent_id ? r.agent_id[1] : "—",
+                city: r.property_city || "",
                 rent: r.rent || 0,
                 charges: r.charges || 0,
                 deposit: r.deposit || 0,
@@ -131,12 +141,56 @@ export class CivoraLeasesScreen extends Component {
             { id: "maintenance", label: "Maintenance" },
         ];
     }
+
+    // Listes dédupliquées pour les <select> de filtres
+    get agentOptions() {
+        const seen = new Map();
+        for (const l of (this.allLeases || [])) {
+            if (l.agentId && !seen.has(l.agentId)) {
+                seen.set(l.agentId, l.agentName);
+            }
+        }
+        return Array.from(seen.entries()).map(([id, name]) => ({ id, name }));
+    }
+    get ownerOptions() {
+        const seen = new Map();
+        for (const l of (this.allLeases || [])) {
+            if (l.ownerId && !seen.has(l.ownerId)) {
+                seen.set(l.ownerId, l.ownerName);
+            }
+        }
+        return Array.from(seen.entries()).map(([id, name]) => ({ id, name }));
+    }
+    get cityOptions() {
+        const seen = new Set();
+        const result = [];
+        for (const l of (this.allLeases || [])) {
+            if (l.city && !seen.has(l.city)) {
+                seen.add(l.city);
+                result.push(l.city);
+            }
+        }
+        return result.sort();
+    }
+
     setStatusFilter(v) {
         this.state.statusFilter = v;
         this.applyFilter();
     }
     setTypeFilter(v) {
         this.state.typeFilter = v;
+        this.applyFilter();
+    }
+    onAgentFilter(ev) {
+        this.state.agentFilter = ev.target.value;
+        this.applyFilter();
+    }
+    onOwnerFilter(ev) {
+        this.state.ownerFilter = ev.target.value;
+        this.applyFilter();
+    }
+    onCityFilter(ev) {
+        this.state.cityFilter = ev.target.value;
         this.applyFilter();
     }
     onSearchInput(ev) {
@@ -156,14 +210,23 @@ export class CivoraLeasesScreen extends Component {
         const q = (this.state.search || "").trim().toLowerCase();
         const status = this.state.statusFilter;
         const type = this.state.typeFilter;
+        const agentF = this.state.agentFilter;
+        const ownerF = this.state.ownerFilter;
+        const cityF = this.state.cityFilter;
         this.state.leases = (this.allLeases || []).filter((l) => {
             if (status !== "all" && l.status !== status) return false;
             if (type !== "all" && l.leaseType !== type) return false;
+            if (agentF !== "all" && (l.agentId + "") !== agentF) return false;
+            if (ownerF !== "all" && (l.ownerId + "") !== ownerF) return false;
+            if (cityF !== "all" && l.city !== cityF) return false;
             if (!q) return true;
             return (
                 (l.tenantName || "").toLowerCase().includes(q) ||
                 (l.propertyName || "").toLowerCase().includes(q) ||
-                (l.ref || "").toLowerCase().includes(q)
+                (l.ref || "").toLowerCase().includes(q) ||
+                (l.agentName || "").toLowerCase().includes(q) ||
+                (l.ownerName || "").toLowerCase().includes(q) ||
+                (l.city || "").toLowerCase().includes(q)
             );
         });
     }

@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_locations.ArrearsView">
+    <div class="civora-arr">
+
+        <!-- ===== ERREUR ===== -->
+        <div t-if="state.error" class="civora-arr-error">
+            <i class="fa fa-exclamation-circle"/>
+            <span t-esc="state.error"/>
+        </div>
+
+        <!-- ===== CHARGEMENT ===== -->
+        <div t-if="state.loading" class="civora-arr-loading">
+            <i class="fa fa-circle-o-notch fa-spin"/> Chargement des impayés…
+        </div>
+
+        <t t-if="!state.loading &amp;&amp; !state.error">
+
+            <!-- ===== FILE DE VALIDATION ===== -->
+            <div t-if="state.queue.length" class="civora-arr-queue">
+                <i class="fa fa-inbox"/>
+                <div class="civora-arr-queue-b">
+                    <b><t t-esc="state.queue.length"/> relance(s) préparée(s)</b>
+                    par la détection automatique, en attente de votre validation.
+                </div>
+            </div>
+
+            <!-- ===== SYNTHESE ===== -->
+            <div class="civora-arr-kpis">
+                <div class="civora-arr-kpi">
+                    <div class="civora-arr-kpi-l">Baux en impayé</div>
+                    <div class="civora-arr-kpi-v"><t t-esc="state.summary.lease_count"/></div>
+                </div>
+                <div class="civora-arr-kpi is-danger">
+                    <div class="civora-arr-kpi-l">Montant total dû</div>
+                    <div class="civora-arr-kpi-v"><t t-esc="fmtMoney(state.summary.total_due)"/></div>
+                </div>
+                <div class="civora-arr-kpi">
+                    <div class="civora-arr-kpi-l">Dossiers critiques</div>
+                    <div class="civora-arr-kpi-v">
+                        <t t-esc="state.summary.legal_count"/>
+                        <span class="civora-arr-kpi-sub"><t t-esc="fmtMoney(state.summary.legal_amount)"/></span>
+                    </div>
+                </div>
+                <div class="civora-arr-kpi">
+                    <div class="civora-arr-kpi-l">Jamais relancés</div>
+                    <div class="civora-arr-kpi-v"><t t-esc="state.summary.never_reminded"/></div>
+                </div>
+                <div class="civora-arr-kpi">
+                    <div class="civora-arr-kpi-l">Retard moyen</div>
+                    <div class="civora-arr-kpi-v">
+                        <t t-esc="state.summary.avg_days"/> j
+                        <span class="civora-arr-kpi-sub">max <t t-esc="state.summary.max_days"/> j</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== BARRE D'OUTILS ===== -->
+            <div class="civora-arr-toolbar">
+                <div class="civora-arr-filters">
+                    <button t-foreach="severityTabs" t-as="tab" t-key="tab.id"
+                            t-att-class="'civora-arr-fbtn' + (state.severity === tab.id ? ' is-active' : '')"
+                            t-on-click="() => this.setSeverity(tab.id)">
+                        <t t-esc="tab.label"/>
+                        <span class="civora-arr-fcount" t-esc="tab.count"/>
+                    </button>
+                </div>
+                <div class="civora-arr-search">
+                    <i class="fa fa-search"/>
+                    <input type="text" placeholder="Locataire, bien ou référence…"
+                           t-att-value="state.query" t-on-input="onSearch"/>
+                </div>
+            </div>
+
+            <!-- ===== BARRE DE SELECTION ===== -->
+            <div t-if="selectedCount" class="civora-arr-selbar">
+                <div>
+                    <b><t t-esc="selectedCount"/></b> bail(s) sélectionné(s) ·
+                    <t t-esc="fmtMoney(selectedAmount)"/> à recouvrer
+                </div>
+                <div class="civora-arr-selbar-act">
+                    <button class="civora-btn civora-btn-ghost"
+                            t-on-click="() => this.state.selected = {}">
+                        Tout désélectionner
+                    </button>
+                    <button class="civora-btn civora-btn-accent" t-on-click="openBulk">
+                        <i class="fa fa-bell"/> Relancer la sélection
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===== LISTE VIDE ===== -->
+            <div t-if="!state.list.length" class="civora-arr-empty">
+                <i class="fa fa-check-circle"/>
+                <div class="civora-arr-empty-t">
+                    <t t-if="rows.length">Aucun résultat</t>
+                    <t t-else="">Aucun impayé</t>
+                </div>
+                <p t-if="rows.length">Aucun bail ne correspond à ce filtre ou à cette recherche.</p>
+                <p t-else="">L'ensemble du portefeuille est à jour de ses loyers.</p>
+            </div>
+
+            <!-- ===== LISTE ===== -->
+            <div t-if="state.list.length" class="civora-arr-list">
+
+                <div class="civora-arr-head">
+                    <label class="civora-arr-check">
+                        <input type="checkbox" t-att-checked="allSelected"
+                               t-on-change="toggleAll"/>
+                        <span>Tout sélectionner</span>
+                    </label>
+                </div>
+
+                <div t-foreach="state.list" t-as="r" t-key="r.lease_id"
+                     t-att-class="'civora-arr-row is-' + r.severity">
+
+                    <label class="civora-arr-check">
+                        <input type="checkbox" t-att-checked="isSelected(r.lease_id)"
+                               t-on-change="() => this.toggleRow(r.lease_id)"/>
+                    </label>
+
+                    <div class="civora-arr-ico"
+                         t-att-style="'background:' + severityMeta(r.severity).color + '1a;color:' + severityMeta(r.severity).color">
+                        <i class="fa fa-exclamation-triangle"/>
+                    </div>
+
+                    <div class="civora-arr-main">
+                        <div class="civora-arr-t">
+                            <span class="civora-arr-tenant" t-on-click="() => this.openLease(r.lease_id)"
+                                  t-esc="r.tenant_name"/>
+                            <span class="civora-arr-sep">·</span>
+                            <span class="civora-arr-prop" t-esc="r.property_name"/>
+                        </div>
+                        <div class="civora-arr-meta">
+                            <span t-esc="r.lease_ref"/>
+                            <span t-if="r.tenant_phone"> · <t t-esc="r.tenant_phone"/></span>
+                            <span t-if="r.payday"> · Jour de paiement : <t t-esc="r.payday"/></span>
+                        </div>
+                        <div class="civora-arr-tags">
+                            <span class="civora-arr-sev"
+                                  t-att-style="'background:' + severityMeta(r.severity).color">
+                                Retard J+<t t-esc="r.days_overdue"/>
+                            </span>
+                            <span class="civora-arr-due">
+                                Dû : <b t-esc="fmtMoney(r.amount_due)"/>
+                            </span>
+                            <span class="civora-arr-periods" t-att-title="r.periods">
+                                <t t-esc="r.installment_count"/> échéance(s) · <t t-esc="periodsLabel(r)"/>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="civora-arr-side">
+                        <div class="civora-arr-actions">
+                            <button class="civora-btn civora-btn-ghost civora-arr-abtn"
+                                    t-att-disabled="!r.tenant_email"
+                                    t-att-title="r.tenant_email ? 'Relancer par email' : 'Pas d\'adresse email'"
+                                    t-on-click="() => this.openReminder(r, 'email')">
+                                <i class="fa fa-envelope"/> Email
+                            </button>
+                            <button class="civora-btn civora-btn-ghost civora-arr-abtn"
+                                    t-att-disabled="!r.tenant_phone"
+                                    t-att-title="r.tenant_phone ? 'Relancer par WhatsApp' : 'Pas de numéro'"
+                                    t-on-click="() => this.openWhatsapp(r)">
+                                <i class="fa fa-whatsapp"/> WhatsApp
+                            </button>
+                            <button class="civora-btn civora-btn-danger civora-arr-abtn"
+                                    t-att-disabled="state.noticeBusy === r.lease_id"
+                                    title="Établir une mise en demeure et générer le PDF"
+                                    t-on-click="() => this.createFormalNotice(r)">
+                                <i t-att-class="state.noticeBusy === r.lease_id ? 'fa fa-circle-o-notch fa-spin' : 'fa fa-file-text-o'"/>
+                                Mise en demeure
+                            </button>
+                        </div>
+                        <div t-att-class="'civora-arr-last' + (r.last_reminder_date ? '' : ' is-never')">
+                            <t t-esc="lastReminderLabel(r)"/>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </t>
+
+        <ReminderDrawer t-if="state.drawer"
+                        leaseId="state.drawer.leaseId"
+                        preselectedInstallmentIds="state.drawer.installmentIds"
+                        defaultContext="state.drawer.context"
+                        onClose="() => this.closeReminder()"
+                        onSaved="() => this.onReminderSaved()"/>
+
+        <BulkReminderDialog t-if="state.bulk"
+                            leaseIds="state.bulk.leaseIds"
+                            onClose="() => this.closeBulk()"
+                            onDone="(res) => this.onBulkDone(res)"/>
+
+    </div>
+</t>
+
+</templates>

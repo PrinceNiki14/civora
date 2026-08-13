@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_documents.FolderView">
+    <div class="civora-folderv">
+
+        <div class="civora-folderv-head">
+            <div>
+                <div class="civora-folderv-title" t-esc="folderMeta.name"/>
+                <div class="civora-folderv-sub">
+                    <t t-esc="state.total"/> document<t t-if="state.total > 1">s</t> · dossier
+                </div>
+            </div>
+            <button class="civora-btn civora-btn-accent" t-on-click="() => this.openUploadDrawer()">
+                <i class="fa fa-cloud-upload"/> Uploader
+            </button>
+        </div>
+
+        <!-- Fil d'ariane -->
+        <nav class="civora-folderv-crumbs">
+            <span class="civora-folderv-crumb-link" t-on-click="() => this.openHome()">Documents</span>
+            <i class="fa fa-chevron-right"/>
+            <span class="civora-folderv-crumb-cur" t-esc="folderMeta.name"/>
+        </nav>
+
+        <!-- Carte du dossier -->
+        <div class="civora-folderv-card">
+            <div t-att-class="'civora-folderv-card-ico civora-folderv-card-ico-' + folderMeta.color">
+                <i t-att-class="'fa ' + folderMeta.icon"/>
+            </div>
+            <div>
+                <div class="civora-folderv-card-name" t-esc="folderMeta.name"/>
+                <div class="civora-folderv-card-desc" t-esc="folderMeta.description"/>
+            </div>
+        </div>
+
+        <!-- Recherche + Groupement -->
+        <div class="civora-folderv-search">
+            <i class="fa fa-search"/>
+            <input type="text"
+                   t-att-placeholder="'Rechercher dans ' + folderMeta.name + '…'"
+                   t-att-value="state.search"
+                   t-on-input="(ev) => this.onSearchInput(ev)"/>
+        </div>
+
+        <div t-if="state.loading" class="civora-folderv-loading">
+            <i class="fa fa-circle-o-notch fa-spin"/> Chargement…
+        </div>
+
+        <t t-else="">
+            <div class="civora-folderv-toolbar-view">
+                <div class="civora-folderv-tb-l">
+                    <div class="civora-folderv-section-title">Documents du dossier</div>
+                    <div t-if="groupOptions.length > 1" class="civora-folderv-groupby">
+                        <label>Grouper :</label>
+                        <select t-on-change="(ev) => this.onGroupByChange(ev)">
+                            <option t-foreach="groupOptions" t-as="g" t-key="g.value"
+                                    t-att-value="g.value"
+                                    t-att-selected="state.groupBy === g.value"
+                                    t-esc="g.label"/>
+                        </select>
+                    </div>
+                </div>
+                <div class="civora-folderv-viewtoggle">
+                    <button t-att-class="'civora-folderv-viewbtn' + (state.viewMode === 'grid' ? ' is-active' : '')"
+                            t-on-click="() => this.setViewMode('grid')" title="Vue grille">
+                        <i class="fa fa-th-large"/>
+                    </button>
+                    <button t-att-class="'civora-folderv-viewbtn' + (state.viewMode === 'list' ? ' is-active' : '')"
+                            t-on-click="() => this.setViewMode('list')" title="Vue liste">
+                        <i class="fa fa-list"/>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ========== MODE GROUPÉ ========== -->
+            <t t-if="state.groupData">
+                <t t-if="!state.groupData.groups.length &amp;&amp; !state.groupData.ungrouped.length">
+                    <div class="civora-folderv-empty">
+                        <i class="fa fa-folder-open-o"/>
+                        <div class="civora-folderv-empty-t">Aucun document</div>
+                        <p>Cliquez sur <b>Uploader</b> pour ajouter un premier document.</p>
+                    </div>
+                </t>
+
+                <div t-else="" class="civora-folderv-groups">
+                    <!-- Groupes normaux (1 niveau OU owner_property 2 niveaux) -->
+                    <div t-foreach="state.groupData.groups" t-as="g" t-key="g.id" class="civora-folderv-group">
+                        <div class="civora-folderv-group-h" t-on-click="() => this.toggleGroup(g.id)">
+                            <i t-att-class="'fa ' + (isGroupExpanded(g.id) ? 'fa-chevron-down' : 'fa-chevron-right') + ' civora-folderv-group-chev'"/>
+                            <div t-att-class="'civora-folderv-group-ico ' + g.entity_type">
+                                <i t-att-class="groupIcon(g.entity_type)"/>
+                            </div>
+                            <div class="civora-folderv-group-b">
+                                <div class="civora-folderv-group-name" t-esc="g.entity_name"/>
+                                <div t-if="g.entity_secondary" class="civora-folderv-group-meta"
+                                     t-esc="g.entity_secondary"/>
+                            </div>
+                            <span class="civora-folderv-group-count">
+                                <t t-esc="g.count"/> doc<t t-if="g.count > 1">s</t>
+                            </span>
+                            <button t-if="g.entity_type === 'property' || g.entity_type === 'partner'"
+                                    class="civora-folderv-group-open"
+                                    t-on-click="(ev) => this.openGroupEntity(g, ev)"
+                                    title="Ouvrir la fiche">
+                                <i class="fa fa-external-link"/>
+                            </button>
+                        </div>
+
+                        <div t-if="isGroupExpanded(g.id)" class="civora-folderv-group-body">
+                            <!-- Sous-groupes (owner_property uniquement) -->
+                            <t t-if="g.subgroups &amp;&amp; g.subgroups.length">
+                                <div t-foreach="g.subgroups" t-as="sg" t-key="sg.id"
+                                     class="civora-folderv-subgroup">
+                                    <div class="civora-folderv-subgroup-h" t-on-click="() => this.toggleSubgroup(sg.id)">
+                                        <i t-att-class="'fa ' + (isSubgroupExpanded(sg.id) ? 'fa-chevron-down' : 'fa-chevron-right') + ' civora-folderv-group-chev'"/>
+                                        <div class="civora-folderv-group-ico property">
+                                            <i class="fa fa-building-o"/>
+                                        </div>
+                                        <div class="civora-folderv-group-b">
+                                            <div class="civora-folderv-group-name" t-esc="sg.entity_name"/>
+                                        </div>
+                                        <span class="civora-folderv-group-count">
+                                            <t t-esc="sg.count"/> doc<t t-if="sg.count > 1">s</t>
+                                        </span>
+                                        <button class="civora-folderv-group-open"
+                                                t-on-click="(ev) => this.openGroupEntity(sg, ev)"
+                                                title="Ouvrir le bien">
+                                            <i class="fa fa-external-link"/>
+                                        </button>
+                                    </div>
+                                    <div t-if="isSubgroupExpanded(sg.id)" class="civora-folderv-group-body">
+                                        <t t-set="filtered" t-value="filterGroupDocs(sg.documents)"/>
+                                        <t t-if="filtered.length">
+                                            <t t-call="civora_documents.FolderDocsRender">
+                                                <t t-set="docs" t-value="filtered"/>
+                                            </t>
+                                        </t>
+                                        <div t-else="" class="civora-folderv-group-empty">
+                                            Aucun document dans ce bien pour votre recherche.
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+
+                            <!-- Documents directs du groupe -->
+                            <t t-else="">
+                                <t t-set="filtered" t-value="filterGroupDocs(g.documents)"/>
+                                <t t-if="filtered.length">
+                                    <t t-call="civora_documents.FolderDocsRender">
+                                        <t t-set="docs" t-value="filtered"/>
+                                    </t>
+                                </t>
+                                <div t-else="" class="civora-folderv-group-empty">
+                                    Aucun document pour votre recherche.
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+
+                    <!-- Groupe "Non classés" pour les orphelins -->
+                    <div t-if="state.groupData.ungrouped.length" class="civora-folderv-group civora-folderv-group-ungrouped">
+                        <div class="civora-folderv-group-h" t-on-click="() => this.toggleGroup('__ungrouped')">
+                            <i t-att-class="'fa ' + (isGroupExpanded('__ungrouped') ? 'fa-chevron-down' : 'fa-chevron-right') + ' civora-folderv-group-chev'"/>
+                            <div class="civora-folderv-group-ico">
+                                <i class="fa fa-question-circle-o"/>
+                            </div>
+                            <div class="civora-folderv-group-b">
+                                <div class="civora-folderv-group-name">Non classés</div>
+                                <div class="civora-folderv-group-meta">Documents sans entité liée</div>
+                            </div>
+                            <span class="civora-folderv-group-count">
+                                <t t-esc="state.groupData.ungrouped.length"/>
+                            </span>
+                        </div>
+                        <div t-if="isGroupExpanded('__ungrouped')" class="civora-folderv-group-body">
+                            <t t-set="filtered" t-value="filterGroupDocs(state.groupData.ungrouped)"/>
+                            <t t-if="filtered.length">
+                                <t t-call="civora_documents.FolderDocsRender">
+                                    <t t-set="docs" t-value="filtered"/>
+                                </t>
+                            </t>
+                            <div t-else="" class="civora-folderv-group-empty">
+                                Aucun document non classé pour votre recherche.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+
+            <!-- ========== MODE PLAT (aucun groupement) ========== -->
+            <t t-else="">
+                <div t-if="!state.docs.length" class="civora-folderv-empty">
+                    <i class="fa fa-folder-open-o"/>
+                    <div class="civora-folderv-empty-t">Aucun document</div>
+                    <p t-if="state.allDocs.length">Aucun résultat pour votre recherche.</p>
+                    <p t-else="">Cliquez sur <b>Uploader</b> pour ajouter un premier document dans ce dossier.</p>
+                </div>
+
+                <t t-else="">
+                    <t t-call="civora_documents.FolderDocsRender">
+                        <t t-set="docs" t-value="state.docs"/>
+                    </t>
+                </t>
+            </t>
+        </t>
+
+        <DocumentDrawer t-if="state.uploadDrawer"
+                        doc="null"
+                        defaultFolder="folderSlug"
+                        onClose="() => this.closeUploadDrawer()"
+                        onSaved="() => this.onUploadSaved()"/>
+    </div>
+</t>
+
+<!-- ================= Sub-template : rendu de documents (grille ou liste) ================= -->
+<t t-name="civora_documents.FolderDocsRender">
+    <!-- ===== VUE GRILLE ===== -->
+    <div t-if="state.viewMode === 'grid'" class="civora-folderv-grid">
+        <div t-foreach="docs" t-as="d" t-key="d.id"
+             class="civora-folderv-card"
+             t-on-click="() => this.openDocument(d)">
+            <div class="civora-folderv-card-thumb">
+                <i t-att-class="docIcon(d)"/>
+            </div>
+            <div class="civora-folderv-card-body">
+                <div class="civora-folderv-card-title" t-esc="d.name"/>
+                <div class="civora-folderv-card-meta">
+                    <t t-if="d.linked_property_name">
+                        <i class="fa fa-building-o"/> <t t-esc="d.linked_property_name"/>
+                    </t>
+                    <t t-elif="d.linked_contact_name">
+                        <i class="fa fa-user"/> <t t-esc="d.linked_contact_name"/>
+                    </t>
+                    <t t-elif="d.res_display">
+                        <i class="fa fa-link"/> <t t-esc="d.res_display"/>
+                    </t>
+                </div>
+                <div class="civora-folderv-card-foot">
+                    <CivoraBadge label="docTypeMeta(d.document_type).label" variant="'neutral'"/>
+                    <CivoraBadge label="stateMeta(d.state).label" variant="stateMeta(d.state).variant"/>
+                </div>
+                <div class="civora-folderv-card-date">
+                    <t t-esc="fmtDate(d.date_uploaded)"/> · <t t-esc="fmtSize(d.file_size)"/>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== VUE LISTE ===== -->
+    <div t-else="" class="civora-folderv-list">
+        <div t-foreach="docs" t-as="d" t-key="d.id"
+             class="civora-folderv-row"
+             t-on-click="() => this.openDocument(d)">
+            <div class="civora-folderv-row-ico">
+                <i t-att-class="docIcon(d)"/>
+            </div>
+            <div class="civora-folderv-row-b">
+                <div class="civora-folderv-row-n" t-esc="d.name"/>
+                <div class="civora-folderv-row-sub">
+                    <t t-if="d.linked_contact_name">
+                        <i class="fa fa-user"/> <t t-esc="d.linked_contact_name"/>
+                    </t>
+                    <t t-if="d.linked_property_name">
+                        <i class="fa fa-building-o"/> <t t-esc="d.linked_property_name"/>
+                    </t>
+                    <t t-if="!d.linked_contact_name &amp;&amp; !d.linked_property_name &amp;&amp; d.res_display">
+                        <t t-esc="d.res_display"/>
+                    </t>
+                    · <t t-esc="fmtSize(d.file_size)"/>
+                </div>
+                <div t-if="d.tag_ids.length" class="civora-folderv-row-tags">
+                    <span t-foreach="d.tag_ids" t-as="tg" t-key="tg.id"
+                          class="civora-folderv-tag" t-esc="tg.name"/>
+                </div>
+            </div>
+            <CivoraBadge label="docTypeMeta(d.document_type).label" variant="'neutral'"/>
+            <CivoraBadge label="stateMeta(d.state).label" variant="stateMeta(d.state).variant"/>
+            <div class="civora-folderv-row-date" t-esc="fmtDate(d.date_uploaded)"/>
+            <span class="civora-folderv-row-open">Ouvrir</span>
+        </div>
+    </div>
+</t>
+
+</templates>

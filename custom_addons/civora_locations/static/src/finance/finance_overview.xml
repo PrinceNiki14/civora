@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="civora_locations.FinanceOverview">
+        <div class="civora-finover">
+
+            <div class="civora-finover-header">
+                <div class="civora-finover-title">
+                    <i class="fa fa-money"/>
+                    Situation financière
+                </div>
+            </div>
+
+            <div t-if="state.loading" class="civora-finover-loading">
+                <i class="fa fa-circle-o-notch fa-spin"/>
+            </div>
+
+            <div t-elif="state.kpis" class="civora-finover-body">
+
+                <!-- KPI cards principales -->
+                <div class="civora-finover-kpis">
+
+                    <div class="civora-finover-kpi is-success">
+                        <div class="civora-finover-kpi-label">Total encaissé</div>
+                        <div class="civora-finover-kpi-value"
+                             t-esc="fmtAmount(state.kpis.total_encaisse)"/>
+                        <div class="civora-finover-kpi-sub">
+                            <i class="fa fa-check-circle"/> Depuis le début du bail
+                        </div>
+                    </div>
+
+                    <div t-att-class="'civora-finover-kpi ' + (hasOverdue ? 'is-danger' : 'is-neutral')">
+                        <div class="civora-finover-kpi-label">Reste à encaisser</div>
+                        <div class="civora-finover-kpi-value"
+                             t-esc="fmtAmount(state.kpis.reste_du_a_date)"/>
+                        <div class="civora-finover-kpi-sub">
+                            <t t-if="hasOverdue">
+                                <i class="fa fa-exclamation-triangle"/>
+                                <t t-esc="state.kpis.overdue_count + ''"/> mois en retard
+                            </t>
+                            <t t-else="">
+                                <i class="fa fa-info-circle"/> Aucun retard
+                            </t>
+                        </div>
+                    </div>
+
+                    <div class="civora-finover-kpi is-info">
+                        <div class="civora-finover-kpi-label">Loyer mensuel</div>
+                        <div class="civora-finover-kpi-value"
+                             t-esc="fmtAmount(state.kpis.rent_monthly)"/>
+                        <div class="civora-finover-kpi-sub">
+                            <i class="fa fa-calendar"/> Loyer + charges
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Bloc prochaine échéance -->
+                <div t-if="state.kpis.next_installment"
+                     t-att-class="'civora-finover-next ' + (state.kpis.next_installment.is_overdue ? 'is-overdue' : 'is-upcoming')">
+                    <div class="civora-finover-next-ico">
+                        <i t-att-class="'fa fa-' + (state.kpis.next_installment.is_overdue ? 'exclamation-triangle' : 'calendar-check-o')"/>
+                    </div>
+                    <div class="civora-finover-next-info">
+                        <div class="civora-finover-next-label">
+                            <t t-if="state.kpis.next_installment.is_overdue">Échéance en retard</t>
+                            <t t-else="">Prochaine échéance</t>
+                        </div>
+                        <div class="civora-finover-next-details">
+                            <b t-esc="state.kpis.next_installment.period_label"/>
+                            · <t t-esc="fmtDate(state.kpis.next_installment.due_date)"/>
+                        </div>
+                    </div>
+                    <div class="civora-finover-next-amount"
+                         t-esc="fmtAmount(state.kpis.next_installment.amount_remaining)"/>
+                </div>
+
+                <div t-else="" class="civora-finover-allpaid">
+                    <i class="fa fa-check-circle"/>
+                    <span>Toutes les échéances actuelles sont réglées.</span>
+                </div>
+
+                <!-- Bloc versements initiaux -->
+                <div t-if="state.kpis.initial_payment_expected > 0"
+                     class="civora-finover-initial">
+                    <div class="civora-finover-initial-header">
+                        <div class="civora-finover-initial-title">
+                            <i class="fa fa-key"/>
+                            Versements à la signature
+                        </div>
+                        <div t-if="initialPaymentComplete" class="civora-finover-initial-badge is-done">
+                            <i class="fa fa-check"/> Complet
+                        </div>
+                        <div t-elif="hasInitialPending" class="civora-finover-initial-badge is-pending">
+                            <i class="fa fa-clock-o"/> Incomplet
+                        </div>
+                    </div>
+                    <div class="civora-finover-initial-grid">
+                        <div class="civora-finover-initial-item">
+                            <div class="civora-finover-initial-label">Attendu</div>
+                            <div class="civora-finover-initial-value"
+                                 t-esc="fmtAmount(state.kpis.initial_payment_expected)"/>
+                        </div>
+                        <div class="civora-finover-initial-item">
+                            <div class="civora-finover-initial-label">Reçu</div>
+                            <div class="civora-finover-initial-value is-received"
+                                 t-esc="fmtAmount(state.kpis.initial_payment_received)"/>
+                        </div>
+                        <div t-if="hasInitialPending" class="civora-finover-initial-item">
+                            <div class="civora-finover-initial-label">Restant</div>
+                            <div class="civora-finover-initial-value is-pending"
+                                 t-esc="fmtAmount(state.kpis.initial_payment_pending)"/>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </t>
+
+</templates>

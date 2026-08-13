@@ -28,4 +28,28 @@
         <field name="use_date_range" eval="True"/>
     </record>
 
+    <!-- Numerotation des restitutions de caution : RC-YYYY-000 -->
+    <record id="seq_civora_deposit_refund" model="ir.sequence">
+        <field name="name">Numérotation des restitutions de caution CIVORA</field>
+        <field name="code">civora.deposit.refund</field>
+        <field name="prefix">RC-%(year)s-</field>
+        <field name="padding">4</field>
+        <field name="number_next">1</field>
+        <field name="number_increment">1</field>
+        <field name="implementation">standard</field>
+        <field name="use_date_range" eval="True"/>
+    </record>
+
+    <!-- Numerotation des relances : REL-YYYY-000 -->
+    <record id="seq_civora_lease_reminder" model="ir.sequence">
+        <field name="name">Numérotation des relances CIVORA</field>
+        <field name="code">civora.lease.reminder</field>
+        <field name="prefix">REL-%(year)s-</field>
+        <field name="padding">4</field>
+        <field name="number_next">1</field>
+        <field name="number_increment">1</field>
+        <field name="implementation">standard</field>
+        <field name="use_date_range" eval="True"/>
+    </record>
+
 </odoo>

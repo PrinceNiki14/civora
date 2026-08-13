@@ -31,6 +31,28 @@
                                         t-att-value="p.id" t-att-selected="state.form.property_id === p.id"
                                         t-esc="propertyLabel(p)"/>
                             </select>
+                            <!-- Bandeau : bien déjà loué -->
+                            <div t-if="state.availability.checked &amp;&amp; !state.availability.available"
+                                 class="civora-lf-availability-warn">
+                                <div class="civora-lf-availability-ico">
+                                    <i class="fa fa-exclamation-triangle"/>
+                                </div>
+                                <div class="civora-lf-availability-msg">
+                                    <div class="civora-lf-availability-title">
+                                        Ce bien est déjà loué
+                                    </div>
+                                    <div t-if="state.availability.existing" class="civora-lf-availability-details">
+                                        Bail <b t-esc="state.availability.existing.name"/>
+                                        au nom de <b t-esc="state.availability.existing.tenant_name"/>
+                                        <t t-if="state.availability.existing.date_start">
+                                            · depuis le <t t-esc="state.availability.existing.date_start"/>
+                                        </t>
+                                    </div>
+                                    <div class="civora-lf-availability-help">
+                                        Résiliez le bail existant avant d'en créer un nouveau pour ce bien.
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="civora-fld civora-col2">
                             <label>Locataire *</label>
@@ -39,6 +61,15 @@
                                 <option t-foreach="tenants" t-as="t" t-key="t.id"
                                         t-att-value="t.id" t-att-selected="state.form.tenant_id === t.id"
                                         t-esc="tenantLabel(t)"/>
+                            </select>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Agent responsable</label>
+                            <select t-on-change="(ev) => this.setM2O('agent_id', ev)">
+                                <option value="">— Aucun —</option>
+                                <option t-foreach="agents" t-as="a" t-key="a.id"
+                                        t-att-value="a.id" t-att-selected="state.form.agent_id === a.id"
+                                        t-esc="a.name"/>
                             </select>
                         </div>
                         <div class="civora-fld">
@@ -81,11 +112,6 @@
                                    t-on-input="(ev) => this.setField('date_end', ev)"/>
                         </div>
                         <div class="civora-fld">
-                            <label>Jour de paiement (1-28)</label>
-                            <input type="number" min="1" max="28" t-att-value="state.form.payday"
-                                   t-on-input="(ev) => this.setNumber('payday', ev)"/>
-                        </div>
-                        <div class="civora-fld">
                             <label>Indexation</label>
                             <input type="text" t-att-value="state.form.indexation"
                                    t-on-input="(ev) => this.setField('indexation', ev)"
@@ -111,19 +137,90 @@
                     <div class="civora-lf-title">Conditions financières</div>
                     <div class="civora-lf-grid civora-lf-grid3">
                         <div class="civora-fld">
-                            <label>Loyer mensuel (FCFA) *</label>
+                            <label>Loyer mensuel *</label>
                             <input type="number" min="0" step="1000" t-att-value="state.form.rent"
                                    t-on-input="(ev) => this.setNumber('rent', ev)"/>
                         </div>
                         <div class="civora-fld">
-                            <label>Charges mensuelles (FCFA)</label>
+                            <label>Charges mensuelles</label>
                             <input type="number" min="0" step="1000" t-att-value="state.form.charges"
                                    t-on-input="(ev) => this.setNumber('charges', ev)"/>
                         </div>
                         <div class="civora-fld">
-                            <label>Dépôt de garantie (FCFA)</label>
-                            <input type="number" min="0" step="1000" t-att-value="state.form.deposit"
-                                   t-on-input="(ev) => this.setNumber('deposit', ev)"/>
+                            <label>Jour de paiement (1-28)</label>
+                            <input type="number" min="1" max="28" step="1"
+                                   t-att-value="state.form.payday"
+                                   t-on-input="(ev) => this.setNumber('payday', ev)"/>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Versements à la signature -->
+                <div class="civora-lf-section">
+                    <div class="civora-lf-title">Versements à la signature</div>
+                    <div class="civora-lf-hint">
+                        Configurez le nombre de mois de loyer d'avance, de caution et de frais d'agence.
+                        Les montants sont calculés automatiquement à partir du loyer.
+                    </div>
+                    <div class="civora-lf-grid civora-lf-grid3">
+                        <div class="civora-fld">
+                            <label>Mois d'avance</label>
+                            <input type="number" min="0" max="24" step="1"
+                                   t-att-value="state.form.advance_months"
+                                   t-on-input="(ev) => this.setNumber('advance_months', ev)"/>
+                            <div class="civora-lf-field-hint">Loyer d'avance versé à la signature.</div>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Mois de caution</label>
+                            <input type="number" min="0" max="24" step="1"
+                                   t-att-value="state.form.caution_months"
+                                   t-on-input="(ev) => this.setNumber('caution_months', ev)"/>
+                            <div class="civora-lf-field-hint">Restituée en fin de bail.</div>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Mois d'agence</label>
+                            <input type="number" min="0" max="24" step="1"
+                                   t-att-value="state.form.agency_months"
+                                   t-on-input="(ev) => this.setNumber('agency_months', ev)"/>
+                            <div class="civora-lf-field-hint">Frais d'agence.</div>
+                        </div>
+                    </div>
+
+                    <!-- Récap montants calculés -->
+                    <div class="civora-lf-recap">
+                        <div class="civora-lf-recap-title">
+                            <i class="fa fa-calculator"/>
+                            Récapitulatif des versements initiaux
+                        </div>
+                        <div class="civora-lf-recap-grid">
+                            <div class="civora-lf-recap-item">
+                                <div class="civora-lf-recap-label">Loyer d'avance</div>
+                                <div class="civora-lf-recap-value" t-esc="fmtAmount(advanceAmount)"/>
+                                <div class="civora-lf-recap-sub"
+                                     t-esc="advanceMonths + ' mois × ' + fmtAmount(totalMonthly)"/>
+                            </div>
+                            <div class="civora-lf-recap-item">
+                                <div class="civora-lf-recap-label">Caution</div>
+                                <div class="civora-lf-recap-value" t-esc="fmtAmount(cautionAmount)"/>
+                                <div class="civora-lf-recap-sub"
+                                     t-esc="cautionMonths + ' mois × ' + fmtAmount(state.form.rent || 0)"/>
+                            </div>
+                            <div class="civora-lf-recap-item">
+                                <div class="civora-lf-recap-label">Frais d'agence</div>
+                                <div class="civora-lf-recap-value" t-esc="fmtAmount(agencyAmount)"/>
+                                <div class="civora-lf-recap-sub"
+                                     t-esc="agencyMonths + ' mois × ' + fmtAmount(state.form.rent || 0)"/>
+                            </div>
+                        </div>
+                        <div class="civora-lf-recap-total">
+                            <span class="civora-lf-recap-total-label">Total à verser à la signature</span>
+                            <span class="civora-lf-recap-total-value"
+                                  t-esc="fmtAmount(initialPaymentTotal)"/>
+                        </div>
+                        <div t-if="firstDueMonthLabel" class="civora-lf-recap-first-due">
+                            <i class="fa fa-calendar-check-o"/>
+                            Premier loyer mensuel dû par le locataire :
+                            <b t-esc="firstDueMonthLabel"/>
                         </div>
                     </div>
                 </div>

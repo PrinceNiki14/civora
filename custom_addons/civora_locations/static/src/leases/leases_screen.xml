@@ -42,10 +42,11 @@
 
         <!-- ===== BAUX ===== -->
         <t t-elif="state.view === 'leases'">
+            <!-- Ligne 1 : recherche + toggle type -->
             <div class="civora-lsc-toolbar">
                 <div class="civora-lsc-search">
                     <i class="fa fa-search"/>
-                    <input type="text" placeholder="Locataire, bien, n° bail…"
+                    <input type="text" placeholder="Locataire, bien, ville, agent…"
                            t-att-value="state.search" t-on-input="(ev) => this.onSearchInput(ev)"/>
                 </div>
                 <div class="civora-lsc-typetoggle">
@@ -58,6 +59,46 @@
                 </div>
             </div>
 
+            <!-- Ligne 2 : filtres avancés (agent / propriétaire / ville) -->
+            <div class="civora-lsc-filters">
+                <div class="civora-lsc-filter-group">
+                    <i class="fa fa-user-circle-o"/>
+                    <select t-on-change="(ev) => this.onAgentFilter(ev)">
+                        <option value="all">Tous les agents</option>
+                        <option t-foreach="agentOptions" t-as="a" t-key="a.id"
+                                t-att-value="a.id + ''"
+                                t-att-selected="state.agentFilter === (a.id + '')"
+                                t-esc="a.name"/>
+                    </select>
+                </div>
+                <div class="civora-lsc-filter-group">
+                    <i class="fa fa-building-o"/>
+                    <select t-on-change="(ev) => this.onOwnerFilter(ev)">
+                        <option value="all">Tous les propriétaires</option>
+                        <option t-foreach="ownerOptions" t-as="o" t-key="o.id"
+                                t-att-value="o.id + ''"
+                                t-att-selected="state.ownerFilter === (o.id + '')"
+                                t-esc="o.name"/>
+                    </select>
+                </div>
+                <div class="civora-lsc-filter-group">
+                    <i class="fa fa-map-marker"/>
+                    <select t-on-change="(ev) => this.onCityFilter(ev)">
+                        <option value="all">Toutes les villes</option>
+                        <option t-foreach="cityOptions" t-as="c" t-key="c"
+                                t-att-value="c"
+                                t-att-selected="state.cityFilter === c"
+                                t-esc="c"/>
+                    </select>
+                </div>
+                <!-- Indicateur de filtres actifs -->
+                <span t-if="state.agentFilter !== 'all' || state.ownerFilter !== 'all' || state.cityFilter !== 'all'"
+                      class="civora-lsc-filter-active">
+                    <i class="fa fa-filter"/> Filtres actifs
+                </span>
+            </div>
+
+            <!-- Onglets statut : Tous / Actifs / En retard / Expire bientôt -->
             <div class="civora-lsc-statustabs">
                 <button t-foreach="statusTabs" t-as="s" t-key="s.id"
                         t-att-class="'civora-lsc-statustab' + (state.statusFilter === s.id ? ' is-active' : '')"
@@ -86,6 +127,13 @@
                         </div>
                         <div class="civora-lsc-row-meta">
                             <span><i class="fa fa-user"/> <t t-esc="l.tenantName"/></span>
+                            <span t-if="l.city"><i class="fa fa-map-marker"/> <t t-esc="l.city"/></span>
+                            <span t-if="l.agentId" class="civora-lsc-row-agent">
+                                <i class="fa fa-user-circle-o"/> <t t-esc="l.agentName"/>
+                            </span>
+                            <span t-if="l.ownerId" class="civora-lsc-row-owner">
+                                <i class="fa fa-building-o"/> <t t-esc="l.ownerName"/>
+                            </span>
                         </div>
                         <div class="civora-lsc-row-fin">
                             <span>Loyer : <b t-esc="kpiMoney(l.rent)"/></span>
@@ -117,11 +165,16 @@
             <p>Vue consolidée des paiements par canal et reversements propriétaires — à venir.</p>
         </div>
 
-        <!-- ===== IMPAYES (a venir) ===== -->
-        <div t-elif="state.view === 'arrears'" class="civora-lsc-soon">
-            <div class="civora-lsc-soon-ico"><i class="fa fa-exclamation-triangle"/></div>
-            <div class="civora-lsc-soon-t">Impayés</div>
-            <p>Relances automatisées (email/WhatsApp) et mise en demeure — à venir.</p>
+        <!-- ===== IMPAYES ===== -->
+        <t t-elif="state.view === 'arrears'">
+            <ArrearsView onOpenLease="(id) => this.openLease({ id })"/>
+        </t>
+
+        <!-- ===== MAINTENANCE (a venir) ===== -->
+        <div t-elif="state.view === 'maintenance'" class="civora-lsc-soon">
+            <div class="civora-lsc-soon-ico"><i class="fa fa-wrench"/></div>
+            <div class="civora-lsc-soon-t">Maintenance</div>
+            <p>Tickets d'intervention, suivi des prestataires et historique par bien — à venir.</p>
         </div>
 
         <!-- ===== RENOUVELLEMENTS (a venir) ===== -->
@@ -131,7 +184,7 @@
             <p>Indexation IRL et proposition de renouvellement signable en ligne — à venir.</p>
         </div>
 
-        <!-- ===== QUITTANCES (a venir) ===== -->
+        <!-- ===== QUITTANCES ===== -->
         <t t-elif="state.view === 'receipts'">
             <div t-if="!state.receipts.length" class="civora-lsc-soon">
                 <div class="civora-lsc-soon-ico"><i class="fa fa-file-text-o"/></div>

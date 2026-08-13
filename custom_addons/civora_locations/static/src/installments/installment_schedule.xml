@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="civora_locations.InstallmentSchedule">
+        <div class="civora-schedule">
+
+            <!-- HEADER -->
+            <div class="civora-schedule-header">
+                <div class="civora-schedule-title">
+                    <i class="fa fa-calendar-o"/>
+                    <span>Échéancier des loyers</span>
+                </div>
+                <div class="civora-schedule-actions">
+                    <button t-if="!state.hasSchedule &amp;&amp; !state.loading"
+                            class="civora-btn civora-btn-outline civora-btn-sm"
+                            t-att-disabled="state.regenerating"
+                            t-on-click="() => this.regenerateSchedule()">
+                        <i t-att-class="'fa fa-' + (state.regenerating ? 'circle-o-notch fa-spin' : 'refresh')"/>
+                        Générer l'échéancier
+                    </button>
+                    <button t-if="state.hasSchedule"
+                            class="civora-btn civora-btn-ghost civora-btn-sm"
+                            t-att-disabled="state.regenerating"
+                            t-on-click="() => this.regenerateSchedule()"
+                            title="Régénérer l'échéancier depuis zéro">
+                        <i t-att-class="'fa fa-' + (state.regenerating ? 'circle-o-notch fa-spin' : 'refresh')"/>
+                    </button>
+                </div>
+            </div>
+
+            <!-- CHARGEMENT -->
+            <div t-if="state.loading" class="civora-schedule-loading">
+                <i class="fa fa-circle-o-notch fa-spin"/> Chargement…
+            </div>
+
+            <!-- ÉCHÉANCIER VIDE -->
+            <div t-elif="!state.hasSchedule" class="civora-schedule-empty">
+                <div class="civora-schedule-empty-ico">
+                    <i class="fa fa-calendar-plus-o"/>
+                </div>
+                <div class="civora-schedule-empty-title">
+                    Aucun échéancier généré
+                </div>
+                <div class="civora-schedule-empty-text">
+                    L'échéancier se génère automatiquement dès que le contrat de bail est signé
+                    des deux parties. Vous pouvez aussi le générer manuellement depuis le bouton ci-dessus.
+                </div>
+            </div>
+
+            <!-- VUE COMPACTE -->
+            <div t-else="" class="civora-schedule-compact">
+                <div t-foreach="state.compactItems" t-as="item" t-key="item.id"
+                     t-att-class="'civora-schedule-row is-' + this.stateMeta(item.state).variant">
+
+                    <!-- Icône état -->
+                    <div class="civora-schedule-row-ico">
+                        <i t-att-class="'fa fa-' + this.stateMeta(item.state).icon"/>
+                    </div>
+
+                    <!-- Période + échéance -->
+                    <div class="civora-schedule-row-period">
+                        <div class="civora-schedule-row-month" t-esc="item.period_label"/>
+                        <div class="civora-schedule-row-due">
+                            <t t-if="item.state === 'covered_by_advance'">
+                                Couvert par le loyer d'avance
+                            </t>
+                            <t t-else="">
+                                Échéance au <span t-esc="this.fmtDate(item.due_date)"/>
+                                <t t-if="item.is_overdue_days > 0">
+                                    · <span class="civora-schedule-overdue-tag"
+                                            t-esc="this.overdueLabel(item.is_overdue_days)"/>
+                                </t>
+                            </t>
+                        </div>
+                    </div>
+
+                    <!-- Montants -->
+                    <div class="civora-schedule-row-amounts">
+                        <div class="civora-schedule-row-due-amount"
+                             t-esc="this.fmtAmount(item.amount_due)"/>
+                        <div t-if="item.amount_paid &gt; 0 &amp;&amp; item.state !== 'paid'"
+                             class="civora-schedule-row-paid">
+                            Payé : <span t-esc="this.fmtAmount(item.amount_paid)"/>
+                        </div>
+                        <div t-if="item.state === 'partial' || item.state === 'overdue'"
+                             class="civora-schedule-row-remaining">
+                            Reste : <b t-esc="this.fmtAmount(item.amount_remaining)"/>
+                        </div>
+                    </div>
+
+                    <!-- Badge état -->
+                    <div class="civora-schedule-row-badge">
+                        <span t-att-class="'civora-badge civora-badge-' + this.stateMeta(item.state).variant"
+                              t-esc="this.stateMeta(item.state).label"/>
+                    </div>
+                </div>
+
+                <!-- Bouton voir tout -->
+                <div class="civora-schedule-footer">
+                    <button class="civora-btn civora-btn-outline civora-btn-block"
+                            t-on-click="() => this.openAllDrawer()">
+                        <i class="fa fa-list"/> Voir tout l'échéancier
+                    </button>
+                </div>
+            </div>
+
+            <!-- ═══ DRAWER PLEIN ÉCRAN : TOUTES LES ÉCHÉANCES ══════════════ -->
+            <div t-if="state.drawerOpen" class="civora-schedule-drawer-overlay"
+                 t-on-click.self="() => this.closeDrawer()">
+                <div class="civora-schedule-drawer">
+
+                    <div class="civora-schedule-drawer-header">
+                        <div class="civora-schedule-drawer-title">
+                            <i class="fa fa-calendar-o"/>
+                            <span>Échéancier complet</span>
+                        </div>
+                        <div class="civora-schedule-drawer-stats">
+                            <span class="civora-schedule-stat">
+                                <b t-esc="allCount + ''"/> mois
+                            </span>
+                            <span t-if="paidTotal > 0" class="civora-schedule-stat is-paid">
+                                <b t-esc="paidTotal + ''"/> payé(s)
+                            </span>
+                            <span t-if="overdueTotal > 0" class="civora-schedule-stat is-overdue">
+                                <b t-esc="overdueTotal + ''"/> en retard
+                            </span>
+                        </div>
+                        <button class="civora-btn civora-btn-outline"
+                                t-on-click="() => this.closeDrawer()">
+                            <i class="fa fa-times"/> Fermer
+                        </button>
+                    </div>
+
+                    <div t-if="state.drawerLoading" class="civora-schedule-loading">
+                        <i class="fa fa-circle-o-notch fa-spin"/> Chargement…
+                    </div>
+
+                    <div t-else="" class="civora-schedule-drawer-body">
+                        <div t-foreach="state.allItems" t-as="item" t-key="item.id"
+                             t-att-class="'civora-schedule-row is-' + this.stateMeta(item.state).variant">
+                            <div class="civora-schedule-row-ico">
+                                <i t-att-class="'fa fa-' + this.stateMeta(item.state).icon"/>
+                            </div>
+                            <div class="civora-schedule-row-period">
+                                <div class="civora-schedule-row-month" t-esc="item.period_label"/>
+                                <div class="civora-schedule-row-due">
+                                    <t t-if="item.state === 'covered_by_advance'">
+                                        Couvert par le loyer d'avance
+                                    </t>
+                                    <t t-else="">
+                                        Échéance au <span t-esc="this.fmtDate(item.due_date)"/>
+                                        <t t-if="item.is_overdue_days > 0">
+                                            · <span class="civora-schedule-overdue-tag"
+                                                    t-esc="this.overdueLabel(item.is_overdue_days)"/>
+                                        </t>
+                                    </t>
+                                </div>
+                            </div>
+                            <div class="civora-schedule-row-amounts">
+                                <div class="civora-schedule-row-due-amount"
+                                     t-esc="this.fmtAmount(item.amount_due)"/>
+                                <div t-if="item.amount_paid &gt; 0 &amp;&amp; item.state !== 'paid'"
+                                     class="civora-schedule-row-paid">
+                                    Payé : <span t-esc="this.fmtAmount(item.amount_paid)"/>
+                                </div>
+                                <div t-if="item.state === 'partial' || item.state === 'overdue'"
+                                     class="civora-schedule-row-remaining">
+                                    Reste : <b t-esc="this.fmtAmount(item.amount_remaining)"/>
+                                </div>
+                            </div>
+                            <div class="civora-schedule-row-badge">
+                                <span t-att-class="'civora-badge civora-badge-' + this.stateMeta(item.state).variant"
+                                      t-esc="this.stateMeta(item.state).label"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </t>
+
+</templates>

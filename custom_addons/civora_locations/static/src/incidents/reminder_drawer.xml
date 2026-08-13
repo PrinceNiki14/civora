@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_locations.ReminderDrawer">
+    <CivoraDrawer variant="'modal'"
+                  title="drawerTitle"
+                  subtitle="drawerSubtitle"
+                  onClose="props.onClose">
+        <div class="civora-reminder-drawer">
+            <div t-if="state.loading" class="civora-reminder-loading">
+                <i class="fa fa-circle-o-notch fa-spin"/> Chargement…
+            </div>
+
+            <t t-else="">
+                <div t-if="state.error" class="civora-reminder-error">
+                    <i class="fa fa-exclamation-triangle"/> <t t-esc="state.error"/>
+                </div>
+
+                <!-- Bandeau prérequis email (avertissement si canal=email et prérequis manquants) -->
+                <div t-if="isEmail &amp;&amp; !state.emailInfo.ok" class="civora-reminder-warn">
+                    <i class="fa fa-exclamation-triangle"/>
+                    <div>
+                        <b>Envoi par email impossible pour l'instant :</b>
+                        <ul>
+                            <li t-foreach="state.emailInfo.errors" t-as="err" t-key="err_index" t-esc="err"/>
+                        </ul>
+                        Vous pouvez encore <b>enregistrer en brouillon</b> et corriger les infos manquantes.
+                    </div>
+                </div>
+
+                <!-- Bandeau info : prérequis OK -->
+                <div t-if="isEmail &amp;&amp; state.emailInfo.ok" class="civora-reminder-info">
+                    <i class="fa fa-envelope"/>
+                    <div>
+                        L'email sera envoyé à <b t-esc="state.emailInfo.tenant_email"/>
+                        <span t-if="state.emailInfo.tenant_name"> (<t t-esc="state.emailInfo.tenant_name"/>)</span>
+                        depuis <b t-esc="state.emailInfo.company_email"/>.
+                    </div>
+                </div>
+
+                <div class="civora-reminder-grid">
+                    <div class="civora-fld">
+                        <label>Canal *</label>
+                        <select t-on-change="(ev) => this.setField('channel', ev)">
+                            <option t-foreach="channels" t-as="c" t-key="c.value"
+                                    t-att-value="c.value"
+                                    t-att-selected="state.form.channel === c.value"
+                                    t-esc="c.label"/>
+                        </select>
+                    </div>
+                    <div class="civora-fld">
+                        <label>Sévérité *</label>
+                        <select t-on-change="(ev) => this.onSeverityChange(ev)">
+                            <option t-foreach="severities" t-as="s" t-key="s.value"
+                                    t-att-value="s.value"
+                                    t-att-selected="state.form.severity === s.value"
+                                    t-esc="s.label"/>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="civora-fld">
+                    <label>Sujet *</label>
+                    <input type="text"
+                           t-att-value="state.form.subject"
+                           t-on-input="(ev) => this.setField('subject', ev)"
+                           placeholder="Objet de la relance"/>
+                </div>
+
+                <div class="civora-fld">
+                    <label>Message</label>
+                    <textarea rows="10"
+                              t-on-input="(ev) => this.setField('body', ev)"
+                              placeholder="Corps du message envoyé au locataire" t-esc="state.form.body"/>
+                    <div class="civora-reminder-hint">
+                        Le message est pré-rempli selon la sévérité choisie. Vous pouvez l'ajuster.
+                    </div>
+                </div>
+
+                <div class="civora-reminder-actions">
+                    <button class="civora-btn civora-btn-outline"
+                            t-on-click="() => this.props.onClose()"
+                            t-att-disabled="state.saving">
+                        Annuler
+                    </button>
+                    <button class="civora-btn"
+                            t-on-click="() => this.saveDraft()"
+                            t-att-disabled="state.saving">
+                        <i class="fa fa-save"/> Enregistrer en brouillon
+                    </button>
+                    <button class="civora-btn civora-btn-accent"
+                            t-on-click="() => this.openConfirmSend()"
+                            t-att-disabled="state.saving">
+                        <i t-att-class="sendButtonIcon"/>
+                        <t t-esc="sendButtonLabel"/>
+                    </button>
+                </div>
+            </t>
+
+            <!-- Modale de confirmation avant envoi email réel -->
+            <div t-if="state.confirmSend" class="civora-reminder-confirm-overlay"
+                 t-on-click="() => this.cancelConfirmSend()">
+                <div class="civora-reminder-confirm" t-on-click.stop="() => {}">
+                    <div class="civora-reminder-confirm-ico">
+                        <i class="fa fa-envelope"/>
+                    </div>
+                    <h3 class="civora-reminder-confirm-title">Confirmer l'envoi de l'email</h3>
+                    <div class="civora-reminder-confirm-body">
+                        <div class="civora-reminder-confirm-row">
+                            <span class="civora-reminder-confirm-label">De :</span>
+                            <b t-esc="state.emailInfo.company_email"/>
+                        </div>
+                        <div class="civora-reminder-confirm-row">
+                            <span class="civora-reminder-confirm-label">À :</span>
+                            <b t-esc="state.emailInfo.tenant_email"/>
+                            <span t-if="state.emailInfo.tenant_name" class="civora-reminder-confirm-name">
+                                (<t t-esc="state.emailInfo.tenant_name"/>)
+                            </span>
+                        </div>
+                        <div class="civora-reminder-confirm-row">
+                            <span class="civora-reminder-confirm-label">Sujet :</span>
+                            <b t-esc="state.form.subject"/>
+                        </div>
+                    </div>
+                    <p class="civora-reminder-confirm-hint">
+                        L'email sera envoyé via le serveur SMTP configuré dans Paramètres > Technique > Courrier sortant.
+                    </p>
+                    <div class="civora-reminder-confirm-actions">
+                        <button class="civora-btn civora-btn-outline"
+                                t-on-click="() => this.cancelConfirmSend()">
+                            Annuler
+                        </button>
+                        <button class="civora-btn civora-btn-accent"
+                                t-on-click="() => this.confirmAndSend()">
+                            <i class="fa fa-paper-plane"/> Confirmer et envoyer
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </CivoraDrawer>
+</t>
+
+</templates>

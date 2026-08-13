@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_documents.DocumentsHome">
+    <div class="civora-dochome">
+
+        <div class="civora-dochome-head">
+            <div>
+                <div class="civora-dochome-title">Documents</div>
+                <div class="civora-dochome-sub">
+                    <t t-esc="state.kpis.total"/> documents ·
+                    <t t-esc="state.kpis.classified_pct"/>% classés ·
+                    <t t-esc="state.kpis.total_size_fmt"/>
+                </div>
+            </div>
+            <div class="civora-dochome-head-actions">
+                <button class="civora-btn civora-btn-outline">
+                    <i class="fa fa-filter"/> Filtres
+                </button>
+                <button class="civora-btn civora-btn-accent" t-on-click="() => this.openUploadDrawer()">
+                    <i class="fa fa-cloud-upload"/> Uploader
+                </button>
+            </div>
+        </div>
+
+        <!-- KPIs -->
+        <div class="civora-dochome-kpis">
+            <CivoraStatCard label="'Documents totaux'"
+                            value="state.kpis.total + ''"
+                            delta="'+' + state.kpis.this_month + ' ce mois'"
+                            icon="'fa fa-file-text-o'"/>
+            <CivoraStatCard label="'Classés'"
+                            value="state.kpis.classified_pct + '%'"
+                            delta="'classification manuelle'"
+                            icon="'fa fa-check-circle-o'"/>
+            <CivoraStatCard label="'Signatures en attente'"
+                            value="state.kpis.pending_signatures + ''"
+                            delta="'à relancer'"
+                            icon="'fa fa-pencil-square-o'"/>
+            <CivoraStatCard label="'Espace utilisé'"
+                            value="state.kpis.total_size_fmt"
+                            delta="'stockage local'"
+                            icon="'fa fa-hdd-o'"/>
+        </div>
+
+        <!-- Barre de recherche -->
+        <div class="civora-dochome-search">
+            <i class="fa fa-search"/>
+            <input type="text"
+                   placeholder="Rechercher dans tous les documents…"
+                   t-att-value="state.search"
+                   t-on-input="(ev) => this.onSearchInput(ev)"
+                   t-on-keydown="(ev) => this.onSearchSubmit(ev)"/>
+        </div>
+
+        <div t-if="state.loading" class="civora-dochome-loading">
+            <i class="fa fa-circle-o-notch fa-spin"/> Chargement…
+        </div>
+
+        <t t-else="">
+            <!-- Section Dossiers -->
+            <div class="civora-dochome-section-title">Dossiers</div>
+            <div class="civora-dochome-folders">
+                <div t-foreach="state.folders" t-as="f" t-key="f.slug"
+                     class="civora-dochome-folder"
+                     t-on-click="() => this.openFolder(f.slug)">
+                    <div t-att-class="'civora-dochome-folder-ico civora-dochome-folder-ico-' + folderMeta(f.slug).color">
+                        <i t-att-class="'fa ' + folderMeta(f.slug).icon"/>
+                    </div>
+                    <div class="civora-dochome-folder-name" t-esc="f.name"/>
+                    <div class="civora-dochome-folder-count">
+                        <t t-esc="f.count"/> document<t t-if="f.count > 1">s</t>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section Documents récents -->
+            <div class="civora-dochome-recent">
+                <div class="civora-dochome-recent-head">
+                    <h2 class="civora-dochome-section-title">Documents récents</h2>
+                    <div class="civora-dochome-recent-head-r">
+                        <div class="civora-dochome-viewtoggle">
+                            <button t-att-class="'civora-dochome-viewbtn' + (state.viewMode === 'grid' ? ' is-active' : '')"
+                                    t-on-click="() => this.setViewMode('grid')" title="Vue grille">
+                                <i class="fa fa-th-large"/>
+                            </button>
+                            <button t-att-class="'civora-dochome-viewbtn' + (state.viewMode === 'list' ? ' is-active' : '')"
+                                    t-on-click="() => this.setViewMode('list')" title="Vue liste">
+                                <i class="fa fa-list"/>
+                            </button>
+                        </div>
+                        <CivoraBadge label="'Classification manuelle'" variant="'info'"/>
+                    </div>
+                </div>
+                <div t-if="!state.recentDocs.length" class="civora-dochome-empty">
+                    <i class="fa fa-folder-open-o"/>
+                    <div class="civora-dochome-empty-t">Aucun document</div>
+                    <p>Cliquez sur <b>Uploader</b> pour ajouter votre premier fichier.</p>
+                </div>
+
+                <!-- ===== VUE GRILLE ===== -->
+                <div t-elif="state.viewMode === 'grid'" class="civora-dochome-grid">
+                    <div t-foreach="state.recentDocs" t-as="d" t-key="d.id"
+                         class="civora-dochome-card"
+                         t-on-click="() => this.openDocument(d)">
+                        <div class="civora-dochome-card-thumb">
+                            <i t-att-class="docIcon(d)"/>
+                        </div>
+                        <div class="civora-dochome-card-body">
+                            <div class="civora-dochome-card-title" t-esc="d.name"/>
+                            <div class="civora-dochome-card-meta" t-esc="d.res_display || '—'"/>
+                            <div class="civora-dochome-card-foot">
+                                <CivoraBadge label="docTypeMeta(d.document_type).label" variant="'neutral'"/>
+                                <CivoraBadge label="stateMeta(d.state).label" variant="stateMeta(d.state).variant"/>
+                            </div>
+                            <div class="civora-dochome-card-date">
+                                <t t-esc="fmtDate(d.date_uploaded)"/> · <t t-esc="fmtSize(d.file_size)"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== VUE LISTE ===== -->
+                <div t-else="" class="civora-dochome-list">
+                    <div t-foreach="state.recentDocs" t-as="d" t-key="d.id"
+                         class="civora-dochome-row"
+                         t-on-click="() => this.openDocument(d)">
+                        <div class="civora-dochome-row-ico">
+                            <i t-att-class="docIcon(d)"/>
+                        </div>
+                        <div class="civora-dochome-row-b">
+                            <div class="civora-dochome-row-n" t-esc="d.name"/>
+                            <div class="civora-dochome-row-sub">
+                                <t t-if="d.res_display">
+                                    <t t-esc="d.res_display"/> ·
+                                </t>
+                                <t t-esc="fmtSize(d.file_size)"/>
+                            </div>
+                        </div>
+                        <CivoraBadge label="docTypeMeta(d.document_type).label" variant="'neutral'"/>
+                        <CivoraBadge label="stateMeta(d.state).label" variant="stateMeta(d.state).variant"/>
+                        <div class="civora-dochome-row-date" t-esc="fmtDate(d.date_uploaded)"/>
+                        <span class="civora-dochome-row-open">Ouvrir</span>
+                    </div>
+                </div>
+            </div>
+        </t>
+
+        <!-- Drawer upload -->
+        <DocumentDrawer t-if="state.uploadDrawer"
+                        doc="null"
+                        onClose="() => this.closeUploadDrawer()"
+                        onSaved="() => this.onUploadSaved()"/>
+    </div>
+</t>
+
+</templates>

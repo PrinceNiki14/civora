@@ -304,10 +304,15 @@ export class CivoraPropertiesScreen extends Component {
 
     // --- Navigation / creation / edition ------------------------------
     openProperty(p) {
+        const siblingIds = this.state.properties.map((x) => x.id);
         this.action.doAction({
             type: "ir.actions.client",
             tag: "civora.property_360",
-            params: { propertyId: p.id },
+            params: {
+                propertyId: p.id,
+                siblingIds,
+                origin: { tag: "civora.properties", label: "Biens" },
+            },
             target: "current",
         });
     }

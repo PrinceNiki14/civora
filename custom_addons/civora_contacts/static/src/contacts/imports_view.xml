@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_contacts.ImportsView">
+    <div class="civora-imports">
+        <div class="civora-imports-grid">
+            <!-- ============ Zone principale ============ -->
+            <div class="civora-imports-main">
+                <!-- Étape 1 : dropzone -->
+                <div t-if="state.step === 'idle'"
+                     t-att-class="'civora-imports-dropzone' + (state.dragActive ? ' is-active' : '')"
+                     t-on-dragenter="(ev) => this.onDragEnter(ev)"
+                     t-on-dragleave="(ev) => this.onDragLeave(ev)"
+                     t-on-dragover="(ev) => this.onDragOver(ev)"
+                     t-on-drop="(ev) => this.onDrop(ev)">
+                    <i class="fa fa-cloud-upload"/>
+                    <div class="civora-imports-dz-title">Déposez un fichier CSV ou Excel</div>
+                    <div class="civora-imports-dz-sub">Mapping automatique · Détection des doublons</div>
+                    <label class="civora-btn civora-btn-accent civora-imports-file-lbl">
+                        <i class="fa fa-folder-open-o"/> Parcourir un fichier
+                        <input type="file" accept=".csv,.xlsx,.xls" class="civora-imports-file-in"
+                               t-on-change="(ev) => this.onFileChange(ev)"/>
+                    </label>
+                    <div class="civora-imports-dz-template">
+                        <span>Vous n'avez pas de fichier ?</span>
+                        <button class="civora-imports-dz-tpl-btn" t-on-click="() => this.downloadTemplate()">
+                            <i class="fa fa-download"/> Télécharger le modèle CSV
+                        </button>
+                    </div>
+                    <div t-if="state.error" class="civora-imports-error">
+                        <i class="fa fa-exclamation-circle"/> <t t-esc="state.error"/>
+                    </div>
+                </div>
+
+                <!-- Étape 2 : parsing en cours -->
+                <div t-if="state.step === 'previewing'" class="civora-imports-loading">
+                    <i class="fa fa-circle-o-notch fa-spin"/> Analyse du fichier…
+                </div>
+
+                <!-- Étape 3 : preview + mapping -->
+                <div t-if="state.step === 'preview_ready'" class="civora-imports-preview">
+                    <div class="civora-imports-p-h">
+                        <div>
+                            <div class="civora-imports-p-title" t-esc="state.fileName"/>
+                            <div class="civora-imports-p-sub">
+                                <t t-esc="state.totalRows"/> lignes · <t t-esc="fmtSize(state.fileSize)"/>
+                            </div>
+                        </div>
+                        <button class="civora-btn civora-btn-outline" t-on-click="() => this.reset()">
+                            <i class="fa fa-times"/> Annuler
+                        </button>
+                    </div>
+
+                    <div class="civora-imports-mapping">
+                        <div class="civora-imports-map-title">Mapping des colonnes</div>
+                        <div class="civora-imports-map-hint">
+                            Associez chaque colonne du fichier à un champ CIVORA. Le champ
+                            <b>Nom</b> est obligatoire.
+                        </div>
+                        <div class="civora-imports-map-grid">
+                            <div t-foreach="state.headers" t-as="h" t-key="h_index"
+                                 class="civora-imports-map-item">
+                                <div class="civora-imports-map-src">
+                                    <div class="civora-imports-map-col-idx"><t t-esc="h_index + 1"/></div>
+                                    <div class="civora-imports-map-col-txt">
+                                        <div class="civora-imports-map-col-name" t-esc="h || 'Sans titre'"/>
+                                        <div t-if="state.preview.length &amp;&amp; state.preview[0][h_index]"
+                                             class="civora-imports-map-col-sample"
+                                             t-esc="'Ex: ' + state.preview[0][h_index]"/>
+                                    </div>
+                                </div>
+                                <i class="fa fa-long-arrow-right civora-imports-map-arrow"/>
+                                <select class="civora-imports-map-tgt"
+                                        t-att-value="getMapping(h_index)"
+                                        t-on-change="(ev) => this.setMapping(h_index, ev)">
+                                    <option value="">— Ignorer —</option>
+                                    <option t-foreach="state.availableFields" t-as="f" t-key="f.code"
+                                            t-att-value="f.code"
+                                            t-att-selected="getMapping(h_index) === f.code"
+                                            t-esc="f.label"/>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Preview des 5 premières lignes -->
+                    <div class="civora-imports-tblwrap" t-if="state.preview.length">
+                        <div class="civora-imports-tbl-title">Aperçu des 5 premières lignes</div>
+                        <table class="civora-imports-tbl">
+                            <thead>
+                                <tr>
+                                    <th t-foreach="state.headers" t-as="h" t-key="h_index"
+                                        t-esc="h || 'Col ' + (h_index + 1)"/>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="state.preview" t-as="row" t-key="row_index">
+                                    <td t-foreach="row" t-as="cell" t-key="cell_index" t-esc="cell"/>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="civora-imports-options">
+                        <label class="civora-imports-checkbox">
+                            <input type="checkbox"
+                                   t-att-checked="state.skipDuplicates"
+                                   t-on-change="(ev) => this.toggleSkipDuplicates(ev)"/>
+                            <span>Ignorer les doublons (détection sur nom, email, téléphone)</span>
+                        </label>
+                    </div>
+
+                    <div t-if="state.error" class="civora-imports-error">
+                        <i class="fa fa-exclamation-circle"/> <t t-esc="state.error"/>
+                    </div>
+
+                    <div class="civora-imports-actions">
+                        <button class="civora-btn civora-btn-accent"
+                                t-att-disabled="!hasNameMapping()"
+                                t-on-click="() => this.runImport()">
+                            <i class="fa fa-play"/> Lancer l'import
+                            (<t t-esc="state.totalRows"/> lignes)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Étape 4 : import en cours -->
+                <div t-if="state.step === 'importing'" class="civora-imports-loading">
+                    <i class="fa fa-circle-o-notch fa-spin"/> Import en cours (<t t-esc="state.totalRows"/> lignes)…
+                </div>
+
+                <!-- Étape 5 : résumé -->
+                <div t-if="state.step === 'done' &amp;&amp; state.summary" class="civora-imports-summary">
+                    <div class="civora-imports-summary-h">
+                        <i class="fa fa-check-circle civora-imports-summary-ok"/>
+                        <div>
+                            <div class="civora-imports-summary-title">Import terminé</div>
+                            <div class="civora-imports-summary-sub" t-esc="state.fileName"/>
+                        </div>
+                    </div>
+                    <div class="civora-imports-summary-stats">
+                        <div class="civora-imports-summary-stat">
+                            <div class="civora-imports-summary-stat-v" t-esc="state.summary.imported"/>
+                            <div class="civora-imports-summary-stat-l">Créés</div>
+                        </div>
+                        <div class="civora-imports-summary-stat">
+                            <div class="civora-imports-summary-stat-v civora-imports-summary-warning"
+                                 t-esc="state.summary.duplicates"/>
+                            <div class="civora-imports-summary-stat-l">Doublons ignorés</div>
+                        </div>
+                        <div class="civora-imports-summary-stat">
+                            <div t-att-class="'civora-imports-summary-stat-v' + (state.summary.errors ? ' civora-imports-summary-danger' : '')"
+                                 t-esc="state.summary.errors"/>
+                            <div class="civora-imports-summary-stat-l">Erreurs</div>
+                        </div>
+                    </div>
+                    <button class="civora-btn civora-btn-outline" t-on-click="() => this.reset()">
+                        <i class="fa fa-plus"/> Nouvel import
+                    </button>
+                </div>
+            </div>
+
+            <!-- ============ Historique ============ -->
+            <div class="civora-imports-history">
+                <div class="civora-imports-history-h">Imports récents</div>
+                <div t-if="state.historyLoading" class="civora-imports-loading civora-imports-loading-sm">
+                    <i class="fa fa-circle-o-notch fa-spin"/>
+                </div>
+                <div t-elif="!state.history.length" class="civora-imports-history-empty">
+                    Aucun import réalisé
+                </div>
+                <div t-else="" class="civora-imports-history-list">
+                    <div t-foreach="state.history" t-as="h" t-key="h.id"
+                         class="civora-imports-history-item">
+                        <div class="civora-imports-history-name" t-esc="h.name"/>
+                        <div class="civora-imports-history-meta">
+                            <t t-esc="fmtDate(h.date)"/>
+                            <span t-if="h.user_name"> · <t t-esc="h.user_name"/></span>
+                        </div>
+                        <div class="civora-imports-history-stats">
+                            <CivoraBadge label="stateLabel(h.state)" variant="stateVariant(h.state)"/>
+                            <span t-if="h.imported_count" class="civora-imports-history-stat">
+                                <i class="fa fa-user-plus"/> <t t-esc="h.imported_count"/>
+                            </span>
+                            <span t-if="h.duplicates_count" class="civora-imports-history-stat civora-imports-history-warn">
+                                <i class="fa fa-copy"/> <t t-esc="h.duplicates_count"/>
+                            </span>
+                            <span t-if="h.errors_count" class="civora-imports-history-stat civora-imports-history-danger">
+                                <i class="fa fa-exclamation-triangle"/> <t t-esc="h.errors_count"/>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</t>
+
+</templates>

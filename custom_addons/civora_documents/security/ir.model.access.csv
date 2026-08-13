@@ -1,0 +1,11 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_civora_document_user,civora.document user,model_civora_document,base.group_user,1,1,1,1
+access_civora_document_admin,civora.document admin,model_civora_document,base.group_system,1,1,1,1
+access_civora_document_tag_user,civora.document.tag user,model_civora_document_tag,base.group_user,1,1,1,0
+access_civora_document_tag_admin,civora.document.tag admin,model_civora_document_tag,base.group_system,1,1,1,1
+access_civora_document_version_user,civora.document.version user,model_civora_document_version,base.group_user,1,0,1,0
+access_civora_document_version_admin,civora.document.version admin,model_civora_document_version,base.group_system,1,1,1,1
+access_civora_document_signer_user,civora.document.signer user,model_civora_document_signer,base.group_user,1,1,1,1
+access_civora_document_signer_admin,civora.document.signer admin,model_civora_document_signer,base.group_system,1,1,1,1
+access_civora_document_audit_user,civora.document.audit user,model_civora_document_audit,base.group_user,1,0,1,0
+access_civora_document_audit_admin,civora.document.audit admin,model_civora_document_audit,base.group_system,1,1,1,1

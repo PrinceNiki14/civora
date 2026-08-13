@@ -12,6 +12,18 @@
                 </div>
             </div>
             <div class="civora-leads-head-actions">
+                <button t-att-class="'civora-btn civora-btn-outline civora-leads-filtersbtn' + (activeFilterCount ? ' is-active' : '')"
+                        t-on-click="() => this.openFilters()">
+                    <i class="fa fa-sliders"/> Filtres
+                    <span t-if="activeFilterCount" class="civora-leads-filterbadge" t-esc="activeFilterCount"/>
+                </button>
+                <button t-if="activeFilterCount" class="civora-leads-clearfilters" title="Effacer les filtres"
+                        t-on-click="() => this.clearFilters()">
+                    <i class="fa fa-times"/>
+                </button>
+                <button class="civora-btn civora-btn-outline" t-on-click="() => this.exportCsv()">
+                    <i class="fa fa-file-excel-o"/> Exporter
+                </button>
                 <button class="civora-btn civora-btn-outline" t-on-click="() => this.importVisits()">
                     <i class="fa fa-download"/> Importer les visites
                 </button>
@@ -34,6 +46,13 @@
         <div t-if="state.hotCount" class="civora-leads-insight">
             <i class="fa fa-magic"/>
             <span><b t-esc="state.hotCount"/> piste(s) chaude(s) détectée(s) (score &gt; 85) — conversion immédiate recommandée.</span>
+            <button class="civora-btn civora-btn-accent civora-leads-insight-btn"
+                    t-att-disabled="state.autoAssigning"
+                    t-on-click="() => this.autoAssignHot()">
+                <i t-if="state.autoAssigning" class="fa fa-circle-o-notch fa-spin"/>
+                <i t-else="" class="fa fa-magic"/>
+                Auto-assigner
+            </button>
         </div>
 
         <div class="civora-leads-analytics">
@@ -42,7 +61,13 @@
                 <div t-if="!state.sources.length" class="civora-leads-muted">Aucune source.</div>
                 <div t-foreach="state.sources" t-as="s" t-key="s.label" class="civora-leads-src">
                     <div class="civora-leads-src-top">
-                        <span t-esc="s.label"/><b><t t-esc="s.n"/> · <t t-esc="s.pct"/> %</b>
+                        <span class="civora-leads-src-label">
+                            <span t-att-class="'civora-leads-src-ico tone-' + s.tone">
+                                <i t-att-class="'fa ' + s.icon"/>
+                            </span>
+                            <span t-esc="s.label"/>
+                        </span>
+                        <b><t t-esc="s.n"/> · <t t-esc="s.pct"/> %</b>
                     </div>
                     <CivoraProgress value="s.pct" tone="'accent'"/>
                 </div>
@@ -87,7 +112,7 @@
                             <CivoraBadge label="statusMeta(l).label" variant="statusMeta(l).variant"/>
                         </div>
                         <div class="civora-leads-item-m" t-esc="contactLine(l)"/>
-                        <div class="civora-leads-item-src"><i class="fa fa-random"/> <t t-esc="sourceLabel(l)"/></div>
+                        <div class="civora-leads-item-src"><i t-att-class="'fa ' + iconForSource(sourceLabel(l)).icon"/> <t t-esc="sourceLabel(l)"/></div>
                     </div>
                     <div class="civora-leads-item-score">
                         <div class="civora-leads-scorebar">
@@ -115,7 +140,7 @@
                     </div>
 
                     <div class="civora-leads-detail-kv"><span><i class="fa fa-money"/> Budget</span><b t-esc="budgetLabel(selected)"/></div>
-                    <div class="civora-leads-detail-kv"><span><i class="fa fa-random"/> Source</span><b t-esc="sourceLabel(selected)"/></div>
+                    <div class="civora-leads-detail-kv"><span><i t-att-class="'fa ' + iconForSource(sourceLabel(selected)).icon"/> Source</span><b t-esc="sourceLabel(selected)"/></div>
                     <div class="civora-leads-detail-kv"><span><i class="fa fa-building"/> Bien</span><b t-esc="selected.property_id ? selected.property_id[1] : '—'"/></div>
                     <div class="civora-leads-detail-kv"><span><i class="fa fa-user-o"/> Agent</span><b t-esc="agentLabel(selected)"/></div>
                     <div class="civora-leads-detail-kv"><span><i class="fa fa-phone"/> Contact</span><b t-esc="selected.phone or (selected.email or '—')"/></div>
@@ -144,6 +169,85 @@
                         </button>
                     </div>
                 </t>
+            </div>
+        </div>
+
+        <!-- ===== MODAL DE FILTRES AVANCES ===== -->
+        <div t-if="state.filtersOpen" class="civora-leads-modal-backdrop" t-on-click="() => this.closeFilters()">
+            <div class="civora-leads-modal" t-on-click.stop="">
+                <div class="civora-leads-modal-h">
+                    <div class="civora-leads-modal-t">
+                        <i class="fa fa-sliders"/> Filtres avancés
+                    </div>
+                    <button class="civora-leads-modal-x" t-on-click="() => this.closeFilters()">
+                        <i class="fa fa-times"/>
+                    </button>
+                </div>
+                <div class="civora-leads-modal-b">
+                    <div class="civora-fld">
+                        <label>Sources</label>
+                        <div class="civora-leads-chips">
+                            <button t-foreach="state.allSources" t-as="src" t-key="src.id"
+                                    t-att-class="'civora-leads-chip' + (isSourceOn(src.id) ? ' is-on' : '')"
+                                    t-on-click="() => this.toggleFilterSource(src.id)">
+                                <i t-att-class="'fa ' + iconForSource(src.name).icon"/>
+                                <t t-esc="src.name"/>
+                            </button>
+                            <div t-if="!state.allSources.length" class="civora-leads-muted">Aucune source paramétrée.</div>
+                        </div>
+                    </div>
+                    <div class="civora-leads-grid2">
+                        <div class="civora-fld">
+                            <label>Agent</label>
+                            <select t-on-change="(ev) => this.setFilterAgent(ev)">
+                                <option value="">Tous les agents</option>
+                                <option t-foreach="state.allAgents" t-as="u" t-key="u.id"
+                                        t-att-value="u.id"
+                                        t-att-selected="state.filtersDraft.agent_id === u.id"
+                                        t-esc="u.name"/>
+                            </select>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Transaction</label>
+                            <select t-on-change="(ev) => this.setFilterField('transaction', ev)">
+                                <option value="" t-att-selected="!state.filtersDraft.transaction">Toutes</option>
+                                <option value="vente" t-att-selected="state.filtersDraft.transaction === 'vente'">Vente</option>
+                                <option value="location" t-att-selected="state.filtersDraft.transaction === 'location'">Location</option>
+                                <option value="saisonnier" t-att-selected="state.filtersDraft.transaction === 'saisonnier'">Saisonnier</option>
+                            </select>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Budget min (FCFA)</label>
+                            <input type="number" min="0" placeholder="0"
+                                   t-att-value="state.filtersDraft.budget_min"
+                                   t-on-input="(ev) => this.setFilterNumber('budget_min', ev)"/>
+                        </div>
+                        <div class="civora-fld">
+                            <label>Budget max (FCFA)</label>
+                            <input type="number" min="0" placeholder="0 = illimité"
+                                   t-att-value="state.filtersDraft.budget_max"
+                                   t-on-input="(ev) => this.setFilterNumber('budget_max', ev)"/>
+                        </div>
+                        <div class="civora-fld civora-col2">
+                            <label>Ancienneté max (jours)</label>
+                            <input type="number" min="0" placeholder="0 = illimité"
+                                   t-att-value="state.filtersDraft.max_days"
+                                   t-on-input="(ev) => this.setFilterNumber('max_days', ev)"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="civora-leads-modal-f">
+                    <button class="civora-btn civora-btn-ghost" t-on-click="() => this.resetFilters()">
+                        Réinitialiser
+                    </button>
+                    <span class="civora-lf-spacer"/>
+                    <button class="civora-btn civora-btn-outline" t-on-click="() => this.closeFilters()">
+                        Annuler
+                    </button>
+                    <button class="civora-btn civora-btn-accent" t-on-click="() => this.applyFilters()">
+                        <i class="fa fa-check"/> Appliquer
+                    </button>
+                </div>
             </div>
         </div>
 

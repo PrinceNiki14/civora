@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_contacts.RgpdView">
+    <div class="civora-rgpd">
+        <div t-if="state.loading &amp;&amp; !state.kpis" class="civora-rgpd-loading">
+            <i class="fa fa-circle-o-notch fa-spin"/> Chargement…
+        </div>
+        <t t-else="">
+            <!-- KPIs -->
+            <div t-if="state.kpis" class="civora-rgpd-kpis">
+                <CivoraStatCard label="'Opt-in marketing'"
+                                value="state.kpis.opt_in_any + ''"
+                                delta="state.kpis.opt_in_any_pct + '%'"
+                                icon="'fa fa-shield'"/>
+                <CivoraStatCard label="'Opt-in Email'"
+                                value="state.kpis.opt_in_email + ''"
+                                icon="'fa fa-envelope-o'"/>
+                <CivoraStatCard label="'Opt-in WhatsApp'"
+                                value="state.kpis.opt_in_whatsapp + ''"
+                                icon="'fa fa-whatsapp'"/>
+                <CivoraStatCard label="'Conformité globale'"
+                                value="state.kpis.conformity + '%'"
+                                delta="state.kpis.to_update + ' à mettre à jour'"
+                                icon="'fa fa-check-circle-o'"/>
+            </div>
+
+            <!-- Toolbar : filtres + export -->
+            <div class="civora-rgpd-toolbar">
+                <div class="civora-rgpd-toolbar-l">
+                    <div class="civora-fld">
+                        <label>Filtrer par canal</label>
+                        <select t-on-change="(ev) => this.setFilterChannel(ev)">
+                            <option value="">Tous</option>
+                            <option t-foreach="channels" t-as="c" t-key="c.code"
+                                    t-att-value="c.code"
+                                    t-att-selected="state.filterChannel === c.code"
+                                    t-esc="c.label"/>
+                        </select>
+                    </div>
+                    <div class="civora-fld" t-if="state.filterChannel">
+                        <label>Valeur</label>
+                        <select t-on-change="(ev) => this.setFilterValue(ev)">
+                            <option value="">Toutes</option>
+                            <option value="opt_in" t-att-selected="state.filterValue === 'opt_in'">Opt-in</option>
+                            <option value="opt_out" t-att-selected="state.filterValue === 'opt_out'">Opt-out</option>
+                            <option value="none" t-att-selected="state.filterValue === 'none'">Non renseigné</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="civora-rgpd-toolbar-r">
+                    <button class="civora-btn civora-btn-outline"
+                            t-att-disabled="state.exporting"
+                            t-on-click="() => this.exportDpo()">
+                        <i t-att-class="state.exporting ? 'fa fa-circle-o-notch fa-spin' : 'fa fa-download'"/>
+                        <t t-esc="state.exporting ? 'Export…' : 'Export DPO (CSV)'"/>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Compteur -->
+            <div class="civora-rgpd-count">
+                <t t-esc="state.rows.length"/> sur <t t-esc="state.total"/> contact<t t-if="state.total > 1">s</t>
+            </div>
+
+            <!-- Registre -->
+            <div class="civora-card civora-rgpd-table-wrap">
+                <table class="civora-rgpd-table">
+                    <thead>
+                        <tr>
+                            <th>Contact</th>
+                            <th>Email</th>
+                            <th>SMS</th>
+                            <th>WhatsApp</th>
+                            <th>Dernier changement</th>
+                            <th class="civora-rgpd-actions-h">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-if="!state.rows.length">
+                            <td colspan="6" class="civora-rgpd-empty">Aucun contact trouvé.</td>
+                        </tr>
+                        <tr t-foreach="state.rows" t-as="r" t-key="r.id"
+                            t-att-class="'civora-rgpd-row' + (r.is_anonymized ? ' is-anonymized' : '')">
+                            <td>
+                                <div class="civora-rgpd-name" t-esc="r.name"/>
+                                <div t-if="r.email || r.phone" class="civora-rgpd-sub">
+                                    <t t-if="r.email"><i class="fa fa-envelope-o"/> <t t-esc="r.email"/></t>
+                                    <t t-if="r.email &amp;&amp; r.phone"> · </t>
+                                    <t t-if="r.phone"><i class="fa fa-phone"/> <t t-esc="r.phone"/></t>
+                                </div>
+                            </td>
+                            <td><CivoraBadge label="consentMeta(r.consent_email).label" variant="consentMeta(r.consent_email).variant"/></td>
+                            <td><CivoraBadge label="consentMeta(r.consent_sms).label" variant="consentMeta(r.consent_sms).variant"/></td>
+                            <td><CivoraBadge label="consentMeta(r.consent_whatsapp).label" variant="consentMeta(r.consent_whatsapp).variant"/></td>
+                            <td class="civora-rgpd-muted">
+                                <t t-esc="r.last_consent_date ? fmtDate(r.last_consent_date) : 'Jamais'"/>
+                            </td>
+                            <td class="civora-rgpd-actions">
+                                <button class="civora-rgpd-a-btn" title="Historique consentements"
+                                        t-on-click="() => this.openHistory(r)">
+                                    <i class="fa fa-history"/>
+                                </button>
+                                <button class="civora-rgpd-a-btn" title="Exporter données personnelles"
+                                        t-on-click="() => this.exportPersonal(r)">
+                                    <i class="fa fa-download"/>
+                                </button>
+                                <button class="civora-rgpd-a-btn civora-rgpd-a-btn-danger"
+                                        t-att-disabled="r.is_anonymized"
+                                        t-att-title="r.is_anonymized ? 'Déjà anonymisé' : 'Droit à l\'oubli'"
+                                        t-on-click="() => this.anonymize(r)">
+                                    <i class="fa fa-user-times"/>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div t-if="hasMore" class="civora-rgpd-loadmore">
+                    <button class="civora-btn civora-btn-outline" t-on-click="() => this.loadMore()">
+                        <i class="fa fa-chevron-down"/> Charger plus
+                        (<t t-esc="state.rows.length"/> / <t t-esc="state.total"/>)
+                    </button>
+                </div>
+            </div>
+        </t>
+
+        <!-- Panneau historique (drawer léger) -->
+        <div t-if="state.historyOpen" class="civora-rgpd-drawer-backdrop"
+             t-on-click="() => this.closeHistory()"/>
+        <div t-if="state.historyOpen" class="civora-rgpd-drawer">
+            <div class="civora-rgpd-drawer-h">
+                <div>
+                    <div class="civora-rgpd-drawer-title">Historique des consentements</div>
+                    <div class="civora-rgpd-drawer-sub" t-esc="state.historyContact.name"/>
+                </div>
+                <button class="civora-rgpd-drawer-close" t-on-click="() => this.closeHistory()">
+                    <i class="fa fa-times"/>
+                </button>
+            </div>
+            <div class="civora-rgpd-drawer-body">
+                <div t-if="state.historyLoading" class="civora-rgpd-loading">
+                    <i class="fa fa-circle-o-notch fa-spin"/> Chargement…
+                </div>
+                <t t-elif="!state.historyEvents.length">
+                    <div class="civora-rgpd-empty">Aucun changement enregistré pour ce contact.</div>
+                </t>
+                <div t-else="" class="civora-rgpd-events">
+                    <div t-foreach="state.historyEvents" t-as="e" t-key="e.id"
+                         class="civora-rgpd-event">
+                        <div class="civora-rgpd-event-h">
+                            <CivoraBadge label="e.channel_label" variant="'info'"/>
+                            <span class="civora-rgpd-event-date" t-esc="fmtDateTime(e.date)"/>
+                        </div>
+                        <div class="civora-rgpd-event-body">
+                            <CivoraBadge label="e.old_label" variant="consentMeta(e.old_value).variant"/>
+                            <i class="fa fa-arrow-right civora-rgpd-event-arrow"/>
+                            <CivoraBadge label="e.new_label" variant="consentMeta(e.new_value).variant"/>
+                        </div>
+                        <div class="civora-rgpd-event-meta">
+                            Par <b t-esc="e.user_name"/> · Source : <t t-esc="e.source_label"/>
+                            <span t-if="e.note"> · <i t-esc="e.note"/></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</t>
+
+</templates>

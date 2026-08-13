@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_documents.DocumentPreview">
+    <div class="civora-docpv">
+        <div t-if="isPdf" class="civora-docpv-pdf">
+            <iframe t-att-src="url" title="Aperçu PDF"/>
+        </div>
+        <div t-elif="isImage" class="civora-docpv-img">
+            <img t-att-src="url" t-att-alt="props.name || 'Document'"/>
+        </div>
+        <div t-else="" class="civora-docpv-fallback">
+            <i class="fa fa-file-o"/>
+            <div class="civora-docpv-fallback-t">Aperçu non disponible</div>
+            <p>Ce type de fichier ne peut pas être prévisualisé directement.</p>
+            <a class="civora-btn civora-btn-accent" t-att-href="downloadUrl" target="_blank">
+                <i class="fa fa-download"/> Télécharger
+            </a>
+        </div>
+    </div>
+</t>
+
+</templates>

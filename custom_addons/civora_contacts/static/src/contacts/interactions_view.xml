@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_contacts.InteractionsView">
+    <div class="civora-interactions">
+
+        <div t-if="state.loading" class="civora-an-loading">
+            <i class="fa fa-circle-o-notch fa-spin"/> Chargement du flux…
+        </div>
+
+        <div t-elif="state.error" class="civora-an-error">
+            <i class="fa fa-exclamation-triangle"/> <span t-esc="state.error"/>
+            <button class="civora-an-retry" t-on-click="() => this.reload()">Réessayer</button>
+        </div>
+
+        <t t-else="">
+            <!-- ══════════ KPIs ══════════ -->
+            <div t-if="state.stats" class="civora-an-kpis">
+                <CivoraStatCard label="'Interactions'"
+                                value="state.stats.total + ''"
+                                delta="'sur ' + periodLabel"
+                                icon="'fa fa-exchange'"/>
+                <CivoraStatCard label="'Canal dominant'"
+                                value="state.stats.dominant_label"
+                                delta="state.stats.dominant_count + ' échanges'"
+                                icon="'fa fa-signal'"/>
+                <CivoraStatCard label="'Contacts touchés'"
+                                value="state.stats.contacts_touched + ''"
+                                icon="'fa fa-address-book-o'"/>
+                <CivoraStatCard label="'Agents actifs'"
+                                value="state.stats.agents_active + ''"
+                                icon="'fa fa-user-o'"/>
+            </div>
+
+            <!-- ══════════ Barre de filtres ══════════ -->
+            <div class="civora-an-toolbar">
+                <div class="civora-an-toolbar-l">
+                    <select class="civora-an-select"
+                            t-att-value="state.filters.kind"
+                            t-on-change="(ev) => this.setFilter('kind', ev.target.value)">
+                        <option value="">Tous les canaux</option>
+                        <option t-foreach="state.channels" t-as="c" t-key="c.code"
+                                t-att-value="c.code"
+                                t-att-selected="state.filters.kind === c.code ? 'selected' : false"
+                                t-esc="c.label"/>
+                    </select>
+
+                    <select class="civora-an-select"
+                            t-att-value="state.filters.agent_id"
+                            t-on-change="(ev) => this.setFilter('agent_id', ev.target.value)">
+                        <option value="">Tous les agents</option>
+                        <option t-foreach="state.agents" t-as="a" t-key="a.id"
+                                t-att-value="a.id"
+                                t-att-selected="(state.filters.agent_id + '') === (a.id + '') ? 'selected' : false"
+                                t-esc="a.name"/>
+                    </select>
+
+                    <select class="civora-an-select"
+                            t-att-value="state.filters.days"
+                            t-on-change="(ev) => this.setFilter('days', ev.target.value)">
+                        <option t-foreach="periodOptions" t-as="p" t-key="p.value"
+                                t-att-value="p.value"
+                                t-att-selected="state.filters.days === p.value ? 'selected' : false"
+                                t-esc="p.label"/>
+                    </select>
+
+                    <button t-if="activeFilterCount" class="civora-an-reset"
+                            t-on-click="() => this.resetFilters()">
+                        <i class="fa fa-times"/> Réinitialiser
+                        <span class="civora-an-reset-n" t-esc="activeFilterCount"/>
+                    </button>
+                </div>
+                <div class="civora-an-toolbar-r" t-esc="state.total + ' interaction' + (state.total > 1 ? 's' : '')"/>
+            </div>
+
+            <!-- ══════════ 2 colonnes : flux + canaux ══════════ -->
+            <div class="civora-an-cols21">
+
+                <!-- Flux -->
+                <div class="civora-an-card">
+                    <div class="civora-an-card-h">
+                        <h3><i class="fa fa-bolt"/> Flux d'interactions</h3>
+                    </div>
+
+                    <div t-if="!state.rows.length" class="civora-an-empty">
+                        Aucune interaction sur cette période.
+                    </div>
+
+                    <div class="civora-an-feed">
+                        <div t-foreach="state.rows" t-as="r" t-key="r.id"
+                             class="civora-an-feed-item"
+                             t-on-click="() => this.onContactClick(r)">
+                            <CivoraAvatar name="r.contact_name" size="'md'"/>
+                            <div class="civora-an-feed-body">
+                                <div class="civora-an-feed-h">
+                                    <span class="civora-an-feed-who" t-esc="r.contact_name"/>
+                                    <CivoraBadge label="r.kind_label" variant="channelVariant(r.kind)"/>
+                                    <span class="civora-an-feed-ago" t-esc="r.ago"/>
+                                </div>
+                                <div class="civora-an-feed-title" t-esc="r.title"/>
+                                <div t-if="r.description" class="civora-an-feed-desc" t-esc="r.description"/>
+                                <div t-if="r.agent_name" class="civora-an-feed-agent"
+                                     t-esc="'par ' + r.agent_name"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div t-if="state.hasMore" class="civora-an-more">
+                        <button class="civora-an-more-btn"
+                                t-att-disabled="state.loadingMore ? 'disabled' : false"
+                                t-on-click="() => this.loadMore()">
+                            <i t-att-class="state.loadingMore ? 'fa fa-circle-o-notch fa-spin' : 'fa fa-chevron-down'"/>
+                            <span t-esc="state.loadingMore ? 'Chargement…' : 'Charger plus'"/>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Canaux -->
+                <div class="civora-an-card">
+                    <div class="civora-an-card-h">
+                        <h3>Canaux</h3>
+                        <span class="civora-an-card-hint" t-esc="periodLabel"/>
+                    </div>
+
+                    <div t-if="state.stats &amp;&amp; !state.stats.total" class="civora-an-empty">
+                        Aucune donnée sur cette période.
+                    </div>
+
+                    <div t-if="state.stats" class="civora-an-channels">
+                        <div t-foreach="state.stats.channels" t-as="c" t-key="c.code"
+                             class="civora-an-channel">
+                            <div class="civora-an-channel-h">
+                                <span class="civora-an-channel-l">
+                                    <i t-att-class="'fa ' + c.icon"/>
+                                    <span t-esc="c.label"/>
+                                </span>
+                                <span class="civora-an-channel-v">
+                                    <strong t-esc="c.count"/>
+                                    <span class="civora-an-channel-share" t-esc="c.share + '%'"/>
+                                </span>
+                            </div>
+                            <CivoraProgress value="c.pct" tone="'success'"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </div>
+</t>
+
+</templates>

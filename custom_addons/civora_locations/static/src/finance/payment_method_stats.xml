@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="civora_locations.PaymentMethodStats">
+        <div class="civora-pmstats">
+
+            <div class="civora-pmstats-header">
+                <div class="civora-pmstats-title">
+                    <i class="fa fa-pie-chart"/>
+                    Répartition des encaissements par méthode
+                </div>
+            </div>
+
+            <!-- Chargement -->
+            <div t-if="state.loading" class="civora-pmstats-loading">
+                <i class="fa fa-circle-o-notch fa-spin"/>
+            </div>
+
+            <!-- État vide -->
+            <div t-elif="isEmpty" class="civora-pmstats-empty">
+                <div class="civora-pmstats-empty-ico">
+                    <i class="fa fa-bar-chart"/>
+                </div>
+                <div class="civora-pmstats-empty-text">
+                    Aucun paiement encaissé pour l'instant.
+                    Les statistiques apparaîtront dès qu'un premier versement sera enregistré.
+                </div>
+            </div>
+
+            <!-- Contenu principal -->
+            <div t-else="" class="civora-pmstats-body">
+
+                <!-- Donut SVG -->
+                <div class="civora-pmstats-donut-wrap">
+                    <svg viewBox="0 0 120 120" class="civora-pmstats-donut"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <!-- Cercle de fond -->
+                        <circle cx="60" cy="60" r="45" fill="none"
+                                stroke="#f0f2f5" stroke-width="18"/>
+                        <!-- Segments colorés -->
+                        <t t-foreach="donutSegments" t-as="seg" t-key="seg_index">
+                            <path t-att-d="seg.d"
+                                  fill="none"
+                                  t-att-stroke="seg.color"
+                                  t-att-stroke-width="seg.strokeWidth"
+                                  stroke-linecap="butt"/>
+                        </t>
+                    </svg>
+                    <div class="civora-pmstats-donut-center">
+                        <div class="civora-pmstats-donut-total-label">Total encaissé</div>
+                        <div class="civora-pmstats-donut-total-value"
+                             t-esc="fmtAmount(state.total)"/>
+                    </div>
+                </div>
+
+                <!-- Liste des méthodes -->
+                <div class="civora-pmstats-list">
+                    <div t-foreach="state.stats" t-as="s" t-key="s.method"
+                         class="civora-pmstats-row">
+                        <div class="civora-pmstats-row-color"
+                             t-attf-style="background-color: {{colorFor(s.method)}}"/>
+                        <div class="civora-pmstats-row-info">
+                            <div class="civora-pmstats-row-name" t-esc="s.method_label"/>
+                            <div class="civora-pmstats-row-sub">
+                                <t t-esc="fmtCount(s.count)"/>
+                                · <b t-esc="s.percent + '%'"/>
+                            </div>
+                        </div>
+                        <div class="civora-pmstats-row-amount"
+                             t-esc="fmtAmount(s.amount)"/>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </t>
+
+</templates>

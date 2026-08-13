@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+
+    <!-- Pièces couramment exigées pour une transaction foncière
+         ou immobilière en Côte d'Ivoire.
+         is_essential : pièce sans laquelle la vente est juridiquement
+         fragile — sert à alerter l'agence sur un dossier incomplet. -->
+
+    <record id="saledoc_acd" model="civora.sale.doc.type">
+        <field name="company_id" eval="False"/>
+        <field name="name">ACD (Arrêté de Concession Définitive)</field>
+        <field name="code">acd</field>
+        <field name="scope">tous</field>
+        <field name="is_essential" eval="True"/>
+        <field name="sequence">10</field>
+    </record>
+
+    <record id="saledoc_titre_foncier" model="civora.sale.doc.type">
+        <field name="company_id" eval="False"/>
+        <field name="name">Titre Foncier</field>
+        <field name="code">titre_foncier</field>
+        <field name="scope">tous</field>
+        <field name="is_essential" eval="True"/>
+        <field name="sequence">20</field>
+    </record>
+
+    <record id="saledoc_lettre_attribution" model="civora.sale.doc.type">
+        <field name="company_id" eval="False"/>
+        <field name="name">Lettre d'attribution</field>
+        <field name="code">lettre_attribution</field>
+        <field name="scope">terrain</field>
+        <field name="sequence">30</field>
+    </record>
+
+    <record id="saledoc_certificat_propriete" model="civora.sale.doc.type">
+        <field name="company_id" eval="False"/>
+        <field name="name">Certificat de propriété</field>
+        <field name="code">certificat_propriete</field>
+        <field name="scope">tous</field>
+        <field name="is_essential" eval="True"/>
+        <field name="sequence">40</field>
+    </record>
+
+    <record id="saledoc_permis_construire" model="civora.sale.doc.type">
+        <field name="company_id" eval="False"/>
+        <field name="name">Permis de construire</field>
+        <field name="code">permis_construire</field>
+        <field name="scope">bati</field>
+        <field name="sequence">50</field>
+    </record>
+
+    <record id="saledoc_plan_cadastral" model="civora.sale.doc.type">
+        <field name="company_id" eval="False"/>
+        <field name="name">Plan cadastral</field>
+        <field name="code">plan_cadastral</field>
+        <field name="scope">tous</field>
+        <field name="sequence">60</field>
+    </record>
+
+    <record id="saledoc_quitus_fiscal" model="civora.sale.doc.type">
+        <field name="company_id" eval="False"/>
+        <field name="name">Quitus fiscal</field>
+        <field name="code">quitus_fiscal</field>
+        <field name="scope">tous</field>
+        <field name="sequence">70</field>
+    </record>
+
+    <record id="saledoc_certificat_non_litige" model="civora.sale.doc.type">
+        <field name="company_id" eval="False"/>
+        <field name="name">Certificat de non-litige</field>
+        <field name="code">certificat_non_litige</field>
+        <field name="scope">tous</field>
+        <field name="sequence">80</field>
+    </record>
+
+    <record id="saledoc_acte_notarie" model="civora.sale.doc.type">
+        <field name="company_id" eval="False"/>
+        <field name="name">Acte notarié</field>
+        <field name="code">acte_notarie</field>
+        <field name="scope">tous</field>
+        <field name="sequence">90</field>
+    </record>
+
+</odoo>

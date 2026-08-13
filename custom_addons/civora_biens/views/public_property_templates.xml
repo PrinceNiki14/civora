@@ -45,15 +45,102 @@
                 .cv-cline:last-child{border-bottom:0;padding-bottom:0;}
                 .cv-cline span{color:var(--muted);}
                 .cv-cline b{font-weight:600;text-align:right;}
+
+
+                /* ══════════ Localisation ══════════ */
+                .cv-map-wrap{border-radius:var(--radius);overflow:hidden;
+                    border:1px solid var(--border);}
+                .cv-map{height:340px;width:100%;background:#e9eef3;}
+                @media(max-width:560px){.cv-map{height:250px;}}
+                .cv-map-foot{display:flex;align-items:center;justify-content:space-between;
+                    gap:12px;flex-wrap:wrap;padding:12px 16px;background:var(--card);
+                    border-top:1px solid var(--border);}
+                .cv-map-addr{font-size:13.5px;color:var(--fg);font-weight:600;}
+                .cv-map-addr small{display:block;font-weight:400;color:var(--muted);
+                    font-size:12px;margin-top:2px;}
+                .cv-map-link{display:inline-flex;align-items:center;gap:7px;
+                    background:var(--navy);color:#fff;text-decoration:none;
+                    border-radius:9px;padding:9px 15px;font-size:13px;font-weight:600;
+                    white-space:nowrap;}
+                .cv-map-link:hover{opacity:.9;}
+                .cv-map-none{padding:18px;background:var(--card);border:1px solid var(--border);
+                    border-radius:var(--radius);font-size:13.5px;color:var(--muted);
+                    display:flex;align-items:center;gap:10px;}
+                .leaflet-container{font-family:'Inter',sans-serif;}
+
+                /* ══════════ Modale de demande de visite ══════════ */
+                .cv-ico{font-style:normal;line-height:1;}
+                .cv-cta .cv-btn{display:flex;align-items:center;justify-content:center;gap:8px;}
+
+                .cv-modal{position:fixed;inset:0;z-index:1000;display:none;
+                    align-items:center;justify-content:center;padding:18px;}
+                .cv-modal.is-open{display:flex;}
+                .cv-modal-bd{position:absolute;inset:0;background:rgba(7,17,35,.55);}
+                .cv-modal-box{position:relative;width:100%;max-width:460px;background:var(--card);
+                    border-radius:16px;box-shadow:0 24px 60px rgba(7,17,35,.28);
+                    max-height:92vh;overflow-y:auto;padding:22px;}
+
+                .cv-modal-h{display:flex;align-items:flex-start;justify-content:space-between;
+                    gap:12px;margin-bottom:16px;}
+                .cv-modal-h h3{display:flex;align-items:center;gap:8px;
+                    font-family:'Plus Jakarta Sans';font-weight:700;font-size:17px;color:var(--fg);}
+                .cv-modal-h p{font-size:12.5px;color:var(--muted);margin-top:3px;}
+                .cv-modal-x{background:transparent;border:0;font-size:16px;color:var(--muted);
+                    cursor:pointer;line-height:1;padding:2px 4px;}
+                .cv-modal-x:hover{color:#dc2626;}
+
+                .cv-fld{margin-bottom:14px;}
+                .cv-fld label{display:flex;align-items:center;gap:6px;font-size:12.5px;
+                    font-weight:600;color:#3d4757;margin-bottom:6px;}
+                .cv-req{color:#dc2626;}
+                .cv-grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 12px;}
+                @media(max-width:420px){.cv-grid2{grid-template-columns:1fr;}}
+
+                /* Contrastes mesures (WCAG) :
+                   bordure #7d90a8 sur blanc      3.27:1  (min 3:1 pour un
+                                                   element d'interface)
+                   texte #0b1729 sur champ       15.98:1
+                   placeholder #5f6e82 sur champ  4.62:1
+                   La version precedente utilisait un fond #f6f8fa sur une
+                   carte blanche, soit 1.06:1 : les champs etaient invisibles. */
+                .cv-input{width:100%;box-sizing:border-box;
+                    border:1px solid #7d90a8;border-radius:10px;
+                    background:#eef2f7;padding:12px 13px;
+                    font-family:'Inter',sans-serif;font-size:15px;
+                    color:#0b1729;transition:border-color .15s,box-shadow .15s,background .15s;}
+                .cv-input::placeholder{color:#5f6e82;opacity:1;}
+                .cv-input:hover{border-color:#5f6e82;}
+                .cv-input:focus{outline:none;border-color:#008a54;background:#fff;
+                    box-shadow:0 0 0 3px rgba(0,171,104,.20);}
+                textarea.cv-input{resize:vertical;line-height:1.55;min-height:84px;}
+                /* Le selecteur de date natif doit rester lisible et cliquable */
+                input[type=date].cv-input{min-height:46px;}
+
+                .cv-err{background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;
+                    border-radius:9px;padding:9px 12px;font-size:12.5px;margin-bottom:10px;}
+                .cv-btn:disabled{opacity:.6;cursor:default;}
+                .cv-btn-ghost{background:#fff;color:var(--fg);border:1px solid var(--border);}
+                .cv-legal{font-size:11px;color:var(--muted);text-align:center;margin-top:10px;
+                    line-height:1.5;}
+
+                .cv-done{text-align:center;padding:14px 6px 6px;}
+                .cv-done-ico{width:62px;height:62px;margin:0 auto 16px;border-radius:50%;
+                    background:rgba(0,171,104,.12);color:var(--accent);display:flex;
+                    align-items:center;justify-content:center;font-size:28px;}
+                .cv-done h3{font-family:'Plus Jakarta Sans';font-weight:700;font-size:19px;
+                    color:var(--fg);margin-bottom:8px;}
+                .cv-done p{font-size:13.5px;color:var(--muted);margin-bottom:20px;line-height:1.55;}
+
                 .cv-cta{background:linear-gradient(135deg,var(--navy),#0d2b52);color:#fff;border-radius:var(--radius);padding:20px;}
                 .cv-cta h3{font-family:'Plus Jakarta Sans';font-weight:700;font-size:15px;margin-bottom:8px;}
                 .cv-cta p{font-size:13px;color:#c6cfdb;margin-bottom:14px;}
                 .cv-btn{display:block;width:100%;text-align:center;background:var(--accent);color:#fff;border:0;border-radius:10px;padding:12px;font-weight:600;font-size:14px;text-decoration:none;cursor:pointer;}
-                .cv-input{width:100%;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;border-radius:8px;padding:10px 12px;font-size:13px;margin-bottom:8px;font-family:'Inter';outline:none;}
-                .cv-input::placeholder{color:#aeb9c7;}
-                .cv-input:focus{border-color:var(--accent);}
+                /* L'ancienne regle .cv-input (texte blanc sur fond translucide)
+                   servait le formulaire inline pose sur le bloc navy sombre.
+                   Ce formulaire a ete remplace par la modale sur fond clair :
+                   la regle etait devenue morte, mais elle ecrasait toujours la
+                   nouvelle par ordre de cascade — d'ou des champs invisibles. */
                 .cv-hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0;}
-                .cv-err{background:rgba(230,44,44,.18);color:#ffd7d7;border-radius:8px;padding:8px 10px;font-size:12.5px;margin-bottom:10px;}
                 .cv-foot{text-align:center;color:var(--muted);font-size:12px;margin-top:30px;}
                 /* Immeuble : grille d'unites */
                 .cv-section{margin-top:26px;}
@@ -77,6 +164,7 @@
                 @media(max-width:820px){.cv-grid{grid-template-columns:1fr;}.cv-cover{height:260px;}.cv-units{grid-template-columns:1fr 1fr;}}
                 @media(max-width:560px){.cv-units{grid-template-columns:1fr;}}
             </style>
+        <link rel="stylesheet" href="/civora_biens/static/lib/leaflet/leaflet.css"/>
         </head>
         <body>
             <div class="cv-top">
@@ -173,27 +261,49 @@
                     </div>
 
                     <div class="cv-cta">
-                        <t t-if="sent">
-                            <h3>Merci ! ✅</h3>
-                            <p>Votre demande de visite a bien été transmise à l'agence. Nous vous recontacterons rapidement.</p>
-                        </t>
-                        <t t-else="">
-                            <h3 t-if="is_building">Se renseigner</h3>
-                            <h3 t-else="">Demander une visite</h3>
-                            <p t-if="is_building">Intéressé par une unité ? Laissez vos coordonnées, l'agence vous recontacte.</p>
-                            <p t-else="">Laissez vos coordonnées, l'agence vous recontacte.</p>
-                            <t t-if="form_error">
-                                <div class="cv-err">Merci d'indiquer au minimum votre nom et votre téléphone.</div>
-                            </t>
-                            <form method="post" t-attf-action="/civora/bien/#{token}/visite">
-                                <input type="text" name="website" class="cv-hp" tabindex="-1" autocomplete="off"/>
-                                <input class="cv-input" type="text" name="name" placeholder="Votre nom *" required="required"/>
-                                <input class="cv-input" type="text" name="phone" placeholder="Téléphone *" required="required"/>
-                                <input class="cv-input" type="email" name="email" placeholder="Email (optionnel)"/>
-                                <textarea class="cv-input" name="message" rows="3" placeholder="Message (optionnel)"/>
-                                <button class="cv-btn" type="submit">Envoyer la demande</button>
-                            </form>
-                        </t>
+                        <h3 t-if="is_building">Une unité vous intéresse ?</h3>
+                        <h3 t-else="">Ce bien vous intéresse ?</h3>
+                        <p t-if="is_building">Laissez vos coordonnées, l'agence vous recontacte sous 24h ouvrées.</p>
+                        <p t-else="">Réservez une visite en quelques secondes.</p>
+                        <button type="button" class="cv-btn" id="cv-open-visit">
+                            <span class="cv-ico">&#128197;</span>
+                            <t t-if="is_building">Se renseigner</t>
+                            <t t-else="">Demander une visite</t>
+                        </button>
+                    </div>
+                </div>
+
+
+                <!-- ══════════ LOCALISATION ══════════ -->
+                <div class="cv-section" t-if="has_geo or loc">
+                    <div class="cv-section-h">
+                        <h2>Localisation</h2>
+                    </div>
+
+                    <div t-if="has_geo" class="cv-map-wrap">
+                        <div id="cv-map" class="cv-map"
+                             t-att-data-lat="latitude"
+                             t-att-data-lng="longitude"
+                             t-att-data-label="prop.name or ''"
+                             t-att-data-loc="loc or ''"/>
+                        <div class="cv-map-foot">
+                            <div class="cv-map-addr">
+                                <t t-esc="loc or 'Localisation du bien'"/>
+                                <small t-if="type_label" t-esc="type_label"/>
+                            </div>
+                            <a class="cv-map-link" target="_blank" rel="noopener"
+                               t-attf-href="https://www.google.com/maps/dir/?api=1&amp;destination=#{latitude},#{longitude}">
+                                <span class="cv-ico">&#128205;</span> Itinéraire
+                            </a>
+                        </div>
+                    </div>
+
+                    <div t-else="" class="cv-map-none">
+                        <span class="cv-ico">&#128205;</span>
+                        <span>
+                            <t t-esc="loc"/> — la position exacte sera communiquée
+                            par l'agence lors de la prise de rendez-vous.
+                        </span>
                     </div>
                 </div>
 
@@ -263,8 +373,236 @@
 
                 <div class="cv-foot">Fiche partagée via CIVORA · NK SERVICE</div>
             </div>
+        <!-- ══════════ MODALE : demande de visite ══════════ -->
+        <div class="cv-modal" id="cv-visit-modal" role="dialog" aria-modal="true"
+             aria-labelledby="cv-visit-title"
+             t-att-data-sent="sent and '1' or ''">
+            <div class="cv-modal-bd" id="cv-visit-close-bd"/>
+            <div class="cv-modal-box">
+
+                <!-- Formulaire -->
+                <div id="cv-visit-form-wrap">
+                    <div class="cv-modal-h">
+                        <div>
+                            <h3 id="cv-visit-title">
+                                <span class="cv-ico">&#128197;</span>
+                                <t t-if="is_building">Se renseigner</t>
+                                <t t-else="">Demander une visite</t>
+                            </h3>
+                            <p>Réponse sous 24h ouvrées</p>
+                        </div>
+                        <button type="button" class="cv-modal-x" id="cv-visit-close"
+                                aria-label="Fermer">&#10005;</button>
+                    </div>
+
+                    <form id="cv-visit-form" t-attf-action="/civora/bien/#{token}/visite"
+                          method="post" novalidate="novalidate">
+                        <!-- Pot de miel anti-robot : invisible pour un humain -->
+                        <input type="text" name="website" class="cv-hp" tabindex="-1"
+                               autocomplete="off"/>
+
+                        <div class="cv-fld">
+                            <label for="cv-f-name">
+                                <span class="cv-ico">&#128100;</span> Nom complet
+                                <span class="cv-req">*</span>
+                            </label>
+                            <input class="cv-input" id="cv-f-name" type="text" name="name"
+                                   autocomplete="name" required="required"/>
+                        </div>
+
+                        <div class="cv-grid2">
+                            <div class="cv-fld">
+                                <label for="cv-f-phone">
+                                    <span class="cv-ico">&#128222;</span> Téléphone
+                                    <span class="cv-req">*</span>
+                                </label>
+                                <input class="cv-input" id="cv-f-phone" type="tel" name="phone"
+                                       placeholder="+225 …" autocomplete="tel"
+                                       required="required"/>
+                            </div>
+                            <div class="cv-fld">
+                                <label for="cv-f-date">
+                                    <span class="cv-ico">&#128197;</span> Date
+                                </label>
+                                <input class="cv-input" id="cv-f-date" type="date"
+                                       name="preferred_date"/>
+                            </div>
+                        </div>
+
+                        <div class="cv-fld">
+                            <label for="cv-f-email">
+                                <span class="cv-ico">&#9993;</span> Email
+                            </label>
+                            <input class="cv-input" id="cv-f-email" type="email" name="email"
+                                   autocomplete="email"/>
+                        </div>
+
+                        <div class="cv-fld">
+                            <label for="cv-f-msg">Message</label>
+                            <textarea class="cv-input" id="cv-f-msg" name="message" rows="3"
+                                      placeholder="Précisez vos disponibilités ou questions…"/>
+                        </div>
+
+                        <div class="cv-err" id="cv-visit-err" style="display:none;"/>
+
+                        <button class="cv-btn" type="submit" id="cv-visit-send">
+                            Envoyer la demande
+                        </button>
+                        <p class="cv-legal">
+                            En soumettant, vous acceptez d'être recontacté par
+                            <t t-esc="company_name or 'CIVORA'"/> au sujet de ce bien.
+                        </p>
+                    </form>
+                </div>
+
+                <!-- Accusé de réception -->
+                <div id="cv-visit-done" style="display:none;">
+                    <div class="cv-done">
+                        <div class="cv-done-ico">&#10003;</div>
+                        <h3>Demande envoyée</h3>
+                        <p>Un conseiller vous recontactera très vite.</p>
+                        <button type="button" class="cv-btn cv-btn-ghost" id="cv-visit-ok">
+                            Fermer
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <script type="text/javascript">
+            (function () {
+                var modal = document.getElementById('cv-visit-modal');
+                if (!modal) return;
+                var form   = document.getElementById('cv-visit-form');
+                var wrap   = document.getElementById('cv-visit-form-wrap');
+                var done   = document.getElementById('cv-visit-done');
+                var errEl  = document.getElementById('cv-visit-err');
+                var sendBt = document.getElementById('cv-visit-send');
+
+                function open() {
+                    modal.classList.add('is-open');
+                    document.body.style.overflow = 'hidden';
+                    setTimeout(function () {
+                        var f = document.getElementById('cv-f-name');
+                        if (f) f.focus();
+                    }, 60);
+                }
+                function close() {
+                    modal.classList.remove('is-open');
+                    document.body.style.overflow = '';
+                }
+
+                ['cv-open-visit'].forEach(function (id) {
+                    var el = document.getElementById(id);
+                    if (el) el.addEventListener('click', open);
+                });
+                ['cv-visit-close', 'cv-visit-close-bd', 'cv-visit-ok'].forEach(function (id) {
+                    var el = document.getElementById(id);
+                    if (el) el.addEventListener('click', close);
+                });
+                document.addEventListener('keydown', function (ev) {
+                    if (ev.key === 'Escape') close();
+                });
+
+                // Repli : si le formulaire est parti par un POST classique
+                // (JavaScript indisponible au moment de l'envoi), le serveur
+                // redirige avec ?sent=1. On rouvre alors la modale sur
+                // l'accuse plutot que de laisser le visiteur sans reponse.
+                if (modal.getAttribute('data-sent') === '1') {
+                    wrap.style.display = 'none';
+                    done.style.display = 'block';
+                    open();
+                }
+
+                form.addEventListener('submit', function (ev) {
+                    ev.preventDefault();
+                    errEl.style.display = 'none';
+
+                    var name  = (document.getElementById('cv-f-name').value || '').trim();
+                    var phone = (document.getElementById('cv-f-phone').value || '').trim();
+                    if (!name || !phone) {
+                        errEl.textContent = "Merci d'indiquer au minimum votre nom et votre téléphone.";
+                        errEl.style.display = 'block';
+                        return;
+                    }
+
+                    sendBt.disabled = true;
+                    sendBt.textContent = 'Envoi…';
+
+                    var fd = new FormData(form);
+                    fd.append('ajax', '1');
+                    fetch(form.getAttribute('action'), { method: 'POST', body: fd })
+                        .then(function (r) { return r.json(); })
+                        .then(function (res) {
+                            if (res.ok) {
+                                wrap.style.display = 'none';
+                                done.style.display = 'block';
+                                return;
+                            }
+                            errEl.textContent = res.error || "Envoi impossible.";
+                            errEl.style.display = 'block';
+                            sendBt.disabled = false;
+                            sendBt.textContent = 'Envoyer la demande';
+                        })
+                        .catch(function () {
+                            errEl.textContent = "Connexion interrompue. Merci de réessayer.";
+                            errEl.style.display = 'block';
+                            sendBt.disabled = false;
+                            sendBt.textContent = 'Envoyer la demande';
+                        });
+                });
+            })();
+        </script>
+
+        <script type="text/javascript"
+                src="/civora_biens/static/lib/leaflet/leaflet.js"/>
+        <script type="text/javascript">
+            (function () {
+                var el = document.getElementById('cv-map');
+                if (!el || typeof L === 'undefined') return;
+
+                var lat = parseFloat(el.getAttribute('data-lat'));
+                var lng = parseFloat(el.getAttribute('data-lng'));
+                if (isNaN(lat) || isNaN(lng)) return;
+
+                // Leaflet cherche ses icones a la racine du site par defaut.
+                // On les sert depuis le module : la page publique ne doit
+                // dependre d'aucun CDN.
+                var base = '/civora_biens/static/lib/leaflet/images/';
+                var icon = L.icon({
+                    iconUrl: base + 'marker-icon.png',
+                    iconRetinaUrl: base + 'marker-icon-2x.png',
+                    shadowUrl: base + 'marker-shadow.png',
+                    iconSize: [25, 41], iconAnchor: [12, 41],
+                    popupAnchor: [1, -34], shadowSize: [41, 41]
+                });
+
+                var map = L.map('cv-map', {
+                    scrollWheelZoom: false   // evite de capturer le defilement
+                }).setView([lat, lng], 15);
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '&#169; OpenStreetMap'
+                }).addTo(map);
+
+                var label = el.getAttribute('data-label') || '';
+                var loc = el.getAttribute('data-loc') || '';
+                L.marker([lat, lng], { icon: icon }).addTo(map)
+                    .bindPopup('<b>' + label + '</b>' + (loc ? '<br/>' + loc : ''));
+
+                // Le zoom molette ne s'active qu'apres un clic sur la carte :
+                // sans cela, on reste bloque dessus en faisant defiler la page.
+                map.on('click', function () { map.scrollWheelZoom.enable(); });
+                map.on('mouseout', function () { map.scrollWheelZoom.disable(); });
+            })();
+        </script>
+
         </body>
         </html>
+
+
     </template>
 
 </odoo>

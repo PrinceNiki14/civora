@@ -1,0 +1,348 @@
+.civora-arr {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-height: 0;
+
+    // ── Etats ──────────────────────────────────────────────────────────
+    .civora-arr-loading,
+    .civora-arr-error {
+        padding: 28px;
+        text-align: center;
+        color: $civora-muted;
+        font-size: 13px;
+        i { margin-right: 6px; }
+    }
+    .civora-arr-error {
+        color: $civora-danger;
+        background: rgba(220, 38, 38, .06);
+        border: 1px solid rgba(220, 38, 38, .2);
+        border-radius: $civora-radius;
+    }
+
+    // ── File de validation ─────────────────────────────────────────────
+    .civora-arr-queue {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 11px 14px;
+        background: rgba(0, 171, 104, .07);
+        border: 1px solid rgba(0, 171, 104, .22);
+        border-radius: $civora-radius;
+        font-size: 13px;
+        color: $civora-fg;
+
+        i {
+            color: $civora-accent;
+            font-size: 15px;
+        }
+        b { font-weight: 600; }
+    }
+    .civora-arr-queue-b {
+        flex: 1;
+        min-width: 0;
+        line-height: 1.5;
+    }
+
+    // ── KPIs ───────────────────────────────────────────────────────────
+    .civora-arr-kpis {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 10px;
+    }
+    .civora-arr-kpi {
+        background: $civora-card;
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius;
+        padding: 12px 14px;
+
+        &.is-danger .civora-arr-kpi-v { color: $civora-danger; }
+    }
+    .civora-arr-kpi-l {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: .4px;
+        color: $civora-muted;
+        margin-bottom: 5px;
+    }
+    .civora-arr-kpi-v {
+        font-family: $civora-font-display;
+        font-size: 19px;
+        font-weight: 700;
+        color: $civora-fg;
+        line-height: 1.15;
+    }
+    .civora-arr-kpi-sub {
+        display: block;
+        font-family: $civora-font;
+        font-size: 11px;
+        font-weight: 400;
+        color: $civora-muted;
+        margin-top: 2px;
+    }
+
+    // ── Barre d'outils ─────────────────────────────────────────────────
+    .civora-arr-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+    .civora-arr-filters {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+    .civora-arr-fbtn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border: 1px solid $civora-border;
+        background: $civora-card;
+        color: $civora-muted;
+        border-radius: 999px;
+        padding: 6px 13px;
+        font-size: 12.5px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all .15s ease;
+
+        &:hover { border-color: $civora-accent; color: $civora-fg; }
+        &.is-active {
+            background: $civora-accent;
+            border-color: $civora-accent;
+            color: #fff;
+            .civora-arr-fcount { background: rgba(255, 255, 255, .25); color: #fff; }
+        }
+    }
+    .civora-arr-fcount {
+        background: rgba(0, 0, 0, .06);
+        border-radius: 999px;
+        padding: 1px 7px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+    .civora-arr-search {
+        position: relative;
+        min-width: 240px;
+
+        i {
+            position: absolute;
+            left: 11px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: $civora-muted;
+            font-size: 12px;
+        }
+        input {
+            width: 100%;
+            padding: 8px 12px 8px 30px;
+            border: 1px solid $civora-border;
+            border-radius: $civora-radius-sm;
+            background: $civora-card;
+            color: $civora-fg;
+            font-size: 13px;
+            outline: none;
+
+            &:focus { border-color: $civora-accent; }
+        }
+    }
+
+    // ── Barre de selection ─────────────────────────────────────────────
+    .civora-arr-selbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        padding: 10px 14px;
+        background: $civora-primary;
+        color: #fff;
+        border-radius: $civora-radius;
+        font-size: 13px;
+
+        b { font-weight: 700; }
+    }
+    .civora-arr-selbar-act {
+        display: flex;
+        gap: 8px;
+
+        .civora-btn-ghost {
+            color: rgba(255, 255, 255, .85);
+            border-color: rgba(255, 255, 255, .3);
+            background: transparent;
+            &:hover { background: rgba(255, 255, 255, .12); color: #fff; }
+        }
+    }
+
+    // ── Liste ──────────────────────────────────────────────────────────
+    .civora-arr-list {
+        background: $civora-card;
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius;
+        overflow: hidden;
+    }
+    .civora-arr-head {
+        padding: 9px 14px;
+        border-bottom: 1px solid $civora-border;
+        background: rgba(0, 0, 0, .015);
+    }
+    .civora-arr-check {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        font-size: 12px;
+        color: $civora-muted;
+        margin: 0;
+
+        input { cursor: pointer; }
+    }
+
+    .civora-arr-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 14px;
+        border-bottom: 1px solid $civora-border;
+        border-left: 3px solid transparent;
+        transition: background .15s ease;
+
+        &:last-child { border-bottom: none; }
+        &:hover { background: rgba(0, 0, 0, .018); }
+
+        &.is-legal    { border-left-color: #991b1b; }
+        &.is-firm     { border-left-color: #dc2626; }
+        &.is-moderate { border-left-color: #ea580c; }
+        &.is-soft     { border-left-color: #f59e0b; }
+
+        > .civora-arr-check { padding-top: 9px; }
+    }
+    .civora-arr-ico {
+        width: 38px;
+        height: 38px;
+        border-radius: $civora-radius-sm;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 16px;
+    }
+    .civora-arr-main {
+        flex: 1;
+        min-width: 200px;
+    }
+    .civora-arr-t {
+        font-size: 14px;
+        color: $civora-fg;
+        margin-bottom: 3px;
+    }
+    .civora-arr-tenant {
+        font-weight: 600;
+        cursor: pointer;
+        &:hover { color: $civora-accent; text-decoration: underline; }
+    }
+    .civora-arr-sep { color: $civora-border; margin: 0 5px; }
+    .civora-arr-prop { color: $civora-muted; }
+    .civora-arr-meta {
+        font-size: 11.5px;
+        color: $civora-muted;
+        margin-bottom: 8px;
+    }
+    .civora-arr-tags {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        font-size: 12px;
+    }
+    .civora-arr-sev {
+        color: #fff;
+        border-radius: 999px;
+        padding: 2px 9px;
+        font-size: 11px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+    .civora-arr-due {
+        color: $civora-muted;
+        b { color: $civora-fg; font-weight: 700; }
+    }
+    .civora-arr-periods {
+        color: $civora-muted;
+        font-size: 11.5px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 260px;
+    }
+
+    .civora-arr-side {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 6px;
+        flex-shrink: 0;
+    }
+    .civora-arr-actions {
+        display: flex;
+        gap: 5px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+    .civora-arr-abtn {
+        font-size: 11.5px;
+        padding: 5px 10px;
+        white-space: nowrap;
+
+        &[disabled] { opacity: .4; cursor: not-allowed; }
+        i { margin-right: 4px; }
+    }
+    .civora-arr-last {
+        font-size: 11px;
+        color: $civora-muted;
+
+        &.is-never { color: $civora-warning; font-weight: 500; }
+    }
+
+    // ── Vide ───────────────────────────────────────────────────────────
+    .civora-arr-empty {
+        text-align: center;
+        padding: 44px 20px;
+        background: $civora-card;
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius;
+
+        i {
+            font-size: 34px;
+            color: $civora-success;
+            margin-bottom: 12px;
+            display: block;
+        }
+        p {
+            font-size: 13px;
+            color: $civora-muted;
+            margin: 5px 0 0;
+        }
+    }
+    .civora-arr-empty-t {
+        font-family: $civora-font-display;
+        font-size: 16px;
+        font-weight: 600;
+        color: $civora-fg;
+    }
+
+    // ── Responsive ─────────────────────────────────────────────────────
+    @media (max-width: 900px) {
+        .civora-arr-row {
+            flex-wrap: wrap;
+        }
+        .civora-arr-side {
+            width: 100%;
+            align-items: flex-start;
+        }
+        .civora-arr-actions { justify-content: flex-start; }
+        .civora-arr-search { min-width: 100%; }
+    }
+}

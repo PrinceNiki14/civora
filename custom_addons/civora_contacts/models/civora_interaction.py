@@ -11,6 +11,7 @@ CIVORA_INTERACTION_KIND = [
     ('visite', "Visite"),
     ('note', "Note"),
     ('document', "Document"),
+    ('role_change', "Changement de rôle"),
 ]
 
 

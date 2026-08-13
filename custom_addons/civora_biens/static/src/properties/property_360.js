@@ -6,6 +6,7 @@ import { user } from "@web/core/user";
 import { CivoraStatCard } from "@civora_core/components/civora_stat_card";
 import { CivoraBadge } from "@civora_core/components/civora_kit";
 import { PropertyDrawer } from "./property_drawer";
+import { CivoraMap } from "@civora_biens/components/civora_map";
 
 const STATUS_META = {
     disponible: { label: "Disponible", variant: "success" },
@@ -15,13 +16,14 @@ const STATUS_META = {
 
 const FIELDS = [
     "name", "ref", "property_type_id", "transaction", "mandate_type", "status",
-    "city", "neighborhood", "street", "latitude", "longitude",
+    "city", "neighborhood", "street", "latitude", "longitude", "maps_url",
     "surface", "rooms", "bedrooms", "bathrooms", "year_built",
     "price", "monthly_revenue", "yield_rate",
     "owner_id", "agent_id", "tenant_id", "description", "note",
     "rental_deposit", "rental_charges", "rental_min_stay", "rental_advance", "rental_agency_fees",
     "sale_negotiable", "sale_notary", "sale_payment", "sale_handover",
     "is_building", "floors_count", "total_units", "parent_id", "floor", "unit_number",
+    "sale_doc_ids", "sale_doc_count", "sale_docs_ok",
 ];
 
 const TRANSACTION_LABEL = { vente: "À vendre", location: "À louer", saisonnier: "Location saisonnière" };
@@ -37,7 +39,7 @@ const VR_STATE = {
 
 export class CivoraProperty360 extends Component {
     static template = "civora_biens.Property360";
-    static components = { CivoraStatCard, CivoraBadge, PropertyDrawer };
+    static components = { CivoraStatCard, CivoraBadge, PropertyDrawer, CivoraMap };
     static props = { ...standardActionServiceProps };
 
     setup() {
@@ -45,8 +47,11 @@ export class CivoraProperty360 extends Component {
         this.action = useService("action");
 
         const params = (this.props.action && this.props.action.params) || {};
+        this.saleDocTypes = [];
         this.propertyId = Number(params.propertyId) || false;
         this.origin = params.origin || null;
+        // Navigation prev/next : liste ordonnee d'ids fournie par l'ecran de depart.
+        this.siblingIds = Array.isArray(params.siblingIds) ? params.siblingIds.map(Number).filter(Boolean) : [];
         this.contribTabs = registry
             .category("civora_property_360_tab")
             .getAll()
@@ -85,6 +90,17 @@ export class CivoraProperty360 extends Component {
                 return;
             }
             this.state.record = rec;
+
+            // Referentiel des pieces juridiques : le champ ne renvoie que
+            // des identifiants, il faut les libelles pour l'affichage.
+            try {
+                this.saleDocTypes = await this.orm.call(
+                    "civora.sale.doc.type", "civora_doc_types", []
+                );
+            } catch (e) {
+                console.error("[CIVORA-BIEN360] saleDocTypes", e);
+                this.saleDocTypes = [];
+            }
             const imgs = await this.orm.searchRead(
                 "civora.property.image", [["property_id", "=", this.propertyId]], ["name"], { order: "sequence, id" }
             );
@@ -162,6 +178,73 @@ export class CivoraProperty360 extends Component {
     get backLabel() {
         return this.origin && this.origin.label ? this.origin.label : "Biens";
     }
+
+    // ---- Navigation entre biens (respecte l'ordre + filtres de l'ecran de depart) ----
+    get siblingIndex() {
+        if (!this.siblingIds.length || !this.propertyId) return -1;
+        return this.siblingIds.indexOf(this.propertyId);
+    }
+    get siblingPosition() {
+        const idx = this.siblingIndex;
+        if (idx < 0) return "";
+        return `${idx + 1} / ${this.siblingIds.length}`;
+    }
+    get canGoPrev() {
+        return this.siblingIndex > 0;
+    }
+    get canGoNext() {
+        const idx = this.siblingIndex;
+        return idx >= 0 && idx < this.siblingIds.length - 1;
+    }
+    goPrev() { this._navigateTo(this.siblingIndex - 1); }
+    goNext() { this._navigateTo(this.siblingIndex + 1); }
+    _navigateTo(idx) {
+        if (idx < 0 || idx >= this.siblingIds.length) return;
+        const nextId = this.siblingIds[idx];
+        this.action.doAction({
+            type: "ir.actions.client",
+            tag: "civora.property_360",
+            params: {
+                propertyId: nextId,
+                siblingIds: this.siblingIds,
+                origin: this.origin,
+            },
+            target: "current",
+        });
+    }
+
+    // ---- Position sur carte ----
+    get hasPosition() {
+        const r = this.state.record;
+        const la = Number(r && r.latitude);
+        const lo = Number(r && r.longitude);
+        return Number.isFinite(la) && Number.isFinite(lo) && (la !== 0 || lo !== 0);
+    }
+    get googleMapsLink() {
+        if (!this.hasPosition) return "";
+        return `https://www.google.com/maps/?q=${this.state.record.latitude},${this.state.record.longitude}`;
+    }
+    // ── Documents juridiques (vente) ────────────────────────────────
+    get isSale() {
+        return this.state.record && this.state.record.transaction === "vente";
+    }
+
+    /** Pièces fournies, dans l'ordre du référentiel. */
+    get saleDocsProvided() {
+        const ids = (this.state.record && this.state.record.sale_doc_ids) || [];
+        return this.saleDocTypes.filter((d) => ids.includes(d.id));
+    }
+
+    /** Pièces manquantes : ce que l'agence doit encore réclamer. */
+    get saleDocsMissing() {
+        const ids = (this.state.record && this.state.record.sale_doc_ids) || [];
+        return this.saleDocTypes.filter((d) => !ids.includes(d.id));
+    }
+
+    get saleDocsOk() {
+        return !!(this.state.record && this.state.record.sale_docs_ok);
+    }
+
     setTab(id) {
         this.state.activeTab = id;
     }
