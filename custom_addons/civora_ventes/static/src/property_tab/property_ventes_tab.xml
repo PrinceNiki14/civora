@@ -28,7 +28,7 @@
                 <div class="civora-sale-item">
                     <div>
                         <span class="civora-sale-ref"><t t-esc="s.name"/></span>
-                        <span class="civora-sale-buyer"> — <t t-esc="s.buyer_id ? s.buyer_id[1] : 'Pas d acquereur'"/></span>
+                        <span class="civora-sale-buyer"> — <t t-esc="s.buyer_id ? s.buyer_id[1] : 'Pas d\u2019acquéreur'"/></span>
                     </div>
                     <div>
                         <span class="civora-sale-amount"><t t-esc="s.sale_amount ? fmtMoney(s.sale_amount) + ' F' : fmtMoney(s.asking_price) + ' F'"/></span>

@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
+import logging
+
+from odoo.exceptions import UserError
 from odoo import api, fields, models
+
+_logger = logging.getLogger(__name__)
 
 # Nature juridique / commerciale du programme.
 CIVORA_PROGRAM_TYPE = [
@@ -222,6 +227,124 @@ class CivoraProgram(models.Model):
     # ------------------------------------------------------------------
     # CRUD
     # ------------------------------------------------------------------
+    # ------------------------------------------------------------------
+    # Generation de la grille de lots
+    # ------------------------------------------------------------------
+    def action_generate_missing_lots(self):
+        """Complete la grille de lots jusqu'au total declare au permis.
+
+        Un promoteur qui saisit un programme de 48 logements ne va pas creer
+        48 lignes a la main. On genere les lots manquants en respectant la
+        repartition batiments / etages du programme et la typologie deja
+        presente : les lots crees heritent de la surface et du prix moyen
+        des lots existants de meme etage, ou d'une valeur derivee du prix
+        moyen au m2 du programme quand la grille est vide.
+
+        Les lots deja saisis ne sont jamais touches.
+        """
+        self.ensure_one()
+        Lot = self.env["civora.program.lot"]
+        target = self.total_lots or 0
+        existing = self.lot_ids
+        missing = target - len(existing)
+        if missing <= 0:
+            raise UserError(
+                "La grille est deja complete : %s lot(s) saisis pour %s declares."
+                % (len(existing), target)
+            )
+
+        buildings = sorted({l.building for l in existing if l.building}) or ["A"]
+        if self.building_count and self.building_count > len(buildings):
+            alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            buildings = [alphabet[i] for i in range(self.building_count)]
+
+        # On reste dans les niveaux deja decrits par la grille : inventer un
+        # rez-de-chaussee ou des etages supplementaires reviendrait a changer
+        # la description physique du batiment. On n'etend vers le haut que si
+        # la capacite des niveaux connus ne suffit pas a atteindre le total.
+        floors = sorted({l.floor for l in existing}) or [0, 1, 2, 3, 4, 5, 6]
+        slots_per_floor = 4
+        while len(floors) * len(buildings) * slots_per_floor < target:
+            floors.append(max(floors) + 1)
+
+        # Reference de surface / prix par typologie, tiree de l'existant.
+        by_type = {}
+        for lot in existing:
+            entry = by_type.setdefault(lot.lot_type, {"surface": [], "price": []})
+            if lot.surface:
+                entry["surface"].append(lot.surface)
+            if lot.price:
+                entry["price"].append(lot.price)
+
+        # Prix moyen au m2 : on le derive des lots deja saisis (source la plus
+        # fiable), et on retombe sur le champ du programme s'il n'y en a pas.
+        priced = [l for l in existing if l.price and l.surface]
+        sqm_ref = (
+            sum(l.price / l.surface for l in priced) / len(priced)
+            if priced else (self.avg_price_sqm or 0)
+        )
+
+        def reference(lot_type, fallback_surface):
+            entry = by_type.get(lot_type)
+            if entry and entry["surface"] and entry["price"]:
+                surface = sum(entry["surface"]) / len(entry["surface"])
+                price = sum(entry["price"]) / len(entry["price"])
+                return round(surface, 1), int(round(price))
+            return fallback_surface, int(round(fallback_surface * sqm_ref))
+
+        # Typologie tournante representative d'un R+6 abidjanais.
+        rotation = [
+            ("t2", 62.0, 2, 1), ("t3", 84.0, 3, 2),
+            ("t3", 84.0, 3, 2), ("t4", 112.0, 4, 2),
+        ]
+        # On reprend la convention de nommage deja utilisee dans le programme
+        # (ex. "A-101" = batiment A, R+1, lot 01) plutot que d'en imposer une
+        # nouvelle : une grille melangeant "A-101" et "A101" est illisible.
+        sample = existing[0].name if existing else ""
+        separator = "-" if "-" in sample else ""
+        taken = set(existing.mapped("name"))
+        created = Lot.browse()
+        index = 0
+        for floor in floors:
+            for building in buildings:
+                for slot in range(1, 5):
+                    if len(created) >= missing:
+                        break
+                    lot_type, base_surface, rooms, baths = rotation[index % len(rotation)]
+                    index += 1
+                    name = "%s%s%s%02d" % (building, separator, floor, slot)
+                    if name in taken:
+                        continue
+                    taken.add(name)
+                    surface, price = reference(lot_type, base_surface)
+                    # Valorisation de l'etage : +1,5 % par niveau.
+                    price = int(round(price * (1 + 0.015 * floor)))
+                    created |= Lot.create({
+                        "program_id": self.id,
+                        "name": name,
+                        "building": building,
+                        "floor": floor,
+                        "lot_type": lot_type,
+                        "status": "disponible",
+                        "surface": surface,
+                        "rooms": rooms,
+                        "bathrooms": baths,
+                        "parking": 1,
+                        "price": price,
+                    })
+                if len(created) >= missing:
+                    break
+            if len(created) >= missing:
+                break
+
+        # civora.program n'herite pas de mail.thread : pas de fil de discussion,
+        # donc pas de message_post. On trace dans le log serveur.
+        _logger.info(
+            "CIVORA programme %s : %s lot(s) generes (%s/%s).",
+            self.ref or self.id, len(created), len(self.lot_ids), target,
+        )
+        return {"created": len(created), "total": len(self.lot_ids), "target": target}
+
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:

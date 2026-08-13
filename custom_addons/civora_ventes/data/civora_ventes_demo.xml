@@ -267,4 +267,16 @@
         <field name="notes">Offre finale acceptée. Compromis signé le 10 juillet.</field>
     </record>
 
+    <!-- Repartition des dossiers sur les commerciaux de l'agence.
+         Passe par une fonction plutot qu'un ref inter-modules : civora_ventes
+         reste installable seul, et l'assignation se fait si (et seulement si)
+         les comptes de l'equipe existent. -->
+    <!-- noupdate="0" volontaire : une <function> placee dans un bloc
+         noupdate="1" n'est jouee qu'a l'installation, jamais aux mises a
+         jour. On veut au contraire qu'elle repasse pour rattraper les
+         dossiers restes sur l'utilisateur d'installation. -->
+    <data noupdate="0">
+        <function model="civora.sale" name="_demo_assign_agents"/>
+    </data>
+
 </odoo>

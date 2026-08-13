@@ -14,6 +14,18 @@ function fmtMoney(v) {
     return n.toLocaleString("fr-FR");
 }
 
+// Les dates arrivaient brutes de la base ("2026-05-20") : illisible dans une
+// carte de pipeline. Format court francais, coherent avec le reste de l'ERP.
+const MONTHS_SHORT = ["janv.", "févr.", "mars", "avr.", "mai", "juin",
+                      "juil.", "août", "sept.", "oct.", "nov.", "déc."];
+
+function fmtDate(iso) {
+    if (!iso) return "—";
+    const [y, m, d] = String(iso).slice(0, 10).split("-").map(Number);
+    if (!y || !m || !d) return iso;
+    return `${d} ${MONTHS_SHORT[m - 1]} ${y}`;
+}
+
 function fmtMoneyFull(v) {
     if (!v && v !== 0) return "0";
     return Number(v).toLocaleString("fr-FR");
@@ -25,14 +37,14 @@ const STATE_LABELS = {
     offre: "Offre",
     compromis: "Compromis",
     acte: "Acte",
-    cloture: "Cloture",
-    annule: "Annule",
+    cloture: "Clôturée",
+    annule: "Annulée",
 };
 
 const MANDATE_LABELS = {
     exclusif: "Exclusif",
     simple: "Simple",
-    delegue: "Delegue",
+    delegue: "Délégué",
 };
 
 class CivoraVentesScreen extends Component {
@@ -214,6 +226,7 @@ class CivoraVentesScreen extends Component {
     mandateLabel(s) { return MANDATE_LABELS[s] || s; }
     fmtMoney(v) { return fmtMoney(v); }
     fmtMoneyFull(v) { return fmtMoneyFull(v); }
+    fmtDate(v) { return fmtDate(v); }
 
     openDrawer(mode, id) {
         this.state.drawerMode = mode || "create";

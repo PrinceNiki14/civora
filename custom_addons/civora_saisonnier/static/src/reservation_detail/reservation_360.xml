@@ -26,8 +26,35 @@
                     <t t-if="r.state === 'checkin'">
                         <button class="civora-btn civora-btn-primary" t-on-click="actionCheckout">Check-out</button>
                     </t>
+                    <t t-if="r.deposit_amount and r.deposit_status === 'pending'">
+                        <button class="civora-btn civora-btn-outline" title="Bloquer la caution"
+                                t-on-click="() => this.depositAction('action_deposit_collect')">
+                            <i class="fa fa-lock"/> Encaisser la caution
+                        </button>
+                    </t>
+                    <t t-if="r.deposit_status === 'collected'">
+                        <button class="civora-btn civora-btn-outline" title="Rendre la caution au voyageur"
+                                t-on-click="() => this.depositAction('action_deposit_return')">
+                            <i class="fa fa-undo"/> Restituer
+                        </button>
+                        <button class="civora-btn civora-btn-outline civora-btn-danger-outline"
+                                title="Conserver la caution suite a un incident"
+                                t-on-click="() => this.depositAction('action_deposit_retain')">
+                            <i class="fa fa-exclamation-triangle"/> Retenir
+                        </button>
+                    </t>
+                    <t t-if="r.state !== 'cancelled'">
+                        <button class="civora-btn civora-btn-outline" t-on-click="openEdit">
+                            <i class="fa fa-pencil"/> Modifier
+                        </button>
+                    </t>
                 </div>
             </div>
+
+            <t t-if="state.drawerOpen">
+                <ReservationDrawer mode="'edit'" recordId="state.reservation.id"
+                                   onSaved.bind="onSaved" onClose.bind="closeDrawer"/>
+            </t>
 
             <!-- Header -->
             <div class="civora-360-header">
@@ -79,11 +106,11 @@
                         <h3>Séjour</h3>
                         <div class="civora-kv">
                             <span class="civora-k">Arrivée</span>
-                            <span class="civora-v"><t t-esc="r.checkin_date"/></span>
+                            <span class="civora-v"><t t-esc="fmtDayMonth(r.checkin_date)"/></span>
                         </div>
                         <div class="civora-kv">
                             <span class="civora-k">Départ</span>
-                            <span class="civora-v"><t t-esc="r.checkout_date"/></span>
+                            <span class="civora-v"><t t-esc="fmtDayMonth(r.checkout_date)"/></span>
                         </div>
                         <div class="civora-kv">
                             <span class="civora-k">Nuitées</span>
@@ -95,7 +122,7 @@
                         </div>
                         <div class="civora-kv">
                             <span class="civora-k">Source</span>
-                            <span class="civora-v"><t t-esc="r.source"/></span>
+                            <span class="civora-v"><t t-esc="sourceLabel(r.source)"/></span>
                         </div>
                     </div>
                     <div class="civora-360-card">
@@ -224,12 +251,12 @@
                             </div>
                             <div class="civora-field" style="margin-top: 0.5rem;">
                                 <label>Commentaire</label>
-                                <textarea rows="2" t-att-value="state.reviewForm.comment"
+                                <textarea rows="2" t-ref="comment"
                                           t-on-change="(ev) => this.setReviewField('comment', ev)"/>
                             </div>
                             <div class="civora-field" style="margin-top: 0.5rem;">
                                 <label>Note interne</label>
-                                <textarea rows="2" t-att-value="state.reviewForm.internal_note"
+                                <textarea rows="2" t-ref="internal"
                                           t-on-change="(ev) => this.setReviewField('internal_note', ev)"/>
                             </div>
                             <button class="civora-btn civora-btn-accent" style="margin-top: 0.75rem;"
@@ -237,6 +264,8 @@
                         </div>
                     </t>
                 </div>
+
+
             </t>
         </t>
     </div>

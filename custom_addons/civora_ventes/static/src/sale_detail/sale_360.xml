@@ -26,6 +26,9 @@
                     </div>
                 </div>
                 <div class="civora-360-actions">
+                    <button class="civora-btn civora-btn-outline" t-on-click="() => this.openEdit()">
+                        <i class="fa fa-pencil"/> Modifier
+                    </button>
                     <t t-if="rec.state === 'mandat'">
                         <button class="civora-btn civora-btn-accent" t-on-click="() => this.doAction('action_commercialisation')">Lancer la commercialisation</button>
                     </t>
@@ -33,10 +36,10 @@
                         <button class="civora-btn civora-btn-primary" t-on-click="() => this.doAction('action_compromis')">Passer au compromis</button>
                     </t>
                     <t t-if="rec.state === 'compromis'">
-                        <button class="civora-btn civora-btn-primary" t-on-click="() => this.doAction('action_acte')">Passer a l'acte</button>
+                        <button class="civora-btn civora-btn-primary" t-on-click="() => this.doAction('action_acte')">Passer à l'acte</button>
                     </t>
                     <t t-if="rec.state === 'acte'">
-                        <button class="civora-btn civora-btn-success" t-on-click="() => this.doAction('action_cloturer')">Cloturer la vente</button>
+                        <button class="civora-btn civora-btn-success" t-on-click="() => this.doAction('action_cloturer')">Clôturer la vente</button>
                     </t>
                     <t t-if="rec.state !== 'cloture' and rec.state !== 'annule'">
                         <button class="civora-btn civora-btn-danger" t-on-click="() => this.doAction('action_annuler')">Annuler</button>
@@ -46,7 +49,7 @@
 
             <!-- KPIs -->
             <div class="civora-360-kpis">
-                <CivoraStatCard label="'Prix demande'" value="fmtMoney(rec.asking_price) + ' F'" icon="'fa-tag'"/>
+                <CivoraStatCard label="'Prix demandé'" value="fmtMoney(rec.asking_price) + ' F'" icon="'fa-tag'"/>
                 <CivoraStatCard label="'Prix de vente'" value="rec.sale_amount ? fmtMoney(rec.sale_amount) + ' F' : '—'" icon="'fa-money'"/>
                 <CivoraStatCard label="'Commission'" value="rec.commission_amount ? fmtMoney(rec.commission_amount) + ' F' : '—'" hint="rec.commission_rate + '%'" icon="'fa-percent'"/>
                 <CivoraStatCard label="'Offres'" value="'' + state.offers.length" icon="'fa-gavel'"/>
@@ -83,7 +86,7 @@
                             <span class="civora-v"><t t-esc="rec.mandate_end_date || '—'"/></span>
                         </div>
                         <div class="civora-kv">
-                            <span class="civora-k">Prix demande</span>
+                            <span class="civora-k">Prix demandé</span>
                             <span class="civora-v"><t t-esc="fmtMoney(rec.asking_price)"/> FCFA</span>
                         </div>
                     </div>
@@ -139,6 +142,22 @@
                             <span class="civora-k">Commission agence</span>
                             <span class="civora-v"><t t-esc="rec.commission_amount ? fmtMoney(rec.commission_amount) + ' FCFA' : '—'"/></span>
                         </div>
+                        <div class="civora-kv">
+                            <span class="civora-k">Montant encaissé</span>
+                            <span class="civora-v"><t t-esc="rec.amount_paid ? fmtMoney(rec.amount_paid) + ' FCFA' : '—'"/></span>
+                        </div>
+                        <div class="civora-kv">
+                            <span class="civora-k">Reste à encaisser</span>
+                            <span class="civora-v"><t t-esc="remaining ? fmtMoney(remaining) + ' FCFA' : '—'"/></span>
+                        </div>
+                        <t t-if="rec.sale_amount">
+                            <div class="civora-pay-progress">
+                                <div class="civora-pay-progress-bar">
+                                    <span t-attf-style="width: {{ rec.payment_progress || 0 }}%;"/>
+                                </div>
+                                <span class="civora-pay-progress-label"><t t-esc="rec.payment_progress || 0"/>% encaissé</span>
+                            </div>
+                        </t>
                     </div>
                 </div>
                 <t t-if="rec.notes">
@@ -182,6 +201,11 @@
                         </t>
                     </div>
                 </t>
+            </t>
+
+            <t t-if="state.editing">
+                <SaleDrawer mode="'edit'" recordId="saleId"
+                            onSaved="() => this.onEdited()" onClose="() => this.closeEdit()"/>
             </t>
 
         </t>

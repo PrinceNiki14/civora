@@ -63,7 +63,7 @@
             <!-- ===== VUE D'ENSEMBLE ===== -->
             <t t-if="state.activeTab === 'overview'">
                 <div class="civora-l360-kpis">
-                    <CivoraStatCard label="'Loyer mensuel'" value="kpiMoney(lease.rent)" icon="'fa fa-wallet'"/>
+                    <CivoraStatCard label="'Loyer mensuel'" value="kpiMoney(lease.rent)" icon="'fa fa-money'"/>
                     <CivoraStatCard label="'Total mensuel'" value="kpiMoney(lease.total_monthly)" icon="'fa fa-money'"/>
                     <CivoraStatCard label="'Dépôt de garantie'" value="kpiMoney(lease.deposit)" icon="'fa fa-shield'"/>
                     <CivoraStatCard label="'Taux de paiement'" value="(lease.payment_rate || 0) + ' %'" icon="'fa fa-line-chart'"/>

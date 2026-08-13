@@ -204,3 +204,35 @@
         .civora-360-grid { grid-template-columns: 1fr; }
     }
 }
+
+// Barre d'encaissement de la carte Finances : on visualise le rapport
+// encaisse / prix de vente, la ligne « Reste a encaisser » seule ne donnant
+// aucune idee de l'avancement.
+.civora-sale-360 .civora-pay-progress {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: 0.85rem;
+}
+
+.civora-sale-360 .civora-pay-progress-bar {
+    flex: 1;
+    height: 6px;
+    border-radius: 999px;
+    background: rgba($civora-primary, 0.08);
+    overflow: hidden;
+
+    span {
+        display: block;
+        height: 100%;
+        border-radius: 999px;
+        background: $civora-accent;
+    }
+}
+
+.civora-sale-360 .civora-pay-progress-label {
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: $civora-muted;
+    white-space: nowrap;
+}

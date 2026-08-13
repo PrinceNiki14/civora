@@ -3,7 +3,7 @@ import { Component, useState, onWillStart } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { CivoraStatCard } from "@civora_core/components/civora_stat_card";
-import { ReservationDrawer } from "./reservation_drawer";
+import { ReservationDrawer, CleaningTaskDialog } from "./reservation_drawer";
 
 const STATE_LABELS = {
     draft: "Brouillon",
@@ -22,6 +22,38 @@ const SOURCE_LABELS = {
     other: "Autre",
 };
 
+// Les dates arrivaient brutes de la base ("2026-09-12"). Illisible dans un
+// tableau : on reprend le format compact de la demo — "12 → 16 sept · 4 nuits".
+const MONTHS_SHORT = ["janv.", "févr.", "mars", "avr.", "mai", "juin",
+                      "juil.", "août", "sept.", "oct.", "nov.", "déc."];
+
+export function fmtDayMonth(iso) {
+    if (!iso) return "—";
+    const [y, m, d] = String(iso).slice(0, 10).split("-").map(Number);
+    if (!y || !m || !d) return iso;
+    return `${d} ${MONTHS_SHORT[m - 1]}`;
+}
+
+// Avec annee : pour les lignes ou l'exercice compte (virements, incidents),
+// masquer l'annee serait trompeur.
+export function fmtDateFull(iso) {
+    if (!iso) return "—";
+    const [y, m, d] = String(iso).slice(0, 10).split("-").map(Number);
+    if (!y || !m || !d) return iso;
+    return `${d} ${MONTHS_SHORT[m - 1]} ${y}`;
+}
+
+export function fmtStayRange(checkin, checkout, nights) {
+    if (!checkin || !checkout) return "—";
+    const a = String(checkin).slice(0, 10).split("-").map(Number);
+    const b = String(checkout).slice(0, 10).split("-").map(Number);
+    // Meme mois : on n'ecrit le mois qu'une fois ("12 → 16 sept").
+    const left = a[1] === b[1] && a[0] === b[0] ? String(a[2]) : fmtDayMonth(checkin);
+    const right = fmtDayMonth(checkout);
+    const n = nights ? ` · ${nights} nuit${nights > 1 ? "s" : ""}` : "";
+    return `${left} → ${right}${n}`;
+}
+
 const CHANNEL_ICON = {
     email: "fa-envelope-o",
     sms: "fa-mobile",
@@ -31,13 +63,16 @@ const CHANNEL_ICON = {
 
 class CivoraReservationsScreen extends Component {
     static template = "civora_saisonnier.ReservationsScreen";
-    static components = { CivoraStatCard, ReservationDrawer };
+    static components = { CivoraStatCard, ReservationDrawer, CleaningTaskDialog };
     static props = { "*": true };
 
     setup() {
         this.orm = useService("orm");
         this.action = useService("action");
         this.notification = useService("notification");
+        this.fmtDayMonth = fmtDayMonth;
+        this.fmtDateFull = fmtDateFull;
+        this.fmtStayRange = fmtStayRange;
         this.state = useState({
             loading: true,
             error: "",
@@ -55,6 +90,8 @@ class CivoraReservationsScreen extends Component {
             drawerOpen: false,
             drawerMode: "create",
             drawerRecordId: false,
+            taskDialogOpen: false,
+            taskId: false,
         });
         onWillStart(() => this.load());
     }
@@ -344,6 +381,32 @@ class CivoraReservationsScreen extends Component {
             () => this.notification.add("Snippet copié dans le presse-papier.", { type: "success" }),
             () => this.notification.add("Copie impossible.", { type: "warning" }),
         );
+    }
+
+    /* ========================= MENAGE & MAINTENANCE ======================== */
+    openTaskDialog(id) {
+        this.state.taskId = id || false;
+        this.state.taskDialogOpen = true;
+    }
+
+    closeTaskDialog() {
+        this.state.taskDialogOpen = false;
+        this.state.taskId = false;
+    }
+
+    async onTaskSaved() {
+        this.state.taskDialogOpen = false;
+        this.state.taskId = false;
+        await this.load();
+    }
+
+    /** Le parc de biens se gere depuis le module Biens : on y renvoie. */
+    goToProperties() {
+        this.action.doAction({
+            type: "ir.actions.client",
+            tag: "civora.properties",
+            target: "current",
+        });
     }
 
     /* ============================== DRAWER ================================= */

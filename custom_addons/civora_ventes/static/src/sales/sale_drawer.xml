@@ -10,7 +10,7 @@
                     <div class="civora-field">
                         <label>Bien immobilier</label>
                         <select t-on-change="(ev) => this.onPropertyChange(ev)">
-                            <option value="">-- Selectionner un bien --</option>
+                            <option value="">— Sélectionner un bien —</option>
                             <t t-foreach="state.properties" t-as="p" t-key="p.id">
                                 <option t-att-value="p.id" t-att-selected="state.form.property_id === p.id">
                                     <t t-esc="p.name"/> — <t t-esc="p.city"/>
@@ -24,17 +24,48 @@
             <!-- Vendeur -->
             <div class="civora-drawer-section">
                 <h4>Vendeur</h4>
-                <div class="civora-field-group full">
+                <div class="civora-field-group">
                     <div class="civora-field">
                         <label>Propriétaire / Vendeur</label>
                         <select t-on-change="(ev) => this.onSelectChange('seller_id', ev)">
-                            <option value="">-- Selectionner --</option>
+                            <option value="">— Sélectionner —</option>
                             <t t-foreach="state.contacts" t-as="c" t-key="c.id">
                                 <option t-att-value="c.id" t-att-selected="state.form.seller_id === c.id">
                                     <t t-esc="c.name"/>
                                 </option>
                             </t>
                         </select>
+                    </div>
+                    <div class="civora-field">
+                        <label>Acquéreur</label>
+                        <select t-on-change="(ev) => this.onSelectChange('buyer_id', ev)">
+                            <option value="">— Pas encore identifié —</option>
+                            <t t-foreach="state.contacts" t-as="c" t-key="c.id">
+                                <option t-att-value="c.id" t-att-selected="state.form.buyer_id === c.id">
+                                    <t t-esc="c.name"/>
+                                </option>
+                            </t>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transaction -->
+            <div class="civora-drawer-section">
+                <h4>Transaction</h4>
+                <div class="civora-field-group">
+                    <div class="civora-field">
+                        <label>Prix de vente final (FCFA)</label>
+                        <input type="number" min="0" step="1000000" placeholder="0"
+                               t-att-value="state.form.sale_amount"
+                               t-on-change="(ev) => this.onFieldChange('sale_amount', ev)"/>
+                    </div>
+                    <div class="civora-field">
+                        <label>Montant encaissé (FCFA)</label>
+                        <input type="number" min="0" step="1000000" placeholder="0"
+                               t-att-value="state.form.amount_paid"
+                               t-on-change="(ev) => this.onFieldChange('amount_paid', ev)"/>
+                        <span class="civora-field-hint">Acompte, séquestre et solde cumulés.</span>
                     </div>
                 </div>
             </div>
@@ -48,11 +79,11 @@
                         <select t-on-change="(ev) => this.onFieldChange('mandate_type', ev)">
                             <option value="simple" t-att-selected="state.form.mandate_type === 'simple'">Simple</option>
                             <option value="exclusif" t-att-selected="state.form.mandate_type === 'exclusif'">Exclusif</option>
-                            <option value="delegue" t-att-selected="state.form.mandate_type === 'delegue'">Delegue</option>
+                            <option value="delegue" t-att-selected="state.form.mandate_type === 'delegue'">Délégué</option>
                         </select>
                     </div>
                     <div class="civora-field">
-                        <label>Prix demande (FCFA)</label>
+                        <label>Prix demandé (FCFA)</label>
                         <input type="number" t-att-value="state.form.asking_price" t-on-input="(ev) => this.onFieldChange('asking_price', ev)"/>
                     </div>
                     <div class="civora-field">
@@ -90,10 +121,16 @@
                 <h4>Notes</h4>
                 <div class="civora-field-group full">
                     <div class="civora-field">
-                        <textarea t-att-value="state.form.notes" t-on-input="(ev) => this.onFieldChange('notes', ev)" placeholder="Notes internes..."/>
+                        <textarea t-on-input="(ev) => this.onFieldChange('notes', ev)" placeholder="Notes internes…"><t t-esc="state.form.notes"/></textarea>
                     </div>
                 </div>
             </div>
+
+            <t t-if="state.error">
+                <div class="civora-ventes-formerror">
+                    <i class="fa fa-exclamation-triangle"/> <t t-esc="state.error"/>
+                </div>
+            </t>
 
             <!-- Footer -->
             <div class="civora-drawer-footer">

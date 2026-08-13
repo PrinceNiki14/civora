@@ -239,10 +239,20 @@
                             <button t-att-class="state.lotView === 'tableau' ? 'is-active' : ''"
                                     t-on-click="() => this.setLotView('tableau')">TABLEAU</button>
                         </div>
-                        <button class="civora-btn civora-btn-accent" t-on-click="() => this.openLotCreate()">
-                            <i class="fa fa-plus"/> Ajouter un lot
-                        </button>
+                        <div class="civora-prg-lotactions">
+                            <button t-if="lotGapNotice" class="civora-btn civora-btn-outline"
+                                    t-att-disabled="state.generating"
+                                    t-on-click="generateMissingLots">
+                                <i class="fa fa-magic"/>
+                                <t t-if="state.generating"> Génération…</t>
+                                <t t-else=""> Compléter la grille</t>
+                            </button>
+                            <button class="civora-btn civora-btn-accent" t-on-click="() => this.openLotCreate()">
+                                <i class="fa fa-plus"/> Ajouter un lot
+                            </button>
+                        </div>
                     </div>
+                    <div t-if="lotGapNotice" class="civora-prg-gap civora-prg-gap--bar" t-esc="lotGapNotice"/>
                 </div>
 
                 <div t-if="!state.lots.length" class="civora-prg-empty">

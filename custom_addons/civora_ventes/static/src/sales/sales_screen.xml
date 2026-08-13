@@ -140,7 +140,7 @@
                                             <t t-esc="card.agent_initials"/>
                                         </span>
                                     </div>
-                                    <div class="civora-pipeline-card-date"><t t-esc="card.date"/></div>
+                                    <div class="civora-pipeline-card-date"><t t-esc="fmtDate(card.date)"/></div>
                                 </div>
                             </t>
                             <t t-if="!col.cards.length">
@@ -161,18 +161,18 @@
                     <button t-attf-class="civora-pill {{ state.filter === 'offres' ? 'active' : '' }}" t-on-click="() => this.setFilter('offres')">Offres</button>
                     <button t-attf-class="civora-pill {{ state.filter === 'compromis' ? 'active' : '' }}" t-on-click="() => this.setFilter('compromis')">Compromis</button>
                     <button t-attf-class="civora-pill {{ state.filter === 'acte' ? 'active' : '' }}" t-on-click="() => this.setFilter('acte')">Acte</button>
-                    <button t-attf-class="civora-pill {{ state.filter === 'cloture' ? 'active' : '' }}" t-on-click="() => this.setFilter('cloture')">Clotures</button>
+                    <button t-attf-class="civora-pill {{ state.filter === 'cloture' ? 'active' : '' }}" t-on-click="() => this.setFilter('cloture')">Clôturées</button>
                 </div>
             </div>
             <div class="civora-table-wrapper">
                 <table class="civora-table">
                     <thead>
                         <tr>
-                            <th>Ref</th>
+                            <th>Réf.</th>
                             <th>Bien</th>
                             <th>Vendeur</th>
                             <th>Acquéreur</th>
-                            <th>Prix demande</th>
+                            <th>Prix demandé</th>
                             <th>Prix vente</th>
                             <th>Mandat</th>
                             <th>Commission</th>
@@ -186,7 +186,7 @@
                                 <td><t t-esc="s.property_id ? s.property_id[1] : ''"/></td>
                                 <td><t t-esc="s.seller_id ? s.seller_id[1] : ''"/></td>
                                 <td><t t-esc="s.buyer_id ? s.buyer_id[1] : '—'"/></td>
-                                <td class="text-right"><t t-esc="fmtMoneyFull(s.asking_price)"/></td>
+                                <td class="text-right"><t t-esc="s.asking_price ? fmtMoneyFull(s.asking_price) + ' F' : '—'"/></td>
                                 <td class="text-right font-semibold"><t t-esc="s.sale_amount ? fmtMoneyFull(s.sale_amount) + ' F' : '—'"/></td>
                                 <td><span class="civora-mandate-badge"><t t-esc="mandateLabel(s.mandate_type)"/></span></td>
                                 <td class="text-right"><t t-esc="s.commission_amount ? fmtMoneyFull(s.commission_amount) + ' F' : '—'"/></td>
@@ -216,7 +216,7 @@
                             <span class="civora-ventes-avatar" t-esc="a.initials"/>
                             <div class="civora-ventes-agentmain">
                                 <div class="civora-ventes-strong" t-esc="a.name"/>
-                                <div class="civora-ventes-sub"><t t-esc="a.deals"/> dossiers actifs</div>
+                                <div class="civora-ventes-sub"><t t-esc="a.deals"/> dossier<t t-if="a.deals > 1">s</t> actif<t t-if="a.deals > 1">s</t></div>
                             </div>
                             <div class="civora-ventes-agentamount">
                                 <div class="civora-ventes-strong"><t t-esc="fmtMoney(a.total)"/> FCFA</div>
@@ -243,7 +243,7 @@
                                     <t t-esc="fmtMoneyFull(c.amount)"/> FCFA
                                 </div>
                             </div>
-                            <span class="civora-ventes-sub" t-esc="c.date"/>
+                            <span class="civora-ventes-sub" t-esc="fmtDate(c.date)"/>
                         </div>
                     </t>
                     <t t-if="!(state.dash.recent_commissions or []).length">
@@ -280,7 +280,7 @@
                             <div class="civora-ventes-zoneline">
                                 <span class="civora-ventes-strong" t-esc="z.name"/>
                                 <span class="civora-ventes-sub">
-                                    <t t-esc="fmtMoney(z.volume)"/> FCFA · <t t-esc="z.count"/> ventes
+                                    <t t-esc="fmtMoney(z.volume)"/> FCFA · <t t-esc="z.count"/> vente<t t-if="z.count > 1">s</t>
                                 </span>
                             </div>
                             <div class="civora-ventes-bartrack">
@@ -307,7 +307,7 @@
                                  <t t-else="">—</t>
                              </strong></div>
                         <div><span>ANNULATIONS</span>
-                             <strong><t t-esc="state.dash.cycle.cancelled"/> dossier(s)</strong></div>
+                             <strong><t t-esc="state.dash.cycle.cancelled"/> dossier<t t-if="state.dash.cycle.cancelled > 1">s</t></strong></div>
                         <div><span>TICKET MOYEN</span>
                              <strong><t t-esc="fmtMoneyFull(state.dash.cycle.ticket)"/> FCFA</strong></div>
                     </div>

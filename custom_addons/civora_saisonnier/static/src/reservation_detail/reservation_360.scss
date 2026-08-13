@@ -315,3 +315,40 @@
         .civora-review-form-grid { grid-template-columns: repeat(3, 1fr); }
     }
 }
+
+// Bloc de gestion de la caution (encaisser / restituer / retenir).
+.civora-360-deposit {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    background: $civora-card;
+    border: 1px solid $civora-border;
+    border-radius: $civora-radius;
+    padding: .85rem 1.15rem;
+    margin-top: 1.25rem;
+}
+
+.civora-360-deposit-main {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+
+    strong {
+        font-family: $civora-font-display;
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: $civora-fg;
+    }
+}
+
+.civora-360-deposit-label {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: $civora-muted;
+}
+
+.civora-360-deposit-actions { display: flex; gap: .5rem; flex-wrap: wrap; }

@@ -163,6 +163,41 @@ class CivoraSale(models.Model):
         if self.property_id and self.property_id.status == 'vendu':
             self.property_id.write({'status': 'disponible'})
 
+
+    @api.model
+    def _demo_assign_agents(self):
+        """Repartit les dossiers de demonstration sur les commerciaux CIVORA.
+
+        Sans cela, tous les dossiers restent sur l'utilisateur qui a installe
+        le module (souvent OdooBot) et l'onglet Commissions n'affiche qu'une
+        seule ligne, ce qui ne montre rien de l'ecran.
+
+        Tolerant : si les comptes de l'equipe n'existent pas (module Equipe
+        non installe), la methode ne fait rien.
+        """
+        logins = [
+            "moussa.ouattara@civora.ci",
+            "mariam.bamba@civora.ci",
+            "kofi.asante@civora.ci",
+        ]
+        agents = self.env["res.users"].sudo().search([("login", "in", logins)])
+        if not agents:
+            return False
+        # Ordre stable : on suit l'ordre des logins declares ci-dessus.
+        ordered = [a for login in logins for a in agents if a.login == login]
+        sales = self.search([], order="id")
+        for index, sale in enumerate(sales):
+            sale.agent_id = ordered[index % len(ordered)]
+            # Un dossier cloture est, par definition, un dossier paye : sans
+            # cela l'onglet Commissions affichait « 0 encaisse » partout alors
+            # qu'une vente etait bien soldee, ce qui n'a aucun sens metier.
+            if sale.state == "cloture" and sale.sale_amount and not sale.amount_paid:
+                vals = {"amount_paid": sale.sale_amount}
+                if not sale.full_payment_date:
+                    vals["full_payment_date"] = sale.acte_date or fields.Date.today()
+                sale.write(vals)
+        return True
+
     @api.model
     def get_sales_kpis(self):
         today = fields.Date.today()
@@ -200,7 +235,16 @@ class CivoraSale(models.Model):
     @api.model
     def get_pipeline_data(self):
         company_domain = [('company_id', 'in', self.env.companies.ids)]
+        # La demo n'expose que 4 colonnes parce que son modele ne connait que
+        # 4 etapes. Le notre en compte 6 (hors annulation) : n'afficher que les
+        # 4 dernieres rendait invisibles les dossiers en « Mandat signe » et
+        # « En commercialisation » — or c'est exactement l'etat d'un dossier
+        # que l'on vient de creer depuis l'ecran. Le pipeline couvre donc
+        # toutes les etapes actives, et son compteur egale enfin le KPI
+        # « dossiers » affiche en haut de page.
         columns = [
+            ('mandat', 'Mandat signé'),
+            ('commercialisation', 'En commercialisation'),
             ('offre', 'Promesse'),
             ('compromis', 'Compromis signé'),
             ('acte', 'Acte authentique'),

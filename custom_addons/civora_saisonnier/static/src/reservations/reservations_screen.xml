@@ -199,8 +199,8 @@
             <table class="civora-sais-table">
                 <thead>
                     <tr>
-                        <th>Référence</th><th>Bien</th><th>Voyageur</th><th>Arrivée</th><th>Départ</th>
-                        <th>Nuitées</th><th>Tarif/nuit</th><th>Total</th><th>Source</th><th>Statut</th>
+                        <th>Référence</th><th>Bien</th><th>Voyageur</th><th>Dates</th>
+                        <th>Tarif/nuit</th><th>Total</th><th>Source</th><th>Statut</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -209,9 +209,7 @@
                             <td class="civora-sais-ref" t-esc="r.ref"/>
                             <td t-esc="r.property"/>
                             <td t-esc="r.guest"/>
-                            <td t-esc="r.checkin"/>
-                            <td t-esc="r.checkout"/>
-                            <td t-esc="r.nights"/>
+                            <td class="civora-sais-dates" t-esc="fmtStayRange(r.checkin, r.checkout, r.nights)"/>
                             <td t-esc="fmtMoney(r.tariff)"/>
                             <td><t t-esc="fmtMoney(r.total)"/> F</td>
                             <td t-esc="r.source_label"/>
@@ -220,7 +218,7 @@
                         </tr>
                     </t>
                     <t t-if="!filteredReservations.length">
-                        <tr><td colspan="10" class="civora-sais-empty">Aucune réservation trouvée.</td></tr>
+                        <tr><td colspan="8" class="civora-sais-empty">Aucune réservation trouvée.</td></tr>
                     </t>
                 </tbody>
             </table>
@@ -402,7 +400,7 @@
                     </div>
                 </t>
                 <div class="civora-sais-propcard civora-sais-propcard--add"
-                     t-on-click="() => this.openDrawer('create')">
+                     t-on-click="goToProperties">
                     <i class="fa fa-plus-circle"/>
                     <div class="civora-sais-propname">Ajouter un bien saisonnier</div>
                     <div class="civora-sais-propcity">Création guidée · publication multi-canaux</div>
@@ -417,14 +415,15 @@
                     <h3 class="civora-sais-secttitle">Planning ménage &amp; maintenance</h3>
                     <div class="civora-sais-sectsub">Tâches générées automatiquement par les check-out</div>
                 </div>
-                <button class="civora-btn civora-btn-accent" t-on-click="() => this.openDrawer('create')">
+                <button class="civora-btn civora-btn-accent" t-on-click="() => this.openTaskDialog(false)">
                     <i class="fa fa-plus"/> Nouvelle tâche
                 </button>
             </div>
             <div class="civora-sais-cols">
                 <div class="civora-sais-col">
                     <t t-foreach="state.d.cleaning or []" t-as="t" t-key="t.id">
-                        <div class="civora-sais-taskrow">
+                        <div class="civora-sais-taskrow civora-sais-taskrow--click"
+                             t-on-click="() => this.openTaskDialog(t.id)">
                             <div>
                                 <div class="civora-sais-strong">
                                     <t t-esc="t.property"/> · <t t-esc="t.type"/>
@@ -822,7 +821,7 @@
                             <td class="civora-sais-ref" t-esc="i.ref"/>
                             <td>
                                 <div class="civora-sais-strong" t-esc="i.property"/>
-                                <div class="civora-sais-sectsub"><t t-esc="i.guest"/> · <t t-esc="i.date"/></div>
+                                <div class="civora-sais-sectsub"><t t-esc="i.guest"/> · <t t-esc="fmtDateFull(i.date)"/></div>
                             </td>
                             <td t-esc="i.type"/>
                             <td t-esc="i.description"/>
@@ -910,7 +909,7 @@
                 <tbody>
                     <t t-foreach="state.d.payouts or []" t-as="p" t-key="p.id">
                         <tr>
-                            <td t-esc="p.date"/>
+                            <td t-esc="fmtDateFull(p.date)"/>
                             <td t-esc="p.channel"/>
                             <td class="civora-sais-ref" t-esc="p.reference"/>
                             <td><t t-esc="fmtMoney(p.gross)"/> F</td>
@@ -1094,6 +1093,10 @@
         <t t-if="state.drawerOpen">
             <ReservationDrawer mode="state.drawerMode" recordId="state.drawerRecordId"
                                onSaved.bind="onSaved" onClose.bind="closeDrawer"/>
+        </t>
+        <t t-if="state.taskDialogOpen">
+            <CleaningTaskDialog taskId="state.taskId"
+                                onSaved.bind="onTaskSaved" onClose.bind="closeTaskDialog"/>
         </t>
     </div>
 </t>

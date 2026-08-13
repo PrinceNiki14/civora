@@ -1128,3 +1128,43 @@
 
 .civora-sais-stars { font-size: .78rem; }
 .civora-sais-reviewtxt { font-size: .84rem; color: $civora-fg; margin: .35rem 0 .5rem; }
+
+// Formulaire de tache menage / maintenance
+.civora-sais-taskform { display: flex; flex-direction: column; gap: .85rem; }
+
+.civora-sais-taskgrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .85rem;
+}
+
+.civora-sais-taskfield {
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+
+    label { font-size: .8rem; font-weight: 600; color: $civora-fg; }
+
+    .civora-input {
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius-sm;
+        padding: .5rem .7rem;
+        font-size: .85rem;
+        color: $civora-fg;
+        background: $civora-card;
+        width: 100%;
+
+        &:focus { outline: none; border-color: $civora-accent; }
+    }
+
+    textarea.civora-input { resize: vertical; min-height: 58px; }
+}
+
+.civora-sais-taskhint { font-size: .72rem; color: $civora-muted; }
+
+.civora-sais-taskrow--click {
+    cursor: pointer;
+    border-radius: $civora-radius-sm;
+
+    &:hover { background: rgba(0, 171, 104, .04); }
+}

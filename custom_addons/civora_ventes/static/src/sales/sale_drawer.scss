@@ -60,3 +60,21 @@
         border-top: 1px solid $civora-border;
     }
 }
+
+.civora-ventes-formerror {
+    background: rgba(230, 44, 44, .08);
+    border: 1px solid rgba(230, 44, 44, .25);
+    color: $civora-danger;
+    border-radius: $civora-radius-sm;
+    padding: .6rem .8rem;
+    font-size: .83rem;
+    font-weight: 600;
+    margin-top: .75rem;
+}
+
+.civora-field-hint {
+    display: block;
+    margin-top: .2rem;
+    font-size: .72rem;
+    color: $civora-muted;
+}

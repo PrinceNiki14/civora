@@ -3,6 +3,7 @@ import { Component, useState, onWillStart } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { CivoraStatCard } from "@civora_core/components/civora_stat_card";
+import { SaleDrawer } from "@civora_ventes/sales/sale_drawer";
 
 function fmtMoney(v) {
     if (!v && v !== 0) return "0";
@@ -10,25 +11,25 @@ function fmtMoney(v) {
 }
 
 const STATE_LABELS = {
-    mandat: "Mandat signe",
+    mandat: "Mandat signé",
     commercialisation: "En commercialisation",
-    offre: "Offre recue",
+    offre: "Offre reçue",
     compromis: "Compromis signé",
     acte: "Acte en cours",
-    cloture: "Cloturee",
+    cloture: "Clôturée",
     annule: "Annulée",
 };
 
 const OFFER_LABELS = {
     pending: "En attente",
     accepted: "Acceptée",
-    refused: "Refusee",
-    withdrawn: "Retiree",
+    refused: "Refusée",
+    withdrawn: "Retirée",
 };
 
 class CivoraSale360 extends Component {
     static template = "civora_ventes.Sale360";
-    static components = { CivoraStatCard };
+    static components = { CivoraStatCard, SaleDrawer };
 
     setup() {
         this.orm = useService("orm");
@@ -38,18 +39,26 @@ class CivoraSale360 extends Component {
             sale: null,
             offers: [],
             activeTab: "overview",
+            editing: false,
         });
         onWillStart(() => this.load());
     }
 
     async load() {
-        if (!this.saleId) return;
+        // Sans identifiant (URL de l'action ouverte directement, favori peri-
+        // me...), l'ecran restait bloque sur « Chargement... » indefiniment.
+        // On renvoie a la liste : c'est la seule issue utile.
+        if (!this.saleId) {
+            this.goBack();
+            return;
+        }
         const [sale] = await this.orm.read("civora.sale", [this.saleId], [
             "name", "property_id", "seller_id", "buyer_id", "agent_id",
             "state", "mandate_type", "mandate_date", "mandate_end_date",
             "asking_price", "sale_amount", "commission_rate", "commission_amount",
             "notary_name", "notary_phone", "compromis_date", "conditions_text",
             "acte_date", "estimated_acte_date", "notes",
+            "amount_paid", "payment_progress",
         ]);
         const offers = await this.orm.searchRead("civora.sale.offer", [
             ["sale_id", "=", this.saleId],
@@ -68,6 +77,23 @@ class CivoraSale360 extends Component {
     }
 
     setTab(t) { this.state.activeTab = t; }
+
+    // Le drawer sait deja editer un dossier (mode "edit"), mais aucun ecran
+    // ne l'ouvrait dans ce mode : la fiche etait consultable et pas modifiable.
+    openEdit() { this.state.editing = true; }
+    closeEdit() { this.state.editing = false; }
+    async onEdited() {
+        this.state.editing = false;
+        await this.load();
+    }
+
+    // Reste a encaisser : l'information que reclame un gestionnaire devant
+    // une vente en cours, et qui n'apparaissait nulle part sur la fiche.
+    get remaining() {
+        const rec = this.state.sale;
+        if (!rec || !rec.sale_amount) return 0;
+        return Math.max(0, rec.sale_amount - (rec.amount_paid || 0));
+    }
 
     stateLabel(s) { return STATE_LABELS[s] || s; }
     stateClass(s) {
@@ -88,7 +114,7 @@ class CivoraSale360 extends Component {
         return m[s] || "";
     }
     mandateLabel(s) {
-        const m = { exclusif: "Exclusif", simple: "Simple", delegue: "Delegue" };
+        const m = { exclusif: "Exclusif", simple: "Simple", delegue: "Délégué" };
         return m[s] || s;
     }
     fmtMoney(v) { return fmtMoney(v); }

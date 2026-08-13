@@ -155,15 +155,68 @@ class CivoraReservation(models.Model):
                 'reservation_id': rec.id,
                 'property_id': rec.property_id.id,
                 'date': rec.checkout_date,
+                'task_type': 'menage',
+                'priority': 'haute',
                 'state': 'a_planifier',
                 'company_id': rec.company_id.id,
             })
 
+    @api.model
+    def _demo_assign_agents(self):
+        """Repartit les sejours de demonstration sur les gestionnaires CIVORA.
+
+        Meme raison que cote Ventes : sans cela tout est rattache a l'utilisateur
+        qui a installe le module (OdooBot), et la ligne « Agent » de la fiche 360
+        affiche un robot au lieu d'un membre de l'equipe.
+
+        Tolerant : sans les comptes de l'equipe, la methode ne fait rien.
+        """
+        logins = [
+            "mariam.bamba@civora.ci",
+            "kofi.asante@civora.ci",
+            "moussa.ouattara@civora.ci",
+        ]
+        agents = self.env["res.users"].sudo().search([("login", "in", logins)])
+        if not agents:
+            return False
+        ordered = [a for login in logins for a in agents if a.login == login]
+        for index, rec in enumerate(self.search([], order="id")):
+            rec.agent_id = ordered[index % len(ordered)]
+        return True
+
     def action_cancel(self):
-        self.write({'state': 'cancelled'})
+        # Le statut du bien doit etre libere AVANT d'ecrire l'annulation :
+        # sinon rec.state vaut deja 'cancelled' et le test ne passe jamais,
+        # ce qui laissait un bien marque occupe apres l'annulation d'un sejour
+        # en cours.
         for rec in self:
             if rec.property_id and rec.state == 'checkin':
                 rec.property_id.write({'status': 'disponible'})
+        self.write({'state': 'cancelled'})
+
+    # ------------------------------------------------------------------
+    # Caution
+    # ------------------------------------------------------------------
+    def action_deposit_collect(self):
+        for rec in self:
+            if not rec.deposit_amount:
+                raise ValidationError(
+                    _("Renseignez d'abord le montant de la caution."))
+        self.write({'deposit_status': 'collected'})
+
+    def action_deposit_return(self):
+        for rec in self:
+            if rec.deposit_status != 'collected':
+                raise ValidationError(
+                    _("La caution doit avoir ete encaissee avant d'etre restituee."))
+        self.write({'deposit_status': 'returned'})
+
+    def action_deposit_retain(self):
+        for rec in self:
+            if rec.deposit_status != 'collected':
+                raise ValidationError(
+                    _("La caution doit avoir ete encaissee avant d'etre retenue."))
+        self.write({'deposit_status': 'retained'})
 
     @api.model
     def get_seasonal_kpis(self):

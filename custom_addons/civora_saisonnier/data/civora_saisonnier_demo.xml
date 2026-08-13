@@ -41,8 +41,44 @@
             <field name="country_id" ref="base.fr"/>
         </record>
 
+        <!-- ====== PROPRIETAIRES BAILLEURS ======
+             Un bien saisonnier appartient toujours a quelqu'un : c'est a lui
+             qu'on reverse. Sans proprietaire, la fiche reservation affichait
+             « Proprietaire — » et les releves n'etaient rattaches a personne. -->
+        <record id="owner_riviera" model="res.partner">
+            <field name="name">M. Kouassi Franck</field>
+            <field name="phone">+225 07 01 22 33 44</field>
+            <field name="email">f.kouassi@gmail.com</field>
+            <field name="city">Abidjan</field>
+            <field name="civora_is_contact" eval="True"/>
+        </record>
+        <record id="owner_cocody" model="res.partner">
+            <field name="name">Mme Adjoua Sylvie</field>
+            <field name="phone">+225 05 44 55 66 77</field>
+            <field name="email">sylvie.adjoua@gmail.com</field>
+            <field name="city">Abidjan</field>
+            <field name="civora_is_contact" eval="True"/>
+        </record>
+        <record id="owner_plateau" model="res.partner">
+            <field name="name">SCI Ivoire Patrimoine</field>
+            <field name="phone">+225 27 20 31 40 50</field>
+            <field name="email">gestion@ivoire-patrimoine.ci</field>
+            <field name="city">Abidjan</field>
+            <field name="is_company" eval="True"/>
+            <field name="civora_is_contact" eval="True"/>
+        </record>
+        <record id="owner_assinie" model="res.partner">
+            <field name="name">M. Guillaume Perrin</field>
+            <field name="phone">+33 6 12 45 78 90</field>
+            <field name="email">g.perrin@orange.fr</field>
+            <field name="city">Lyon</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="civora_is_contact" eval="True"/>
+        </record>
+
         <!-- ====== BIENS SAISONNIERS ====== -->
         <record id="prop_villa_riviera" model="civora.property">
+            <field name="owner_id" ref="owner_riviera"/>
             <field name="name">Villa Palmier — Riviera Golf</field>
             <field name="ref">SAI-001</field>
             <field name="transaction">saisonnier</field>
@@ -56,6 +92,7 @@
             <field name="property_type_id" ref="civora_biens.ptype_villa"/>
         </record>
         <record id="prop_appart_cocody" model="civora.property">
+            <field name="owner_id" ref="owner_cocody"/>
             <field name="name">Appartement Standing — Cocody Angré</field>
             <field name="ref">SAI-002</field>
             <field name="transaction">saisonnier</field>
@@ -69,6 +106,7 @@
             <field name="property_type_id" ref="civora_biens.ptype_appartement"/>
         </record>
         <record id="prop_studio_plateau" model="civora.property">
+            <field name="owner_id" ref="owner_plateau"/>
             <field name="name">Studio Meublé — Plateau Centre</field>
             <field name="ref">SAI-003</field>
             <field name="transaction">saisonnier</field>
@@ -82,6 +120,7 @@
             <field name="property_type_id" ref="civora_biens.ptype_studio"/>
         </record>
         <record id="prop_villa_assinie" model="civora.property">
+            <field name="owner_id" ref="owner_assinie"/>
             <field name="name">Villa Bord de Mer — Assinie Mafia</field>
             <field name="ref">SAI-004</field>
             <field name="transaction">saisonnier</field>
@@ -728,28 +767,32 @@
             <field name="channel_id" ref="chan_booking"/>
         </record>
         <record id="stmt_assinie" model="civora.seasonal.owner.statement">
-            <field name="name">Prop. Villa Assinie</field>
+            <field name="partner_id" ref="owner_assinie"/>
+            <field name="name">M. Guillaume Perrin</field>
             <field name="gross_amount">2900000</field>
             <field name="channel_commission">145000</field>
             <field name="management_rate">20.0</field>
             <field name="property_id" ref="prop_villa_assinie"/>
         </record>
         <record id="stmt_cocody" model="civora.seasonal.owner.statement">
-            <field name="name">Prop. Appartement Cocody</field>
+            <field name="partner_id" ref="owner_cocody"/>
+            <field name="name">Mme Adjoua Sylvie</field>
             <field name="gross_amount">950000</field>
             <field name="channel_commission">142500</field>
             <field name="management_rate">20.0</field>
             <field name="property_id" ref="prop_appart_cocody"/>
         </record>
         <record id="stmt_riviera" model="civora.seasonal.owner.statement">
-            <field name="name">Prop. Villa Riviera</field>
+            <field name="partner_id" ref="owner_riviera"/>
+            <field name="name">M. Kouassi Franck</field>
             <field name="gross_amount">1820000</field>
             <field name="channel_commission">91000</field>
             <field name="management_rate">20.0</field>
             <field name="property_id" ref="prop_villa_riviera"/>
         </record>
         <record id="stmt_plateau" model="civora.seasonal.owner.statement">
-            <field name="name">Prop. Studio Plateau</field>
+            <field name="partner_id" ref="owner_plateau"/>
+            <field name="name">SCI Ivoire Patrimoine</field>
             <field name="gross_amount">975000</field>
             <field name="channel_commission">48750</field>
             <field name="management_rate">20.0</field>
@@ -1325,5 +1368,47 @@
             <field name="reservation_id" ref="res_plateau_2"/>
             <field name="quantity">2</field>
         </record>
+
+    <!-- noupdate="0" volontaire : une <function> placee dans un bloc
+         noupdate="1" n'est jouee qu'a l'installation, jamais aux mises a jour. -->
+    <!-- Le fichier est en noupdate="1" : Odoo ne rejoue pas les champs des
+         enregistrements deja crees. Les rattachements de proprietaires sont
+         donc redeclares ici en noupdate="0" pour s'appliquer aussi lors d'une
+         simple mise a jour du module, et pas seulement a l'installation. -->
+    <data noupdate="0">
+        <record id="prop_villa_riviera" model="civora.property">
+            <field name="owner_id" ref="owner_riviera"/>
+        </record>
+        <record id="prop_appart_cocody" model="civora.property">
+            <field name="owner_id" ref="owner_cocody"/>
+        </record>
+        <record id="prop_studio_plateau" model="civora.property">
+            <field name="owner_id" ref="owner_plateau"/>
+        </record>
+        <record id="prop_villa_assinie" model="civora.property">
+            <field name="owner_id" ref="owner_assinie"/>
+        </record>
+
+        <record id="stmt_assinie" model="civora.seasonal.owner.statement">
+            <field name="name">M. Guillaume Perrin</field>
+            <field name="partner_id" ref="owner_assinie"/>
+        </record>
+        <record id="stmt_cocody" model="civora.seasonal.owner.statement">
+            <field name="name">Mme Adjoua Sylvie</field>
+            <field name="partner_id" ref="owner_cocody"/>
+        </record>
+        <record id="stmt_riviera" model="civora.seasonal.owner.statement">
+            <field name="name">M. Kouassi Franck</field>
+            <field name="partner_id" ref="owner_riviera"/>
+        </record>
+        <record id="stmt_plateau" model="civora.seasonal.owner.statement">
+            <field name="name">SCI Ivoire Patrimoine</field>
+            <field name="partner_id" ref="owner_plateau"/>
+        </record>
+    </data>
+
+    <data noupdate="0">
+        <function model="civora.reservation" name="_demo_assign_agents"/>
+    </data>
 
 </odoo>

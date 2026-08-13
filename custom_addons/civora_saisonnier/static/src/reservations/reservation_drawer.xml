@@ -70,7 +70,8 @@
                 <div class="civora-form-grid">
                     <div class="civora-field">
                         <label>Tarif / nuit (FCFA) *</label>
-                        <input type="number" min="0" step="1000" t-att-value="state.form.tariff_night"
+                        <input type="number" min="0" step="1000" t-ref="tariff"
+                               t-att-value="state.form.tariff_night"
                                t-on-change="(ev) => this.setNumber('tariff_night', ev)"/>
                     </div>
                     <div class="civora-field">
@@ -98,25 +99,103 @@
                 <div class="civora-form-grid civora-form-grid-1">
                     <div class="civora-field">
                         <label>Instructions d'accès</label>
-                        <textarea rows="2" t-att-value="state.form.access_instructions"
-                                  t-on-change="(ev) => this.setField('access_instructions', ev)"/>
+                        <textarea rows="2"
+                                  t-on-change="(ev) => this.setField('access_instructions', ev)"><t t-esc="state.form.access_instructions"/></textarea>
                     </div>
                     <div class="civora-field">
                         <label>Notes</label>
-                        <textarea rows="2" t-att-value="state.form.notes"
-                                  t-on-change="(ev) => this.setField('notes', ev)"/>
+                        <textarea rows="2"
+                                  t-on-change="(ev) => this.setField('notes', ev)"><t t-esc="state.form.notes"/></textarea>
                     </div>
                 </div>
             </div>
         </div>
 
         <t t-set-slot="footer">
+            <!-- Annuler a gauche, action a droite : meme ordre que tous les
+                 autres drawers CIVORA. Ce drawer etait le seul inverse. -->
+            <button class="civora-btn civora-btn-outline" t-on-click="props.onClose">Annuler</button>
             <button class="civora-btn civora-btn-accent" t-on-click="save" t-att-disabled="state.saving">
                 <t t-if="state.saving">Enregistrement...</t>
                 <t t-else="">Enregistrer</t>
             </button>
-            <button class="civora-btn civora-btn-outline" t-on-click="props.onClose">Annuler</button>
         </t>
     </CivoraDrawer>
 </t>
+<t t-name="civora_saisonnier.CleaningTaskDialog">
+    <CivoraDrawer variant="'modal'" size="'md'" icon="'fa-magic'"
+                  title="dialogTitle" onClose="props.onClose">
+        <div class="civora-sais-taskform">
+            <t t-if="state.error">
+                <div class="civora-sais-error"><i class="fa fa-exclamation-triangle"/> <t t-esc="state.error"/></div>
+            </t>
+
+            <div class="civora-sais-taskgrid">
+                <div class="civora-sais-taskfield">
+                    <label>Bien *</label>
+                    <select class="civora-input" t-on-change="(ev) => this.update('property_id', ev)">
+                        <t t-foreach="state.properties" t-as="p" t-key="p.id">
+                            <option t-att-value="p.id" t-att-selected="isValue('property_id', p.id)" t-esc="p.name"/>
+                        </t>
+                    </select>
+                </div>
+                <div class="civora-sais-taskfield">
+                    <label>Type d'intervention</label>
+                    <select class="civora-input" t-on-change="(ev) => this.update('task_type', ev)">
+                        <t t-foreach="types" t-as="t" t-key="t.id">
+                            <option t-att-value="t.id" t-att-selected="isValue('task_type', t.id)" t-esc="t.label"/>
+                        </t>
+                    </select>
+                </div>
+                <div class="civora-sais-taskfield">
+                    <label>Date *</label>
+                    <input type="date" class="civora-input" t-att-value="state.values.date"
+                           t-on-change="(ev) => this.update('date', ev)"/>
+                </div>
+                <div class="civora-sais-taskfield">
+                    <label>Créneau</label>
+                    <select class="civora-input" t-on-change="(ev) => this.update('time_slot', ev)">
+                        <t t-foreach="slots" t-as="sl" t-key="sl.id">
+                            <option t-att-value="sl.id" t-att-selected="isValue('time_slot', sl.id)" t-esc="sl.label"/>
+                        </t>
+                    </select>
+                </div>
+                <div class="civora-sais-taskfield">
+                    <label>Intervenant</label>
+                    <select class="civora-input" t-on-change="(ev) => this.update('staff_id', ev)">
+                        <option value="" t-att-selected="isValue('staff_id', '')">— À assigner —</option>
+                        <t t-foreach="state.staff" t-as="st" t-key="st.id">
+                            <option t-att-value="st.id" t-att-selected="isValue('staff_id', st.id)">
+                                <t t-esc="st.name"/> · <t t-esc="st.speciality"/>
+                            </option>
+                        </t>
+                    </select>
+                    <span class="civora-sais-taskhint">Sans intervenant, la tâche reste « à planifier ».</span>
+                </div>
+                <div class="civora-sais-taskfield">
+                    <label>Priorité</label>
+                    <select class="civora-input" t-on-change="(ev) => this.update('priority', ev)">
+                        <t t-foreach="priorities" t-as="pr" t-key="pr.id">
+                            <option t-att-value="pr.id" t-att-selected="isValue('priority', pr.id)" t-esc="pr.label"/>
+                        </t>
+                    </select>
+                </div>
+            </div>
+
+            <div class="civora-sais-taskfield">
+                <label>Consignes</label>
+                <textarea class="civora-input" rows="2" placeholder="Points de vigilance, matériel, accès…"
+                          t-on-change="(ev) => this.update('notes', ev)"><t t-esc="state.values.notes"/></textarea>
+            </div>
+        </div>
+
+        <t t-set-slot="footer">
+            <button class="civora-btn civora-btn-ghost" t-on-click="() => props.onClose()">Annuler</button>
+            <button class="civora-btn civora-btn-accent" t-att-disabled="state.saving" t-on-click="save">
+                <i class="fa fa-check"/> <t t-esc="isEdit ? 'Enregistrer' : 'Planifier la tâche'"/>
+            </button>
+        </t>
+    </CivoraDrawer>
+</t>
+
 </templates>

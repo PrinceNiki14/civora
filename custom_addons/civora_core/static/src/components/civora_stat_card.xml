@@ -11,7 +11,7 @@
                 <div t-if="props.hint" class="civora-stat-hint" t-esc="props.hint"/>
             </div>
             <div class="civora-stat-icon">
-                <i t-att-class="props.icon or 'fa fa-circle-o'"/>
+                <i t-att-class="iconClass"/>
             </div>
         </div>
     </div>

@@ -83,6 +83,7 @@ export class CivoraProgram360 extends Component {
             lotView: "grille",
             lotStatus: "tous",
             lotSearch: "",
+            generating: false,
             commission: {},
             savingCommission: false,
             programDialog: false,
@@ -198,6 +199,29 @@ export class CivoraProgram360 extends Component {
      * fiche donnent deux verites differentes sans que personne ne sache
      * laquelle est bonne.
      */
+    /**
+     * Complete la grille jusqu'au total declare au permis.
+     * Cote serveur, les lots existants ne sont jamais modifies.
+     */
+    async generateMissingLots() {
+        if (this.state.generating) return;
+        this.state.generating = true;
+        try {
+            const res = await this.orm.call(
+                "civora.program", "action_generate_missing_lots", [[this.programId]]);
+            await this.load();
+            this.notification.add(
+                `${res.created} lot(s) générés — grille à ${res.total}/${res.target}.`,
+                { type: "success" });
+        } catch (e) {
+            this.notification.add(
+                (e && e.data && e.data.message) || "Génération impossible.",
+                { type: "warning" });
+        } finally {
+            this.state.generating = false;
+        }
+    }
+
     get lotGapNotice() {
         const declared = this.p.total_lots || 0;
         const captured = this.p.lot_count || 0;

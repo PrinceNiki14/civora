@@ -112,11 +112,16 @@
     }
 
     // ── Pipeline (Kanban) ────────────────────────────────────────────
+    // 6 etapes actives : au-dela de 4 colonnes une grille 1fr ecrase les
+    // cartes. On passe en rail horizontal a largeur minimale garantie, la
+    // grille reste identique a la demo tant que la place suffit.
     .civora-pipeline {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(6, minmax(230px, 1fr));
         gap: 1rem;
         align-items: flex-start;
+        overflow-x: auto;
+        padding-bottom: 0.35rem;
     }
 
     .civora-pipeline-col {
@@ -144,6 +149,14 @@
         font-weight: 600;
         white-space: nowrap;
 
+        &.civora-pipeline-badge-mandat {
+            background: rgba($civora-muted, 0.12);
+            color: $civora-muted;
+        }
+        &.civora-pipeline-badge-commercialisation {
+            background: rgba($civora-info, 0.12);
+            color: $civora-info;
+        }
         &.civora-pipeline-badge-offre {
             background: rgba($civora-warning, 0.12);
             color: darken($civora-warning, 12%);

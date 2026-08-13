@@ -1,8 +1,10 @@
 /** @odoo-module **/
-import { Component, useState, onWillStart } from "@odoo/owl";
+import { Component, useState, onWillStart, useRef } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { CivoraStatCard } from "@civora_core/components/civora_stat_card";
+import { ReservationDrawer } from "../reservations/reservation_drawer";
+import { fmtDayMonth } from "../reservations/reservations_screen";
 
 function fmtMoney(v) {
     if (!v && v !== 0) return "0";
@@ -13,6 +15,10 @@ const STATE_LABELS = {
     draft: "Brouillon", confirmed: "Confirmée",
     checkin: "En séjour", checkout: "Terminée", cancelled: "Annulée",
 };
+const SOURCE_LABELS = {
+    direct: "Direct", airbnb: "Airbnb", booking: "Booking.com",
+    whatsapp: "WhatsApp", referral: "Référence", other: "Autre",
+};
 const DEPOSIT_LABELS = {
     pending: "En attente", collected: "Encaissée",
     returned: "Restituée", retained: "Retenue",
@@ -20,9 +26,11 @@ const DEPOSIT_LABELS = {
 
 class CivoraReservation360 extends Component {
     static template = "civora_saisonnier.Reservation360";
-    static components = { CivoraStatCard };
+    static components = { CivoraStatCard, ReservationDrawer };
 
     setup() {
+
+        this.fmtDayMonth = fmtDayMonth;
         this.orm = useService("orm");
         this.action = useService("action");
         this.notification = useService("notification");
@@ -31,9 +39,35 @@ class CivoraReservation360 extends Component {
             reviews: [],
             cleaningTasks: [],
             activeTab: "overview",
+            drawerOpen: false,
             reviewForm: { rating: 5, cleanliness_rating: 5, location_rating: 5, comfort_rating: 5, value_rating: 5, comment: "", internal_note: "" },
         });
+        // Les <textarea> ne se vident pas en repositionnant leur contenu :
+        // il faut remettre la propriete DOM value a la main apres soumission.
+        this.commentRef = useRef("comment");
+        this.internalRef = useRef("internal");
         onWillStart(() => this.load());
+    }
+
+    openEdit() { this.state.drawerOpen = true; }
+    closeDrawer() { this.state.drawerOpen = false; }
+
+    async onSaved() {
+        this.state.drawerOpen = false;
+        await this.load();
+        this.notification.add("Réservation mise à jour", { type: "success" });
+    }
+
+    async depositAction(method) {
+        try {
+            await this.orm.call("civora.reservation", method, [[this.reservationId]]);
+            await this.load();
+            this.notification.add("Caution mise à jour", { type: "success" });
+        } catch (e) {
+            this.notification.add(
+                (e && e.data && e.data.message) || e.message || "Action impossible",
+                { type: "danger" });
+        }
     }
 
     get reservationId() {
@@ -73,6 +107,7 @@ class CivoraReservation360 extends Component {
     fmtMoney(v) { return fmtMoney(v); }
     stateLabel(s) { return STATE_LABELS[s] || s; }
     depositLabel(s) { return DEPOSIT_LABELS[s] || s; }
+    sourceLabel(s) { return SOURCE_LABELS[s] || s; }
 
     stateClass(s) {
         const m = { draft: "muted", confirmed: "info", checkin: "accent", checkout: "success", cancelled: "danger" };
@@ -128,6 +163,8 @@ class CivoraReservation360 extends Component {
                 rating: 5, cleanliness_rating: 5, location_rating: 5,
                 comfort_rating: 5, value_rating: 5, comment: "", internal_note: "",
             };
+            if (this.commentRef.el) this.commentRef.el.value = "";
+            if (this.internalRef.el) this.internalRef.el.value = "";
             await this.load();
             this.notification.add("Avis enregistré", { type: "success" });
         } catch (e) {
