@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- Catalogue des prestations propose dans l'assistant Programme
+         (identique a la liste du front CIVORA). -->
+    <record id="amenity_piscine" model="civora.program.amenity">
+        <field name="name">Piscine</field><field name="sequence">10</field>
+    </record>
+    <record id="amenity_salle_sport" model="civora.program.amenity">
+        <field name="name">Salle de sport</field><field name="sequence">20</field>
+    </record>
+    <record id="amenity_conciergerie" model="civora.program.amenity">
+        <field name="name">Conciergerie 24/7</field><field name="sequence">30</field>
+    </record>
+    <record id="amenity_espaces_verts" model="civora.program.amenity">
+        <field name="name">Espaces verts</field><field name="sequence">40</field>
+    </record>
+    <record id="amenity_aire_jeux" model="civora.program.amenity">
+        <field name="name">Aire de jeux</field><field name="sequence">50</field>
+    </record>
+    <record id="amenity_videosurveillance" model="civora.program.amenity">
+        <field name="name">Vidéo-surveillance</field><field name="sequence">60</field>
+    </record>
+    <record id="amenity_local_velos" model="civora.program.amenity">
+        <field name="name">Local vélos</field><field name="sequence">70</field>
+    </record>
+    <record id="amenity_bornes_elec" model="civora.program.amenity">
+        <field name="name">Bornes électriques</field><field name="sequence">80</field>
+    </record>
+    <record id="amenity_parking_visiteurs" model="civora.program.amenity">
+        <field name="name">Parking visiteurs</field><field name="sequence">90</field>
+    </record>
+    <record id="amenity_securite" model="civora.program.amenity">
+        <field name="name">Sécurité 24/7</field><field name="sequence">100</field>
+    </record>
+    <record id="amenity_ascenseur" model="civora.program.amenity">
+        <field name="name">Ascenseur</field><field name="sequence">110</field>
+    </record>
+    <record id="amenity_clim" model="civora.program.amenity">
+        <field name="name">Climatisation centralisée</field><field name="sequence">120</field>
+    </record>
+    <record id="amenity_domotique" model="civora.program.amenity">
+        <field name="name">Domotique</field><field name="sequence">130</field>
+    </record>
+    <record id="amenity_groupe_elec" model="civora.program.amenity">
+        <field name="name">Groupe électrogène</field><field name="sequence">140</field>
+    </record>
+    <record id="amenity_forage" model="civora.program.amenity">
+        <field name="name">Forage / réserve d'eau</field><field name="sequence">150</field>
+    </record>
+
+</odoo>

@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_programmes.Programs">
+    <div class="civora-prg">
+
+        <!-- En-tete -->
+        <div class="civora-prg-head">
+            <div>
+                <div class="civora-prg-title">Programmes immobiliers</div>
+                <div class="civora-prg-sub" t-esc="headerSub"/>
+            </div>
+            <div class="civora-prg-head-actions">
+                <button class="civora-btn civora-btn-outline" t-on-click="() => this.onImport()">
+                    <i class="fa fa-upload"/> Importer
+                </button>
+                <button class="civora-btn civora-btn-outline" t-on-click="() => this.onExport()">
+                    <i class="fa fa-download"/> Exporter
+                </button>
+                <button class="civora-btn civora-btn-accent" t-on-click="() => this.openCreate()">
+                    <i class="fa fa-plus"/> Nouveau programme
+                </button>
+            </div>
+        </div>
+
+        <!-- KPIs -->
+        <div class="civora-prg-kpis">
+            <CivoraStatCard label="'Programmes actifs'"
+                            value="state.stats.count + ''"
+                            delta="state.stats.commercialisation + ' en commercialisation'"
+                            icon="'fa fa-building'"/>
+            <CivoraStatCard label="'Lots disponibles'"
+                            value="state.stats.available + ''"
+                            delta="state.stats.sold + ' vendus · ' + state.stats.reserved + ' réservés'"
+                            icon="'fa fa-th-large'"/>
+            <CivoraStatCard label="'CA signé'"
+                            value="kpiSigned()"
+                            delta="kpiPotential()"
+                            icon="'fa fa-credit-card'"/>
+            <CivoraStatCard label="'Taux d\'absorption'"
+                            value="state.stats.absorption + '%'"
+                            delta="'sur ' + state.stats.totalLots + ' lots'"
+                            icon="'fa fa-line-chart'"/>
+        </div>
+
+        <!-- Insight IA -->
+        <CivoraInsight title="'Recommandation CIVORA AI'" body="insightBody"/>
+
+        <!-- Barre de filtres -->
+        <div class="civora-prg-toolbar">
+            <div class="civora-prg-toolbar-row">
+                <div class="civora-prg-search">
+                    <i class="fa fa-search"/>
+                    <input type="text" placeholder="Nom, ville, promoteur, référence…"
+                           t-att-value="state.search"
+                           t-on-input="(ev) => this.onSearchInput(ev)"/>
+                </div>
+                <div class="civora-prg-pills">
+                    <button t-foreach="statusFilters" t-as="f" t-key="f.id"
+                            t-att-class="'civora-prg-pill' + (state.statusFilter === f.id ? ' is-active' : '')"
+                            t-on-click="() => this.setStatus(f.id)"
+                            t-esc="f.label"/>
+                </div>
+                <div class="civora-prg-pills">
+                    <button t-foreach="typeFilters" t-as="f" t-key="f.id"
+                            t-att-class="'civora-prg-pill' + (state.typeFilter === f.id ? ' is-active' : '')"
+                            t-on-click="() => this.setType(f.id)"
+                            t-esc="f.label"/>
+                </div>
+            </div>
+            <div class="civora-prg-toolbar-foot">
+                <div class="civora-prg-viewtoggle">
+                    <button t-att-class="'civora-prg-vt' + (state.view === 'grid' ? ' is-active' : '')"
+                            title="Grille" t-on-click="() => this.setView('grid')">
+                        <i class="fa fa-th-large"/>
+                    </button>
+                    <button t-att-class="'civora-prg-vt' + (state.view === 'list' ? ' is-active' : '')"
+                            title="Liste" t-on-click="() => this.setView('list')">
+                        <i class="fa fa-list"/>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chargement -->
+        <div t-if="state.loading" class="civora-prg-state">
+            <i class="fa fa-circle-o-notch fa-spin"/> Chargement…
+        </div>
+
+        <!-- Etat vide -->
+        <div t-elif="!state.programs.length" class="civora-prg-empty">
+            <i class="fa fa-cubes"/>
+            <div class="civora-prg-empty-t">Aucun programme</div>
+            <p>Aucun programme ne correspond à ces critères. Cliquez sur « Nouveau programme » pour en créer un.</p>
+        </div>
+
+        <!-- Vue grille -->
+        <div t-elif="state.view === 'grid'" class="civora-prg-grid">
+            <div t-foreach="state.programs" t-as="p" t-key="p.id" class="civora-card civora-prg-card">
+                <div t-att-class="coverClass(p)">
+                    <div class="civora-prg-cover-badges">
+                        <span class="civora-prg-cover-badge" t-esc="statusMeta(p).label"/>
+                        <span class="civora-prg-cover-badge is-ghost" t-esc="typeLabel(p)"/>
+                    </div>
+                    <span class="civora-prg-cover-ref" t-esc="p.ref"/>
+                </div>
+
+                <div class="civora-prg-card-body">
+                    <div class="civora-prg-card-name" t-esc="p.name"/>
+                    <div class="civora-prg-card-loc">
+                        <i class="fa fa-map-marker"/> <span t-esc="locLabel(p)"/>
+                    </div>
+                    <div class="civora-prg-card-dev">
+                        Promoteur : <strong t-esc="p.developer or '—'"/>
+                    </div>
+
+                    <div class="civora-prg-card-stats">
+                        <div class="civora-prg-stat">
+                            <div class="civora-prg-stat-l">VENDUS</div>
+                            <div class="civora-prg-stat-v" t-esc="soldOf(p)"/>
+                        </div>
+                        <div class="civora-prg-stat">
+                            <div class="civora-prg-stat-l">RÉSERVÉS</div>
+                            <div class="civora-prg-stat-v" t-esc="reservedOf(p)"/>
+                        </div>
+                        <div class="civora-prg-stat">
+                            <div class="civora-prg-stat-l">DISPOS</div>
+                            <div class="civora-prg-stat-v" t-esc="availableOf(p)"/>
+                        </div>
+                    </div>
+
+                    <div class="civora-prg-bars">
+                        <div class="civora-prg-bar">
+                            <div class="civora-prg-bar-head">
+                                <span>Commercialisation</span>
+                                <strong t-esc="(p.commercial_progress or 0) + '%'"/>
+                            </div>
+                            <div class="civora-pg-track">
+                                <div class="civora-pg-fill civora-pg-accent"
+                                     t-attf-style="width: {{p.commercial_progress or 0}}%;"/>
+                            </div>
+                        </div>
+                        <div class="civora-prg-bar">
+                            <div class="civora-prg-bar-head">
+                                <span><i class="fa fa-wrench"/> Avancement travaux</span>
+                                <strong t-esc="(p.works_progress or 0) + '%'"/>
+                            </div>
+                            <div class="civora-pg-track">
+                                <div class="civora-pg-fill civora-pg-primary"
+                                     t-attf-style="width: {{p.works_progress or 0}}%;"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="civora-prg-card-foot">
+                        <span class="civora-prg-card-date">
+                            <i class="fa fa-calendar-o"/> Livraison <span t-esc="deliveryLabel(p)"/>
+                        </span>
+                        <strong class="civora-prg-card-val" t-esc="valueLabel(p)"/>
+                    </div>
+
+                    <div class="civora-prg-card-actions">
+                        <button class="civora-btn civora-btn-outline" t-on-click="() => this.openProgram(p)">
+                            <i class="fa fa-file-text-o"/> Ouvrir la fiche
+                        </button>
+                        <button class="civora-btn civora-prg-btn-soft" t-on-click="() => this.openPipeline()">
+                            Pipeline <i class="fa fa-arrow-right"/>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vue liste -->
+        <div t-else="" class="civora-card civora-prg-table-wrap">
+            <table class="civora-prg-table">
+                <thead>
+                    <tr>
+                        <th>PROGRAMME</th>
+                        <th>STATUT</th>
+                        <th class="ta-r">LOTS</th>
+                        <th class="ta-r">COMMERC.</th>
+                        <th class="ta-r">CHANTIER</th>
+                        <th class="ta-r">CA SIGNÉ</th>
+                        <th class="ta-r">LIVRAISON</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="state.programs" t-as="p" t-key="p.id"
+                        class="civora-prg-tr" t-on-click="() => this.openProgram(p)">
+                        <td>
+                            <div class="civora-prg-td-name" t-esc="p.name"/>
+                            <div class="civora-prg-td-sub">
+                                <t t-esc="p.ref"/> · <t t-esc="p.district or p.city or '—'"/>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="civora-badge2"
+                                  t-attf-class="civora-badge-{{statusMeta(p).variant}}"
+                                  t-esc="statusMeta(p).label"/>
+                        </td>
+                        <td class="ta-r">
+                            <strong t-esc="placedOf(p)"/><span class="civora-prg-td-mut" t-esc="'/' + totalOf(p)"/>
+                        </td>
+                        <td class="ta-r"><strong t-esc="(p.commercial_progress or 0) + '%'"/></td>
+                        <td class="ta-r"><strong t-esc="(p.works_progress or 0) + '%'"/></td>
+                        <td class="ta-r" t-esc="signedLabel(p)"/>
+                        <td class="ta-r civora-prg-td-mut" t-esc="deliveryLabel(p)"/>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <ProgramDialog t-if="state.dialog.open"
+                       programId="state.dialog.programId"
+                       onClose="() => this.closeDialog()"
+                       onSaved="() => this.onDialogSaved()"/>
+    </div>
+</t>
+
+</templates>

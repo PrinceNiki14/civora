@@ -1,0 +1,818 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_programmes.Program360">
+    <div class="civora-prg360">
+
+        <div t-if="state.loading" class="civora-prg-state">
+            <i class="fa fa-circle-o-notch fa-spin"/> Chargement…
+        </div>
+
+        <div t-elif="!state.program" class="civora-prg-empty">
+            <i class="fa fa-cubes"/>
+            <div class="civora-prg-empty-t">Programme introuvable</div>
+            <p>Ce programme n'existe plus ou n'est pas accessible.</p>
+            <button class="civora-btn civora-btn-outline" t-on-click="() => this.backToList()">
+                Retour aux programmes
+            </button>
+        </div>
+
+        <t t-else="">
+            <!-- En-tete -->
+            <div class="civora-prg-head">
+                <div>
+                    <div class="civora-prg-title" t-esc="p.name"/>
+                    <div class="civora-prg-sub" t-esc="headerSub"/>
+                </div>
+                <div class="civora-prg-head-actions">
+                    <button class="civora-btn civora-btn-outline" t-on-click="() => this.share()">
+                        <i class="fa fa-share-alt"/> Partager
+                    </button>
+                    <button class="civora-btn civora-btn-outline" t-on-click="() => this.brochure()">
+                        <i class="fa fa-download"/> Brochure
+                    </button>
+                    <button class="civora-btn civora-btn-accent" t-on-click="() => this.openEdit()">
+                        <i class="fa fa-pencil"/> Modifier
+                    </button>
+                </div>
+            </div>
+
+            <!-- Fil d'ariane -->
+            <div class="civora-prg-crumb">
+                <button t-on-click="() => this.backToList()">Programmes</button>
+                <i class="fa fa-angle-right"/>
+                <span t-esc="p.name"/>
+            </div>
+
+            <!-- Bandeau programme -->
+            <div class="civora-card civora-prg-hero">
+                <div t-attf-class="civora-prg-hero-ico civora-prg-cover--{{statusMeta.gradient}}">
+                    <i class="fa fa-building"/>
+                </div>
+                <div class="civora-prg-hero-main">
+                    <div class="civora-prg-hero-name" t-esc="p.name"/>
+                    <div class="civora-prg-hero-meta">
+                        <span><i class="fa fa-map-marker"/> <t t-esc="locLabel"/></span>
+                        <span class="civora-prg-hero-dot">·</span>
+                        <span>Promoteur : <t t-esc="p.developer or '—'"/></span>
+                    </div>
+                    <div class="civora-prg-hero-badges">
+                        <span class="civora-badge2"
+                              t-attf-class="civora-badge-{{statusMeta.variant}}" t-esc="statusMeta.label"/>
+                        <span class="civora-badge2 civora-badge-primary" t-esc="typeLabel"/>
+                        <span class="civora-badge2 civora-badge-accent"
+                              t-esc="(p.works_progress or 0) + '% chantier'"/>
+                        <span class="civora-badge2 civora-badge-neutral" t-esc="totalLots + ' lots'"/>
+                        <span class="civora-badge2 civora-badge-neutral"
+                              t-esc="(p.building_count or 0) + ' bâtiments'"/>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KPIs -->
+            <div class="civora-prg-kpis">
+                <CivoraStatCard label="'CA signé'"
+                                value="money(p.signed_revenue or p.sold_value)"
+                                delta="'sur ' + money(p.total_value or p.stock_value) + ' potentiel'"
+                                icon="'fa fa-credit-card'"/>
+                <CivoraStatCard label="'Lots commercialisés'"
+                                value="placedLots + '/' + (p.lot_count or 0)"
+                                delta="(p.lot_available or 0) + ' disponibles'"
+                                icon="'fa fa-th-large'"/>
+                <CivoraStatCard label="'Avancement chantier'"
+                                value="(p.works_progress or 0) + '%'"
+                                delta="statusMeta.label"
+                                icon="'fa fa-wrench'"/>
+                <CivoraStatCard label="'Taux d\'absorption'"
+                                value="(p.absorption_rate or 0) + '%'"
+                                delta="(p.realization_rate or 0) + '% du CA'"
+                                icon="'fa fa-line-chart'"/>
+            </div>
+
+            <CivoraInsight title="insight.title" body="insight.body"/>
+
+            <!-- Onglets -->
+            <div class="civora-prg360-tabs">
+                <CivoraTabs tabs="tabs" active="state.tab" onChange="(id) => this.setTab(id)"/>
+            </div>
+
+            <!-- ============ VUE D'ENSEMBLE ============ -->
+            <div t-if="state.tab === 'overview'" class="civora-prg360-pane">
+                <div class="civora-card civora-prg-block">
+                    <div class="civora-prg-block-h">Présentation du programme</div>
+                    <p class="civora-prg-desc" t-esc="p.description or 'Aucune description saisie.'"/>
+
+                    <div class="civora-prg-deflist">
+                        <div><span>RÉFÉRENCE</span><strong t-esc="p.ref or '—'"/></div>
+                        <div><span>STATUT</span><strong t-esc="statusMeta.label"/></div>
+                        <div><span>LANCEMENT TRAVAUX</span><strong t-esc="monthLabel(p.start_date)"/></div>
+                        <div><span>LIVRAISON PRÉVUE</span><strong t-esc="monthLabel(p.delivery_date)"/></div>
+                        <div><span>BÂTIMENTS</span><strong t-esc="p.building_count or 0"/></div>
+                        <div><span>TOTAL LOTS</span><strong t-esc="totalLots"/></div>
+                        <div><span>RÉGIME</span><strong t-esc="typeLabel"/></div>
+                        <div><span>PERMIS</span><strong t-esc="p.building_permit or '—'"/></div>
+                    </div>
+                </div>
+
+                <div class="civora-card civora-prg-block">
+                    <div class="civora-prg-block-h">Prestations &amp; équipements</div>
+                    <div t-if="!state.amenities.length" class="civora-prg-muted">
+                        Aucune prestation renseignée.
+                    </div>
+                    <div t-else="" class="civora-prgf-taglist">
+                        <span t-foreach="state.amenities" t-as="a" t-key="a.id"
+                              class="civora-prgf-tag is-static">
+                            <i class="fa fa-check"/> <t t-esc="a.name"/>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="civora-prg-cols">
+                    <div class="civora-card civora-prg-block">
+                        <div class="civora-prg-block-h">Avancement commercial</div>
+                        <div class="civora-prg-adv">
+                            <div><span>Vendus</span><strong t-esc="(p.lot_sold or 0) + ' lots'"/></div>
+                            <div><span>Réservés</span><strong t-esc="(p.lot_reserved or 0) + ' lots'"/></div>
+                            <div><span>Optionnés</span><strong t-esc="(p.lot_optioned or 0) + ' lots'"/></div>
+                            <div><span>Disponibles</span><strong t-esc="(p.lot_available or 0) + ' lots'"/></div>
+                            <div><span>Bloqués</span><strong t-esc="(p.lot_blocked or 0) + ' lots'"/></div>
+                        </div>
+                    </div>
+
+                    <div class="civora-card civora-prg-block">
+                        <div class="civora-prg-block-h">Contact projet</div>
+                        <div t-if="!state.stakeholders.length" class="civora-prg-muted">
+                            Aucun acteur renseigné — complétez l'étape 4 de la fiche programme.
+                        </div>
+                        <div t-else="" class="civora-prg-contacts">
+                            <div t-foreach="state.stakeholders" t-as="s" t-key="s.id"
+                                 class="civora-prg-contactline">
+                                <div>
+                                    <strong t-esc="s.name or s.role"/>
+                                    <div class="civora-prg-muted" t-esc="s.role"/>
+                                </div>
+                                <div class="civora-prg-contactline-act">
+                                    <a t-if="s.phone" t-attf-href="tel:{{s.phone}}" title="Appeler">
+                                        <i class="fa fa-phone"/>
+                                    </a>
+                                    <a t-if="s.email" t-attf-href="mailto:{{s.email}}" title="Email">
+                                        <i class="fa fa-envelope-o"/>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============ PLAN & LOTS ============ -->
+            <div t-if="state.tab === 'lots'" class="civora-prg360-pane">
+                <div class="civora-card civora-prg-block">
+                    <div class="civora-prg-lotbar">
+                        <div class="civora-prg-search">
+                            <i class="fa fa-search"/>
+                            <input type="text" placeholder="N° de lot, type, acquéreur…"
+                                   t-att-value="state.lotSearch"
+                                   t-on-input="(ev) => this.onLotSearch(ev)"/>
+                        </div>
+                        <div class="civora-prg-pills">
+                            <button t-foreach="lotStatusFilters" t-as="f" t-key="f.id"
+                                    t-att-class="'civora-prg-pill' + (state.lotStatus === f.id ? ' is-active' : '')"
+                                    t-on-click="() => this.setLotStatus(f.id)">
+                                <t t-esc="f.label"/>
+                                <t t-if="f.id !== 'tous'"> (<t t-esc="lotStatusCounts[f.id]"/>)</t>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="civora-prg-lotbar-foot">
+                        <div class="civora-prg-segmented">
+                            <button t-att-class="state.lotView === 'plan' ? 'is-active' : ''"
+                                    t-on-click="() => this.setLotView('plan')">PLAN</button>
+                            <button t-att-class="state.lotView === 'grille' ? 'is-active' : ''"
+                                    t-on-click="() => this.setLotView('grille')">GRILLE</button>
+                            <button t-att-class="state.lotView === 'tableau' ? 'is-active' : ''"
+                                    t-on-click="() => this.setLotView('tableau')">TABLEAU</button>
+                        </div>
+                        <button class="civora-btn civora-btn-accent" t-on-click="() => this.openLotCreate()">
+                            <i class="fa fa-plus"/> Ajouter un lot
+                        </button>
+                    </div>
+                </div>
+
+                <div t-if="!state.lots.length" class="civora-prg-empty">
+                    <i class="fa fa-th-large"/>
+                    <div class="civora-prg-empty-t">Aucun lot</div>
+                    <p>Cliquez sur « Ajouter un lot » pour commencer à constituer le stock.</p>
+                </div>
+
+                <!-- Plan de masse -->
+                <div t-elif="state.lotView === 'plan'" class="civora-card civora-prg-block">
+                    <div class="civora-prg-block-h">Plan de masse — Stock interactif</div>
+                    <div class="civora-prg-block-s">Cliquez sur un lot pour voir le détail</div>
+
+                    <div t-foreach="buildings" t-as="b" t-key="b.code" class="civora-prg-building">
+                        <div class="civora-prg-building-h">
+                            <span class="civora-prg-building-badge" t-esc="b.code"/>
+                            <div>
+                                <div class="civora-prg-building-n" t-esc="'Bâtiment ' + b.code"/>
+                                <div class="civora-prg-building-s">
+                                    <t t-esc="b.maxFloor ? 'R+' + b.maxFloor : 'RDC'"/> · <t t-esc="b.count"/> lots
+                                </div>
+                            </div>
+                        </div>
+                        <div class="civora-prg-stack">
+                            <div t-foreach="b.levels" t-as="lv" t-key="lv.floor" class="civora-prg-level">
+                                <div class="civora-prg-level-l" t-esc="lv.label"/>
+                                <div class="civora-prg-level-lots">
+                                    <button t-if="!lv.lots.length" class="civora-prg-level-none" disabled="1">—</button>
+                                    <button t-foreach="lv.lots" t-as="l" t-key="l.id"
+                                            t-att-class="lotTileClass(l)"
+                                            t-on-click="() => this.openLot(l)">
+                                        <span class="civora-prg-tile-n" t-esc="l.name"/>
+                                        <span class="civora-prg-tile-s">
+                                            <t t-esc="lotTypeLabel(l)"/> · <t t-esc="(l.surface or 0) + 'm²'"/>
+                                        </span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="civora-prg-legend">
+                        <span t-foreach="lotStatusFilters.slice(1)" t-as="s" t-key="s.id">
+                            <i t-attf-class="civora-prg-dot civora-prg-dot--{{s.id}}"/> <t t-esc="s.label"/>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Grille -->
+                <div t-elif="state.lotView === 'grille'" class="civora-prg-lotgrid">
+                    <div t-foreach="filteredLots" t-as="l" t-key="l.id"
+                         class="civora-card civora-prg-lotcard" t-on-click="() => this.openLot(l)">
+                        <div class="civora-prg-lotcard-h">
+                            <div>
+                                <div class="civora-prg-lotcard-n" t-esc="l.name"/>
+                                <div class="civora-prg-lotcard-s">
+                                    Bâtiment <t t-esc="l.building or '—'"/> · <t t-esc="l.floor_label"/>
+                                </div>
+                            </div>
+                            <span class="civora-badge2"
+                                  t-attf-class="civora-badge-{{lotStatusMeta(l).variant}}"
+                                  t-esc="lotStatusMeta(l).label"/>
+                        </div>
+                        <div class="civora-prg-lotcard-chips">
+                            <span><i class="fa fa-home"/> <t t-esc="lotTypeLabel(l)"/></span>
+                            <span><i class="fa fa-arrows-alt"/> <t t-esc="(l.surface or 0) + 'm²'"/></span>
+                            <span><i class="fa fa-bed"/> <t t-esc="(l.rooms or 0) + 'p'"/></span>
+                            <span><i class="fa fa-compass"/> <t t-esc="orientationShort(l)"/></span>
+                        </div>
+                        <div class="civora-prg-lotcard-f">
+                            <span>Prix</span>
+                            <strong t-esc="money(l.price)"/>
+                        </div>
+                        <div t-if="buyerLabel(l)" class="civora-prg-lotcard-buyer">
+                            <i class="fa fa-user-o"/> <t t-esc="buyerLabel(l)"/>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tableau -->
+                <div t-else="" class="civora-card civora-prg-table-wrap">
+                    <table class="civora-prg-table">
+                        <thead>
+                            <tr>
+                                <th>LOT</th><th>TYPE</th><th class="ta-r">SURFACE</th>
+                                <th>ORIENT.</th><th class="ta-r">PRIX</th>
+                                <th>STATUT</th><th>ACQUÉREUR</th><th class="ta-r"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="filteredLots" t-as="l" t-key="l.id" class="civora-prg-tr">
+                                <td><strong t-esc="l.name"/></td>
+                                <td t-esc="lotTypeLabel(l)"/>
+                                <td class="ta-r" t-esc="(l.surface or 0) + ' m²'"/>
+                                <td t-esc="orientationShort(l)"/>
+                                <td class="ta-r"><strong t-esc="money(l.price)"/></td>
+                                <td>
+                                    <span class="civora-badge2"
+                                          t-attf-class="civora-badge-{{lotStatusMeta(l).variant}}"
+                                          t-esc="lotStatusMeta(l).label"/>
+                                </td>
+                                <td t-esc="buyerLabel(l) or '—'"/>
+                                <td class="ta-r">
+                                    <button class="civora-prg-iconbtn" title="Voir le détail"
+                                            t-on-click="() => this.openLot(l)">
+                                        <i class="fa fa-eye"/>
+                                    </button>
+                                    <button class="civora-prg-iconbtn" title="Supprimer"
+                                            t-on-click="() => this.deleteLot(l)">
+                                        <i class="fa fa-trash-o"/>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ============ PLANNING CHANTIER ============ -->
+            <div t-if="state.tab === 'phases'" class="civora-prg360-pane">
+                <div class="civora-card civora-prg-block">
+                    <div class="civora-prg-block-row">
+                        <div>
+                            <div class="civora-prg-block-h">Planning des travaux</div>
+                            <div class="civora-prg-block-s">
+                                <t t-esc="state.phases.length"/> phase(s) ·
+                                Avancement moyen <t t-esc="(p.phase_progress or 0) + '%'"/>
+                            </div>
+                        </div>
+                        <button class="civora-btn civora-btn-accent" t-on-click="() => this.openPhaseCreate()">
+                            <i class="fa fa-plus"/> Ajouter une phase
+                        </button>
+                    </div>
+
+                    <div t-if="!state.phases.length" class="civora-prg-empty is-inline">
+                        <i class="fa fa-calendar-o"/>
+                        <div class="civora-prg-empty-t">Aucune phase planifiée</div>
+                        <p>Ajoutez les phases : terrassement, fondations, gros œuvre, mise hors d'eau,
+                           second œuvre, finitions, livraison.</p>
+                    </div>
+
+                    <div t-else="" class="civora-prg-timeline">
+                        <div t-foreach="state.phases" t-as="ph" t-key="ph.id" class="civora-prg-phase">
+                            <div class="civora-prg-phase-dot"
+                                 t-attf-class="civora-prg-phase-dot--{{ph.status}}"/>
+                            <div class="civora-prg-phase-body">
+                                <div class="civora-prg-phase-h">
+                                    <div>
+                                        <strong t-esc="ph.name"/>
+                                        <span t-if="ph.is_milestone" class="civora-badge2 civora-badge-warning">
+                                            Jalon
+                                        </span>
+                                    </div>
+                                    <div class="civora-prg-phase-act">
+                                        <span class="civora-badge2"
+                                              t-attf-class="civora-badge-{{phaseStatusMeta(ph).variant}}"
+                                              t-esc="phaseStatusMeta(ph).label"/>
+                                        <button class="civora-prg-iconbtn" title="Modifier"
+                                                t-on-click="() => this.openPhaseEdit(ph)">
+                                            <i class="fa fa-pencil"/>
+                                        </button>
+                                        <button class="civora-prg-iconbtn" title="Supprimer"
+                                                t-on-click="() => this.deletePhase(ph)">
+                                            <i class="fa fa-trash-o"/>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="civora-prg-phase-dates">
+                                    <t t-esc="dateLabel(ph.date_start)"/> →
+                                    <t t-esc="dateLabel(ph.date_end_real or ph.date_end_planned)"/>
+                                </div>
+                                <div class="civora-prg-bar">
+                                    <div class="civora-prg-bar-head">
+                                        <span>Avancement</span>
+                                        <strong t-esc="(ph.progress or 0) + '%'"/>
+                                    </div>
+                                    <div class="civora-pg-track">
+                                        <div class="civora-pg-fill civora-pg-accent"
+                                             t-attf-style="width: {{ph.progress or 0}}%;"/>
+                                    </div>
+                                </div>
+                                <p t-if="ph.notes" class="civora-prg-muted" t-esc="ph.notes"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============ RÉSERVATIONS ============ -->
+            <div t-if="state.tab === 'reservations'" class="civora-prg360-pane">
+                <div t-if="!reservationRows.length" class="civora-prg-empty">
+                    <i class="fa fa-file-text-o"/>
+                    <div class="civora-prg-empty-t">Aucune réservation</div>
+                    <p>Les réservations apparaîtront ici dès qu'un lot du programme passera en
+                       optionné, réservé ou vendu (onglet Plan &amp; Lots → action Réserver).</p>
+                </div>
+                <div t-else="" class="civora-card civora-prg-table-wrap">
+                    <table class="civora-prg-table">
+                        <thead>
+                            <tr>
+                                <th>LOT</th><th>TYPE</th><th>ACQUÉREUR</th>
+                                <th class="ta-r">PRIX</th><th>STATUT</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="reservationRows" t-as="l" t-key="l.id"
+                                class="civora-prg-tr" t-on-click="() => this.openLot(l)">
+                                <td><strong t-esc="l.name"/>
+                                    <div class="civora-prg-td-sub">
+                                        Bât. <t t-esc="l.building"/> · <t t-esc="l.floor_label"/>
+                                    </div>
+                                </td>
+                                <td t-esc="lotTypeLabel(l)"/>
+                                <td t-esc="buyerLabel(l) or '—'"/>
+                                <td class="ta-r"><strong t-esc="money(l.price)"/></td>
+                                <td>
+                                    <span class="civora-badge2"
+                                          t-attf-class="civora-badge-{{lotStatusMeta(l).variant}}"
+                                          t-esc="lotStatusMeta(l).label"/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ============ APPELS DE FONDS ============ -->
+            <div t-if="state.tab === 'calls'" class="civora-prg360-pane">
+                <div class="civora-prg-kpis">
+                    <CivoraStatCard label="'Lots éligibles'"
+                                    value="callStats.eligible + '/' + callStats.total"
+                                    icon="'fa fa-money'"/>
+                    <CivoraStatCard label="'Total appelé'" value="money(callStats.called)"
+                                    icon="'fa fa-bullhorn'"/>
+                    <CivoraStatCard label="'Encaissé'" value="money(callStats.cashed)"
+                                    delta="callStats.cashedPct + '% du total appelé'"
+                                    icon="'fa fa-check-circle'"/>
+                    <CivoraStatCard label="'Reste à percevoir'" value="money(callStats.remaining)"
+                                    icon="'fa fa-exclamation-circle'"/>
+                </div>
+
+                <div class="civora-card civora-prg-block">
+                    <div class="civora-prg-block-row">
+                        <div>
+                            <div class="civora-prg-block-h">Grille d'échéancier VEFA</div>
+                            <div class="civora-prg-block-s">
+                                % cumulés du prix appelés à chaque jalon contractuel
+                            </div>
+                        </div>
+                        <div class="civora-prg-block-acts">
+                            <button class="civora-btn civora-btn-outline"
+                                    t-on-click="() => this.seedStandardSchedule()">
+                                <i class="fa fa-magic"/> Grille standard
+                            </button>
+                            <button class="civora-btn civora-btn-accent"
+                                    t-on-click="() => this.openMilestoneCreate()">
+                                <i class="fa fa-plus"/> Ajouter une échéance
+                            </button>
+                        </div>
+                    </div>
+
+                    <div t-if="!state.milestones.length" class="civora-prg-empty is-inline">
+                        <i class="fa fa-money"/>
+                        <div class="civora-prg-empty-t">Aucune grille d'échéancier</div>
+                        <p>Cliquez sur « Grille standard » pour initialiser l'échéancier VEFA usuel
+                           (5% → 35% → 70% → 95% → 100%).</p>
+                    </div>
+
+                    <table t-else="" class="civora-prg-table">
+                        <thead>
+                            <tr>
+                                <th>JALON</th><th>PHASE LIÉE</th>
+                                <th class="ta-r">% ÉCHÉANCE</th><th class="ta-r">% CUMULÉ</th>
+                                <th class="ta-r">ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="state.milestones" t-as="m" t-key="m.id">
+                                <td>
+                                    <strong t-esc="m.name"/>
+                                    <span t-if="m.issued" class="civora-badge2 civora-badge-success">Émis</span>
+                                </td>
+                                <td t-esc="milestonePhaseLabel(m)"/>
+                                <td class="ta-r" t-esc="Math.round(m.step_pct or 0) + '%'"/>
+                                <td class="ta-r"><strong t-esc="Math.round(m.cumulative_pct or 0) + '%'"/></td>
+                                <td class="ta-r">
+                                    <button class="civora-btn civora-prg-btn-soft"
+                                            t-on-click="() => this.issueMilestone(m)">Émettre</button>
+                                    <button class="civora-prg-iconbtn" title="Modifier"
+                                            t-on-click="() => this.openMilestoneEdit(m)">
+                                        <i class="fa fa-pencil"/>
+                                    </button>
+                                    <button class="civora-prg-iconbtn" title="Supprimer"
+                                            t-on-click="() => this.deleteMilestone(m)">
+                                        <i class="fa fa-trash-o"/>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="civora-card civora-prg-block">
+                    <div class="civora-prg-block-row">
+                        <div>
+                            <div class="civora-prg-block-h">Appels de fonds émis</div>
+                            <div class="civora-prg-block-s">
+                                <t t-esc="state.calls.length"/> appel(s) — générés à partir de la grille × lots vendus
+                            </div>
+                        </div>
+                        <button class="civora-btn civora-btn-outline" t-on-click="() => this.exportCalls()">
+                            <i class="fa fa-download"/> Export
+                        </button>
+                    </div>
+
+                    <div t-if="!state.calls.length" class="civora-prg-empty is-inline">
+                        <i class="fa fa-bullhorn"/>
+                        <div class="civora-prg-empty-t">Aucun appel émis</div>
+                        <p>Définissez la grille puis cliquez sur « Émettre » sur un jalon pour générer
+                           les appels par acquéreur.</p>
+                    </div>
+
+                    <table t-else="" class="civora-prg-table">
+                        <thead>
+                            <tr>
+                                <th>JALON</th><th>LOT</th><th>ACQUÉREUR</th>
+                                <th class="ta-r">MONTANT</th><th class="ta-r">ENCAISSÉ</th>
+                                <th>ÉMISSION</th><th>STATUT</th><th class="ta-r"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="state.calls" t-as="c" t-key="c.id">
+                                <td t-esc="c.milestone_id ? c.milestone_id[1] : '—'"/>
+                                <td><strong t-esc="callLotLabel(c)"/></td>
+                                <td t-esc="callPartnerLabel(c)"/>
+                                <td class="ta-r" t-esc="money(c.amount)"/>
+                                <td class="ta-r" t-esc="money(c.amount_paid)"/>
+                                <td t-esc="dateLabel(c.date_issue)"/>
+                                <td>
+                                    <span class="civora-badge2"
+                                          t-attf-class="civora-badge-{{callStatusMeta(c).variant}}"
+                                          t-esc="callStatusMeta(c).label"/>
+                                </td>
+                                <td class="ta-r">
+                                    <button t-if="c.status !== 'encaisse'" class="civora-btn civora-prg-btn-soft"
+                                            t-on-click="() => this.markCallPaid(c)">Encaisser</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ============ FINANCES & GARANTIES ============ -->
+            <div t-if="state.tab === 'finance'" class="civora-prg360-pane">
+                <div class="civora-prg-kpis">
+                    <CivoraStatCard label="'CA signé'" value="money(p.signed_revenue or p.sold_value)"
+                                    icon="'fa fa-credit-card'"/>
+                    <CivoraStatCard label="'CA optionné / réservé'" value="money(p.optioned_value)"
+                                    icon="'fa fa-money'"/>
+                    <CivoraStatCard label="'Valeur totale stock'" value="money(p.total_value or p.stock_value)"
+                                    icon="'fa fa-archive'"/>
+                    <CivoraStatCard label="'Taux de réalisation'" value="(p.realization_rate or 0) + '%'"
+                                    delta="'CA signé / Valeur stock'" icon="'fa fa-line-chart'"/>
+                </div>
+
+                <div class="civora-card civora-prg-note">
+                    <i class="fa fa-bullhorn"/>
+                    <div>
+                        <strong>Pilotage financier consolidé</strong>
+                        <p>Les chiffres ci-dessus sont calculés à partir du stock de lots et des ventes
+                           enregistrées. Les appels de fonds se gèrent dans l'onglet dédié et alimentent
+                           la comptabilité. Les garanties (GFA, dommages-ouvrage, RC, décennale) se
+                           gèrent ci-dessous.</p>
+                    </div>
+                </div>
+
+                <div class="civora-card civora-prg-block">
+                    <div class="civora-prg-block-row">
+                        <div>
+                            <div class="civora-prg-block-h">Garanties &amp; assurances</div>
+                            <div class="civora-prg-block-s">
+                                <t t-esc="state.guarantees.length"/> couverture(s) ·
+                                <t t-esc="expiringCount"/> arrivent à échéance
+                            </div>
+                        </div>
+                        <button class="civora-btn civora-btn-accent" t-on-click="() => this.openGuaranteeCreate()">
+                            <i class="fa fa-plus"/> Nouvelle garantie
+                        </button>
+                    </div>
+
+                    <div t-if="!state.guarantees.length" class="civora-prg-empty is-inline">
+                        <i class="fa fa-shield"/>
+                        <div class="civora-prg-empty-t">Aucune garantie</div>
+                        <p>Ajoutez les couvertures contractuelles : GFA, DO, RC, décennale…</p>
+                    </div>
+
+                    <table t-else="" class="civora-prg-table">
+                        <thead>
+                            <tr>
+                                <th>TYPE</th><th>ÉMETTEUR</th><th>N° POLICE</th>
+                                <th class="ta-r">MONTANT</th><th>EFFET</th><th>EXPIRATION</th>
+                                <th class="ta-r"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="state.guarantees" t-as="g" t-key="g.id">
+                                <td><strong t-esc="guaranteeTypeLabel(g)"/></td>
+                                <td t-esc="g.issuer"/>
+                                <td t-esc="g.policy_number or '—'"/>
+                                <td class="ta-r" t-esc="money(g.amount)"/>
+                                <td t-esc="dateLabel(g.date_start)"/>
+                                <td>
+                                    <t t-esc="dateLabel(g.date_end)"/>
+                                    <span t-if="g.is_expiring" class="civora-badge2 civora-badge-warning">
+                                        Échéance proche
+                                    </span>
+                                </td>
+                                <td class="ta-r">
+                                    <button class="civora-prg-iconbtn" title="Modifier"
+                                            t-on-click="() => this.openGuaranteeEdit(g)">
+                                        <i class="fa fa-pencil"/>
+                                    </button>
+                                    <button class="civora-prg-iconbtn" title="Supprimer"
+                                            t-on-click="() => this.deleteGuarantee(g)">
+                                        <i class="fa fa-trash-o"/>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="civora-card civora-prg-block">
+                    <div class="civora-prg-block-h">Paramètres de commission</div>
+                    <div class="civora-prg-block-s">Synchronisé avec la base</div>
+                    <div class="civora-prgf">
+                        <div class="civora-prgf-grid2">
+                            <div class="civora-prgf-field">
+                                <label>Taux de commercialisation</label>
+                                <div class="civora-prgf-suffixed">
+                                    <input type="number" step="0.1" t-att-value="state.commission.commission_rate"
+                                           t-on-input="(ev) => this.setCommission('commission_rate', ev)"/>
+                                    <span>% du CA</span>
+                                </div>
+                            </div>
+                            <div class="civora-prgf-field">
+                                <label>Frais de réservation</label>
+                                <div class="civora-prgf-suffixed">
+                                    <input type="number" t-att-value="state.commission.reservation_fee"
+                                           t-on-input="(ev) => this.setCommission('reservation_fee', ev)"/>
+                                    <span>FCFA / lot</span>
+                                </div>
+                            </div>
+                            <div class="civora-prgf-field">
+                                <label>Budget marketing</label>
+                                <div class="civora-prgf-suffixed">
+                                    <input type="number" t-att-value="state.commission.marketing_budget"
+                                           t-on-input="(ev) => this.setCommission('marketing_budget', ev)"/>
+                                    <span>FCFA</span>
+                                </div>
+                            </div>
+                            <div class="civora-prgf-field">
+                                <label>Part négociateur</label>
+                                <div class="civora-prgf-suffixed">
+                                    <input type="number" step="0.1" t-att-value="state.commission.negotiator_share"
+                                           t-on-input="(ev) => this.setCommission('negotiator_share', ev)"/>
+                                    <span>% de la com agence</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="civora-prgf-field">
+                            <label>Bonus closing VEFA</label>
+                            <div class="civora-prgf-suffixed">
+                                <input type="number" t-att-value="state.commission.closing_bonus"
+                                       t-on-input="(ev) => this.setCommission('closing_bonus', ev)"/>
+                                <span>FCFA / lot signé</span>
+                            </div>
+                        </div>
+                        <div class="civora-prgf-field">
+                            <label>Notes internes</label>
+                            <textarea rows="3" placeholder="Conditions particulières, paliers négociés, etc."
+                                      t-att-value="state.commission.internal_notes"
+                                      t-on-input="(ev) => this.setCommission('internal_notes', ev)"/>
+                        </div>
+                        <div class="civora-prgf-actions">
+                            <button class="civora-btn civora-btn-accent"
+                                    t-att-disabled="state.savingCommission"
+                                    t-on-click="() => this.saveCommission()">
+                                <i class="fa fa-floppy-o"/> Enregistrer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============ COMMERCIALISATION ============ -->
+            <div t-if="state.tab === 'marketing'" class="civora-prg360-pane">
+                <div class="civora-prg-empty">
+                    <i class="fa fa-bullhorn"/>
+                    <div class="civora-prg-empty-t">Module commercialisation en cours de configuration</div>
+                    <p>Le suivi des visites de la fiche programme, des sources de leads et des campagnes
+                       sera alimenté automatiquement dès l'activation du tracking marketing (mini-site
+                       programme, Marketplace CIVORA, réseau d'agents). Aucune donnée fictive n'est affichée.</p>
+                </div>
+            </div>
+
+            <!-- ============ DOCUMENTS ============ -->
+            <div t-if="state.tab === 'documents'" class="civora-prg360-pane">
+                <div class="civora-card civora-prg-block">
+                    <div class="civora-prg-block-row">
+                        <div>
+                            <div class="civora-prg-block-h">Dossier documentaire</div>
+                            <div class="civora-prg-block-s">
+                                <t t-esc="state.documents.length"/> document(s) · espace partagé sécurisé
+                            </div>
+                        </div>
+                        <button class="civora-btn civora-btn-accent" t-on-click="() => this.openDocumentCreate()">
+                            <i class="fa fa-upload"/> Déposer
+                        </button>
+                    </div>
+
+                    <div t-if="!state.documents.length" class="civora-prg-empty is-inline">
+                        <i class="fa fa-file-text-o"/>
+                        <div class="civora-prg-empty-t">Aucun document</div>
+                        <p>Déposez les pièces du programme (permis, plans, brochure, notices, garanties).</p>
+                    </div>
+
+                    <table t-else="" class="civora-prg-table">
+                        <thead>
+                            <tr><th>DOCUMENT</th><th>TYPE</th><th>DÉPOSÉ LE</th><th class="ta-r"></th></tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="state.documents" t-as="d" t-key="d.id">
+                                <td>
+                                    <strong t-esc="d.name"/>
+                                    <div t-if="d.file_name" class="civora-prg-td-sub" t-esc="d.file_name"/>
+                                </td>
+                                <td t-esc="documentTypeLabel(d)"/>
+                                <td t-esc="dateLabel(d.create_date)"/>
+                                <td class="ta-r">
+                                    <a class="civora-prg-iconbtn" title="Ouvrir" target="_blank"
+                                       t-att-href="documentUrl(d)"><i class="fa fa-external-link"/></a>
+                                    <button class="civora-prg-iconbtn" title="Supprimer"
+                                            t-on-click="() => this.deleteDocument(d)">
+                                        <i class="fa fa-trash-o"/>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ============ ÉQUIPE ============ -->
+            <div t-if="state.tab === 'team'" class="civora-prg360-pane">
+                <div class="civora-card civora-prg-block">
+                    <div class="civora-prg-block-h">Acteurs du projet</div>
+                    <div class="civora-prg-block-s">Maîtrise d'ouvrage, partenaires &amp; prestataires</div>
+
+                    <div t-if="!state.stakeholders.length" class="civora-prg-empty is-inline">
+                        <i class="fa fa-users"/>
+                        <div class="civora-prg-empty-t">Aucun acteur</div>
+                        <p>Renseignez les contacts projet à l'étape 4 de la fiche programme.</p>
+                    </div>
+
+                    <div t-else="" class="civora-prg-team">
+                        <div t-foreach="state.stakeholders" t-as="s" t-key="s.id"
+                             class="civora-prg-teamcard">
+                            <div class="civora-prg-teamcard-r" t-esc="(s.role or '').toUpperCase()"/>
+                            <div class="civora-prg-teamcard-n" t-esc="s.name or '—'"/>
+                            <div class="civora-prg-teamcard-a">
+                                <a t-if="s.phone" t-attf-href="tel:{{s.phone}}" title="Appeler">
+                                    <i class="fa fa-phone"/>
+                                </a>
+                                <a t-if="s.email" t-attf-href="mailto:{{s.email}}" title="Email">
+                                    <i class="fa fa-envelope-o"/>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============ Modales ============ -->
+            <ProgramDialog t-if="state.programDialog"
+                           programId="programId"
+                           onClose="() => this.closeProgramDialog()"
+                           onSaved="() => this.onProgramSaved()"/>
+            <LotDialog t-if="state.lotDialog.open"
+                       programId="programId" lotId="state.lotDialog.lotId"
+                       onClose="() => this.closeLotDialog()"
+                       onSaved="() => this.onLotSaved()"/>
+            <LotDrawer t-if="state.lotDrawer.open"
+                       lotId="state.lotDrawer.lotId"
+                       onClose="() => this.closeLotDrawer()"
+                       onChanged="() => this.onLotChanged()"
+                       onEdit="(id) => this.openLotEdit(id)"/>
+            <PhaseDialog t-if="state.phaseDialog.open"
+                         programId="programId" recordId="state.phaseDialog.recordId"
+                         onClose="() => this.closePhaseDialog()"
+                         onSaved="() => this.onPhaseSaved()"/>
+            <MilestoneDialog t-if="state.milestoneDialog.open"
+                             programId="programId" recordId="state.milestoneDialog.recordId"
+                             onClose="() => this.closeMilestoneDialog()"
+                             onSaved="() => this.onMilestoneSaved()"/>
+            <GuaranteeDialog t-if="state.guaranteeDialog.open"
+                             programId="programId" recordId="state.guaranteeDialog.recordId"
+                             onClose="() => this.closeGuaranteeDialog()"
+                             onSaved="() => this.onGuaranteeSaved()"/>
+            <DocumentDialog t-if="state.documentDialog.open"
+                            programId="programId" recordId="state.documentDialog.recordId"
+                            onClose="() => this.closeDocumentDialog()"
+                            onSaved="() => this.onDocumentSaved()"/>
+        </t>
+    </div>
+</t>
+
+</templates>

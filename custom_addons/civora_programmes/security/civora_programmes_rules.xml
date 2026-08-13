@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+
+    <!--
+        Regles multi-societe CIVORA Programmes.
+        Les objets rattaches (lots, phases, echeances, appels, garanties,
+        documents, acteurs) heritent de la societe du programme.
+    -->
+
+    <record id="civora_program_company_rule" model="ir.rule">
+        <field name="name">civora.program : multi-societe</field>
+        <field name="model_id" ref="model_civora_program"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="civora_program_lot_company_rule" model="ir.rule">
+        <field name="name">civora.program.lot : multi-societe</field>
+        <field name="model_id" ref="model_civora_program_lot"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="civora_program_phase_company_rule" model="ir.rule">
+        <field name="name">civora.program.phase : multi-societe</field>
+        <field name="model_id" ref="model_civora_program_phase"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="civora_program_milestone_company_rule" model="ir.rule">
+        <field name="name">civora.program.milestone : multi-societe</field>
+        <field name="model_id" ref="model_civora_program_milestone"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="civora_program_call_company_rule" model="ir.rule">
+        <field name="name">civora.program.call : multi-societe</field>
+        <field name="model_id" ref="model_civora_program_call"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="civora_program_guarantee_company_rule" model="ir.rule">
+        <field name="name">civora.program.guarantee : multi-societe</field>
+        <field name="model_id" ref="model_civora_program_guarantee"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="civora_program_document_company_rule" model="ir.rule">
+        <field name="name">civora.program.document : multi-societe</field>
+        <field name="model_id" ref="model_civora_program_document"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="civora_program_stakeholder_company_rule" model="ir.rule">
+        <field name="name">civora.program.stakeholder : multi-societe</field>
+        <field name="model_id" ref="model_civora_program_stakeholder"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="civora_program_amenity_company_rule" model="ir.rule">
+        <field name="name">civora.program.amenity : multi-societe</field>
+        <field name="model_id" ref="model_civora_program_amenity"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+</odoo>

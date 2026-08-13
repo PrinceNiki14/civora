@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_programmes.LotDrawer">
+    <CivoraDrawer variant="'drawer'" size="'md'"
+                  title="lot.name or 'Lot'" subtitle="subtitle"
+                  onClose="() => props.onClose()">
+        <div t-if="state.loading" class="civora-prg-state">
+            <i class="fa fa-circle-o-notch fa-spin"/> Chargement…
+        </div>
+        <div t-else="" class="civora-prg-lot">
+
+            <div class="civora-prg-lot-top">
+                <span class="civora-prg-lot-kicker">Lot</span>
+                <span class="civora-badge2" t-attf-class="civora-badge-{{statusMeta.variant}}"
+                      t-esc="statusMeta.label"/>
+            </div>
+
+            <div t-att-class="coverClass">
+                <img t-if="photoList.length" t-att-src="photoList[0]" t-att-alt="lot.name"/>
+                <i t-else="" class="fa fa-picture-o"/>
+            </div>
+
+            <div class="civora-prg-lot-grid">
+                <div class="civora-prg-lot-cell">
+                    <div class="civora-prg-lot-l">TYPE</div>
+                    <div class="civora-prg-lot-v" t-esc="typeLabel"/>
+                </div>
+                <div class="civora-prg-lot-cell">
+                    <div class="civora-prg-lot-l">SURFACE</div>
+                    <div class="civora-prg-lot-v" t-esc="(lot.surface or 0) + ' m²'"/>
+                </div>
+                <div class="civora-prg-lot-cell">
+                    <div class="civora-prg-lot-l">PIÈCES</div>
+                    <div class="civora-prg-lot-v" t-esc="lot.rooms or 0"/>
+                </div>
+                <div class="civora-prg-lot-cell">
+                    <div class="civora-prg-lot-l">SALLES D'EAU</div>
+                    <div class="civora-prg-lot-v" t-esc="lot.bathrooms or 0"/>
+                </div>
+                <div class="civora-prg-lot-cell">
+                    <div class="civora-prg-lot-l">ORIENTATION</div>
+                    <div class="civora-prg-lot-v" t-esc="orientationLabel"/>
+                </div>
+                <div class="civora-prg-lot-cell">
+                    <div class="civora-prg-lot-l">PARKING</div>
+                    <div class="civora-prg-lot-v" t-esc="(lot.parking or 0) + ' place(s)'"/>
+                </div>
+                <div class="civora-prg-lot-cell">
+                    <div class="civora-prg-lot-l">BALCON</div>
+                    <div class="civora-prg-lot-v" t-esc="(lot.balcony or 0) + ' m²'"/>
+                </div>
+                <div class="civora-prg-lot-cell">
+                    <div class="civora-prg-lot-l">PRIX HT</div>
+                    <div class="civora-prg-lot-v" t-esc="fmtPrice(lot.price)"/>
+                </div>
+            </div>
+
+            <div t-if="buyerLabel" class="civora-prg-lot-buyer">
+                <i class="fa fa-user-o"/> <span t-esc="buyerLabel"/>
+            </div>
+
+            <div t-if="featureList.length" class="civora-prg-lot-features">
+                <div class="civora-prg-lot-l">PRESTATIONS</div>
+                <div class="civora-prgf-taglist">
+                    <span t-foreach="featureList" t-as="f" t-key="f_index"
+                          class="civora-prgf-tag is-static" t-esc="f"/>
+                </div>
+            </div>
+
+            <div t-if="lot.notes" class="civora-prg-lot-notes" t-esc="lot.notes"/>
+
+            <div class="civora-prg-lot-actions">
+                <button t-if="lot.status !== 'reserve' and lot.status !== 'vendu'"
+                        class="civora-btn civora-btn-accent" t-att-disabled="state.busy"
+                        t-on-click="() => this.setStatus('reserve')">
+                    <i class="fa fa-pencil-square-o"/> Réserver
+                </button>
+                <button t-if="lot.status === 'disponible'"
+                        class="civora-btn civora-btn-outline" t-att-disabled="state.busy"
+                        t-on-click="() => this.setStatus('optionne')">
+                    <i class="fa fa-clock-o"/> Poser une option
+                </button>
+                <button t-if="lot.status === 'reserve'"
+                        class="civora-btn civora-btn-outline" t-att-disabled="state.busy"
+                        t-on-click="() => this.setStatus('vendu')">
+                    <i class="fa fa-check"/> Marquer vendu
+                </button>
+                <button t-if="lot.status !== 'disponible'"
+                        class="civora-btn civora-btn-outline" t-att-disabled="state.busy"
+                        t-on-click="() => this.setStatus('disponible')">
+                    <i class="fa fa-undo"/> Libérer
+                </button>
+                <button class="civora-btn civora-btn-outline" t-on-click="() => this.onEdit()">
+                    <i class="fa fa-pencil"/> Modifier
+                </button>
+            </div>
+        </div>
+    </CivoraDrawer>
+</t>
+
+</templates>

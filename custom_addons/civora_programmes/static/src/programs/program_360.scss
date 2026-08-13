@@ -1,0 +1,855 @@
+// =====================================================================
+// CIVORA Programmes - Fiche programme 360 + formulaires
+// =====================================================================
+
+// ---- Fil d'ariane ----------------------------------------------------
+.civora-prg-crumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12.5px;
+    color: $civora-muted;
+    margin-bottom: 14px;
+
+    button {
+        border: 0;
+        background: transparent;
+        color: $civora-muted;
+        padding: 0;
+        cursor: pointer;
+        font-size: 12.5px;
+        &:hover { color: $civora-accent; text-decoration: underline; }
+    }
+}
+
+// ---- Bandeau programme ----------------------------------------------
+.civora-prg-hero {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 18px 20px;
+    margin-bottom: 18px;
+}
+.civora-prg-hero-ico {
+    flex: 0 0 auto;
+    width: 78px;
+    height: 78px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 30px;
+}
+.civora-prg-hero-name {
+    font-family: $civora-font-display;
+    font-weight: 800;
+    font-size: 26px;
+    line-height: 1.15;
+}
+.civora-prg-hero-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    font-size: 12.5px;
+    color: $civora-muted;
+    margin-top: 4px;
+
+    i { margin-right: 4px; }
+}
+.civora-prg-hero-dot { opacity: .5; }
+.civora-prg-hero-badges {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+// ---- Onglets ---------------------------------------------------------
+.civora-prg360-tabs {
+    background: $civora-card;
+    border: 1px solid $civora-border;
+    border-radius: $civora-radius;
+    box-shadow: $civora-shadow-card;
+    padding: 0 8px;
+    margin: 18px 0;
+
+    .civora-tabs { border-bottom: 0; }
+}
+.civora-prg360-pane {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+// ---- Blocs -----------------------------------------------------------
+.civora-prg-block { padding: 20px 22px; }
+.civora-prg-block-h {
+    font-family: $civora-font-display;
+    font-weight: 700;
+    font-size: 17px;
+}
+.civora-prg-block-s {
+    font-size: 12.5px;
+    color: $civora-muted;
+    margin-top: 3px;
+}
+.civora-prg-block-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+.civora-prg-block-acts {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.civora-prg-cols {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+
+    @media (max-width: 980px) { grid-template-columns: 1fr; }
+}
+.civora-prg-desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: $civora-fg;
+    margin: 10px 0 18px;
+}
+.civora-prg-note {
+    display: flex;
+    gap: 14px;
+    padding: 16px 20px;
+    align-items: flex-start;
+
+    > i {
+        color: $civora-accent;
+        font-size: 18px;
+        margin-top: 2px;
+    }
+    strong { font-family: $civora-font-display; font-size: 14px; }
+    p { margin: 4px 0 0; font-size: 12.5px; color: $civora-muted; line-height: 1.6; }
+}
+
+// Liste de definitions (REFERENCE / STATUT / ...).
+.civora-prg-deflist {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+
+    @media (max-width: 980px) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+    > div {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    span {
+        font-size: 9.5px;
+        font-weight: 700;
+        letter-spacing: .07em;
+        color: $civora-muted;
+    }
+    strong {
+        font-family: $civora-font-display;
+        font-weight: 700;
+        font-size: 14.5px;
+    }
+}
+
+// Avancement commercial.
+.civora-prg-adv {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    > div {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px dashed $civora-border;
+        padding-bottom: 8px;
+        font-size: 13px;
+        color: $civora-muted;
+        &:last-child { border-bottom: 0; padding-bottom: 0; }
+    }
+    strong { color: $civora-fg; font-weight: 700; }
+}
+.civora-prg-contacts { display: flex; flex-direction: column; gap: 10px; }
+.civora-prg-contactline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border: 1px solid $civora-border;
+    border-radius: $civora-radius-sm;
+    padding: 10px 12px;
+
+    strong { font-size: 13.5px; }
+}
+.civora-prg-contactline-act {
+    display: flex;
+    gap: 6px;
+
+    a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        background: $civora-bg;
+        color: $civora-muted;
+        &:hover { color: $civora-accent; }
+    }
+}
+
+// ---- Onglet Plan & Lots ---------------------------------------------
+.civora-prg-lotbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.civora-prg-lotbar-foot {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 12px;
+}
+.civora-prg-segmented {
+    display: inline-flex;
+    gap: 2px;
+    background: $civora-bg;
+    border: 1px solid $civora-border;
+    border-radius: $civora-radius-sm;
+    padding: 3px;
+
+    button {
+        border: 0;
+        background: transparent;
+        color: $civora-muted;
+        padding: 6px 14px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: .04em;
+        border-radius: 6px;
+        cursor: pointer;
+
+        &.is-active { background: $civora-card; color: $civora-fg; box-shadow: $civora-shadow-card; }
+    }
+}
+
+// Plan de masse.
+.civora-prg-building { margin-top: 20px; }
+.civora-prg-building-h {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+.civora-prg-building-badge {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: $civora-font-display;
+    font-weight: 800;
+    font-size: 15px;
+    color: $civora-accent;
+    background: rgba(0, 171, 104, .12);
+}
+.civora-prg-building-n { font-weight: 700; font-size: 14.5px; }
+.civora-prg-building-s { font-size: 11.5px; color: $civora-muted; }
+
+.civora-prg-stack {
+    border: 1px solid $civora-border;
+    border-radius: $civora-radius;
+    background: rgba(9, 30, 64, .015);
+    padding: 12px 14px;
+}
+.civora-prg-level {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 6px 0;
+}
+.civora-prg-level-l {
+    flex: 0 0 44px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: $civora-muted;
+}
+.civora-prg-level-lots {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.civora-prg-level-none {
+    border: 0;
+    background: transparent;
+    color: $civora-muted;
+    font-size: 13px;
+}
+
+// Tuile de lot du plan : la couleur code le statut commercial.
+.civora-prg-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1px;
+    min-width: 88px;
+    border-radius: 10px;
+    border: 1.5px solid transparent;
+    padding: 7px 11px;
+    cursor: pointer;
+    text-align: left;
+    transition: transform .1s ease, box-shadow .1s ease;
+
+    &:hover { transform: translateY(-1px); box-shadow: $civora-shadow-card; }
+
+    &--disponible { background: rgba(21, 187, 119, .10); border-color: rgba(21, 187, 119, .45); }
+    &--optionne   { background: rgba(239, 168, 49, .14); border-color: rgba(239, 168, 49, .55); }
+    &--reserve    { background: rgba(0, 171, 104, .16);  border-color: rgba(0, 171, 104, .55); }
+    &--vendu      { background: rgba(37, 175, 210, .14); border-color: rgba(37, 175, 210, .50); }
+    &--bloque     { background: rgba(230, 44, 44, .10);  border-color: rgba(230, 44, 44, .45); }
+}
+.civora-prg-tile-n { font-weight: 700; font-size: 12.5px; color: $civora-fg; }
+.civora-prg-tile-s { font-size: 10.5px; color: $civora-muted; }
+
+.civora-prg-legend {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    border-top: 1px solid $civora-border;
+    margin-top: 18px;
+    padding-top: 14px;
+    font-size: 11.5px;
+    color: $civora-muted;
+}
+.civora-prg-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 6px;
+    border: 1.5px solid;
+
+    &--disponible { border-color: $civora-success; }
+    &--optionne   { border-color: $civora-warning; }
+    &--reserve    { border-color: $civora-accent; }
+    &--vendu      { border-color: $civora-info; }
+    &--bloque     { border-color: $civora-danger; }
+}
+
+// Grille de lots.
+.civora-prg-lotgrid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+
+    @media (max-width: 1180px) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    @media (max-width: 760px)  { grid-template-columns: 1fr; }
+}
+.civora-prg-lotcard {
+    padding: 16px 18px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: box-shadow .15s ease, transform .15s ease;
+
+    &:hover { box-shadow: $civora-shadow-elevated; transform: translateY(-1px); }
+}
+.civora-prg-lotcard-h {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+}
+.civora-prg-lotcard-n {
+    font-family: $civora-font-display;
+    font-weight: 800;
+    font-size: 20px;
+    letter-spacing: -0.01em;
+}
+.civora-prg-lotcard-s { font-size: 12px; color: $civora-muted; margin-top: 2px; }
+.civora-prg-lotcard-chips {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+
+    span {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 3px;
+        background: $civora-bg;
+        border-radius: $civora-radius-sm;
+        padding: 7px 4px;
+        font-size: 11.5px;
+        font-weight: 600;
+        color: $civora-fg;
+        i { color: $civora-muted; font-size: 11px; }
+    }
+}
+.civora-prg-lotcard-f {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid $civora-border;
+    padding-top: 10px;
+    font-size: 12.5px;
+    color: $civora-muted;
+
+    strong { font-family: $civora-font-display; font-size: 15px; color: $civora-fg; }
+}
+.civora-prg-lotcard-buyer {
+    font-size: 12px;
+    color: $civora-muted;
+    i { margin-right: 5px; }
+}
+
+// ---- Panneau lateral de lot -----------------------------------------
+.civora-prg-lot { display: flex; flex-direction: column; gap: 16px; }
+.civora-prg-lot-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.civora-prg-lot-kicker {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    color: $civora-muted;
+    text-transform: uppercase;
+}
+.civora-prg-lotcover {
+    height: 210px;
+    border-radius: $civora-radius;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, .85);
+    font-size: 34px;
+    overflow: hidden;
+
+    img { width: 100%; height: 100%; object-fit: cover; }
+
+    &--disponible { background: linear-gradient(135deg, #34d399, #6ee7b7); }
+    &--optionne   { background: linear-gradient(135deg, #f59e0b, #fbbf24); }
+    &--reserve    { background: linear-gradient(135deg, #10b981, #34d399); }
+    &--vendu      { background: linear-gradient(135deg, #38bdf8, #7dd3fc); }
+    &--bloque     { background: linear-gradient(135deg, #ef4444, #f87171); }
+}
+.civora-prg-lot-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px 20px;
+}
+.civora-prg-lot-l {
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: .07em;
+    color: $civora-muted;
+}
+.civora-prg-lot-v {
+    font-family: $civora-font-display;
+    font-weight: 700;
+    font-size: 16px;
+    margin-top: 3px;
+}
+.civora-prg-lot-buyer {
+    font-size: 13px;
+    color: $civora-muted;
+    i { margin-right: 6px; }
+}
+.civora-prg-lot-notes {
+    font-size: 12.5px;
+    color: $civora-muted;
+    line-height: 1.6;
+    background: $civora-bg;
+    border-radius: $civora-radius-sm;
+    padding: 10px 12px;
+    white-space: pre-line;
+}
+.civora-prg-lot-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+
+    .civora-btn { justify-content: center; }
+}
+
+// ---- Planning chantier ----------------------------------------------
+.civora-prg-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.civora-prg-phase {
+    display: flex;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid $civora-border;
+    &:last-child { border-bottom: 0; }
+}
+.civora-prg-phase-dot {
+    flex: 0 0 auto;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-top: 5px;
+    background: rgba(9, 30, 64, .18);
+
+    &--en_cours  { background: $civora-accent; }
+    &--terminee  { background: $civora-success; }
+    &--en_retard { background: $civora-danger; }
+}
+.civora-prg-phase-body { flex: 1; }
+.civora-prg-phase-h {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+
+    strong { font-family: $civora-font-display; font-size: 14.5px; margin-right: 8px; }
+}
+.civora-prg-phase-act { display: flex; align-items: center; gap: 6px; }
+.civora-prg-phase-dates {
+    font-size: 12px;
+    color: $civora-muted;
+    margin: 4px 0 10px;
+}
+
+// ---- Equipe ----------------------------------------------------------
+.civora-prg-team {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+
+    @media (max-width: 980px) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    @media (max-width: 640px) { grid-template-columns: 1fr; }
+}
+.civora-prg-teamcard {
+    border: 1px solid $civora-border;
+    border-radius: $civora-radius;
+    padding: 14px 16px;
+}
+.civora-prg-teamcard-r {
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: .07em;
+    color: $civora-muted;
+}
+.civora-prg-teamcard-n {
+    font-family: $civora-font-display;
+    font-weight: 700;
+    font-size: 15px;
+    margin: 4px 0 10px;
+}
+.civora-prg-teamcard-a {
+    display: flex;
+    gap: 6px;
+
+    a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        background: $civora-bg;
+        color: $civora-muted;
+        &:hover { color: $civora-accent; }
+    }
+}
+
+// =====================================================================
+// Formulaires (assistant programme, lot, phase, echeance, garantie)
+// =====================================================================
+.civora-prgf {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    font-size: 13px;
+}
+.civora-prgf-legend {
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: .07em;
+    color: $civora-muted;
+    text-transform: uppercase;
+
+    &--row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+}
+.civora-prgf-hint {
+    font-size: 12px;
+    font-style: italic;
+    color: $civora-muted;
+}
+.civora-prgf-grid2,
+.civora-prgf-grid3,
+.civora-prgf-grid4 {
+    display: grid;
+    gap: 14px;
+}
+.civora-prgf-grid2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.civora-prgf-grid3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.civora-prgf-grid4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+@media (max-width: 760px) {
+    .civora-prgf-grid2,
+    .civora-prgf-grid3,
+    .civora-prgf-grid4 { grid-template-columns: 1fr; }
+}
+
+.civora-prgf-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    > label {
+        font-size: 10.5px;
+        font-weight: 700;
+        letter-spacing: .06em;
+        color: $civora-muted;
+        text-transform: uppercase;
+    }
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    input[type="file"],
+    select,
+    textarea {
+        width: 100%;
+        border: 1px solid transparent;
+        background: $civora-bg;
+        border-radius: $civora-radius-sm;
+        padding: 10px 12px;
+        font-size: 13.5px;
+        font-family: $civora-font;
+        color: $civora-fg;
+        outline: 0;
+        transition: border-color .12s ease, box-shadow .12s ease;
+
+        &:focus {
+            border-color: rgba(0, 171, 104, .45);
+            box-shadow: 0 0 0 3px rgba(0, 171, 104, .12);
+        }
+        &::placeholder { color: rgba(98, 106, 117, .7); }
+    }
+    textarea { resize: vertical; min-height: 72px; }
+}
+.civora-prgf-suffixed {
+    display: flex;
+    align-items: center;
+    background: $civora-bg;
+    border-radius: $civora-radius-sm;
+    padding-right: 12px;
+
+    input { background: transparent !important; }
+    > span {
+        font-size: 11.5px;
+        color: $civora-muted;
+        white-space: nowrap;
+        border-left: 1px solid $civora-border;
+        padding-left: 10px;
+    }
+}
+.civora-prgf-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 500;
+    color: $civora-fg;
+
+    input { width: auto; }
+}
+.civora-prgf-inline {
+    display: flex;
+    gap: 8px;
+
+    input {
+        flex: 1;
+        border: 1px solid transparent;
+        background: $civora-bg;
+        border-radius: $civora-radius-sm;
+        padding: 10px 12px;
+        font-size: 13.5px;
+        font-family: $civora-font;
+        outline: 0;
+        &:focus { border-color: rgba(0, 171, 104, .45); }
+    }
+}
+.civora-prgf-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+// Cartes de choix du type de programme.
+.civora-prgf-typecards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+
+    @media (max-width: 760px) { grid-template-columns: 1fr; }
+}
+.civora-prgf-typecard {
+    text-align: left;
+    border: 1.5px solid $civora-border;
+    background: $civora-card;
+    border-radius: $civora-radius;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: all .12s ease;
+
+    > i { font-size: 18px; color: $civora-muted; }
+    &:hover { border-color: rgba(0, 171, 104, .35); }
+    &.is-active {
+        border-color: $civora-accent;
+        background: rgba(0, 171, 104, .06);
+        > i { color: $civora-accent; }
+    }
+}
+.civora-prgf-typecard-l {
+    font-family: $civora-font-display;
+    font-weight: 700;
+    font-size: 15px;
+    margin-top: 8px;
+}
+.civora-prgf-typecard-h {
+    font-size: 11.5px;
+    color: $civora-muted;
+    margin-top: 2px;
+    line-height: 1.45;
+}
+
+// Chips de prestations.
+.civora-prgf-chips {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.civora-prgf-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid $civora-border;
+    background: $civora-card;
+    color: $civora-muted;
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .12s ease;
+
+    &:hover { border-color: rgba(0, 171, 104, .35); color: $civora-fg; }
+    &.is-on {
+        background: $civora-accent;
+        border-color: $civora-accent;
+        color: #fff;
+    }
+}
+
+// Contacts projet.
+.civora-prgf-contacts { display: flex; flex-direction: column; gap: 8px; }
+.civora-prgf-contact {
+    display: grid;
+    grid-template-columns: 1.2fr 1.4fr 1fr auto;
+    gap: 8px;
+
+    @media (max-width: 760px) { grid-template-columns: 1fr; }
+
+    input {
+        border: 1px solid transparent;
+        background: $civora-bg;
+        border-radius: $civora-radius-sm;
+        padding: 10px 12px;
+        font-size: 13.5px;
+        font-family: $civora-font;
+        outline: 0;
+        &:focus { border-color: rgba(0, 171, 104, .45); }
+    }
+}
+.civora-prgf-addbtn,
+.civora-prgf-delbtn {
+    border: 1px solid $civora-border;
+    background: $civora-card;
+    color: $civora-muted;
+    border-radius: $civora-radius-sm;
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:hover { color: $civora-fg; }
+}
+.civora-prgf-delbtn:hover { color: $civora-danger; border-color: rgba(230, 44, 44, .35); }
+
+// Tags (caracteristiques, photos, prestations).
+.civora-prgf-taglist {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.civora-prgf-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(9, 30, 64, .05);
+    border-radius: 999px;
+    padding: 5px 12px;
+    font-size: 12px;
+    color: $civora-fg;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    &.is-static { background: rgba(0, 171, 104, .09); color: $civora-accent; font-weight: 600; }
+
+    button {
+        border: 0;
+        background: transparent;
+        color: $civora-muted;
+        cursor: pointer;
+        padding: 0;
+        line-height: 1;
+        &:hover { color: $civora-danger; }
+    }
+}
+
+// Recapitulatif de l'etape 3.
+.civora-prgf-recap {
+    background: $civora-bg;
+    border-radius: $civora-radius-sm;
+    padding: 12px 14px;
+}
+.civora-prgf-recap-h {
+    font-size: 12px;
+    font-weight: 700;
+    color: $civora-fg;
+    i { margin-right: 6px; color: $civora-accent; }
+}
+.civora-prgf-recap-b {
+    font-size: 12.5px;
+    color: $civora-muted;
+    margin-top: 4px;
+}

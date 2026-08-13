@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_programmes.LotDialog">
+    <CivoraDrawer variant="'modal'" size="'lg'"
+                  title="title" subtitle="'PROGRAMME · LOT'"
+                  onClose="() => props.onClose()">
+        <div class="civora-prgf">
+
+            <div class="civora-prgf-legend">Identification</div>
+            <div class="civora-prgf-grid2">
+                <div class="civora-prgf-field">
+                    <label>N° de lot *</label>
+                    <input type="text" placeholder="A-101" t-att-value="state.values.name"
+                           t-on-input="(ev) => this.setField('name', ev)"/>
+                </div>
+                <div class="civora-prgf-field">
+                    <label>Bâtiment / îlot</label>
+                    <input type="text" t-att-value="state.values.building"
+                           t-on-input="(ev) => this.setField('building', ev)"/>
+                </div>
+                <div class="civora-prgf-field">
+                    <label>Type</label>
+                    <select t-on-change="(ev) => this.setField('lot_type', ev)">
+                        <option t-foreach="types" t-as="t" t-key="t.id"
+                                t-att-value="t.id" t-att-selected="state.values.lot_type === t.id"
+                                t-esc="t.label"/>
+                    </select>
+                </div>
+                <div class="civora-prgf-field">
+                    <label>Étage (0 = RDC)</label>
+                    <input type="number" t-att-value="state.values.floor"
+                           t-on-input="(ev) => this.setField('floor', ev)"/>
+                </div>
+                <div class="civora-prgf-field">
+                    <label>Statut</label>
+                    <select t-on-change="(ev) => this.setField('status', ev)">
+                        <option t-foreach="statuses" t-as="s" t-key="s.id"
+                                t-att-value="s.id" t-att-selected="state.values.status === s.id"
+                                t-esc="s.label"/>
+                    </select>
+                </div>
+                <div class="civora-prgf-field">
+                    <label>Prix (FCFA)</label>
+                    <input type="number" min="0" t-att-value="state.values.price"
+                           t-on-input="(ev) => this.setField('price', ev)"/>
+                </div>
+            </div>
+
+            <div class="civora-prgf-legend">Surfaces &amp; composition</div>
+            <div class="civora-prgf-grid3">
+                <div class="civora-prgf-field">
+                    <label>Surface habitable (m²)</label>
+                    <input type="number" min="0" t-att-value="state.values.surface"
+                           t-on-input="(ev) => this.setField('surface', ev)"/>
+                </div>
+                <div class="civora-prgf-field">
+                    <label>Pièces</label>
+                    <input type="number" min="0" t-att-value="state.values.rooms"
+                           t-on-input="(ev) => this.setField('rooms', ev)"/>
+                </div>
+                <div class="civora-prgf-field">
+                    <label>Salles d'eau</label>
+                    <input type="number" min="0" t-att-value="state.values.bathrooms"
+                           t-on-input="(ev) => this.setField('bathrooms', ev)"/>
+                </div>
+                <div class="civora-prgf-field">
+                    <label>Balcon (m²)</label>
+                    <input type="number" min="0" t-att-value="state.values.balcony"
+                           t-on-input="(ev) => this.setField('balcony', ev)"/>
+                </div>
+                <div class="civora-prgf-field">
+                    <label>Terrasse (m²)</label>
+                    <input type="number" min="0" t-att-value="state.values.terrace"
+                           t-on-input="(ev) => this.setField('terrace', ev)"/>
+                </div>
+                <div class="civora-prgf-field">
+                    <label>Parking (places)</label>
+                    <input type="number" min="0" t-att-value="state.values.parking"
+                           t-on-input="(ev) => this.setField('parking', ev)"/>
+                </div>
+            </div>
+
+            <div class="civora-prgf-legend">Exposition &amp; vue</div>
+            <div class="civora-prgf-grid3">
+                <div class="civora-prgf-field">
+                    <label>Orientation</label>
+                    <select t-on-change="(ev) => this.setField('orientation', ev)">
+                        <option t-foreach="orientations" t-as="o" t-key="o.id"
+                                t-att-value="o.id" t-att-selected="state.values.orientation === o.id"
+                                t-esc="o.label"/>
+                    </select>
+                </div>
+                <div class="civora-prgf-field">
+                    <label>Exposition</label>
+                    <input type="text" placeholder="Ex : traversant" t-att-value="state.values.exposure"
+                           t-on-input="(ev) => this.setField('exposure', ev)"/>
+                </div>
+                <div class="civora-prgf-field">
+                    <label>Vue</label>
+                    <input type="text" placeholder="Ex : lagune, jardin" t-att-value="state.values.view"
+                           t-on-input="(ev) => this.setField('view', ev)"/>
+                </div>
+            </div>
+
+            <div class="civora-prgf-legend">Caractéristiques &amp; prestations</div>
+            <div t-if="!state.features.length" class="civora-prgf-hint">
+                Aucune caractéristique — ex : dressing, cellier, étage noble, climatisation, cuisine équipée…
+            </div>
+            <div t-else="" class="civora-prgf-taglist">
+                <span t-foreach="state.features" t-as="f" t-key="f_index" class="civora-prgf-tag">
+                    <t t-esc="f"/>
+                    <button t-on-click="() => this.removeFeature(f_index)"><i class="fa fa-times"/></button>
+                </span>
+            </div>
+            <div class="civora-prgf-inline">
+                <input type="text" placeholder="Ajouter une caractéristique"
+                       t-ref="featureInput"
+                       t-att-value="state.featureDraft"
+                       t-on-input="(ev) => this.onFeatureInput(ev)"
+                       t-on-keydown="(ev) => this.onFeatureKey(ev)"/>
+                <button class="civora-btn civora-btn-outline" t-on-click="() => this.addFeature()">
+                    <i class="fa fa-plus"/> Ajouter
+                </button>
+            </div>
+
+            <div class="civora-prgf-legend">Photos (URL)</div>
+            <div t-if="state.photos.length" class="civora-prgf-taglist">
+                <span t-foreach="state.photos" t-as="ph" t-key="ph_index" class="civora-prgf-tag">
+                    <t t-esc="ph"/>
+                    <button t-on-click="() => this.removePhoto(ph_index)"><i class="fa fa-times"/></button>
+                </span>
+            </div>
+            <div class="civora-prgf-inline">
+                <input type="text" placeholder="https://…/photo.jpg"
+                       t-ref="photoInput"
+                       t-att-value="state.photoDraft"
+                       t-on-input="(ev) => this.onPhotoInput(ev)"/>
+                <button class="civora-btn civora-btn-outline" t-on-click="() => this.addPhoto()">
+                    <i class="fa fa-plus"/> Ajouter
+                </button>
+            </div>
+
+            <div class="civora-prgf-field">
+                <label>Notes</label>
+                <textarea rows="3" t-att-value="state.values.notes"
+                          t-on-input="(ev) => this.setField('notes', ev)"/>
+            </div>
+        </div>
+
+        <t t-set-slot="footer">
+            <button class="civora-btn civora-btn-outline" t-on-click="() => props.onClose()">Annuler</button>
+            <button class="civora-btn civora-btn-accent" t-att-disabled="state.saving"
+                    t-on-click="() => this.save()">
+                <t t-esc="isEdit ? 'Enregistrer' : 'Ajouter le lot'"/>
+            </button>
+        </t>
+    </CivoraDrawer>
+</t>
+
+</templates>

@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-name="civora_programmes.ProgramDialog">
+    <CivoraDrawer variant="'modal'" size="'xl'"
+                  title="title" subtitle="subtitle"
+                  onClose="() => props.onClose()">
+
+        <!-- ETAPE 1 : Type & identite -->
+        <div t-if="state.step === 1" class="civora-prgf">
+            <div class="civora-prgf-legend">Type de programme</div>
+            <div class="civora-prgf-typecards">
+                <button t-foreach="typeCards" t-as="c" t-key="c.id"
+                        t-att-class="'civora-prgf-typecard' + (state.values.program_type === c.id ? ' is-active' : '')"
+                        t-on-click="() => this.setType(c.id)">
+                    <i t-attf-class="fa {{c.icon}}"/>
+                    <div class="civora-prgf-typecard-l" t-esc="c.label"/>
+                    <div class="civora-prgf-typecard-h" t-esc="c.hint"/>
+                </button>
+            </div>
+
+            <div class="civora-prgf-grid2">
+                <div class="civora-prgf-field">
+                    <label>Nom du programme *</label>
+                    <input type="text" placeholder="Résidence Akwaba"
+                           t-att-value="state.values.name"
+                           t-on-input="(ev) => this.setField('name', ev)"/>
+                </div>
+                <div class="civora-prgf-field">
+                    <label>Promoteur *</label>
+                    <input type="text" placeholder="Karta Développement"
+                           t-att-value="state.values.developer"
+                           t-on-input="(ev) => this.setField('developer', ev)"/>
+                </div>
+                <div class="civora-prgf-field">
+                    <label>Ville *</label>
+                    <input type="text" t-att-value="state.values.city"
+                           t-on-input="(ev) => this.setField('city', ev)"/>
+                </div>
+                <div class="civora-prgf-field">
+                    <label>Quartier / zone *</label>
+                    <input type="text" placeholder="ex. Cocody, Riviera 3"
+                           t-att-value="state.values.district"
+                           t-on-input="(ev) => this.setField('district', ev)"/>
+                </div>
+            </div>
+
+            <div class="civora-prgf-field">
+                <label>Adresse complète</label>
+                <input type="text" placeholder="Rue J56, Cocody Angré 8ème tranche"
+                       t-att-value="state.values.street"
+                       t-on-input="(ev) => this.setField('street', ev)"/>
+            </div>
+
+            <div class="civora-prgf-grid2">
+                <div class="civora-prgf-field">
+                    <label>Architecte</label>
+                    <input type="text" placeholder="Atelier Koffi &amp; Diabaté"
+                           t-att-value="state.values.architect"
+                           t-on-input="(ev) => this.setField('architect', ev)"/>
+                </div>
+                <div class="civora-prgf-field">
+                    <label>Entreprise BTP</label>
+                    <input type="text" placeholder="PFO Africa"
+                           t-att-value="state.values.contractor"
+                           t-on-input="(ev) => this.setField('contractor', ev)"/>
+                </div>
+            </div>
+
+            <div class="civora-prgf-field">
+                <label>Description</label>
+                <textarea rows="3" placeholder="Présentation, environnement, points forts…"
+                          t-att-value="state.values.description"
+                          t-on-input="(ev) => this.setField('description', ev)"/>
+            </div>
+        </div>
+
+        <!-- ETAPE 2 : Composition & finances -->
+        <div t-if="state.step === 2" class="civora-prgf">
+            <div class="civora-prgf-legend">Composition</div>
+            <div class="civora-prgf-grid4">
+                <div class="civora-prgf-field">
+                    <label>Nombre de bâtiments</label>
+                    <input type="number" min="0" t-att-value="state.values.building_count"
+                           t-on-input="(ev) => this.setField('building_count', ev)"/>
+                </div>
+                <div class="civora-prgf-field">
+                    <label>Total lots</label>
+                    <input type="number" min="0" t-att-value="state.values.total_lots"
+                           t-on-input="(ev) => this.setField('total_lots', ev)"/>
+                </div>
+                <div class="civora-prgf-field">
+                    <label>Lots vendus</label>
+                    <input type="number" min="0" t-att-value="state.values.sold_lots"
+                           t-on-input="(ev) => this.setField('sold_lots', ev)"/>
+                </div>
+                <div class="civora-prgf-field">
+                    <label>Lots réservés</label>
+                    <input type="number" min="0" t-att-value="state.values.reserved_lots"
+                           t-on-input="(ev) => this.setField('reserved_lots', ev)"/>
+                </div>
+            </div>
+
+            <div class="civora-prgf-legend">Surfaces</div>
+            <div class="civora-prgf-grid3">
+                <div class="civora-prgf-field">
+                    <label>Surface foncier (m²)</label>
+                    <input type="number" min="0" t-att-value="state.values.land_surface"
+                           t-on-input="(ev) => this.setField('land_surface', ev)"/>
+                </div>
+                <div class="civora-prgf-field">
+                    <label>Surface bâtie SHON (m²)</label>
+                    <input type="number" min="0" t-att-value="state.values.built_surface"
+                           t-on-input="(ev) => this.setField('built_surface', ev)"/>
+                </div>
+                <div class="civora-prgf-field">
+                    <label>Prix moyen / m² (FCFA)</label>
+                    <input type="number" min="0" t-att-value="state.values.avg_price_sqm"
+                           t-on-input="(ev) => this.setField('avg_price_sqm', ev)"/>
+                </div>
+            </div>
+
+            <div class="civora-prgf-legend">Finances</div>
+            <div class="civora-prgf-grid2">
+                <div class="civora-prgf-field">
+                    <label>Valeur totale du programme (FCFA)</label>
+                    <input type="number" min="0" t-att-value="state.values.total_value"
+                           t-on-input="(ev) => this.setField('total_value', ev)"/>
+                </div>
+                <div class="civora-prgf-field">
+                    <label>Chiffre d'affaires déjà signé (FCFA)</label>
+                    <input type="number" min="0" t-att-value="state.values.signed_revenue"
+                           t-on-input="(ev) => this.setField('signed_revenue', ev)"/>
+                </div>
+            </div>
+        </div>
+
+        <!-- ETAPE 3 : Calendrier & administratif -->
+        <div t-if="state.step === 3" class="civora-prgf">
+            <div class="civora-prgf-grid2">
+                <div class="civora-prgf-field">
+                    <label>Date de démarrage</label>
+                    <input type="date" t-att-value="state.values.start_date"
+                           t-on-input="(ev) => this.setField('start_date', ev)"/>
+                </div>
+                <div class="civora-prgf-field">
+                    <label>Livraison prévue</label>
+                    <input type="date" t-att-value="state.values.delivery_date"
+                           t-on-input="(ev) => this.setField('delivery_date', ev)"/>
+                </div>
+                <div class="civora-prgf-field">
+                    <label>Avancement travaux (%)</label>
+                    <input type="number" min="0" max="100" t-att-value="state.values.works_progress"
+                           t-on-input="(ev) => this.setField('works_progress', ev)"/>
+                </div>
+                <div class="civora-prgf-field">
+                    <label>Statut</label>
+                    <select t-on-change="(ev) => this.setField('status', ev)">
+                        <option t-foreach="statuses" t-as="s" t-key="s.id"
+                                t-att-value="s.id" t-att-selected="state.values.status === s.id"
+                                t-esc="s.label"/>
+                    </select>
+                </div>
+                <div class="civora-prgf-field">
+                    <label>Permis de construire</label>
+                    <input type="text" placeholder="PC-2025-…"
+                           t-att-value="state.values.building_permit"
+                           t-on-input="(ev) => this.setField('building_permit', ev)"/>
+                </div>
+                <div class="civora-prgf-field">
+                    <label>Office notarial</label>
+                    <input type="text" placeholder="Maître Konan, Abidjan"
+                           t-att-value="state.values.notary_office"
+                           t-on-input="(ev) => this.setField('notary_office', ev)"/>
+                </div>
+            </div>
+
+            <div class="civora-prgf-field">
+                <label>Garantie financière d'achèvement (GFA)</label>
+                <input type="text" placeholder="Société Générale CI — GFA n°…"
+                       t-att-value="state.values.gfa_reference"
+                       t-on-input="(ev) => this.setField('gfa_reference', ev)"/>
+            </div>
+
+            <div class="civora-prgf-recap">
+                <div class="civora-prgf-recap-h"><i class="fa fa-file-text-o"/> Récapitulatif</div>
+                <div class="civora-prgf-recap-b">
+                    <t t-esc="recap.type"/> · <strong t-esc="recap.name"/> <t t-esc="recap.bits"/>
+                </div>
+            </div>
+        </div>
+
+        <!-- ETAPE 4 : Prestations & contacts -->
+        <div t-if="state.step === 4" class="civora-prgf">
+            <div class="civora-prgf-legend">Prestations &amp; équipements</div>
+            <div class="civora-prgf-chips">
+                <button t-foreach="state.amenities" t-as="a" t-key="a.id"
+                        t-att-class="'civora-prgf-chip' + (isAmenityOn(a) ? ' is-on' : '')"
+                        t-on-click="() => this.toggleAmenity(a)">
+                    <i t-attf-class="fa {{isAmenityOn(a) ? 'fa-check' : 'fa-plus'}}"/>
+                    <span t-esc="a.name"/>
+                </button>
+            </div>
+
+            <div class="civora-prgf-legend civora-prgf-legend--row">
+                <span>Contacts projet</span>
+                <button class="civora-prgf-addbtn" t-on-click="() => this.addContact()">
+                    <i class="fa fa-plus"/> Ajouter
+                </button>
+            </div>
+            <div class="civora-prgf-contacts">
+                <div t-foreach="state.contacts" t-as="c" t-key="c_index" class="civora-prgf-contact">
+                    <input type="text" placeholder="Rôle" t-att-value="c.role"
+                           t-on-input="(ev) => this.setContact(c_index, 'role', ev)"/>
+                    <input type="text" placeholder="Nom &amp; prénom" t-att-value="c.name"
+                           t-on-input="(ev) => this.setContact(c_index, 'name', ev)"/>
+                    <input type="text" placeholder="Téléphone" t-att-value="c.phone"
+                           t-on-input="(ev) => this.setContact(c_index, 'phone', ev)"/>
+                    <button class="civora-prgf-delbtn" title="Retirer"
+                            t-on-click="() => this.removeContact(c_index)">
+                        <i class="fa fa-trash-o"/>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <t t-set-slot="footer">
+            <button t-if="state.step > 1" class="civora-btn civora-btn-outline"
+                    t-on-click="() => this.prev()">Précédent</button>
+            <button t-else="" class="civora-btn civora-btn-outline"
+                    t-on-click="() => props.onClose()">Annuler</button>
+
+            <button t-if="state.step &lt; 4" class="civora-btn civora-btn-accent"
+                    t-on-click="() => this.next()">Continuer</button>
+            <button t-else="" class="civora-btn civora-btn-accent"
+                    t-att-disabled="state.saving"
+                    t-on-click="() => this.save()">
+                <i class="fa fa-check-circle-o"/> Enregistrer
+            </button>
+        </t>
+    </CivoraDrawer>
+</t>
+
+</templates>

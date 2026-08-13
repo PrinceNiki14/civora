@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Ecran Programmes (client action OWL, aucune vue Odoo) -->
+    <record id="action_civora_programs" model="ir.actions.client">
+        <field name="name">Programmes</field>
+        <field name="tag">civora.programs</field>
+    </record>
+
+    <!-- Fiche programme 360 (ouverte depuis la liste) -->
+    <record id="action_civora_program_360" model="ir.actions.client">
+        <field name="name">Fiche programme</field>
+        <field name="tag">civora.program_360</field>
+    </record>
+
+    <!-- Rattache l'ecran au menu existant IMMOBILIER > Programmes -->
+    <menuitem id="civora_agence.menu_programmes" action="action_civora_programs"/>
+
+</odoo>

@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<!-- ================= Phase de chantier ================= -->
+<t t-name="civora_programmes.PhaseDialog">
+    <CivoraDrawer variant="'modal'" size="'md'" title="title" subtitle="kicker"
+                  onClose="() => props.onClose()">
+        <div class="civora-prgf">
+            <div class="civora-prgf-field">
+                <label>Libellé *</label>
+                <input type="text" placeholder="Gros œuvre" t-att-value="state.values.name"
+                       t-on-input="(ev) => this.setField('name', ev)"/>
+            </div>
+            <div class="civora-prgf-grid2">
+                <div class="civora-prgf-field">
+                    <label>Date début</label>
+                    <input type="date" t-att-value="state.values.date_start"
+                           t-on-input="(ev) => this.setField('date_start', ev)"/>
+                </div>
+                <div class="civora-prgf-field">
+                    <label>Date prévue fin</label>
+                    <input type="date" t-att-value="state.values.date_end_planned"
+                           t-on-input="(ev) => this.setField('date_end_planned', ev)"/>
+                </div>
+                <div class="civora-prgf-field">
+                    <label>Date réelle achèvement</label>
+                    <input type="date" t-att-value="state.values.date_end_real"
+                           t-on-input="(ev) => this.setField('date_end_real', ev)"/>
+                </div>
+                <div class="civora-prgf-field">
+                    <label>Avancement (%)</label>
+                    <input type="number" min="0" max="100" t-att-value="state.values.progress"
+                           t-on-input="(ev) => this.setField('progress', ev)"/>
+                </div>
+                <div class="civora-prgf-field">
+                    <label>Statut</label>
+                    <select t-on-change="(ev) => this.setField('status', ev)">
+                        <option t-foreach="statuses" t-as="s" t-key="s.id"
+                                t-att-value="s.id" t-att-selected="state.values.status === s.id"
+                                t-esc="s.label"/>
+                    </select>
+                </div>
+                <div class="civora-prgf-field">
+                    <label>Ordre</label>
+                    <input type="number" min="1" t-att-value="state.values.sequence"
+                           t-on-input="(ev) => this.setField('sequence', ev)"/>
+                </div>
+            </div>
+            <div class="civora-prgf-field">
+                <label>Jalon-clé (déclenche appel)</label>
+                <label class="civora-prgf-check">
+                    <input type="checkbox" t-att-checked="state.values.is_milestone"
+                           t-on-change="(ev) => this.setField('is_milestone', ev)"/>
+                    <span>Cette phase est un jalon contractuel</span>
+                </label>
+            </div>
+            <div class="civora-prgf-field">
+                <label>Notes</label>
+                <textarea rows="3" t-att-value="state.values.notes"
+                          t-on-input="(ev) => this.setField('notes', ev)"/>
+            </div>
+        </div>
+        <t t-set-slot="footer">
+            <button class="civora-btn civora-btn-outline" t-on-click="() => props.onClose()">Annuler</button>
+            <button class="civora-btn civora-btn-accent" t-att-disabled="state.saving"
+                    t-on-click="() => this.save()">Enregistrer</button>
+        </t>
+    </CivoraDrawer>
+</t>
+
+<!-- ================= Echeance VEFA ================= -->
+<t t-name="civora_programmes.MilestoneDialog">
+    <CivoraDrawer variant="'modal'" size="'md'" title="title" subtitle="kicker"
+                  onClose="() => props.onClose()">
+        <div class="civora-prgf">
+            <div class="civora-prgf-field">
+                <label>Libellé *</label>
+                <input type="text" placeholder="Ex : Fondations achevées"
+                       t-att-value="state.values.name"
+                       t-on-input="(ev) => this.setField('name', ev)"/>
+            </div>
+            <div class="civora-prgf-grid2">
+                <div class="civora-prgf-field">
+                    <label>Ordre</label>
+                    <input type="number" min="1" t-att-value="state.values.sequence"
+                           t-on-input="(ev) => this.setField('sequence', ev)"/>
+                </div>
+                <div class="civora-prgf-field">
+                    <label>% cumulé appelé *</label>
+                    <input type="number" min="0" max="100" t-att-value="state.values.cumulative_pct"
+                           t-on-input="(ev) => this.setField('cumulative_pct', ev)"/>
+                </div>
+            </div>
+            <div class="civora-prgf-field">
+                <label>Lié au jalon chantier</label>
+                <select t-on-change="(ev) => this.setField('phase_id', ev)">
+                    <option value="0" t-att-selected="!state.values.phase_id">— Aucun —</option>
+                    <option t-foreach="phases" t-as="p" t-key="p.id"
+                            t-att-value="p.id"
+                            t-att-selected="Number(state.values.phase_id) === p.id"
+                            t-esc="p.name"/>
+                </select>
+            </div>
+            <div class="civora-prgf-field">
+                <label>Notes</label>
+                <textarea rows="3" t-att-value="state.values.notes"
+                          t-on-input="(ev) => this.setField('notes', ev)"/>
+            </div>
+        </div>
+        <t t-set-slot="footer">
+            <button class="civora-btn civora-btn-outline" t-on-click="() => props.onClose()">Annuler</button>
+            <button class="civora-btn civora-btn-accent" t-att-disabled="state.saving"
+                    t-on-click="() => this.save()">Enregistrer</button>
+        </t>
+    </CivoraDrawer>
+</t>
+
+<!-- ================= Garantie ================= -->
+<t t-name="civora_programmes.GuaranteeDialog">
+    <CivoraDrawer variant="'modal'" size="'md'" title="title" subtitle="kicker"
+                  onClose="() => props.onClose()">
+        <div class="civora-prgf">
+            <div class="civora-prgf-field">
+                <label>Type *</label>
+                <select t-on-change="(ev) => this.setField('guarantee_type', ev)">
+                    <option t-foreach="types" t-as="t" t-key="t.id"
+                            t-att-value="t.id" t-att-selected="state.values.guarantee_type === t.id"
+                            t-esc="t.label"/>
+                </select>
+            </div>
+            <div class="civora-prgf-field">
+                <label>Émetteur (banque / assureur) *</label>
+                <input type="text" placeholder="Ex : Société Générale CI"
+                       t-att-value="state.values.issuer"
+                       t-on-input="(ev) => this.setField('issuer', ev)"/>
+            </div>
+            <div class="civora-prgf-grid2">
+                <div class="civora-prgf-field">
+                    <label>N° de police</label>
+                    <input type="text" t-att-value="state.values.policy_number"
+                           t-on-input="(ev) => this.setField('policy_number', ev)"/>
+                </div>
+                <div class="civora-prgf-field">
+                    <label>Montant garanti (FCFA)</label>
+                    <input type="number" min="0" t-att-value="state.values.amount"
+                           t-on-input="(ev) => this.setField('amount', ev)"/>
+                </div>
+                <div class="civora-prgf-field">
+                    <label>Date d'effet</label>
+                    <input type="date" t-att-value="state.values.date_start"
+                           t-on-input="(ev) => this.setField('date_start', ev)"/>
+                </div>
+                <div class="civora-prgf-field">
+                    <label>Date d'expiration</label>
+                    <input type="date" t-att-value="state.values.date_end"
+                           t-on-input="(ev) => this.setField('date_end', ev)"/>
+                </div>
+            </div>
+            <div class="civora-prgf-field">
+                <label>Notes</label>
+                <textarea rows="3" t-att-value="state.values.notes"
+                          t-on-input="(ev) => this.setField('notes', ev)"/>
+            </div>
+        </div>
+        <t t-set-slot="footer">
+            <button class="civora-btn civora-btn-outline" t-on-click="() => props.onClose()">Annuler</button>
+            <button class="civora-btn civora-btn-accent" t-att-disabled="state.saving"
+                    t-on-click="() => this.save()">Enregistrer</button>
+        </t>
+    </CivoraDrawer>
+</t>
+
+<!-- ================= Document ================= -->
+<t t-name="civora_programmes.DocumentDialog">
+    <CivoraDrawer variant="'modal'" size="'md'" title="title" subtitle="kicker"
+                  onClose="() => props.onClose()">
+        <div class="civora-prgf">
+            <div class="civora-prgf-field">
+                <label>Fichier</label>
+                <input type="file" t-on-change="(ev) => this.onFile(ev)"/>
+            </div>
+            <div class="civora-prgf-field">
+                <label>Nom du document *</label>
+                <input type="text" t-att-value="state.values.name"
+                       t-on-input="(ev) => this.setField('name', ev)"/>
+            </div>
+            <div class="civora-prgf-grid2">
+                <div class="civora-prgf-field">
+                    <label>Type</label>
+                    <select t-on-change="(ev) => this.setField('document_type', ev)">
+                        <option t-foreach="types" t-as="t" t-key="t.id"
+                                t-att-value="t.id" t-att-selected="state.values.document_type === t.id"
+                                t-esc="t.label"/>
+                    </select>
+                </div>
+                <div class="civora-prgf-field">
+                    <label>Lien externe</label>
+                    <input type="text" placeholder="https://…"
+                           t-att-value="state.values.url"
+                           t-on-input="(ev) => this.setField('url', ev)"/>
+                </div>
+            </div>
+            <div class="civora-prgf-field">
+                <label>Notes</label>
+                <textarea rows="3" t-att-value="state.values.notes"
+                          t-on-input="(ev) => this.setField('notes', ev)"/>
+            </div>
+        </div>
+        <t t-set-slot="footer">
+            <button class="civora-btn civora-btn-outline" t-on-click="() => props.onClose()">Annuler</button>
+            <button class="civora-btn civora-btn-accent" t-att-disabled="state.saving"
+                    t-on-click="() => this.save()">Enregistrer</button>
+        </t>
+    </CivoraDrawer>
+</t>
+
+</templates>

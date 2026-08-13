@@ -1,0 +1,19 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_civora_program_user,civora.program user,model_civora_program,base.group_user,1,1,1,0
+access_civora_program_admin,civora.program admin,model_civora_program,base.group_system,1,1,1,1
+access_civora_program_lot_user,civora.program.lot user,model_civora_program_lot,base.group_user,1,1,1,1
+access_civora_program_lot_admin,civora.program.lot admin,model_civora_program_lot,base.group_system,1,1,1,1
+access_civora_program_phase_user,civora.program.phase user,model_civora_program_phase,base.group_user,1,1,1,1
+access_civora_program_phase_admin,civora.program.phase admin,model_civora_program_phase,base.group_system,1,1,1,1
+access_civora_program_milestone_user,civora.program.milestone user,model_civora_program_milestone,base.group_user,1,1,1,1
+access_civora_program_milestone_admin,civora.program.milestone admin,model_civora_program_milestone,base.group_system,1,1,1,1
+access_civora_program_call_user,civora.program.call user,model_civora_program_call,base.group_user,1,1,1,1
+access_civora_program_call_admin,civora.program.call admin,model_civora_program_call,base.group_system,1,1,1,1
+access_civora_program_guarantee_user,civora.program.guarantee user,model_civora_program_guarantee,base.group_user,1,1,1,1
+access_civora_program_guarantee_admin,civora.program.guarantee admin,model_civora_program_guarantee,base.group_system,1,1,1,1
+access_civora_program_document_user,civora.program.document user,model_civora_program_document,base.group_user,1,1,1,1
+access_civora_program_document_admin,civora.program.document admin,model_civora_program_document,base.group_system,1,1,1,1
+access_civora_program_stakeholder_user,civora.program.stakeholder user,model_civora_program_stakeholder,base.group_user,1,1,1,1
+access_civora_program_stakeholder_admin,civora.program.stakeholder admin,model_civora_program_stakeholder,base.group_system,1,1,1,1
+access_civora_program_amenity_user,civora.program.amenity user,model_civora_program_amenity,base.group_user,1,0,0,0
+access_civora_program_amenity_admin,civora.program.amenity admin,model_civora_program_amenity,base.group_system,1,1,1,1
