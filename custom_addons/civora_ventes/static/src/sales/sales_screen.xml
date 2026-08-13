@@ -10,7 +10,7 @@
                 <span class="civora-screen-subtitle">Pipeline transactionnel · suivi compromis, actes, commissions</span>
             </div>
             <div class="civora-screen-actions">
-                <button class="civora-btn civora-btn-outline">
+                <button class="civora-btn civora-btn-outline" t-on-click="exportSales">
                     <i class="fa fa-download"/> Exporter
                 </button>
                 <button class="civora-btn civora-btn-accent" t-on-click="() => this.openDrawer('create')">
@@ -53,12 +53,10 @@
                 <div class="civora-insight-spark"><i class="fa fa-magic"/></div>
                 <div class="civora-insight-main">
                     <div class="civora-insight-tag">IA · INSIGHT</div>
-                    <div class="civora-insight-title">3 dossiers à risque dans les 14 prochains jours</div>
-                    <p class="civora-insight-body">
-                        VTE-2041 (Villa Riviera Golf) attend le déblocage bancaire depuis 18 jours. VTE-2045 nécessite une relance notaire. VTE-2044 a un dépôt de garantie en retard de 6 jours.
-                    </p>
+                    <div class="civora-insight-title" t-esc="insightTitle"/>
+                    <p class="civora-insight-body" t-esc="insightBody"/>
                     <div class="civora-insight-action">
-                        <button class="civora-btn civora-btn-outline">
+                        <button class="civora-btn civora-btn-outline" t-on-click="openActionPlan">
                             Voir le plan d'action IA
                         </button>
                     </div>
@@ -73,10 +71,36 @@
                 <input type="text" placeholder="Rechercher bien, acquéreur, vendeur, commercial..."
                        t-on-input="onSearch" t-att-value="state.search"/>
             </div>
-            <button class="civora-btn civora-btn-outline">
+            <button class="civora-btn civora-btn-outline" t-on-click="toggleFilters">
                 <i class="fa fa-filter"/> Filtres
             </button>
         </div>
+
+        <t t-if="state.showFilters">
+            <div class="civora-ventes-filterpanel">
+                <div class="civora-ventes-filterfield">
+                    <label>Commercial</label>
+                    <select class="civora-input" t-on-change="onFilterAgent">
+                        <option value="all" t-att-selected="isAgent('all')">Tous les commerciaux</option>
+                        <t t-foreach="agentOptions" t-as="a" t-key="a.id">
+                            <option t-att-value="a.name" t-att-selected="isAgent(a.name)" t-esc="a.name"/>
+                        </t>
+                    </select>
+                </div>
+                <div class="civora-ventes-filterfield">
+                    <label>Zone</label>
+                    <select class="civora-input" t-on-change="onFilterZone">
+                        <option value="all" t-att-selected="isZone('all')">Toutes les zones</option>
+                        <t t-foreach="zoneOptions" t-as="z" t-key="z">
+                            <option t-att-value="z" t-att-selected="isZone(z)" t-esc="z"/>
+                        </t>
+                    </select>
+                </div>
+                <button class="civora-btn civora-btn-outline" t-on-click="resetFilters">
+                    <i class="fa fa-times"/> Réinitialiser
+                </button>
+            </div>
+        </t>
 
         <!-- ============ TABS ============ -->
         <div class="civora-ventes-tabs">
@@ -183,19 +207,122 @@
 
         <!-- ============ TAB: COMMISSIONS ============ -->
         <t t-if="state.activeTab === 'commissions'">
-            <div class="civora-ventes-placeholder">
-                <i class="fa fa-percent"/>
-                <h3>Commissions</h3>
-                <p>Suivi des commissions par agent et par dossier. Module en cours de developpement.</p>
+            <div class="civora-ventes-cols">
+                <div class="civora-ventes-card">
+                    <h3 class="civora-ventes-cardtitle">Commissions par commercial</h3>
+                    <div class="civora-ventes-cardsub">Période en cours</div>
+                    <t t-foreach="state.dash.agents or []" t-as="a" t-key="a.id">
+                        <div class="civora-ventes-agentrow">
+                            <span class="civora-ventes-avatar" t-esc="a.initials"/>
+                            <div class="civora-ventes-agentmain">
+                                <div class="civora-ventes-strong" t-esc="a.name"/>
+                                <div class="civora-ventes-sub"><t t-esc="a.deals"/> dossiers actifs</div>
+                            </div>
+                            <div class="civora-ventes-agentamount">
+                                <div class="civora-ventes-strong"><t t-esc="fmtMoney(a.total)"/> FCFA</div>
+                                <div class="civora-ventes-sub">
+                                    <t t-esc="fmtMoney(a.cashed)"/> encaissé ·
+                                    <t t-esc="fmtMoney(a.pending)"/> à venir
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                    <t t-if="!(state.dash.agents or []).length">
+                        <div class="civora-ventes-empty">Aucun dossier actif.</div>
+                    </t>
+
+                    <h3 class="civora-ventes-cardtitle">Dernières commissions</h3>
+                    <t t-foreach="state.dash.recent_commissions or []" t-as="c" t-key="c.id">
+                        <div class="civora-ventes-commrow" t-on-click="() => this.openDetail(c.id)">
+                            <div>
+                                <div class="civora-ventes-strong">
+                                    <t t-esc="c.ref"/> · <t t-esc="c.property"/>
+                                </div>
+                                <div class="civora-ventes-sub">
+                                    <t t-esc="c.agent"/> · <t t-esc="c.rate"/>% =
+                                    <t t-esc="fmtMoneyFull(c.amount)"/> FCFA
+                                </div>
+                            </div>
+                            <span class="civora-ventes-sub" t-esc="c.date"/>
+                        </div>
+                    </t>
+                    <t t-if="!(state.dash.recent_commissions or []).length">
+                        <div class="civora-ventes-empty">Aucune commission enregistrée.</div>
+                    </t>
+                </div>
+
+                <div class="civora-ventes-card">
+                    <h3 class="civora-ventes-cardtitle">Synthèse</h3>
+                    <div class="civora-ventes-deflist">
+                        <div><span>COMMISSIONS TOTALES</span>
+                             <strong><t t-esc="fmtMoneyFull(state.dash.commission_summary.total)"/> FCFA</strong></div>
+                        <div><span>ENCAISSÉES</span>
+                             <strong><t t-esc="fmtMoneyFull(state.dash.commission_summary.cashed)"/> FCFA</strong></div>
+                        <div><span>À ENCAISSER</span>
+                             <strong><t t-esc="fmtMoneyFull(state.dash.commission_summary.pending)"/> FCFA</strong></div>
+                        <div><span>COMMERCIAUX</span>
+                             <strong t-esc="state.dash.commission_summary.agents"/></div>
+                        <div><span>TAUX MOYEN</span>
+                             <strong><t t-esc="state.dash.commission_summary.avg_rate"/>%</strong></div>
+                    </div>
+                </div>
             </div>
         </t>
 
         <!-- ============ TAB: PERFORMANCE ============ -->
         <t t-if="state.activeTab === 'performance'">
-            <div class="civora-ventes-placeholder">
-                <i class="fa fa-bar-chart"/>
-                <h3>Performance</h3>
-                <p>Tableaux de bord et KPIs de performance commerciale. Module en cours de developpement.</p>
+            <div class="civora-ventes-cols">
+                <div class="civora-ventes-card">
+                    <h3 class="civora-ventes-cardtitle">Volume par zone</h3>
+                    <div class="civora-ventes-cardsub">Dossiers signés, en cours d'acte ou clôturés</div>
+                    <t t-foreach="state.dash.zones or []" t-as="z" t-key="z.name">
+                        <div class="civora-ventes-zonerow">
+                            <div class="civora-ventes-zoneline">
+                                <span class="civora-ventes-strong" t-esc="z.name"/>
+                                <span class="civora-ventes-sub">
+                                    <t t-esc="fmtMoney(z.volume)"/> FCFA · <t t-esc="z.count"/> ventes
+                                </span>
+                            </div>
+                            <div class="civora-ventes-bartrack">
+                                <div class="civora-ventes-barfill" t-attf-style="width:{{ z.pct }}%"/>
+                            </div>
+                        </div>
+                    </t>
+                    <t t-if="!(state.dash.zones or []).length">
+                        <div class="civora-ventes-empty">Aucune vente signée sur la période.</div>
+                    </t>
+                </div>
+
+                <div class="civora-ventes-card">
+                    <h3 class="civora-ventes-cardtitle">Cycle de vente</h3>
+                    <div class="civora-ventes-deflist">
+                        <div><span>DÉLAI PROMESSE → ACTE</span>
+                             <strong>
+                                 <t t-if="state.dash.cycle.promise_to_acte"><t t-esc="state.dash.cycle.promise_to_acte"/> j</t>
+                                 <t t-else="">—</t>
+                             </strong></div>
+                        <div><span>DÉLAI ACTE → ENCAISSÉ</span>
+                             <strong>
+                                 <t t-if="state.dash.cycle.acte_to_cash"><t t-esc="state.dash.cycle.acte_to_cash"/> j</t>
+                                 <t t-else="">—</t>
+                             </strong></div>
+                        <div><span>ANNULATIONS</span>
+                             <strong><t t-esc="state.dash.cycle.cancelled"/> dossier(s)</strong></div>
+                        <div><span>TICKET MOYEN</span>
+                             <strong><t t-esc="fmtMoneyFull(state.dash.cycle.ticket)"/> FCFA</strong></div>
+                    </div>
+
+                    <h3 class="civora-ventes-cardtitle">Alertes</h3>
+                    <t t-foreach="alerts" t-as="al" t-key="al.id">
+                        <div t-attf-class="civora-ventes-alert civora-ventes-alert--{{ al.level }}"
+                             t-on-click="() => this.openDetail(al.sale_id)">
+                            <i class="fa fa-exclamation-circle"/> <t t-esc="al.text"/>
+                        </div>
+                    </t>
+                    <t t-if="!alerts.length">
+                        <div class="civora-ventes-empty">Aucune alerte : tous les dossiers sont dans les délais.</div>
+                    </t>
+                </div>
             </div>
         </t>
 

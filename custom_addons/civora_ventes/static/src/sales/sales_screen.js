@@ -46,18 +46,22 @@ class CivoraVentesScreen extends Component {
             sales: [],
             kpis: {},
             pipeline: [],
+            dash: {},
+            showFilters: false,
+            filterAgent: "all",
+            filterZone: "all",
             filter: "all",
             search: "",
             activeTab: "pipeline",
             drawerOpen: false,
             drawerMode: "create",
-            drawerRecordId: null,
+            drawerRecordId: false,
         });
         onWillStart(() => this.load());
     }
 
     async load() {
-        const [kpis, sales, pipeline] = await Promise.all([
+        const [kpis, sales, pipeline, dash] = await Promise.all([
             this.orm.call("civora.sale", "get_sales_kpis", []),
             this.orm.searchRead("civora.sale", [], [
                 "name", "property_id", "seller_id", "buyer_id", "agent_id",
@@ -66,10 +70,102 @@ class CivoraVentesScreen extends Component {
                 "compromis_date", "acte_date",
             ], { order: "create_date desc", limit: 200 }),
             this.orm.call("civora.sale", "get_pipeline_data", []),
+            this.orm.call("civora.sale", "get_sales_dashboard", []),
         ]);
         this.state.kpis = kpis;
         this.state.sales = sales;
         this.state.pipeline = pipeline;
+        this.state.dash = dash;
+    }
+
+    /* ------------------------------------------------------------------
+       INSIGHT IA : derive des alertes reelles, plus de texte fige.
+       ------------------------------------------------------------------ */
+    get alerts() { return this.state.dash.alerts || []; }
+
+    get insightTitle() {
+        const n = this.alerts.length;
+        if (!n) return "Aucun dossier à risque identifié";
+        return `${n} dossier${n > 1 ? "s" : ""} à risque dans les 14 prochains jours`;
+    }
+
+    get insightBody() {
+        if (!this.alerts.length) {
+            return "Tous les dossiers en cours respectent leurs délais de déblocage, "
+                 + "de signature et d'encaissement.";
+        }
+        return this.alerts.map((a) => a.text).join(". ") + ".";
+    }
+
+    openActionPlan() { this.state.activeTab = "performance"; }
+
+    /* ------------------------------ FILTRES --------------------------- */
+    toggleFilters() { this.state.showFilters = !this.state.showFilters; }
+    onFilterAgent(ev) { this.state.filterAgent = ev.target.value; }
+    onFilterZone(ev) { this.state.filterZone = ev.target.value; }
+    isAgent(v) { return `${this.state.filterAgent}` === `${v}`; }
+    isZone(v) { return `${this.state.filterZone}` === `${v}`; }
+
+    resetFilters() {
+        this.state.filterAgent = "all";
+        this.state.filterZone = "all";
+        this.state.filter = "all";
+        this.state.search = "";
+    }
+
+    get agentOptions() {
+        return (this.state.dash.agents || []).map((a) => ({ id: a.id, name: a.name }));
+    }
+
+    get zoneOptions() {
+        return (this.state.dash.zones || []).map((z) => z.name);
+    }
+
+    get transactions() {
+        let list = this.state.dash.transactions || [];
+        const f = this.state.filter;
+        const map = {
+            mandats: ["mandat", "commercialisation"], offres: ["offre"],
+            compromis: ["compromis"], acte: ["acte"], cloture: ["cloture"], annule: ["annule"],
+        };
+        if (map[f]) list = list.filter((r) => map[f].includes(r.state));
+        if (this.state.filterAgent !== "all") {
+            list = list.filter((r) => `${r.agent}` === `${this.state.filterAgent}`);
+        }
+        if (this.state.filterZone !== "all") {
+            list = list.filter((r) => r.zone === this.state.filterZone);
+        }
+        const q = (this.state.search || "").toLowerCase().trim();
+        if (q) {
+            list = list.filter((r) =>
+                (r.property || "").toLowerCase().includes(q) ||
+                (r.buyer || "").toLowerCase().includes(q) ||
+                (r.seller || "").toLowerCase().includes(q) ||
+                (r.agent || "").toLowerCase().includes(q) ||
+                (r.ref || "").toLowerCase().includes(q));
+        }
+        return list;
+    }
+
+    /* ------------------------------ EXPORT ---------------------------- */
+    exportSales() {
+        const rows = this.transactions;
+        const headers = [
+            ["ref", "Référence"], ["property", "Bien"], ["zone", "Zone"],
+            ["buyer", "Acquéreur"], ["seller", "Vendeur"], ["agent", "Commercial"],
+            ["amount", "Montant"], ["paid", "Encaissé"], ["state_label", "Statut"],
+            ["closing", "Closing"],
+        ];
+        const esc = (v) => `"${`${v == null ? "" : v}`.replace(/"/g, '""')}"`;
+        const lines = [headers.map((h) => esc(h[1])).join(";")];
+        for (const r of rows) lines.push(headers.map((h) => esc(r[h[0]])).join(";"));
+        const blob = new Blob(["\ufeff" + lines.join("\n")], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "civora-ventes.csv";
+        a.click();
+        URL.revokeObjectURL(url);
     }
 
     get tabs() {
@@ -77,8 +173,8 @@ class CivoraVentesScreen extends Component {
         return [
             { key: "pipeline", label: "Pipeline", count: pipelineCount },
             { key: "transactions", label: "Transactions", count: this.state.sales.length },
-            { key: "commissions", label: "Commissions", count: 0 },
-            { key: "performance", label: "Performance", count: 0 },
+            { key: "commissions", label: "Commissions", count: (this.state.dash.agents || []).length },
+            { key: "performance", label: "Performance", count: this.alerts.length },
         ];
     }
 
@@ -121,7 +217,7 @@ class CivoraVentesScreen extends Component {
 
     openDrawer(mode, id) {
         this.state.drawerMode = mode || "create";
-        this.state.drawerRecordId = id || null;
+        this.state.drawerRecordId = id || false;
         this.state.drawerOpen = true;
     }
 

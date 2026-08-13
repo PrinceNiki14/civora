@@ -7,4 +7,11 @@
         <field name="padding">4</field>
         <field name="company_id" eval="False"/>
     </record>
+    <record id="seq_civora_seasonal_incident" model="ir.sequence">
+        <field name="name">Incident saisonnier</field>
+        <field name="code">civora.seasonal.incident</field>
+        <field name="prefix">INC-%(year)s-</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
 </odoo>

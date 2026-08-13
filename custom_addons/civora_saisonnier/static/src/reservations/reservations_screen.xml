@@ -1,64 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
 <t t-name="civora_saisonnier.ReservationsScreen">
-    <div class="civora-saisonnier-screen">
+    <div class="civora-sais-screen">
 
-        <!-- ============ HEADER ============ -->
+        <!-- ================= HEADER ================= -->
         <div class="civora-screen-header">
             <div class="civora-screen-title">
                 <h1>Locations saisonnières</h1>
                 <span class="civora-screen-subtitle" t-esc="dynamicSubtitle"/>
             </div>
             <div class="civora-screen-actions">
-                <button class="civora-btn civora-btn-outline">
+                <button class="civora-btn civora-btn-outline" t-on-click="syncAll">
                     <i class="fa fa-refresh"/> Sync Channels
                 </button>
                 <button class="civora-btn civora-btn-accent" t-on-click="() => this.openDrawer('create')">
-                    + Réservation
+                    <i class="fa fa-plus"/> Réservation
                 </button>
             </div>
         </div>
 
-        <!-- ============ KPIs ============ -->
+        <t t-if="state.error">
+            <div class="civora-sais-error"><i class="fa fa-exclamation-triangle"/> <t t-esc="state.error"/></div>
+        </t>
+
+        <!-- ================= KPIs ================= -->
         <div class="civora-kpi-grid">
-            <CivoraStatCard
-                label="'RÉSERVATIONS ACTIVES'"
-                value="'' + (state.kpis.active || 0)"
-                delta="'+6 cette sem.'"
-                icon="'fa fa-calendar-check-o'"
-                trend="'up'"/>
-            <CivoraStatCard
-                label="'REVENUS MOIS'"
-                value="fmtMoney(state.kpis.revenue_month) + ' FCFA'"
-                delta="'+24%'"
-                icon="'fa fa-usd'"
-                trend="'up'"/>
-            <CivoraStatCard
-                label="&quot;TAUX D'OCCUPATION&quot;"
-                value="(state.kpis.occupation_rate || 0) + '%'"
-                delta="'+5 pts'"
-                icon="'fa fa-line-chart'"
-                trend="'up'"/>
-            <CivoraStatCard
-                label="'NOTE MOYENNE'"
-                value="(state.kpis.avg_rating || 0) + ' / 5'"
-                hint="(state.kpis.review_count || 0) + ' avis'"
-                icon="'fa fa-star-o'"
-                trend="'up'"/>
+            <CivoraStatCard label="'RÉSERVATIONS ACTIVES'"
+                value="'' + (state.kpis.active_reservations or 0)"
+                hint="fmtDelta(state.kpis.new_this_week) + ' cette sem.'"
+                icon="'fa fa-calendar-check-o'" trend="'up'"/>
+            <CivoraStatCard label="'REVENUS MOIS'"
+                value="fmtMoney(state.kpis.month_revenue) + ' FCFA'"
+                hint="fmtDelta(state.kpis.revenue_trend, '%') + ' vs mois -1'"
+                icon="'fa fa-money'" trend="'up'"/>
+            <CivoraStatCard label="&quot;TAUX D'OCCUPATION&quot;"
+                value="(state.kpis.occupation_rate or 0) + '%'"
+                hint="fmtDelta(state.kpis.occupation_trend) + ' pts'"
+                icon="'fa fa-line-chart'" trend="'up'"/>
+            <CivoraStatCard label="'NOTE MOYENNE'"
+                value="fmtPct(state.kpis.avg_rating) + ' / 5'"
+                hint="(state.kpis.review_count or 0) + ' avis'"
+                icon="'fa fa-star-o'" trend="'up'"/>
         </div>
 
-        <!-- ============ IA INSIGHT ============ -->
+        <!-- ================= IA INSIGHT ================= -->
         <div class="civora-insight civora-sais-insight">
             <div class="civora-insight-row">
                 <div class="civora-insight-spark"><i class="fa fa-magic"/></div>
                 <div class="civora-insight-main">
                     <div class="civora-insight-tag">IA · INSIGHT</div>
-                    <div class="civora-insight-title">Pricing dynamique — opportunité weekend du 22-23</div>
+                    <div class="civora-insight-title">Pricing dynamique — opportunité weekend</div>
                     <p class="civora-insight-body">
-                        Forte demande détectée sur Assinie (+38% recherches). Augmenter le tarif nuit Villa Assinie de 180k → 220k FCFA pourrait générer +180k FCFA sur le weekend sans perte d'occupation.
+                        Forte demande détectée sur Assinie (+38% recherches). Augmenter le tarif nuit
+                        Villa Assinie de 180k → 220k FCFA pourrait générer +180k FCFA sur le weekend
+                        sans perte d'occupation.
                     </p>
                     <div class="civora-insight-action">
-                        <button class="civora-btn civora-btn-accent">
+                        <button class="civora-btn civora-btn-accent" t-on-click="() => this.setTab('tarification')">
                             <i class="fa fa-magic"/> Appliquer suggestion
                         </button>
                     </div>
@@ -66,222 +64,1036 @@
             </div>
         </div>
 
-        <!-- ============ SUPERHÔTE STATUS ============ -->
+        <!-- ================= SUPERHOTE ================= -->
         <div class="civora-sais-superhote">
-            <div class="civora-sais-superhote-header">
-                <div class="civora-sais-superhote-left">
-                    <div class="civora-sais-superhote-icon"><i class="fa fa-user-circle-o"/></div>
-                    <div>
-                        <div class="civora-sais-superhote-title">
-                            Statut Superhôte
-                            <span class="civora-sais-superhote-badge">Actif · Q4 2025</span>
-                        </div>
-                        <div class="civora-sais-superhote-sub">Prochaine évaluation : 1er janv. 2026 · Tous les critères sont remplis</div>
+            <div class="civora-sais-superhote-head">
+                <div class="civora-sais-superhote-ico"><i class="fa fa-trophy"/></div>
+                <div>
+                    <div class="civora-sais-superhote-title">
+                        Statut Superhôte <span class="civora-sais-pill-ok">Actif · Q4 2025</span>
+                    </div>
+                    <div class="civora-sais-superhote-sub">
+                        Prochaine évaluation : 1er janv. 2026 · Tous les critères sont remplis
                     </div>
                 </div>
-                <button class="civora-btn civora-btn-outline">
+                <button class="civora-btn civora-btn-outline civora-sais-superhote-btn"
+                        t-on-click="() => this.setTab('marche')">
                     <i class="fa fa-bar-chart"/> Détail scoring
                 </button>
             </div>
-            <div class="civora-sais-superhote-grid">
+            <div class="civora-sais-superhote-stats">
                 <div class="civora-sais-superhote-stat">
-                    <div class="civora-sais-superhote-stat-icon"><i class="fa fa-star"/></div>
-                    <div class="civora-sais-superhote-stat-label">NOTE GLOBALE</div>
+                    <div class="civora-sais-superhote-stat-label"><i class="fa fa-star-o"/> NOTE GLOBALE</div>
                     <div class="civora-sais-superhote-stat-value">4,86</div>
                     <div class="civora-sais-superhote-stat-hint"><i class="fa fa-check"/> 312 avis · top 5%</div>
                 </div>
                 <div class="civora-sais-superhote-stat">
-                    <div class="civora-sais-superhote-stat-icon"><i class="fa fa-comment-o"/></div>
-                    <div class="civora-sais-superhote-stat-label">TAUX DE RÉPONSE</div>
+                    <div class="civora-sais-superhote-stat-label"><i class="fa fa-comment-o"/> TAUX DE RÉPONSE</div>
                     <div class="civora-sais-superhote-stat-value">100%</div>
                     <div class="civora-sais-superhote-stat-hint"><i class="fa fa-check"/> sur 30j</div>
                 </div>
                 <div class="civora-sais-superhote-stat">
-                    <div class="civora-sais-superhote-stat-icon"><i class="fa fa-clock-o"/></div>
-                    <div class="civora-sais-superhote-stat-label">TEMPS DE RÉPONSE</div>
+                    <div class="civora-sais-superhote-stat-label"><i class="fa fa-bolt"/> TEMPS DE RÉPONSE</div>
                     <div class="civora-sais-superhote-stat-value">8 min</div>
                     <div class="civora-sais-superhote-stat-hint"><i class="fa fa-check"/> médiane</div>
                 </div>
                 <div class="civora-sais-superhote-stat">
-                    <div class="civora-sais-superhote-stat-icon"><i class="fa fa-thumbs-up"/></div>
-                    <div class="civora-sais-superhote-stat-label">TAUX D'ACCEPTATION</div>
+                    <div class="civora-sais-superhote-stat-label"><i class="fa fa-check-circle-o"/> TAUX D'ACCEPTATION</div>
                     <div class="civora-sais-superhote-stat-value">94%</div>
                     <div class="civora-sais-superhote-stat-hint"><i class="fa fa-check"/> demandes acceptées</div>
                 </div>
                 <div class="civora-sais-superhote-stat">
-                    <div class="civora-sais-superhote-stat-icon"><i class="fa fa-ban"/></div>
-                    <div class="civora-sais-superhote-stat-label">ANNULATIONS HÔTE</div>
+                    <div class="civora-sais-superhote-stat-label"><i class="fa fa-ban"/> ANNULATIONS HÔTE</div>
                     <div class="civora-sais-superhote-stat-value">0,8%</div>
                     <div class="civora-sais-superhote-stat-hint"><i class="fa fa-check"/> 12 mois glissants</div>
                 </div>
                 <div class="civora-sais-superhote-stat">
-                    <div class="civora-sais-superhote-stat-icon"><i class="fa fa-picture-o"/></div>
-                    <div class="civora-sais-superhote-stat-label">COMPLÉTION ANNONCES</div>
+                    <div class="civora-sais-superhote-stat-label"><i class="fa fa-camera"/> COMPLÉTION ANNONCES</div>
                     <div class="civora-sais-superhote-stat-value">96%</div>
                     <div class="civora-sais-superhote-stat-hint"><i class="fa fa-check"/> photos, tags, règles</div>
                 </div>
             </div>
         </div>
 
-        <!-- ============ TABS ============ -->
+        <!-- ================= TABS ================= -->
         <div class="civora-sais-tabs">
-            <t t-foreach="tabs" t-as="tab" t-key="tab.key">
-                <button t-attf-class="civora-sais-tab {{ state.activeTab === tab.key ? 'active' : '' }}"
-                        t-on-click="() => this.setTab(tab.key)">
-                    <t t-esc="tab.label"/>
-                    <span t-if="tab.count" class="civora-sais-tab-count"><t t-esc="tab.count"/></span>
+            <t t-foreach="tabs" t-as="tb" t-key="tb.key">
+                <button t-attf-class="civora-sais-tab {{ isTab(tb.key) ? 'is-active' : '' }}"
+                        t-on-click="() => this.setTab(tb.key)">
+                    <t t-esc="tb.label"/>
+                    <span t-if="tb.count" class="civora-sais-tabcount" t-esc="tb.count"/>
                 </button>
             </t>
         </div>
 
-        <!-- ============ TAB: RESERVATIONS ============ -->
-        <t t-if="state.activeTab === 'reservations'">
-            <div class="civora-filters-bar">
-                <div class="civora-pills">
-                    <button t-attf-class="civora-pill {{ state.filter === 'all' ? 'active' : '' }}" t-on-click="() => this.setFilter('all')">Toutes</button>
-                    <button t-attf-class="civora-pill {{ state.filter === 'confirmed' ? 'active' : '' }}" t-on-click="() => this.setFilter('confirmed')">Confirmées</button>
-                    <button t-attf-class="civora-pill {{ state.filter === 'in_stay' ? 'active' : '' }}" t-on-click="() => this.setFilter('in_stay')">En séjour</button>
-                    <button t-attf-class="civora-pill {{ state.filter === 'checkin_today' ? 'active' : '' }}" t-on-click="() => this.setFilter('checkin_today')">Check-in du jour</button>
-                    <button t-attf-class="civora-pill {{ state.filter === 'checkout_today' ? 'active' : '' }}" t-on-click="() => this.setFilter('checkout_today')">Check-out du jour</button>
-                    <button t-attf-class="civora-pill {{ state.filter === 'upcoming' ? 'active' : '' }}" t-on-click="() => this.setFilter('upcoming')">À venir</button>
-                </div>
-                <div class="civora-search-box">
-                    <i class="fa fa-search"/>
-                    <input type="text" placeholder="Rechercher voyageur, bien, référence…" t-on-input="onSearch" t-att-value="state.search"/>
+        <div class="civora-sais-panel">
+
+        <!-- ============ 1. CALENDRIER ============ -->
+        <t t-if="isTab('calendrier')">
+            <div class="civora-sais-planhead">
+                <div class="civora-sais-planmonth" t-esc="state.d.month_label"/>
+                <div class="civora-sais-planlegend">
+                    <span><i class="civora-sais-dot civora-sais-dot--confirmed"/> Confirmée</span>
+                    <span><i class="civora-sais-dot civora-sais-dot--option"/> Option</span>
+                    <span><i class="civora-sais-dot civora-sais-dot--blocked"/> Bloquée</span>
                 </div>
             </div>
-
-            <div class="civora-table-wrapper">
-                <table class="civora-table">
-                    <thead>
-                        <tr>
-                            <th>Référence</th>
-                            <th>Bien</th>
-                            <th>Voyageur</th>
-                            <th>Arrivée</th>
-                            <th>Départ</th>
-                            <th>Nuitées</th>
-                            <th>Tarif/nuit</th>
-                            <th>Total</th>
-                            <th>Source</th>
-                            <th>Statut</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <t t-foreach="filteredReservations" t-as="r" t-key="r.id">
-                            <tr class="civora-table-row" t-on-click="() => this.openDetail(r.id)">
-                                <td class="civora-ref"><t t-esc="r.name"/></td>
-                                <td><t t-esc="r.property_id ? r.property_id[1] : ''"/></td>
-                                <td><t t-esc="r.guest_id ? r.guest_id[1] : ''"/></td>
-                                <td><t t-esc="r.checkin_date"/></td>
-                                <td><t t-esc="r.checkout_date"/></td>
-                                <td class="text-center"><t t-esc="r.num_nights"/></td>
-                                <td class="text-right"><t t-esc="fmtMoney(r.tariff_night)"/></td>
-                                <td class="text-right font-semibold"><t t-esc="fmtMoney(r.total_amount)"/> F</td>
-                                <td><span class="civora-source-badge"><t t-esc="sourceLabel(r.source)"/></span></td>
-                                <td>
-                                    <span t-attf-class="civora-status-badge civora-status-{{ stateClass(r.state) }}">
-                                        <t t-esc="stateLabel(r.state)"/>
-                                    </span>
-                                </td>
-                            </tr>
+            <div class="civora-sais-plan">
+                <div class="civora-sais-planrow civora-sais-planrow--head">
+                    <div class="civora-sais-plancell">BIEN</div>
+                    <div class="civora-sais-plandays">
+                        <t t-foreach="days" t-as="d" t-key="d">
+                            <span t-attf-class="civora-sais-planday {{ isToday(d) ? 'is-today' : '' }}" t-esc="d"/>
                         </t>
-                        <t t-if="filteredReservations.length === 0">
-                            <tr><td colspan="10" class="civora-empty">Aucune réservation trouvée</td></tr>
-                        </t>
-                    </tbody>
-                </table>
-            </div>
-        </t>
-
-        <!-- ============ TAB: CHECK-IN AUJOURD'HUI ============ -->
-        <t t-if="state.activeTab === 'checkins'">
-            <div class="civora-sais-checkin-section">
-                <h3 class="civora-sais-section-title">Check-in aujourd'hui</h3>
-                <div class="civora-sais-checkin-grid">
-                    <t t-foreach="state.checkinsToday" t-as="ci" t-key="ci.id">
-                        <div class="civora-sais-checkin-card">
-                            <div class="civora-sais-checkin-guest"><t t-esc="ci.guest_name"/></div>
-                            <div class="civora-sais-checkin-property"><t t-esc="ci.property_name"/> · <t t-esc="ci.num_nights"/> nuits</div>
-                            <div class="civora-sais-checkin-code">
-                                Code: <strong><t t-esc="ci.access_code || '—'"/></strong>
-                            </div>
-                            <button class="civora-btn civora-btn-outline civora-sais-checkin-btn">
-                                <i class="fa fa-sign-in"/> Check-in
-                            </button>
+                    </div>
+                </div>
+                <t t-foreach="state.d.planning or []" t-as="p" t-key="p.id">
+                    <div class="civora-sais-planrow">
+                        <div class="civora-sais-plancell">
+                            <span class="civora-sais-planemoji" t-esc="p.emoji"/>
+                            <span class="civora-sais-planname" t-esc="p.name"/>
+                            <span class="civora-sais-planprice"><t t-esc="fmtMoney(p.price)"/> F/nuit</span>
                         </div>
-                    </t>
-                    <t t-if="!state.checkinsToday.length">
-                        <div class="civora-wf-empty">Aucun check-in prévu aujourd'hui</div>
-                    </t>
-                </div>
+                        <div class="civora-sais-plantrack">
+                            <t t-foreach="p.bars" t-as="b" t-key="b.id">
+                                <div t-attf-class="civora-sais-bar {{ barClass(b) }}"
+                                     t-att-style="barStyle(b)"
+                                     t-att-title="b.guest + ' · ' + b.nights + ' nuits · ' + fmtMoney(b.total) + ' F'"
+                                     t-on-click="() => this.openDetail(b.id)">
+                                    <span class="civora-sais-barguest" t-esc="b.guest"/>
+                                    <span class="civora-sais-barsrc" t-esc="b.source_label"/>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </t>
+                <t t-if="!(state.d.planning or []).length">
+                    <div class="civora-sais-empty">Aucun bien saisonnier configuré.</div>
+                </t>
             </div>
         </t>
 
-        <!-- ============ TAB: MÉNAGE & MAINTENANCE ============ -->
-        <t t-if="state.activeTab === 'cleaning'">
-            <div class="civora-sais-checkin-section">
-                <h3 class="civora-sais-section-title">Check-out &amp; ménages</h3>
-                <div class="civora-sais-cleaning-list">
-                    <t t-foreach="state.checkoutsAndCleaning" t-as="task" t-key="task.id">
-                        <div class="civora-sais-cleaning-card">
-                            <div class="civora-sais-cleaning-info">
-                                <div class="civora-sais-cleaning-property"><t t-esc="task.property_name"/></div>
-                                <div class="civora-sais-cleaning-meta">
-                                    <t t-esc="task.date"/> · <t t-esc="task.assigned_to || 'A assigner'"/>
+        <!-- ============ 2. RESERVATIONS ============ -->
+        <t t-if="isTab('reservations')">
+            <div class="civora-sais-toolbar">
+                <div class="civora-sais-searchbox">
+                    <i class="fa fa-search"/>
+                    <input type="text" placeholder="Rechercher voyageur, bien, référence…"
+                           t-att-value="state.search" t-on-input="onSearch"/>
+                </div>
+                <div class="civora-sais-pills">
+                    <button t-attf-class="civora-pill {{ isFilter('all') ? 'active' : '' }}"
+                            t-on-click="() => this.setFilter('all')">Toutes</button>
+                    <button t-attf-class="civora-pill {{ isFilter('confirmed') ? 'active' : '' }}"
+                            t-on-click="() => this.setFilter('confirmed')">Confirmées</button>
+                    <button t-attf-class="civora-pill {{ isFilter('in_stay') ? 'active' : '' }}"
+                            t-on-click="() => this.setFilter('in_stay')">En séjour</button>
+                    <button t-attf-class="civora-pill {{ isFilter('checkin_today') ? 'active' : '' }}"
+                            t-on-click="() => this.setFilter('checkin_today')">Check-in du jour</button>
+                    <button t-attf-class="civora-pill {{ isFilter('checkout_today') ? 'active' : '' }}"
+                            t-on-click="() => this.setFilter('checkout_today')">Check-out du jour</button>
+                    <button t-attf-class="civora-pill {{ isFilter('upcoming') ? 'active' : '' }}"
+                            t-on-click="() => this.setFilter('upcoming')">À venir</button>
+                </div>
+            </div>
+            <table class="civora-sais-table">
+                <thead>
+                    <tr>
+                        <th>Référence</th><th>Bien</th><th>Voyageur</th><th>Arrivée</th><th>Départ</th>
+                        <th>Nuitées</th><th>Tarif/nuit</th><th>Total</th><th>Source</th><th>Statut</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-foreach="filteredReservations" t-as="r" t-key="r.id">
+                        <tr t-on-click="() => this.openDetail(r.id)" class="civora-sais-clickrow">
+                            <td class="civora-sais-ref" t-esc="r.ref"/>
+                            <td t-esc="r.property"/>
+                            <td t-esc="r.guest"/>
+                            <td t-esc="r.checkin"/>
+                            <td t-esc="r.checkout"/>
+                            <td t-esc="r.nights"/>
+                            <td t-esc="fmtMoney(r.tariff)"/>
+                            <td><t t-esc="fmtMoney(r.total)"/> F</td>
+                            <td t-esc="r.source_label"/>
+                            <td><span t-attf-class="civora-badge civora-badge--{{ stateClass(r.state) }}"
+                                      t-esc="r.state_label"/></td>
+                        </tr>
+                    </t>
+                    <t t-if="!filteredReservations.length">
+                        <tr><td colspan="10" class="civora-sais-empty">Aucune réservation trouvée.</td></tr>
+                    </t>
+                </tbody>
+            </table>
+        </t>
+
+        <!-- ============ 3. INBOX ============ -->
+        <t t-if="isTab('inbox')">
+            <div class="civora-sais-inbox">
+                <div class="civora-sais-inboxlist">
+                    <t t-foreach="threads" t-as="th" t-key="th.id">
+                        <button t-attf-class="civora-sais-thread {{ isThread(th.id) ? 'is-active' : '' }}"
+                                t-on-click="() => this.selectThread(th.id)">
+                            <div class="civora-sais-threadtop">
+                                <span class="civora-sais-threadname" t-esc="th.guest"/>
+                                <span class="civora-sais-threadago" t-esc="th.ago"/>
+                            </div>
+                            <div class="civora-sais-threadmeta">
+                                <span class="civora-sais-chan" t-esc="th.channel_label"/>
+                                <span t-esc="th.property"/>
+                            </div>
+                            <div class="civora-sais-threadmsg" t-esc="th.last_message"/>
+                            <span t-if="th.unread" class="civora-sais-unread">
+                                <t t-esc="th.unread"/> nouveau<t t-if="th.unread > 1">x</t>
+                            </span>
+                        </button>
+                    </t>
+                    <t t-if="!threads.length">
+                        <div class="civora-sais-empty">Aucune conversation.</div>
+                    </t>
+                </div>
+
+                <div class="civora-sais-conv" t-if="activeThread">
+                    <div class="civora-sais-convhead">
+                        <div>
+                            <div class="civora-sais-convname" t-esc="activeThread.guest"/>
+                            <div class="civora-sais-convsub">
+                                <t t-esc="activeThread.property"/> · via <t t-esc="activeThread.channel_label"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="civora-sais-convbody">
+                        <div class="civora-sais-convday">AUJOURD'HUI</div>
+                        <t t-foreach="activeThread.messages" t-as="m" t-key="m.id">
+                            <div t-attf-class="civora-sais-bubble civora-sais-bubble--{{ m.direction }}">
+                                <div class="civora-sais-bubbletxt" t-esc="m.body"/>
+                                <div class="civora-sais-bubblemeta">
+                                    <t t-esc="m.time"/><t t-if="m.is_ai"> · Auto-IA</t>
                                 </div>
                             </div>
-                            <span t-attf-class="civora-status-badge {{ task.state === 'planifie' ? 'civora-status-info' : 'civora-status-warning' }}">
-                                <t t-esc="cleaningStateLabel(task.state)"/>
+                        </t>
+                    </div>
+                    <div class="civora-sais-convtpl">
+                        <t t-foreach="state.d.reply_templates or []" t-as="tpl" t-key="tpl.id">
+                            <button class="civora-sais-tplbtn" t-on-click="() => this.useTemplate(tpl)"
+                                    t-esc="tpl.name"/>
+                        </t>
+                    </div>
+                    <div class="civora-sais-convsend">
+                        <textarea rows="2" placeholder="Écrire un message…"
+                                  t-att-value="state.reply" t-on-input="onReply"/>
+                        <button class="civora-btn civora-btn-accent" t-on-click="sendReply">
+                            <i class="fa fa-paper-plane-o"/> Envoyer
+                        </button>
+                    </div>
+                </div>
+
+                <div class="civora-sais-convside" t-if="activeThread">
+                    <div class="civora-sais-sidesec">RÉSERVATION</div>
+                    <div class="civora-sais-sideval" t-esc="activeThread.reservation.dates or '—'"/>
+                    <div class="civora-sais-sidehint">
+                        <t t-esc="activeThread.reservation.nights or 0"/> nuits ·
+                        <t t-esc="fmtMoney(activeThread.reservation.total)"/> F
+                    </div>
+                    <div class="civora-sais-sidesec">VOYAGEUR</div>
+                    <div class="civora-sais-sidehint" t-esc="activeThread.guest_email"/>
+                    <div class="civora-sais-sidehint" t-esc="activeThread.guest_phone"/>
+                    <div class="civora-sais-sidehint">
+                        <t t-esc="activeThread.guest_stays"/> séjours ·
+                        <t t-esc="fmtPct(activeThread.guest_rating)"/>★
+                    </div>
+                    <div class="civora-sais-sidesec">ACTIONS RAPIDES</div>
+                    <button class="civora-btn civora-btn-outline civora-sais-sidebtn"
+                            t-on-click="() => this.useTemplate({body: 'Votre code d\'accès est disponible dans votre espace voyageur.'})">
+                        <i class="fa fa-key"/> Envoyer code accès
+                    </button>
+                    <button class="civora-btn civora-btn-outline civora-sais-sidebtn"
+                            t-on-click="() => this.useTemplate({body: 'Voici votre contrat de location saisonnière en pièce jointe.'})">
+                        <i class="fa fa-file-text-o"/> Envoyer contrat
+                    </button>
+                    <button class="civora-btn civora-btn-outline civora-sais-sidebtn"
+                            t-on-click="() => this.openDetail(activeThread.id)">
+                        <i class="fa fa-file-o"/> Facture
+                    </button>
+                </div>
+            </div>
+        </t>
+
+        <!-- ============ 4. VOYAGEURS ============ -->
+        <t t-if="isTab('voyageurs')">
+            <div class="civora-sais-toolbar">
+                <h3 class="civora-sais-secttitle">Fichier voyageurs</h3>
+                <div>
+                    <button class="civora-btn civora-btn-outline" t-on-click="exportGuests">
+                        <i class="fa fa-download"/> Exporter CRM
+                    </button>
+                </div>
+            </div>
+            <div class="civora-sais-minikpis">
+                <div class="civora-sais-minikpi">
+                    <div class="civora-sais-minilabel">VOYAGEURS UNIQUES</div>
+                    <div class="civora-sais-minivalue" t-esc="state.d.guest_kpis.unique"/>
+                </div>
+                <div class="civora-sais-minikpi">
+                    <div class="civora-sais-minilabel">RÉCURRENTS</div>
+                    <div class="civora-sais-minivalue" t-esc="state.d.guest_kpis.recurring"/>
+                    <div class="civora-sais-minihint"><t t-esc="state.d.guest_kpis.recurring_pct"/>%</div>
+                </div>
+                <div class="civora-sais-minikpi">
+                    <div class="civora-sais-minilabel">NOTE MOYENNE</div>
+                    <div class="civora-sais-minivalue" t-esc="fmtPct(state.d.guest_kpis.rating)"/>
+                </div>
+                <div class="civora-sais-minikpi">
+                    <div class="civora-sais-minilabel">LTV MOYEN</div>
+                    <div class="civora-sais-minivalue"><t t-esc="fmtShort(state.d.guest_kpis.ltv)"/> F</div>
+                </div>
+            </div>
+            <table class="civora-sais-table">
+                <thead>
+                    <tr><th>Voyageur</th><th>Origine</th><th>Séjours</th><th>Nuits</th>
+                        <th>Total dépensé</th><th>Dernier séjour</th><th>Note</th><th>Segment</th></tr>
+                </thead>
+                <tbody>
+                    <t t-foreach="state.d.guests or []" t-as="g" t-key="g.id">
+                        <tr>
+                            <td class="civora-sais-strong" t-esc="g.name"/>
+                            <td><t t-esc="g.flag"/> <t t-esc="g.country"/></td>
+                            <td t-esc="g.stays"/>
+                            <td t-esc="g.nights"/>
+                            <td><t t-esc="fmtMoney(g.total)"/> F</td>
+                            <td t-esc="g.last_stay"/>
+                            <td><i class="fa fa-star civora-sais-star"/> <t t-esc="fmtPct(g.rating)"/></td>
+                            <td><span t-attf-class="civora-sais-tag civora-sais-tag--{{ g.tag }}"
+                                      t-esc="g.tag_label"/></td>
+                        </tr>
+                    </t>
+                    <t t-if="!(state.d.guests or []).length">
+                        <tr><td colspan="8" class="civora-sais-empty">Aucun voyageur enregistré.</td></tr>
+                    </t>
+                </tbody>
+            </table>
+        </t>
+
+        <!-- ============ 5. MES BIENS ============ -->
+        <t t-if="isTab('biens')">
+            <div class="civora-sais-propgrid">
+                <t t-foreach="state.d.planning or []" t-as="p" t-key="p.id">
+                    <div class="civora-sais-propcard">
+                        <div class="civora-sais-prophead">
+                            <span class="civora-sais-propemoji" t-esc="p.emoji"/>
+                            <span class="civora-sais-pill-ok">Live</span>
+                        </div>
+                        <div class="civora-sais-propname" t-esc="p.name"/>
+                        <div class="civora-sais-propcity" t-esc="p.city"/>
+                        <div class="civora-sais-propprice">
+                            <t t-esc="fmtMoney(p.price)"/> F/nuit
+                            <span class="civora-sais-propbase">Tarif de base</span>
+                        </div>
+                        <div class="civora-sais-propchans">
+                            <t t-foreach="state.d.channels or []" t-as="c" t-key="c.id">
+                                <span t-if="c.connected" class="civora-sais-chanchip" t-esc="c.name"/>
+                            </t>
+                        </div>
+                        <div class="civora-sais-propactions">
+                            <button class="civora-btn civora-btn-outline"
+                                    t-on-click="() => this.setTab('booking')">Annonce</button>
+                            <button class="civora-btn civora-btn-outline"
+                                    t-on-click="() => this.setTab('regles')">Réglages</button>
+                        </div>
+                    </div>
+                </t>
+                <div class="civora-sais-propcard civora-sais-propcard--add"
+                     t-on-click="() => this.openDrawer('create')">
+                    <i class="fa fa-plus-circle"/>
+                    <div class="civora-sais-propname">Ajouter un bien saisonnier</div>
+                    <div class="civora-sais-propcity">Création guidée · publication multi-canaux</div>
+                </div>
+            </div>
+        </t>
+
+        <!-- ============ 6. MENAGE & MAINTENANCE ============ -->
+        <t t-if="isTab('menage')">
+            <div class="civora-sais-toolbar">
+                <div>
+                    <h3 class="civora-sais-secttitle">Planning ménage &amp; maintenance</h3>
+                    <div class="civora-sais-sectsub">Tâches générées automatiquement par les check-out</div>
+                </div>
+                <button class="civora-btn civora-btn-accent" t-on-click="() => this.openDrawer('create')">
+                    <i class="fa fa-plus"/> Nouvelle tâche
+                </button>
+            </div>
+            <div class="civora-sais-cols">
+                <div class="civora-sais-col">
+                    <t t-foreach="state.d.cleaning or []" t-as="t" t-key="t.id">
+                        <div class="civora-sais-taskrow">
+                            <div>
+                                <div class="civora-sais-strong">
+                                    <t t-esc="t.property"/> · <t t-esc="t.type"/>
+                                </div>
+                                <div class="civora-sais-sectsub">
+                                    <t t-esc="t.date_label"/> · <t t-esc="t.slot"/> · <t t-esc="t.assignee"/>
+                                </div>
+                            </div>
+                            <div class="civora-sais-taskmeta">
+                                <span t-attf-class="civora-sais-prio civora-sais-prio--{{ t.priority }}"
+                                      t-esc="t.priority"/>
+                                <span t-attf-class="civora-badge civora-badge--{{ t.state === 'termine' ? 'success' : (t.state === 'a_planifier' ? 'warning' : 'info') }}"
+                                      t-esc="t.state_label"/>
+                            </div>
+                        </div>
+                    </t>
+                    <t t-if="!(state.d.cleaning or []).length">
+                        <div class="civora-sais-empty">Aucun ménage planifié.</div>
+                    </t>
+                </div>
+                <div class="civora-sais-colside">
+                    <h4 class="civora-sais-sidetitle">Équipe terrain</h4>
+                    <t t-foreach="state.d.staff or []" t-as="s" t-key="s.id">
+                        <div class="civora-sais-staff">
+                            <div>
+                                <div class="civora-sais-strong" t-esc="s.name"/>
+                                <div class="civora-sais-sectsub">
+                                    <t t-esc="s.speciality"/> · <t t-esc="s.tasks"/> tâches
+                                </div>
+                            </div>
+                            <span class="civora-sais-staffrating">
+                                <i class="fa fa-star civora-sais-star"/> <t t-esc="fmtPct(s.rating)"/>
                             </span>
                         </div>
                     </t>
-                    <t t-if="!state.checkoutsAndCleaning.length">
-                        <div class="civora-wf-empty">Aucun ménage planifié</div>
-                    </t>
-                </div>
-            </div>
-        </t>
 
-        <!-- ============ TAB: AVIS RECENTS ============ -->
-        <t t-if="state.activeTab === 'reviews'">
-            <div class="civora-sais-checkin-section">
-                <h3 class="civora-sais-section-title">Avis récents</h3>
-                <div class="civora-sais-reviews-list">
-                    <t t-foreach="state.recentReviews" t-as="rev" t-key="rev.id">
-                        <div class="civora-sais-review-card">
-                            <div class="civora-sais-review-header">
-                                <div class="civora-sais-review-avatar">
-                                    <t t-esc="(rev.guest_name || '?')[0]"/>
-                                </div>
-                                <div>
-                                    <div class="civora-sais-review-guest"><t t-esc="rev.guest_name"/></div>
-                                    <div class="civora-sais-review-property"><t t-esc="rev.property_name"/></div>
-                                </div>
-                            </div>
-                            <div class="civora-sais-review-stars">
-                                <t t-foreach="[1,2,3,4,5]" t-as="s" t-key="s">
-                                    <i t-attf-class="fa {{ s &lt;= ratingStars(rev.rating) ? 'fa-star' : 'fa-star-o' }}"/>
-                                </t>
-                            </div>
-                            <p class="civora-sais-review-comment"><t t-esc="rev.comment"/></p>
-                            <button class="civora-btn civora-btn-outline civora-sais-review-reply">Repondre</button>
+                    <h4 class="civora-sais-sidetitle">Inventaire &amp; consommables</h4>
+                    <t t-foreach="state.d.inventory or []" t-as="i" t-key="i.id">
+                        <div class="civora-sais-inv">
+                            <span t-esc="i.name"/>
+                            <span t-attf-class="civora-sais-invqty {{ i.low ? 'is-low' : '' }}">
+                                <t t-esc="i.quantity"/><i t-if="i.low" class="fa fa-exclamation-triangle"/>
+                            </span>
                         </div>
                     </t>
-                    <t t-if="!state.recentReviews.length">
-                        <div class="civora-wf-empty">Aucun avis recent</div>
+                </div>
+            </div>
+        </t>
+
+        <!-- ============ 7. CHANNEL MANAGER ============ -->
+        <t t-if="isTab('channels')">
+            <div class="civora-sais-toolbar">
+                <div>
+                    <h3 class="civora-sais-secttitle">Channels connectés</h3>
+                    <div class="civora-sais-sectsub">Synchronisation des disponibilités, tarifs et réservations</div>
+                </div>
+                <button class="civora-btn civora-btn-accent" t-on-click="syncAll">
+                    <i class="fa fa-refresh"/> Tout synchroniser
+                </button>
+            </div>
+            <div class="civora-sais-cols">
+                <div class="civora-sais-col">
+                    <t t-foreach="state.d.channels or []" t-as="c" t-key="c.id">
+                        <div class="civora-sais-chanrow">
+                            <span class="civora-sais-chanemoji" t-esc="c.emoji"/>
+                            <div class="civora-sais-chaninfo">
+                                <div class="civora-sais-strong">
+                                    <t t-esc="c.name"/>
+                                    <span t-if="c.connected" class="civora-sais-pill-ok">Connecté</span>
+                                </div>
+                                <div class="civora-sais-sectsub">
+                                    <t t-esc="c.listings"/> annonces · sync <t t-esc="c.sync"/> ·
+                                    commission <t t-esc="fmtPct(c.commission)"/>%
+                                </div>
+                            </div>
+                            <button class="civora-btn civora-btn-outline" t-on-click="() => this.toggleChannel(c)">
+                                <t t-if="c.connected">Déconnecter</t>
+                                <t t-else="">Connecter</t>
+                            </button>
+                        </div>
+                    </t>
+                </div>
+                <div class="civora-sais-colside">
+                    <h4 class="civora-sais-sidetitle">État de synchronisation</h4>
+                    <t t-foreach="state.d.sync_states or []" t-as="s" t-key="s.id">
+                        <div class="civora-sais-syncrow">
+                            <div class="civora-sais-syncline">
+                                <span t-esc="s.name"/><span><t t-esc="s.percent"/>%</span>
+                            </div>
+                            <div class="civora-sais-bartrack">
+                                <div class="civora-sais-barfill" t-attf-style="width:{{ s.percent }}%"/>
+                            </div>
+                        </div>
+                    </t>
+                    <t t-foreach="state.d.conflicts or []" t-as="c" t-key="c.id">
+                        <div class="civora-sais-conflict">
+                            <div class="civora-sais-strong"><i class="fa fa-exclamation-triangle"/> <t t-esc="c.name"/></div>
+                            <p t-esc="c.description"/>
+                            <button class="civora-btn civora-btn-accent" t-on-click="() => this.resolveConflict(c)">
+                                Résoudre
+                            </button>
+                        </div>
                     </t>
                 </div>
             </div>
         </t>
 
-        <!-- ============ DRAWER ============ -->
+        <!-- ============ 8. TARIFICATION ============ -->
+        <t t-if="isTab('tarification')">
+            <div class="civora-sais-toolbar">
+                <div>
+                    <h3 class="civora-sais-secttitle">Pricing dynamique par bien</h3>
+                    <div class="civora-sais-sectsub">
+                        Tarifs ajustés automatiquement par l'IA selon demande, saison et événements
+                    </div>
+                </div>
+                <span class="civora-sais-pill-ok">IA active</span>
+            </div>
+            <t t-foreach="state.d.pricing or []" t-as="p" t-key="p.id">
+                <div class="civora-sais-pricecard">
+                    <div class="civora-sais-pricehead">
+                        <span class="civora-sais-propemoji" t-esc="p.emoji"/>
+                        <div>
+                            <div class="civora-sais-strong" t-esc="p.name"/>
+                            <div class="civora-sais-sectsub">Base : <t t-esc="fmtMoney(p.base)"/> F/nuit</div>
+                        </div>
+                        <span class="civora-sais-pill-ok">IA active</span>
+                    </div>
+                    <div class="civora-sais-pricegrid">
+                        <div class="civora-sais-pricecell">
+                            <div class="civora-sais-minilabel">Semaine</div>
+                            <div class="civora-sais-minivalue"><t t-esc="fmtMoney(p.week)"/> F</div>
+                        </div>
+                        <div class="civora-sais-pricecell">
+                            <div class="civora-sais-minilabel">Weekend +22%</div>
+                            <div class="civora-sais-minivalue"><t t-esc="fmtMoney(p.weekend)"/> F</div>
+                        </div>
+                        <div class="civora-sais-pricecell">
+                            <div class="civora-sais-minilabel">Haute saison +40%</div>
+                            <div class="civora-sais-minivalue"><t t-esc="fmtMoney(p.high)"/> F</div>
+                        </div>
+                        <div class="civora-sais-pricecell">
+                            <div class="civora-sais-minilabel">Événement +65%</div>
+                            <div class="civora-sais-minivalue"><t t-esc="fmtMoney(p.event)"/> F</div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </t>
+
+        <!-- ============ 9. MARCHE & RATE SHOPPER ============ -->
+        <t t-if="isTab('marche')">
+            <div class="civora-sais-toolbar">
+                <div>
+                    <h3 class="civora-sais-secttitle">Rate shopper — comp set micro-zone</h3>
+                    <div class="civora-sais-sectsub">Concurrents dans un rayon de 3 km, tarif nuit demain</div>
+                </div>
+            </div>
+            <t t-foreach="state.d.competitors or []" t-as="c" t-key="c.id">
+                <div t-attf-class="civora-sais-comprow {{ c.is_self ? 'is-self' : '' }}">
+                    <div>
+                        <div class="civora-sais-strong">
+                            <t t-esc="c.name"/>
+                            <span t-if="c.is_self" class="civora-sais-pill-ok">Vous</span>
+                        </div>
+                        <div class="civora-sais-sectsub">
+                            <t t-if="!c.is_self"><t t-esc="fmtPct(c.distance)"/> km · </t>
+                            <i class="fa fa-star civora-sais-star"/> <t t-esc="fmtPct(c.rating)"/> ·
+                            Occ <t t-esc="c.occupancy"/>%
+                        </div>
+                    </div>
+                    <div class="civora-sais-compprice">
+                        <div class="civora-sais-minivalue"><t t-esc="fmtMoney(c.price)"/> F</div>
+                        <div t-attf-class="civora-sais-trend {{ c.trend >= 0 ? 'is-up' : 'is-down' }}">
+                            <t t-if="c.trend >= 0">+</t><t t-esc="c.trend"/>% 7j
+                        </div>
+                    </div>
+                </div>
+            </t>
+
+            <div class="civora-sais-cols civora-sais-cols--even">
+                <div class="civora-sais-col">
+                    <h4 class="civora-sais-sidetitle">Pace de demande</h4>
+                    <div class="civora-sais-sectsub">Rythme de réservation vs stock</div>
+                    <t t-foreach="state.d.pace or []" t-as="p" t-key="p.id">
+                        <div class="civora-sais-syncrow">
+                            <div class="civora-sais-syncline">
+                                <span t-esc="p.name"/><span><t t-esc="p.percent"/>%</span>
+                            </div>
+                            <div class="civora-sais-bartrack">
+                                <div class="civora-sais-barfill" t-attf-style="width:{{ p.percent }}%"/>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+                <div class="civora-sais-col">
+                    <h4 class="civora-sais-sidetitle">Événements &amp; catalyseurs</h4>
+                    <div class="civora-sais-sectsub">Impact estimé sur la demande locale</div>
+                    <t t-foreach="state.d.events or []" t-as="e" t-key="e.id">
+                        <div class="civora-sais-eventrow">
+                            <div>
+                                <div class="civora-sais-strong">
+                                    <t t-esc="e.name"/>
+                                    <span t-if="e.hot" class="civora-sais-hot">Hot</span>
+                                </div>
+                                <div class="civora-sais-sectsub" t-esc="e.period"/>
+                            </div>
+                            <span class="civora-sais-impact" t-esc="e.impact"/>
+                        </div>
+                    </t>
+                </div>
+            </div>
+        </t>
+
+        <!-- ============ 10. BOOKING ENGINE ============ -->
+        <t t-if="isTab('booking')">
+            <div class="civora-sais-cols">
+                <div class="civora-sais-col">
+                    <h4 class="civora-sais-sidetitle">Funnel de conversion — 30 jours</h4>
+                    <div class="civora-sais-sectsub">Site direct <t t-esc="state.d.booking_config.domain"/></div>
+                    <t t-foreach="state.d.funnel or []" t-as="f" t-key="f.id">
+                        <div class="civora-sais-syncrow">
+                            <div class="civora-sais-syncline">
+                                <span t-esc="f.name"/>
+                                <span><strong t-esc="fmtMoney(f.visitors)"/> · <t t-esc="fmtPct(f.pct)"/>%</span>
+                            </div>
+                            <div class="civora-sais-bartrack">
+                                <div class="civora-sais-barfill civora-sais-barfill--funnel"
+                                     t-attf-style="width:{{ f.pct }}%">
+                                    <span t-if="f.drop" class="civora-sais-drop">
+                                        <t t-esc="fmtPct(f.drop)"/>% <i class="fa fa-long-arrow-down"/>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+
+                    <h4 class="civora-sais-sidetitle">Widgets &amp; landings actifs</h4>
+                    <div class="civora-sais-sectsub">Performance des points d'entrée directs</div>
+                    <table class="civora-sais-table">
+                        <thead>
+                            <tr><th>Point d'entrée</th><th>Type</th><th>Sessions</th><th>Conversion</th></tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="state.d.booking_entries or []" t-as="b" t-key="b.id">
+                                <tr>
+                                    <td t-esc="b.name"/>
+                                    <td><span class="civora-sais-chanchip" t-esc="b.type"/></td>
+                                    <td t-esc="fmtMoney(b.sessions)"/>
+                                    <td class="civora-sais-conv"><t t-esc="fmtPct(b.conversion)"/>%</td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="civora-sais-colside">
+                    <h4 class="civora-sais-sidetitle"><i class="fa fa-globe"/> Moteur de réservation</h4>
+                    <div class="civora-sais-sectsub">
+                        Widget embeddable sur votre site, agences partenaires ou landings pubs — 0% de commission.
+                    </div>
+                    <pre class="civora-sais-snippet" t-esc="state.d.booking_config.snippet"/>
+                    <button class="civora-btn civora-btn-accent civora-sais-sidebtn" t-on-click="copySnippet">
+                        <i class="fa fa-clipboard"/> Copier
+                    </button>
+                    <div class="civora-sais-deflist">
+                        <div><span>Domaine réservation</span><strong t-esc="state.d.booking_config.domain"/></div>
+                        <div><span>Paiement</span><strong t-esc="state.d.booking_config.payment"/></div>
+                        <div><span>Multilingue</span><strong t-esc="state.d.booking_config.languages"/></div>
+                    </div>
+                </div>
+            </div>
+        </t>
+
+        <!-- ============ 11. GUEST JOURNEY ============ -->
+        <t t-if="isTab('journey')">
+            <div class="civora-sais-toolbar">
+                <div>
+                    <h3 class="civora-sais-secttitle">
+                        Guest Journey — <t t-esc="(state.d.journey or []).length"/> étapes automatisées
+                    </h3>
+                    <div class="civora-sais-sectsub">Cadence pré, per et post-séjour · multi-canaux</div>
+                </div>
+            </div>
+            <t t-foreach="state.d.journey or []" t-as="s" t-key="s.id">
+                <div class="civora-sais-journey">
+                    <div class="civora-sais-journeyhead">
+                        <span class="civora-sais-journeynum" t-esc="s_index + 1"/>
+                        <span class="civora-sais-strong" t-esc="s.name"/>
+                        <span class="civora-sais-journeyoffset" t-esc="s.offset"/>
+                    </div>
+                    <div class="civora-sais-journeyactions">
+                        <t t-foreach="s.actions" t-as="a" t-key="a.id">
+                            <div t-attf-class="civora-sais-jaction civora-sais-jaction--{{ a.channel }}">
+                                <span class="civora-sais-jchan">
+                                    <i t-attf-class="fa {{ channelIcon(a.channel) }}"/> <t t-esc="a.channel_label"/>
+                                </span>
+                                <span t-if="a.is_ai" class="civora-sais-jai">IA</span>
+                                <span class="civora-sais-jtext" t-esc="a.name"/>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </t>
+        </t>
+
+        <!-- ============ 12. UPSELLS ============ -->
+        <t t-if="isTab('upsells')">
+            <div class="civora-sais-minikpis">
+                <div class="civora-sais-minikpi">
+                    <div class="civora-sais-minilabel">REVENUS UPSELL (MOIS)</div>
+                    <div class="civora-sais-minivalue"><t t-esc="fmtShort(state.d.upsell_kpis.revenue)"/> F</div>
+                </div>
+                <div class="civora-sais-minikpi">
+                    <div class="civora-sais-minilabel">ATTACH RATE</div>
+                    <div class="civora-sais-minivalue"><t t-esc="state.d.upsell_kpis.attach_rate"/>%</div>
+                    <div class="civora-sais-minihint">résas avec upsell</div>
+                </div>
+                <div class="civora-sais-minikpi">
+                    <div class="civora-sais-minilabel">PANIER UPSELL MOYEN</div>
+                    <div class="civora-sais-minivalue"><t t-esc="fmtShort(state.d.upsell_kpis.basket)"/> F</div>
+                </div>
+                <div class="civora-sais-minikpi">
+                    <div class="civora-sais-minilabel">MARGE NETTE UPSELLS</div>
+                    <div class="civora-sais-minivalue"><t t-esc="state.d.upsell_kpis.margin"/>%</div>
+                </div>
+            </div>
+            <div class="civora-sais-toolbar">
+                <div>
+                    <h3 class="civora-sais-secttitle">Catalogue de services additionnels</h3>
+                    <div class="civora-sais-sectsub">Proposés au voyageur avant, pendant et après le séjour</div>
+                </div>
+                <button class="civora-btn civora-btn-accent" t-on-click="() => this.setTab('journey')">
+                    <i class="fa fa-magic"/> Auto-suggérer
+                </button>
+            </div>
+            <t t-foreach="state.d.upsells or []" t-as="u" t-key="u.id">
+                <div class="civora-sais-upsell">
+                    <button t-attf-class="civora-sais-toggle {{ u.active ? 'is-on' : '' }}"
+                            t-on-click="() => this.toggleUpsell(u)">
+                        <t t-if="u.active">Actif</t><t t-else="">Off</t>
+                    </button>
+                    <div class="civora-sais-upsellmain">
+                        <div class="civora-sais-strong" t-esc="u.name"/>
+                        <div class="civora-sais-sectsub">
+                            <t t-if="u.price"><t t-esc="fmtMoney(u.price)"/> F<t t-esc="u.unit"/></t>
+                            <t t-else="">Gratuit</t>
+                            · marge <t t-if="u.margin"><t t-esc="u.margin"/>%</t><t t-else="">—</t>
+                        </div>
+                    </div>
+                    <div class="civora-sais-upsellstats">
+                        <span><t t-esc="u.sales"/> ventes</span>
+                        <strong><t t-esc="fmtMoney(u.revenue)"/> F</strong>
+                    </div>
+                </div>
+            </t>
+        </t>
+
+        <!-- ============ 13. INCIDENTS & CAUTION ============ -->
+        <t t-if="isTab('incidents')">
+            <div class="civora-sais-minikpis">
+                <div class="civora-sais-minikpi">
+                    <div class="civora-sais-minilabel">INCIDENTS 30J</div>
+                    <div class="civora-sais-minivalue" t-esc="(state.d.incidents or []).length"/>
+                </div>
+                <div class="civora-sais-minikpi">
+                    <div class="civora-sais-minilabel">CAUTIONS EN COURS</div>
+                    <div class="civora-sais-minivalue"><t t-esc="fmtShort(state.d.deposit_total)"/> F</div>
+                </div>
+                <div class="civora-sais-minikpi">
+                    <div class="civora-sais-minilabel">COUVERTURE ASSURANCE</div>
+                    <div class="civora-sais-minivalue"><t t-esc="fmtShort(state.d.insurance.coverage)"/> F</div>
+                </div>
+                <div class="civora-sais-minikpi">
+                    <div class="civora-sais-minilabel">FRANCHISE</div>
+                    <div class="civora-sais-minivalue"><t t-esc="fmtShort(state.d.insurance.franchise)"/> F</div>
+                </div>
+            </div>
+            <div class="civora-sais-toolbar">
+                <div>
+                    <h3 class="civora-sais-secttitle">Journal des incidents</h3>
+                    <div class="civora-sais-sectsub">Casse, nuisances, dépassement, dégâts — trace complète</div>
+                </div>
+                <button class="civora-btn civora-btn-outline" t-on-click="exportIncidents">
+                    <i class="fa fa-download"/> Export
+                </button>
+            </div>
+            <table class="civora-sais-table">
+                <thead>
+                    <tr><th>Réf</th><th>Bien / voyageur</th><th>Type</th><th>Description</th>
+                        <th>Montant</th><th>Sévérité</th><th>Statut</th></tr>
+                </thead>
+                <tbody>
+                    <t t-foreach="state.d.incidents or []" t-as="i" t-key="i.id">
+                        <tr>
+                            <td class="civora-sais-ref" t-esc="i.ref"/>
+                            <td>
+                                <div class="civora-sais-strong" t-esc="i.property"/>
+                                <div class="civora-sais-sectsub"><t t-esc="i.guest"/> · <t t-esc="i.date"/></div>
+                            </td>
+                            <td t-esc="i.type"/>
+                            <td t-esc="i.description"/>
+                            <td><t t-if="i.amount"><t t-esc="fmtMoney(i.amount)"/> F</t><t t-else="">—</t></td>
+                            <td><span t-attf-class="civora-sais-sev civora-sais-sev--{{ i.severity }}"
+                                      t-esc="i.severity_label"/></td>
+                            <td><span class="civora-badge civora-badge--info" t-esc="i.state_label"/></td>
+                        </tr>
+                    </t>
+                    <t t-if="!(state.d.incidents or []).length">
+                        <tr><td colspan="7" class="civora-sais-empty">Aucun incident enregistré.</td></tr>
+                    </t>
+                </tbody>
+            </table>
+
+            <div class="civora-sais-cols civora-sais-cols--even">
+                <div class="civora-sais-col">
+                    <h4 class="civora-sais-sidetitle">Cautions actives</h4>
+                    <div class="civora-sais-sectsub">Pré-autorisations en cours</div>
+                    <t t-foreach="state.d.deposits or []" t-as="dp" t-key="dp.property">
+                        <div class="civora-sais-eventrow">
+                            <div>
+                                <div class="civora-sais-strong" t-esc="dp.property"/>
+                                <div class="civora-sais-sectsub">
+                                    <t t-esc="dp.stays"/> séjours · durée moy. <t t-esc="fmtPct(dp.avg_nights)"/> j
+                                </div>
+                            </div>
+                            <div class="civora-sais-compprice">
+                                <div class="civora-sais-minivalue"><t t-esc="fmtMoney(dp.amount)"/> F</div>
+                                <div class="civora-sais-sectsub">bloqués</div>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+                <div class="civora-sais-col">
+                    <div class="civora-sais-conflict civora-sais-conflict--ok">
+                        <div class="civora-sais-strong"><i class="fa fa-shield"/> Assurance dommages activée</div>
+                        <p>
+                            Chaque séjour est couvert jusqu'à
+                            <t t-esc="fmtShort(state.d.insurance.coverage)"/> FCFA.
+                            Franchise <t t-esc="fmtShort(state.d.insurance.franchise)"/> F.
+                            Déclaration en 1 clic depuis un incident.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </t>
+
+        <!-- ============ 14. PAIEMENTS & REVENUS ============ -->
+        <t t-if="isTab('revenus')">
+            <div class="civora-sais-minikpis">
+                <div class="civora-sais-minikpi">
+                    <div class="civora-sais-minilabel">REVENUS BRUTS</div>
+                    <div class="civora-sais-minivalue"><t t-esc="fmtShort(state.d.revenue_kpis.gross)"/> F</div>
+                </div>
+                <div class="civora-sais-minikpi">
+                    <div class="civora-sais-minilabel">COMMISSIONS CANAUX</div>
+                    <div class="civora-sais-minivalue"><t t-esc="fmtShort(state.d.revenue_kpis.commission)"/> F</div>
+                    <div class="civora-sais-minihint"><t t-esc="fmtPct(state.d.revenue_kpis.commission_pct)"/>%</div>
+                </div>
+                <div class="civora-sais-minikpi">
+                    <div class="civora-sais-minilabel">NET OPÉRATEUR</div>
+                    <div class="civora-sais-minivalue"><t t-esc="fmtShort(state.d.revenue_kpis.net)"/> F</div>
+                </div>
+                <div class="civora-sais-minikpi">
+                    <div class="civora-sais-minilabel">REVERSEMENT PROPRIÉTAIRES</div>
+                    <div class="civora-sais-minivalue"><t t-esc="fmtShort(state.d.revenue_kpis.owner)"/> F</div>
+                    <div class="civora-sais-minihint"><t t-esc="fmtPct(state.d.revenue_kpis.owner_pct)"/>%</div>
+                </div>
+            </div>
+            <div class="civora-sais-toolbar">
+                <div>
+                    <h3 class="civora-sais-secttitle">Virements channels</h3>
+                    <div class="civora-sais-sectsub">Versements Airbnb, Booking et paiements directs</div>
+                </div>
+                <button class="civora-btn civora-btn-outline" t-on-click="exportPayouts">
+                    <i class="fa fa-download"/> Export comptable
+                </button>
+            </div>
+            <table class="civora-sais-table">
+                <thead>
+                    <tr><th>Date</th><th>Canal</th><th>Référence</th><th>Brut</th>
+                        <th>Commission</th><th>Net</th><th>Statut</th><th></th></tr>
+                </thead>
+                <tbody>
+                    <t t-foreach="state.d.payouts or []" t-as="p" t-key="p.id">
+                        <tr>
+                            <td t-esc="p.date"/>
+                            <td t-esc="p.channel"/>
+                            <td class="civora-sais-ref" t-esc="p.reference"/>
+                            <td><t t-esc="fmtMoney(p.gross)"/> F</td>
+                            <td><t t-esc="fmtMoney(p.commission)"/> F</td>
+                            <td class="civora-sais-strong"><t t-esc="fmtMoney(p.net)"/> F</td>
+                            <td><span t-attf-class="civora-badge civora-badge--{{ p.state === 'verse' ? 'success' : 'warning' }}"
+                                      t-esc="p.state_label"/></td>
+                            <td>
+                                <button t-if="p.state !== 'verse'" class="civora-btn civora-btn-outline"
+                                        t-on-click="() => this.markPaid(p)">Marquer reçu</button>
+                            </td>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+
+            <div class="civora-sais-toolbar">
+                <div>
+                    <h3 class="civora-sais-secttitle">Relevés propriétaires</h3>
+                    <div class="civora-sais-sectsub">Calculé selon le mandat (20% de gestion)</div>
+                </div>
+                <button class="civora-btn civora-btn-accent" t-on-click="sendStatements">
+                    <i class="fa fa-paper-plane-o"/> Envoyer relevés
+                </button>
+            </div>
+            <table class="civora-sais-table">
+                <thead>
+                    <tr><th>Propriétaire</th><th>Brut</th><th>Commissions</th>
+                        <th>Honoraires gestion</th><th>Net à reverser</th><th></th></tr>
+                </thead>
+                <tbody>
+                    <t t-foreach="state.d.statements or []" t-as="s" t-key="s.id">
+                        <tr>
+                            <td class="civora-sais-strong" t-esc="s.name"/>
+                            <td><t t-esc="fmtMoney(s.gross)"/> F</td>
+                            <td class="civora-sais-neg">-<t t-esc="fmtMoney(s.commission)"/> F</td>
+                            <td class="civora-sais-neg">-<t t-esc="fmtMoney(s.fee)"/> F</td>
+                            <td class="civora-sais-strong"><t t-esc="fmtMoney(s.net)"/> F</td>
+                            <td><span t-if="s.sent" class="civora-sais-pill-ok">Envoyé</span></td>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+        </t>
+
+        <!-- ============ 15. REGLES & FRAIS ============ -->
+        <t t-if="isTab('regles')">
+            <div class="civora-sais-cols civora-sais-cols--even">
+                <div class="civora-sais-col">
+                    <h4 class="civora-sais-sidetitle">Règles de réservation</h4>
+                    <div class="civora-sais-sectsub">Appliquées par défaut à toutes les annonces</div>
+                    <div class="civora-sais-deflist">
+                        <div><span>Séjour minimum</span><strong><t t-esc="state.d.rules.min_nights"/> nuits</strong></div>
+                        <div><span>Séjour maximum</span><strong><t t-esc="state.d.rules.max_nights"/> nuits</strong></div>
+                        <div><span>Préavis de réservation</span><strong t-esc="state.d.rules.notice"/></div>
+                        <div><span>Délai d'annulation gratuite</span><strong t-esc="state.d.rules.free_cancel"/></div>
+                        <div><span>Check-in</span><strong t-esc="state.d.rules.checkin"/></div>
+                        <div><span>Check-out</span><strong t-esc="state.d.rules.checkout"/></div>
+                        <div><span>Enfants acceptés</span><strong t-esc="state.d.rules.children"/></div>
+                        <div><span>Animaux</span><strong t-esc="state.d.rules.pets"/></div>
+                        <div><span>Fêtes / événements</span><strong t-esc="state.d.rules.parties"/></div>
+                    </div>
+
+                    <h4 class="civora-sais-sidetitle">Conformité &amp; taxes</h4>
+                    <div class="civora-sais-deflist">
+                        <div><span>N° enregistrement meublé</span><strong t-esc="state.d.rules.registration"/></div>
+                        <div><span>Déclaration trimestrielle</span><strong t-esc="state.d.rules.declaration"/></div>
+                        <div><span>Assurance multi-risques</span><strong t-esc="state.d.rules.insurance"/></div>
+                    </div>
+                </div>
+                <div class="civora-sais-col">
+                    <h4 class="civora-sais-sidetitle">Frais additionnels</h4>
+                    <t t-foreach="state.d.rules.fees or []" t-as="f" t-key="f.id">
+                        <div class="civora-sais-eventrow">
+                            <div>
+                                <div class="civora-sais-strong" t-esc="f.name"/>
+                                <span t-if="f.auto" class="civora-sais-pill-ok">Auto</span>
+                            </div>
+                            <span class="civora-sais-strong" t-esc="f.amount"/>
+                        </div>
+                    </t>
+
+                    <h4 class="civora-sais-sidetitle">Messages automatiques</h4>
+                    <t t-foreach="state.d.rules.messages or []" t-as="m" t-key="m.id">
+                        <div class="civora-sais-eventrow">
+                            <div>
+                                <div class="civora-sais-strong" t-esc="m.name"/>
+                                <div class="civora-sais-sectsub">
+                                    <t t-if="m.active">Cliquer pour désactiver</t>
+                                    <t t-else="">Cliquer pour activer</t>
+                                </div>
+                            </div>
+                            <button t-attf-class="civora-sais-toggle {{ m.active ? 'is-on' : '' }}"
+                                    t-on-click="() => this.toggleAutoMessage(m)">
+                                <t t-if="m.active">Actif</t><t t-else="">Désactivé</t>
+                            </button>
+                        </div>
+                    </t>
+                </div>
+            </div>
+        </t>
+
+        </div>
+
+        <!-- ================= BANDEAU BAS ================= -->
+        <div class="civora-sais-bottom">
+            <div class="civora-sais-bottomcard">
+                <h3 class="civora-sais-secttitle">Check-in aujourd'hui</h3>
+                <t t-foreach="state.checkinsToday" t-as="c" t-key="c.id">
+                    <div class="civora-sais-checkin">
+                        <div>
+                            <div class="civora-sais-strong" t-esc="c.guest_name"/>
+                            <div class="civora-sais-sectsub">
+                                <t t-esc="c.property_name"/> · <t t-esc="c.num_nights"/> nuits
+                            </div>
+                            <div class="civora-sais-code">
+                                <i class="fa fa-key"/> Code : <strong t-esc="c.access_code or '—'"/>
+                            </div>
+                        </div>
+                        <div class="civora-sais-checkinright">
+                            <span class="civora-sais-time" t-esc="c.checkin_time or '14:00'"/>
+                            <button class="civora-btn civora-btn-outline"
+                                    t-on-click="() => this.openDetail(c.id)">
+                                <i class="fa fa-sign-in"/> Check-in
+                            </button>
+                        </div>
+                    </div>
+                </t>
+                <t t-if="!state.checkinsToday.length">
+                    <div class="civora-sais-empty">Aucun check-in prévu aujourd'hui.</div>
+                </t>
+            </div>
+
+            <div class="civora-sais-bottomcard">
+                <h3 class="civora-sais-secttitle">Check-out &amp; ménages</h3>
+                <t t-foreach="state.checkoutsAndCleaning" t-as="c" t-key="c.id">
+                    <div class="civora-sais-checkin">
+                        <div>
+                            <div class="civora-sais-strong">
+                                <i class="fa fa-magic"/> <t t-esc="c.property_name"/>
+                            </div>
+                            <div class="civora-sais-sectsub">
+                                <t t-esc="c.date_label"/> · <t t-esc="c.assigned_to or 'À assigner'"/>
+                            </div>
+                        </div>
+                        <span t-attf-class="civora-badge civora-badge--{{ c.state === 'a_planifier' ? 'warning' : 'info' }}"
+                              t-esc="c.state_label"/>
+                    </div>
+                </t>
+                <t t-if="!state.checkoutsAndCleaning.length">
+                    <div class="civora-sais-empty">Aucun ménage planifié.</div>
+                </t>
+            </div>
+
+            <div class="civora-sais-bottomcard">
+                <h3 class="civora-sais-secttitle">Avis récents</h3>
+                <t t-foreach="state.recentReviews" t-as="r" t-key="r.id">
+                    <div class="civora-sais-review">
+                        <div class="civora-sais-reviewtop">
+                            <span class="civora-sais-strong" t-esc="r.guest_name"/>
+                            <span class="civora-sais-stars">
+                                <t t-foreach="starList(r.rating)" t-as="s" t-key="s.i">
+                                    <i t-attf-class="fa fa-star {{ s.on ? 'civora-sais-star' : 'civora-sais-star--off' }}"/>
+                                </t>
+                            </span>
+                        </div>
+                        <div class="civora-sais-sectsub" t-esc="r.property_name"/>
+                        <p class="civora-sais-reviewtxt" t-esc="r.comment"/>
+                        <button class="civora-btn civora-btn-outline" t-on-click="() => this.setTab('inbox')">
+                            <i class="fa fa-comment-o"/> Répondre
+                        </button>
+                    </div>
+                </t>
+                <t t-if="!state.recentReviews.length">
+                    <div class="civora-sais-empty">Aucun avis pour le moment.</div>
+                </t>
+            </div>
+        </div>
+
+        <!-- ================= DRAWER ================= -->
         <t t-if="state.drawerOpen">
-            <ReservationDrawer
-                mode="state.drawerMode"
-                recordId="state.drawerRecordId"
-                onSaved.bind="onSaved"
-                onClose.bind="closeDrawer"/>
+            <ReservationDrawer mode="state.drawerMode" recordId="state.drawerRecordId"
+                               onSaved.bind="onSaved" onClose.bind="closeDrawer"/>
         </t>
     </div>
 </t>

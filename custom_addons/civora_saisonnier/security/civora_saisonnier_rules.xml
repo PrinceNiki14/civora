@@ -23,4 +23,120 @@
         <field name="model_id" ref="model_civora_seasonal_tariff"/>
         <field name="domain_force">[('company_id', 'in', company_ids)]</field>
     </record>
+
+    <record id="rule_seasonal_channel_company" model="ir.rule">
+        <field name="name">civora.seasonal.channel : multi-société</field>
+        <field name="model_id" ref="model_civora_seasonal_channel"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_seasonal_sync_state_company" model="ir.rule">
+        <field name="name">civora.seasonal.sync.state : multi-société</field>
+        <field name="model_id" ref="model_civora_seasonal_sync_state"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_seasonal_conflict_company" model="ir.rule">
+        <field name="name">civora.seasonal.conflict : multi-société</field>
+        <field name="model_id" ref="model_civora_seasonal_conflict"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_seasonal_guest_company" model="ir.rule">
+        <field name="name">civora.seasonal.guest : multi-société</field>
+        <field name="model_id" ref="model_civora_seasonal_guest"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_seasonal_thread_company" model="ir.rule">
+        <field name="name">civora.seasonal.thread : multi-société</field>
+        <field name="model_id" ref="model_civora_seasonal_thread"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_seasonal_message_company" model="ir.rule">
+        <field name="name">civora.seasonal.message : multi-société</field>
+        <field name="model_id" ref="model_civora_seasonal_message"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_seasonal_reply_template_company" model="ir.rule">
+        <field name="name">civora.seasonal.reply.template : multi-société</field>
+        <field name="model_id" ref="model_civora_seasonal_reply_template"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_seasonal_upsell_company" model="ir.rule">
+        <field name="name">civora.seasonal.upsell : multi-société</field>
+        <field name="model_id" ref="model_civora_seasonal_upsell"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_seasonal_incident_company" model="ir.rule">
+        <field name="name">civora.seasonal.incident : multi-société</field>
+        <field name="model_id" ref="model_civora_seasonal_incident"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_seasonal_insurance_company" model="ir.rule">
+        <field name="name">civora.seasonal.insurance : multi-société</field>
+        <field name="model_id" ref="model_civora_seasonal_insurance"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_seasonal_payout_company" model="ir.rule">
+        <field name="name">civora.seasonal.payout : multi-société</field>
+        <field name="model_id" ref="model_civora_seasonal_payout"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_seasonal_owner_statement_company" model="ir.rule">
+        <field name="name">civora.seasonal.owner.statement : multi-société</field>
+        <field name="model_id" ref="model_civora_seasonal_owner_statement"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_seasonal_rule_company" model="ir.rule">
+        <field name="name">civora.seasonal.rule : multi-société</field>
+        <field name="model_id" ref="model_civora_seasonal_rule"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_seasonal_competitor_company" model="ir.rule">
+        <field name="name">civora.seasonal.competitor : multi-société</field>
+        <field name="model_id" ref="model_civora_seasonal_competitor"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_seasonal_demand_pace_company" model="ir.rule">
+        <field name="name">civora.seasonal.demand.pace : multi-société</field>
+        <field name="model_id" ref="model_civora_seasonal_demand_pace"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_seasonal_event_company" model="ir.rule">
+        <field name="name">civora.seasonal.event : multi-société</field>
+        <field name="model_id" ref="model_civora_seasonal_event"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_seasonal_funnel_step_company" model="ir.rule">
+        <field name="name">civora.seasonal.funnel.step : multi-société</field>
+        <field name="model_id" ref="model_civora_seasonal_funnel_step"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_seasonal_booking_entry_company" model="ir.rule">
+        <field name="name">civora.seasonal.booking.entry : multi-société</field>
+        <field name="model_id" ref="model_civora_seasonal_booking_entry"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_seasonal_booking_config_company" model="ir.rule">
+        <field name="name">civora.seasonal.booking.config : multi-société</field>
+        <field name="model_id" ref="model_civora_seasonal_booking_config"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_seasonal_journey_step_company" model="ir.rule">
+        <field name="name">civora.seasonal.journey.step : multi-société</field>
+        <field name="model_id" ref="model_civora_seasonal_journey_step"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_cleaning_staff_company" model="ir.rule">
+        <field name="name">civora.cleaning.staff : multi-société</field>
+        <field name="model_id" ref="model_civora_cleaning_staff"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_seasonal_inventory_company" model="ir.rule">
+        <field name="name">civora.seasonal.inventory : multi-société</field>
+        <field name="model_id" ref="model_civora_seasonal_inventory"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_seasonal_upsell_line_company" model="ir.rule">
+        <field name="name">civora.seasonal.upsell.line : multi-société</field>
+        <field name="model_id" ref="model_civora_seasonal_upsell_line"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
 </odoo>

@@ -413,3 +413,194 @@
         .civora-ventes-search-row { flex-direction: column; }
     }
 }
+
+// =====================================================================
+//  Onglets Commissions & Performance + panneau de filtres
+// =====================================================================
+.civora-ventes-filterpanel {
+    display: flex;
+    align-items: flex-end;
+    gap: 1rem;
+    background: $civora-card;
+    border: 1px solid $civora-border;
+    border-radius: $civora-radius;
+    padding: .85rem 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.civora-ventes-filterfield {
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+    min-width: 220px;
+
+    label {
+        font-size: .78rem;
+        font-weight: 600;
+        color: $civora-muted;
+    }
+
+    .civora-input {
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius-sm;
+        padding: .45rem .65rem;
+        font-size: .85rem;
+        color: $civora-fg;
+        background: $civora-card;
+
+        &:focus { outline: none; border-color: $civora-accent; }
+    }
+}
+
+.civora-ventes-cols {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1.25rem;
+    align-items: start;
+}
+
+@media (max-width: 1200px) {
+    .civora-ventes-cols { grid-template-columns: 1fr; }
+}
+
+.civora-ventes-card {
+    background: $civora-card;
+    border: 1px solid $civora-border;
+    border-radius: $civora-radius;
+    padding: 1.1rem 1.25rem;
+}
+
+.civora-ventes-cardtitle {
+    margin: 1.1rem 0 .15rem;
+    font-family: $civora-font-display;
+    font-size: 1.02rem;
+    font-weight: 700;
+    color: $civora-fg;
+
+    &:first-child { margin-top: 0; }
+}
+
+.civora-ventes-cardsub {
+    font-size: .8rem;
+    color: $civora-muted;
+    margin-bottom: .75rem;
+}
+
+.civora-ventes-strong { font-weight: 700; font-size: .9rem; color: $civora-fg; }
+.civora-ventes-sub { font-size: .78rem; color: $civora-muted; }
+
+.civora-ventes-empty {
+    padding: 1.1rem;
+    text-align: center;
+    color: $civora-muted;
+    font-size: .85rem;
+}
+
+.civora-ventes-agentrow,
+.civora-ventes-commrow {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .65rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, .05);
+
+    &:last-child { border-bottom: none; }
+}
+
+.civora-ventes-commrow {
+    justify-content: space-between;
+    cursor: pointer;
+
+    &:hover { background: rgba(0, 171, 104, .04); }
+}
+
+.civora-ventes-avatar {
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+    border-radius: 50%;
+    background: $civora-primary;
+    color: #fff;
+    font-size: .78rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.civora-ventes-agentmain { flex: 1 1 auto; }
+.civora-ventes-agentamount { text-align: right; }
+
+.civora-ventes-deflist {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+
+    > div {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 1rem;
+        border-bottom: 1px dashed rgba(0, 0, 0, .06);
+        padding-bottom: .45rem;
+    }
+
+    span {
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+        color: $civora-muted;
+    }
+
+    strong {
+        font-family: $civora-font-display;
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: $civora-fg;
+        text-align: right;
+    }
+}
+
+.civora-ventes-zonerow { margin-bottom: .8rem; }
+
+.civora-ventes-zoneline {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: .25rem;
+}
+
+.civora-ventes-bartrack {
+    height: 8px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, .06);
+    overflow: hidden;
+}
+
+.civora-ventes-barfill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, $civora-accent, $civora-primary);
+}
+
+.civora-ventes-alert {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    border-radius: $civora-radius-sm;
+    padding: .55rem .7rem;
+    font-size: .83rem;
+    margin-bottom: .4rem;
+    cursor: pointer;
+    background: rgba(239, 168, 49, .1);
+    color: #a06b08;
+
+    &.civora-ventes-alert--danger {
+        background: rgba(230, 44, 44, .09);
+        color: $civora-danger;
+    }
+
+    &:hover { filter: brightness(.97); }
+}

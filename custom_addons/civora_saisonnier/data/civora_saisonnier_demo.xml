@@ -288,4 +288,1042 @@
             <field name="state">a_planifier</field>
         </record>
 
+
+        <!-- ============ CANAUX DE DISTRIBUTION ============ -->
+        <record id="chan_airbnb" model="civora.seasonal.channel">
+            <field name="name">Airbnb</field>
+            <field name="code">airbnb</field>
+            <field name="emoji">🅰️</field>
+            <field name="listing_count">4</field>
+            <field name="commission_rate">3.0</field>
+            <field name="last_sync_label">il y a 3 min</field>
+            <field name="sequence">10</field>
+            <field name="connected" eval="True"/>
+        </record>
+        <record id="chan_booking" model="civora.seasonal.channel">
+            <field name="name">Booking.com</field>
+            <field name="code">booking</field>
+            <field name="emoji">🅱️</field>
+            <field name="listing_count">3</field>
+            <field name="commission_rate">15.0</field>
+            <field name="last_sync_label">il y a 12 min</field>
+            <field name="sequence">20</field>
+            <field name="connected" eval="True"/>
+        </record>
+        <record id="chan_direct" model="civora.seasonal.channel">
+            <field name="name">Direct (site web)</field>
+            <field name="code">direct</field>
+            <field name="emoji">🌐</field>
+            <field name="listing_count">4</field>
+            <field name="commission_rate">0.0</field>
+            <field name="last_sync_label">Temps réel</field>
+            <field name="sequence">30</field>
+            <field name="connected" eval="True"/>
+        </record>
+        <record id="chan_vrbo" model="civora.seasonal.channel">
+            <field name="name">Vrbo</field>
+            <field name="code">vrbo</field>
+            <field name="emoji">🏠</field>
+            <field name="listing_count">0</field>
+            <field name="commission_rate">5.0</field>
+            <field name="last_sync_label">—</field>
+            <field name="sequence">40</field>
+            <field name="connected" eval="False"/>
+        </record>
+        <record id="chan_expedia" model="civora.seasonal.channel">
+            <field name="name">Expedia</field>
+            <field name="code">expedia</field>
+            <field name="emoji">✈️</field>
+            <field name="listing_count">0</field>
+            <field name="commission_rate">15.0</field>
+            <field name="last_sync_label">—</field>
+            <field name="sequence">50</field>
+            <field name="connected" eval="False"/>
+        </record>
+        <record id="sync_cal" model="civora.seasonal.sync.state">
+            <field name="name">Calendriers</field>
+            <field name="percent">100</field>
+            <field name="sequence">10</field>
+        </record>
+        <record id="sync_rates" model="civora.seasonal.sync.state">
+            <field name="name">Tarifs</field>
+            <field name="percent">100</field>
+            <field name="sequence">20</field>
+        </record>
+        <record id="sync_photos" model="civora.seasonal.sync.state">
+            <field name="name">Photos &amp; annonces</field>
+            <field name="percent">82</field>
+            <field name="sequence">30</field>
+        </record>
+        <record id="conflict_assinie" model="civora.seasonal.conflict">
+            <field name="name">2 conflits détectés</field>
+            <field name="description">Double booking potentiel sur Villa Assinie (15-16 nov) entre Airbnb et site direct.</field>
+            <field name="property_id" ref="prop_villa_assinie"/>
+        </record>
+
+        <!-- ============ VOYAGEURS ============ -->
+        <record id="sg_sarah" model="civora.seasonal.guest">
+            <field name="name">Sarah K.</field>
+            <field name="country_flag">🇫🇷</field>
+            <field name="country_code">FR</field>
+            <field name="stay_count">4</field>
+            <field name="night_count">18</field>
+            <field name="total_spent">1380000</field>
+            <field name="last_stay">2025-11-22</field>
+            <field name="rating">4.9</field>
+            <field name="tag">vip</field>
+            <field name="email">sarah.k@email.com</field>
+            <field name="phone">+225 07 12 34 56 78</field>
+        </record>
+        <record id="sg_james" model="civora.seasonal.guest">
+            <field name="name">James M.</field>
+            <field name="country_flag">🇺🇸</field>
+            <field name="country_code">US</field>
+            <field name="stay_count">2</field>
+            <field name="night_count">9</field>
+            <field name="total_spent">720000</field>
+            <field name="last_stay">2025-11-05</field>
+            <field name="rating">5.0</field>
+            <field name="tag">business</field>
+            <field name="email">james.m@email.com</field>
+            <field name="phone">+1 415 555 0132</field>
+        </record>
+        <record id="sg_aissata" model="civora.seasonal.guest">
+            <field name="name">Aïssata D.</field>
+            <field name="country_flag">🇨🇮</field>
+            <field name="country_code">CI</field>
+            <field name="stay_count">6</field>
+            <field name="night_count">22</field>
+            <field name="total_spent">1650000</field>
+            <field name="last_stay">2025-10-28</field>
+            <field name="rating">4.8</field>
+            <field name="tag">vip</field>
+            <field name="email">aissata.d@gmail.com</field>
+            <field name="phone">+225 05 44 21 87 09</field>
+        </record>
+        <record id="sg_diallo" model="civora.seasonal.guest">
+            <field name="name">Famille Diallo</field>
+            <field name="country_flag">🇸🇳</field>
+            <field name="country_code">SN</field>
+            <field name="stay_count">1</field>
+            <field name="night_count">4</field>
+            <field name="total_spent">720000</field>
+            <field name="last_stay">2025-11-02</field>
+            <field name="rating">4.7</field>
+            <field name="tag">famille</field>
+            <field name="email">diallo.famille@gmail.com</field>
+            <field name="phone">+221 77 123 45 67</field>
+        </record>
+        <record id="sg_toure" model="civora.seasonal.guest">
+            <field name="name">M. Touré</field>
+            <field name="country_flag">🇨🇮</field>
+            <field name="country_code">CI</field>
+            <field name="stay_count">3</field>
+            <field name="night_count">12</field>
+            <field name="total_spent">1100000</field>
+            <field name="last_stay">2025-11-10</field>
+            <field name="rating">5.0</field>
+            <field name="tag">vip</field>
+            <field name="email">m.toure@civora.ci</field>
+            <field name="phone">+225 01 02 03 04 05</field>
+        </record>
+        <record id="sg_yao" model="civora.seasonal.guest">
+            <field name="name">Famille Yao</field>
+            <field name="country_flag">🇨🇮</field>
+            <field name="country_code">CI</field>
+            <field name="stay_count">1</field>
+            <field name="night_count">8</field>
+            <field name="total_spent">1120000</field>
+            <field name="last_stay">2025-11-15</field>
+            <field name="rating">4.5</field>
+            <field name="tag">famille</field>
+            <field name="email">yao.famille@gmail.com</field>
+            <field name="phone">+225 07 88 99 00 11</field>
+        </record>
+
+        <!-- ============ MESSAGERIE VOYAGEUR ============ -->
+        <record id="th_sarah" model="civora.seasonal.thread">
+            <field name="channel">airbnb</field>
+            <field name="guest_id" ref="sg_sarah"/>
+            <field name="property_id" ref="prop_villa_assinie"/>
+        </record>
+        <record id="th_sarah_m1" model="civora.seasonal.message">
+            <field name="thread_id" ref="th_sarah"/>
+            <field name="body">Bonjour, est-il possible de checker à 12h ?</field>
+            <field name="direction">in</field>
+            <field name="is_ai" eval="False"/>
+            <field name="unread" eval="True"/>
+            <field name="message_date" eval="(DateTime.now() - timedelta(minutes=8)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        </record>
+        <record id="th_sarah_m2" model="civora.seasonal.message">
+            <field name="thread_id" ref="th_sarah"/>
+            <field name="body">Bonjour Sarah ! Le check-in standard est à 14h, mais je peux libérer la villa à 12h moyennant un supplément de 15 000 F. Cela vous convient-il ?</field>
+            <field name="direction">out</field>
+            <field name="is_ai" eval="True"/>
+            <field name="unread" eval="False"/>
+            <field name="message_date" eval="(DateTime.now() - timedelta(minutes=2)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        </record>
+        <record id="th_james" model="civora.seasonal.thread">
+            <field name="channel">booking</field>
+            <field name="guest_id" ref="sg_james"/>
+            <field name="property_id" ref="prop_appart_cocody"/>
+        </record>
+        <record id="th_james_m1" model="civora.seasonal.message">
+            <field name="thread_id" ref="th_james"/>
+            <field name="body">Merci pour le séjour, tout était parfait !</field>
+            <field name="direction">in</field>
+            <field name="is_ai" eval="False"/>
+            <field name="unread" eval="False"/>
+            <field name="message_date" eval="(DateTime.now() - timedelta(minutes=120)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        </record>
+        <record id="th_aissata" model="civora.seasonal.thread">
+            <field name="channel">direct</field>
+            <field name="guest_id" ref="sg_aissata"/>
+            <field name="property_id" ref="prop_studio_plateau"/>
+        </record>
+        <record id="th_aissata_m1" model="civora.seasonal.message">
+            <field name="thread_id" ref="th_aissata"/>
+            <field name="body">Le code WiFi ne fonctionne plus.</field>
+            <field name="direction">in</field>
+            <field name="is_ai" eval="False"/>
+            <field name="unread" eval="True"/>
+            <field name="message_date" eval="(DateTime.now() - timedelta(minutes=300)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        </record>
+        <record id="th_toure" model="civora.seasonal.thread">
+            <field name="channel">direct</field>
+            <field name="guest_id" ref="sg_toure"/>
+            <field name="property_id" ref="prop_villa_assinie"/>
+        </record>
+        <record id="th_toure_m1" model="civora.seasonal.message">
+            <field name="thread_id" ref="th_toure"/>
+            <field name="body">Je confirme l'arrivée à 16h demain.</field>
+            <field name="direction">in</field>
+            <field name="is_ai" eval="False"/>
+            <field name="unread" eval="False"/>
+            <field name="message_date" eval="(DateTime.now() - timedelta(minutes=1500)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        </record>
+        <record id="th_yao" model="civora.seasonal.thread">
+            <field name="channel">airbnb</field>
+            <field name="guest_id" ref="sg_yao"/>
+            <field name="property_id" ref="prop_villa_riviera"/>
+        </record>
+        <record id="th_yao_m1" model="civora.seasonal.message">
+            <field name="thread_id" ref="th_yao"/>
+            <field name="body">Avez-vous un parking sécurisé ?</field>
+            <field name="direction">in</field>
+            <field name="is_ai" eval="False"/>
+            <field name="unread" eval="False"/>
+            <field name="message_date" eval="(DateTime.now() - timedelta(minutes=1600)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        </record>
+        <record id="tpl_welcome" model="civora.seasonal.reply.template">
+            <field name="name">Bienvenue · pré check-in</field>
+            <field name="body">Bonjour {voyageur}, votre séjour à {bien} approche ! Voici tout ce qu'il faut savoir avant votre arrivée.</field>
+            <field name="sequence">10</field>
+        </record>
+        <record id="tpl_wifi" model="civora.seasonal.reply.template">
+            <field name="name">Code WiFi &amp; instructions</field>
+            <field name="body">Réseau : CIVORA-{bien} · Mot de passe : {wifi}. Le boîtier se trouve dans l'entrée.</field>
+            <field name="sequence">20</field>
+        </record>
+        <record id="tpl_review" model="civora.seasonal.reply.template">
+            <field name="name">Demande d'avis post-séjour</field>
+            <field name="body">Merci pour votre séjour ! Deux minutes pour nous laisser un avis nous aideraient beaucoup.</field>
+            <field name="sequence">30</field>
+        </record>
+        <record id="tpl_checkout" model="civora.seasonal.reply.template">
+            <field name="name">Procédure check-out</field>
+            <field name="body">Départ avant 11h : merci de laisser les clés dans la boîte et de fermer les fenêtres.</field>
+            <field name="sequence">40</field>
+        </record>
+
+        <!-- ============ SERVICES ADDITIONNELS ============ -->
+        <record id="ups_early" model="civora.seasonal.upsell">
+            <field name="name">Early check-in (dès 11h)</field>
+            <field name="price">15000</field>
+            <field name="price_unit"></field>
+            <field name="margin_pct">100</field>
+            <field name="sales_count">42</field>
+            <field name="sequence">10</field>
+            <field name="is_active" eval="True"/>
+        </record>
+        <record id="ups_late" model="civora.seasonal.upsell">
+            <field name="name">Late check-out (jusqu'à 15h)</field>
+            <field name="price">15000</field>
+            <field name="price_unit"></field>
+            <field name="margin_pct">100</field>
+            <field name="sales_count">38</field>
+            <field name="sequence">20</field>
+            <field name="is_active" eval="True"/>
+        </record>
+        <record id="ups_transfert" model="civora.seasonal.upsell">
+            <field name="name">Transfert aéroport privé</field>
+            <field name="price">25000</field>
+            <field name="price_unit"></field>
+            <field name="margin_pct">40</field>
+            <field name="sales_count">56</field>
+            <field name="sequence">30</field>
+            <field name="is_active" eval="True"/>
+        </record>
+        <record id="ups_chef" model="civora.seasonal.upsell">
+            <field name="name">Chef à domicile (dîner)</field>
+            <field name="price">45000</field>
+            <field name="price_unit">/pers.</field>
+            <field name="margin_pct">25</field>
+            <field name="sales_count">21</field>
+            <field name="sequence">40</field>
+            <field name="is_active" eval="True"/>
+        </record>
+        <record id="ups_panier" model="civora.seasonal.upsell">
+            <field name="name">Panier accueil premium</field>
+            <field name="price">18000</field>
+            <field name="price_unit"></field>
+            <field name="margin_pct">55</field>
+            <field name="sales_count">64</field>
+            <field name="sequence">50</field>
+            <field name="is_active" eval="True"/>
+        </record>
+        <record id="ups_mer" model="civora.seasonal.upsell">
+            <field name="name">Excursion sortie en mer</field>
+            <field name="price">85000</field>
+            <field name="price_unit"></field>
+            <field name="margin_pct">30</field>
+            <field name="sales_count">12</field>
+            <field name="sequence">60</field>
+            <field name="is_active" eval="True"/>
+        </record>
+        <record id="ups_blanchisserie" model="civora.seasonal.upsell">
+            <field name="name">Blanchisserie express</field>
+            <field name="price">8000</field>
+            <field name="price_unit"></field>
+            <field name="margin_pct">70</field>
+            <field name="sales_count">18</field>
+            <field name="sequence">70</field>
+            <field name="is_active" eval="True"/>
+        </record>
+        <record id="ups_photo" model="civora.seasonal.upsell">
+            <field name="name">Photographe séjour (1h)</field>
+            <field name="price">35000</field>
+            <field name="price_unit"></field>
+            <field name="margin_pct">45</field>
+            <field name="sales_count">6</field>
+            <field name="sequence">80</field>
+            <field name="is_active" eval="False"/>
+        </record>
+        <record id="ups_barista" model="civora.seasonal.upsell">
+            <field name="name">Barista café artisanal</field>
+            <field name="price">12000</field>
+            <field name="price_unit">/jour</field>
+            <field name="margin_pct">60</field>
+            <field name="sales_count">22</field>
+            <field name="sequence">90</field>
+            <field name="is_active" eval="True"/>
+        </record>
+        <record id="ups_bebe" model="civora.seasonal.upsell">
+            <field name="name">Kit bébé (lit + chaise)</field>
+            <field name="price">0</field>
+            <field name="price_unit"></field>
+            <field name="margin_pct">0</field>
+            <field name="sales_count">14</field>
+            <field name="sequence">100</field>
+            <field name="is_active" eval="True"/>
+        </record>
+
+        <!-- ============ INCIDENTS & CAUTIONS ============ -->
+        <record id="inc_1" model="civora.seasonal.incident">
+            <field name="incident_date">2025-11-18</field>
+            <field name="incident_type">casse</field>
+            <field name="description">Verre à pied cassé (x2)</field>
+            <field name="amount">12000</field>
+            <field name="severity">faible</field>
+            <field name="state">resolu</field>
+            <field name="property_id" ref="prop_villa_assinie"/>
+            <field name="guest_id" ref="sg_toure"/>
+        </record>
+        <record id="inc_2" model="civora.seasonal.incident">
+            <field name="incident_date">2025-11-12</field>
+            <field name="incident_type">depassement</field>
+            <field name="description">8 personnes déclarées / 4 max</field>
+            <field name="amount">40000</field>
+            <field name="severity">moyenne</field>
+            <field name="state">facture</field>
+            <field name="property_id" ref="prop_appart_cocody"/>
+            <field name="guest_id" ref="sg_yao"/>
+        </record>
+        <record id="inc_3" model="civora.seasonal.incident">
+            <field name="incident_date">2025-11-05</field>
+            <field name="incident_type">nuisances</field>
+            <field name="description">Voisinage — musique 02h30</field>
+            <field name="amount">0</field>
+            <field name="severity">moyenne</field>
+            <field name="state">averti</field>
+            <field name="property_id" ref="prop_villa_riviera"/>
+            <field name="guest_id" ref="sg_james"/>
+        </record>
+        <record id="inc_4" model="civora.seasonal.incident">
+            <field name="incident_date">2025-10-29</field>
+            <field name="incident_type">fumee</field>
+            <field name="description">Odeur cigarette confirmée</field>
+            <field name="amount">25000</field>
+            <field name="severity">haute</field>
+            <field name="state">caution</field>
+            <field name="property_id" ref="prop_studio_plateau"/>
+            <field name="guest_id" ref="sg_aissata"/>
+        </record>
+        <record id="inc_5" model="civora.seasonal.incident">
+            <field name="incident_date">2025-10-22</field>
+            <field name="incident_type">degat</field>
+            <field name="description">Fuite douche — intervention plombier</field>
+            <field name="amount">65000</field>
+            <field name="severity">haute</field>
+            <field name="state">assurance</field>
+            <field name="property_id" ref="prop_villa_assinie"/>
+            <field name="guest_id" ref="sg_diallo"/>
+        </record>
+        <record id="insurance_main" model="civora.seasonal.insurance">
+            <field name="name">Assurance dommages CIVORA</field>
+            <field name="coverage">3000000</field>
+            <field name="franchise">25000</field>
+            <field name="is_active" eval="True"/>
+        </record>
+
+        <!-- ============ PAIEMENTS & REVENUS ============ -->
+        <record id="pay_a001" model="civora.seasonal.payout">
+            <field name="payout_date">2025-11-01</field>
+            <field name="reference">PAY-A001</field>
+            <field name="gross_amount">1280000</field>
+            <field name="commission_amount">38400</field>
+            <field name="state">verse</field>
+            <field name="channel_id" ref="chan_airbnb"/>
+        </record>
+        <record id="pay_b001" model="civora.seasonal.payout">
+            <field name="payout_date">2025-11-01</field>
+            <field name="reference">PAY-B001</field>
+            <field name="gross_amount">855000</field>
+            <field name="commission_amount">128250</field>
+            <field name="state">verse</field>
+            <field name="channel_id" ref="chan_booking"/>
+        </record>
+        <record id="pay_d001" model="civora.seasonal.payout">
+            <field name="payout_date">2025-11-15</field>
+            <field name="reference">PAY-D001</field>
+            <field name="gross_amount">1450000</field>
+            <field name="commission_amount">0</field>
+            <field name="state">verse</field>
+            <field name="channel_id" ref="chan_direct"/>
+        </record>
+        <record id="pay_a002" model="civora.seasonal.payout">
+            <field name="payout_date">2025-11-20</field>
+            <field name="reference">PAY-A002</field>
+            <field name="gross_amount">980000</field>
+            <field name="commission_amount">29400</field>
+            <field name="state">attente</field>
+            <field name="channel_id" ref="chan_airbnb"/>
+        </record>
+        <record id="pay_b002" model="civora.seasonal.payout">
+            <field name="payout_date">2025-11-22</field>
+            <field name="reference">PAY-B002</field>
+            <field name="gross_amount">665000</field>
+            <field name="commission_amount">99750</field>
+            <field name="state">attente</field>
+            <field name="channel_id" ref="chan_booking"/>
+        </record>
+        <record id="stmt_assinie" model="civora.seasonal.owner.statement">
+            <field name="name">Prop. Villa Assinie</field>
+            <field name="gross_amount">2900000</field>
+            <field name="channel_commission">145000</field>
+            <field name="management_rate">20.0</field>
+            <field name="property_id" ref="prop_villa_assinie"/>
+        </record>
+        <record id="stmt_cocody" model="civora.seasonal.owner.statement">
+            <field name="name">Prop. Appartement Cocody</field>
+            <field name="gross_amount">950000</field>
+            <field name="channel_commission">142500</field>
+            <field name="management_rate">20.0</field>
+            <field name="property_id" ref="prop_appart_cocody"/>
+        </record>
+        <record id="stmt_riviera" model="civora.seasonal.owner.statement">
+            <field name="name">Prop. Villa Riviera</field>
+            <field name="gross_amount">1820000</field>
+            <field name="channel_commission">91000</field>
+            <field name="management_rate">20.0</field>
+            <field name="property_id" ref="prop_villa_riviera"/>
+        </record>
+        <record id="stmt_plateau" model="civora.seasonal.owner.statement">
+            <field name="name">Prop. Studio Plateau</field>
+            <field name="gross_amount">975000</field>
+            <field name="channel_commission">48750</field>
+            <field name="management_rate">20.0</field>
+            <field name="property_id" ref="prop_studio_plateau"/>
+        </record>
+
+        <!-- ============ REGLES & FRAIS ============ -->
+        <record id="rule_default" model="civora.seasonal.rule">
+            <field name="name">Règles par défaut</field>
+            <field name="min_nights">2</field>
+            <field name="max_nights">30</field>
+            <field name="notice_label">Same-day OK</field>
+            <field name="free_cancel_hours">48</field>
+            <field name="checkin_from">14:00</field>
+            <field name="checkin_to">22:00</field>
+            <field name="checkout_before">11:00</field>
+            <field name="pets_policy">demande</field>
+            <field name="registration_number">CI-MT-2025-04812</field>
+            <field name="declaration_status">À jour</field>
+            <field name="insurance_status">Active</field>
+            <field name="children_allowed" eval="True"/>
+            <field name="parties_allowed" eval="False"/>
+        </record>
+        <record id="fee_menage" model="civora.seasonal.fee">
+            <field name="name">Frais de ménage</field>
+            <field name="amount_label">15 000 F</field>
+            <field name="sequence">10</field>
+            <field name="rule_id" ref="rule_default"/>
+            <field name="is_auto" eval="True"/>
+        </record>
+        <record id="fee_taxe" model="civora.seasonal.fee">
+            <field name="name">Taxe de séjour (par pers./nuit)</field>
+            <field name="amount_label">500 F</field>
+            <field name="sequence">20</field>
+            <field name="rule_id" ref="rule_default"/>
+            <field name="is_auto" eval="True"/>
+        </record>
+        <record id="fee_caution" model="civora.seasonal.fee">
+            <field name="name">Caution</field>
+            <field name="amount_label">100 000 F (pré-autorisation)</field>
+            <field name="sequence">30</field>
+            <field name="rule_id" ref="rule_default"/>
+            <field name="is_auto" eval="False"/>
+        </record>
+        <record id="fee_extra" model="civora.seasonal.fee">
+            <field name="name">Personne supplémentaire (&gt;4)</field>
+            <field name="amount_label">10 000 F / nuit</field>
+            <field name="sequence">40</field>
+            <field name="rule_id" ref="rule_default"/>
+            <field name="is_auto" eval="False"/>
+        </record>
+        <record id="fee_late" model="civora.seasonal.fee">
+            <field name="name">Late check-out (après 11h)</field>
+            <field name="amount_label">15 000 F</field>
+            <field name="sequence">50</field>
+            <field name="rule_id" ref="rule_default"/>
+            <field name="is_auto" eval="False"/>
+        </record>
+        <record id="am_confirm" model="civora.seasonal.auto.message">
+            <field name="name">Réservation confirmée</field>
+            <field name="sequence">10</field>
+            <field name="rule_id" ref="rule_default"/>
+            <field name="is_active" eval="True"/>
+        </record>
+        <record id="am_j3" model="civora.seasonal.auto.message">
+            <field name="name">J-3 avant arrivée</field>
+            <field name="sequence">20</field>
+            <field name="rule_id" ref="rule_default"/>
+            <field name="is_active" eval="True"/>
+        </record>
+        <record id="am_arrivee" model="civora.seasonal.auto.message">
+            <field name="name">Jour d'arrivée — code &amp; instructions</field>
+            <field name="sequence">30</field>
+            <field name="rule_id" ref="rule_default"/>
+            <field name="is_active" eval="True"/>
+        </record>
+        <record id="am_mid" model="civora.seasonal.auto.message">
+            <field name="name">Mi-séjour — feedback</field>
+            <field name="sequence">40</field>
+            <field name="rule_id" ref="rule_default"/>
+            <field name="is_active" eval="False"/>
+        </record>
+        <record id="am_depart" model="civora.seasonal.auto.message">
+            <field name="name">Jour de départ — rappel check-out</field>
+            <field name="sequence">50</field>
+            <field name="rule_id" ref="rule_default"/>
+            <field name="is_active" eval="True"/>
+        </record>
+        <record id="am_avis" model="civora.seasonal.auto.message">
+            <field name="name">J+1 — demande d'avis</field>
+            <field name="sequence">60</field>
+            <field name="rule_id" ref="rule_default"/>
+            <field name="is_active" eval="True"/>
+        </record>
+
+        <!-- ============ MARCHE & RATE SHOPPER ============ -->
+        <record id="comp_lagune" model="civora.seasonal.competitor">
+            <field name="name">Villa Bord de Lagune</field>
+            <field name="distance_km">0.8</field>
+            <field name="rating">4.7</field>
+            <field name="occupancy">78</field>
+            <field name="price_night">195000</field>
+            <field name="trend_7d">8</field>
+            <field name="is_self" eval="False"/>
+        </record>
+        <record id="comp_palm" model="civora.seasonal.competitor">
+            <field name="name">Résidence Palm Beach</field>
+            <field name="distance_km">1.2</field>
+            <field name="rating">4.5</field>
+            <field name="occupancy">71</field>
+            <field name="price_night">165000</field>
+            <field name="trend_7d">-3</field>
+            <field name="is_self" eval="False"/>
+        </record>
+        <record id="comp_cocotiers" model="civora.seasonal.competitor">
+            <field name="name">Villa Cocotiers</field>
+            <field name="distance_km">1.5</field>
+            <field name="rating">4.8</field>
+            <field name="occupancy">84</field>
+            <field name="price_night">210000</field>
+            <field name="trend_7d">12</field>
+            <field name="is_self" eval="False"/>
+        </record>
+        <record id="comp_beach" model="civora.seasonal.competitor">
+            <field name="name">Beach House Assinie</field>
+            <field name="distance_km">2.1</field>
+            <field name="rating">4.6</field>
+            <field name="occupancy">66</field>
+            <field name="price_night">155000</field>
+            <field name="trend_7d">-5</field>
+            <field name="is_self" eval="False"/>
+        </record>
+        <record id="comp_self" model="civora.seasonal.competitor">
+            <field name="name">Villa Assinie (vous)</field>
+            <field name="distance_km">0.0</field>
+            <field name="rating">4.9</field>
+            <field name="occupancy">86</field>
+            <field name="price_night">180000</field>
+            <field name="trend_7d">6</field>
+            <field name="is_self" eval="True"/>
+        </record>
+        <record id="pace_1" model="civora.seasonal.demand.pace">
+            <field name="name">22-23 nov (weekend)</field>
+            <field name="percent">92</field>
+            <field name="sequence">10</field>
+        </record>
+        <record id="pace_2" model="civora.seasonal.demand.pace">
+            <field name="name">29-30 nov</field>
+            <field name="percent">74</field>
+            <field name="sequence">20</field>
+        </record>
+        <record id="pace_3" model="civora.seasonal.demand.pace">
+            <field name="name">5-7 déc (pont)</field>
+            <field name="percent">88</field>
+            <field name="sequence">30</field>
+        </record>
+        <record id="pace_4" model="civora.seasonal.demand.pace">
+            <field name="name">24-26 déc (Noël)</field>
+            <field name="percent">98</field>
+            <field name="sequence">40</field>
+        </record>
+        <record id="pace_5" model="civora.seasonal.demand.pace">
+            <field name="name">31 déc - 2 janv</field>
+            <field name="percent">96</field>
+            <field name="sequence">50</field>
+        </record>
+        <record id="pace_6" model="civora.seasonal.demand.pace">
+            <field name="name">12-14 janv</field>
+            <field name="percent">42</field>
+            <field name="sequence">60</field>
+        </record>
+        <record id="evt_assinie" model="civora.seasonal.event">
+            <field name="name">Festival Assinie Beach</field>
+            <field name="period_label">22-23 nov</field>
+            <field name="impact_label">+38% demande</field>
+            <field name="sequence">10</field>
+            <field name="is_hot" eval="True"/>
+        </record>
+        <record id="evt_masa" model="civora.seasonal.event">
+            <field name="name">MASA 2025</field>
+            <field name="period_label">5-12 déc</field>
+            <field name="impact_label">+22% Abidjan</field>
+            <field name="sequence">20</field>
+            <field name="is_hot" eval="True"/>
+        </record>
+        <record id="evt_sara" model="civora.seasonal.event">
+            <field name="name">Salon SARA</field>
+            <field name="period_label">15-24 janv</field>
+            <field name="impact_label">+18% Plateau</field>
+            <field name="sequence">30</field>
+            <field name="is_hot" eval="False"/>
+        </record>
+        <record id="evt_can" model="civora.seasonal.event">
+            <field name="name">CAN 2026 (qualifs)</field>
+            <field name="period_label">à venir</field>
+            <field name="impact_label">+45% projeté</field>
+            <field name="sequence">40</field>
+            <field name="is_hot" eval="True"/>
+        </record>
+
+        <!-- ============ BOOKING ENGINE ============ -->
+        <record id="fun_1" model="civora.seasonal.funnel.step">
+            <field name="name">Visiteurs site direct</field>
+            <field name="visitors">4820</field>
+            <field name="sequence">10</field>
+        </record>
+        <record id="fun_2" model="civora.seasonal.funnel.step">
+            <field name="name">Consultation annonce</field>
+            <field name="visitors">1842</field>
+            <field name="sequence">20</field>
+        </record>
+        <record id="fun_3" model="civora.seasonal.funnel.step">
+            <field name="name">Recherche dispo</field>
+            <field name="visitors">612</field>
+            <field name="sequence">30</field>
+        </record>
+        <record id="fun_4" model="civora.seasonal.funnel.step">
+            <field name="name">Ajout panier</field>
+            <field name="visitors">218</field>
+            <field name="sequence">40</field>
+        </record>
+        <record id="fun_5" model="civora.seasonal.funnel.step">
+            <field name="name">Réservations directes</field>
+            <field name="visitors">87</field>
+            <field name="sequence">50</field>
+        </record>
+        <record id="be_widget" model="civora.seasonal.booking.entry">
+            <field name="name">Widget de recherche (homepage)</field>
+            <field name="entry_type">search</field>
+            <field name="sessions">3210</field>
+            <field name="conversion">2.1</field>
+            <field name="sequence">10</field>
+        </record>
+        <record id="be_assinie" model="civora.seasonal.booking.entry">
+            <field name="name">Fiche bien — Villa Assinie</field>
+            <field name="entry_type">property</field>
+            <field name="sessions">1520</field>
+            <field name="conversion">5.4</field>
+            <field name="sequence">20</field>
+        </record>
+        <record id="be_cocody" model="civora.seasonal.booking.entry">
+            <field name="name">Fiche bien — Appartement Cocody</field>
+            <field name="entry_type">property</field>
+            <field name="sessions">890</field>
+            <field name="conversion">4.2</field>
+            <field name="sequence">30</field>
+        </record>
+        <record id="be_landing" model="civora.seasonal.booking.entry">
+            <field name="name">Landing Assinie été</field>
+            <field name="entry_type">campaign</field>
+            <field name="sessions">640</field>
+            <field name="conversion">8.1</field>
+            <field name="sequence">40</field>
+        </record>
+        <record id="booking_cfg" model="civora.seasonal.booking.config">
+            <field name="name">Moteur de réservation</field>
+            <field name="domain">book.civora.ci</field>
+            <field name="payment_methods">Stripe · MTN · Orange</field>
+            <field name="languages">FR · EN · ES</field>
+            <field name="embed_snippet">&lt;script src="https://book.civora.ci/embed.js"
+  data-prop="villa-assinie"
+  data-theme="light"&gt;&lt;/script&gt;</field>
+        </record>
+
+        <!-- ============ GUEST JOURNEY ============ -->
+        <record id="jn_1" model="civora.seasonal.journey.step">
+            <field name="name">Réservation confirmée</field>
+            <field name="offset_label">T+0</field>
+            <field name="sequence">10</field>
+        </record>
+        <record id="jn_1_a1" model="civora.seasonal.journey.action">
+            <field name="step_id" ref="jn_1"/>
+            <field name="channel">email</field>
+            <field name="name">Merci pour votre réservation · Villa Assinie</field>
+            <field name="is_ai" eval="False"/>
+            <field name="sequence">10</field>
+        </record>
+        <record id="jn_1_a2" model="civora.seasonal.journey.action">
+            <field name="step_id" ref="jn_1"/>
+            <field name="channel">sms</field>
+            <field name="name">Confirmation résa #A2211 — infos à venir</field>
+            <field name="is_ai" eval="False"/>
+            <field name="sequence">20</field>
+        </record>
+        <record id="jn_1_a3" model="civora.seasonal.journey.action">
+            <field name="step_id" ref="jn_1"/>
+            <field name="channel">whatsapp</field>
+            <field name="name">Bienvenue ! Je suis votre hôte, à disposition 🌊</field>
+            <field name="is_ai" eval="True"/>
+            <field name="sequence">30</field>
+        </record>
+        <record id="jn_2" model="civora.seasonal.journey.step">
+            <field name="name">J-7 avant arrivée</field>
+            <field name="offset_label">-7 jours</field>
+            <field name="sequence">20</field>
+        </record>
+        <record id="jn_2_a1" model="civora.seasonal.journey.action">
+            <field name="step_id" ref="jn_2"/>
+            <field name="channel">email</field>
+            <field name="name">Préparez votre séjour — activités &amp; guide local</field>
+            <field name="is_ai" eval="True"/>
+            <field name="sequence">10</field>
+        </record>
+        <record id="jn_2_a2" model="civora.seasonal.journey.action">
+            <field name="step_id" ref="jn_2"/>
+            <field name="channel">upsell</field>
+            <field name="name">Panier chef local · transfert aéroport · massage plage</field>
+            <field name="is_ai" eval="True"/>
+            <field name="sequence">20</field>
+        </record>
+        <record id="jn_3" model="civora.seasonal.journey.step">
+            <field name="name">J-3 avant arrivée</field>
+            <field name="offset_label">-3 jours</field>
+            <field name="sequence">30</field>
+        </record>
+        <record id="jn_3_a1" model="civora.seasonal.journey.action">
+            <field name="step_id" ref="jn_3"/>
+            <field name="channel">whatsapp</field>
+            <field name="name">Confirmez votre heure d'arrivée pour préparer l'accueil</field>
+            <field name="is_ai" eval="True"/>
+            <field name="sequence">10</field>
+        </record>
+        <record id="jn_3_a2" model="civora.seasonal.journey.action">
+            <field name="step_id" ref="jn_3"/>
+            <field name="channel">email</field>
+            <field name="name">Formulaire pré-check-in (identités &amp; CNI)</field>
+            <field name="is_ai" eval="False"/>
+            <field name="sequence">20</field>
+        </record>
+        <record id="jn_4" model="civora.seasonal.journey.step">
+            <field name="name">Jour d'arrivée</field>
+            <field name="offset_label">J</field>
+            <field name="sequence">40</field>
+        </record>
+        <record id="jn_4_a1" model="civora.seasonal.journey.action">
+            <field name="step_id" ref="jn_4"/>
+            <field name="channel">sms</field>
+            <field name="name">🔑 Code d'entrée : 8421 · Instructions parking &amp; Wi-Fi</field>
+            <field name="is_ai" eval="False"/>
+            <field name="sequence">10</field>
+        </record>
+        <record id="jn_4_a2" model="civora.seasonal.journey.action">
+            <field name="step_id" ref="jn_4"/>
+            <field name="channel">whatsapp</field>
+            <field name="name">Bien arrivé ? Tout se passe bien ?</field>
+            <field name="is_ai" eval="True"/>
+            <field name="sequence">20</field>
+        </record>
+        <record id="jn_5" model="civora.seasonal.journey.step">
+            <field name="name">Mi-séjour</field>
+            <field name="offset_label">J+2</field>
+            <field name="sequence">50</field>
+        </record>
+        <record id="jn_5_a1" model="civora.seasonal.journey.action">
+            <field name="step_id" ref="jn_5"/>
+            <field name="channel">whatsapp</field>
+            <field name="name">Feedback à mi-parcours — besoin de quelque chose ?</field>
+            <field name="is_ai" eval="True"/>
+            <field name="sequence">10</field>
+        </record>
+        <record id="jn_6" model="civora.seasonal.journey.step">
+            <field name="name">Veille du départ</field>
+            <field name="offset_label">J-1</field>
+            <field name="sequence">60</field>
+        </record>
+        <record id="jn_6_a1" model="civora.seasonal.journey.action">
+            <field name="step_id" ref="jn_6"/>
+            <field name="channel">email</field>
+            <field name="name">Check-out demain 11h · Late check-out disponible</field>
+            <field name="is_ai" eval="False"/>
+            <field name="sequence">10</field>
+        </record>
+        <record id="jn_6_a2" model="civora.seasonal.journey.action">
+            <field name="step_id" ref="jn_6"/>
+            <field name="channel">upsell</field>
+            <field name="name">Prolonger d'une nuit · -20% dernière minute</field>
+            <field name="is_ai" eval="True"/>
+            <field name="sequence">20</field>
+        </record>
+        <record id="jn_7" model="civora.seasonal.journey.step">
+            <field name="name">Jour du départ</field>
+            <field name="offset_label">J</field>
+            <field name="sequence">70</field>
+        </record>
+        <record id="jn_7_a1" model="civora.seasonal.journey.action">
+            <field name="step_id" ref="jn_7"/>
+            <field name="channel">sms</field>
+            <field name="name">Merci pour votre séjour, à bientôt !</field>
+            <field name="is_ai" eval="False"/>
+            <field name="sequence">10</field>
+        </record>
+        <record id="jn_8" model="civora.seasonal.journey.step">
+            <field name="name">J+1 post-séjour</field>
+            <field name="offset_label">+1 jour</field>
+            <field name="sequence">80</field>
+        </record>
+        <record id="jn_8_a1" model="civora.seasonal.journey.action">
+            <field name="step_id" ref="jn_8"/>
+            <field name="channel">email</field>
+            <field name="name">Comment s'est passé votre séjour ? (2 min)</field>
+            <field name="is_ai" eval="True"/>
+            <field name="sequence">10</field>
+        </record>
+        <record id="jn_8_a2" model="civora.seasonal.journey.action">
+            <field name="step_id" ref="jn_8"/>
+            <field name="channel">whatsapp</field>
+            <field name="name">-15% sur votre prochaine réservation directe</field>
+            <field name="is_ai" eval="True"/>
+            <field name="sequence">20</field>
+        </record>
+        <record id="jn_9" model="civora.seasonal.journey.step">
+            <field name="name">J+30 nurturing</field>
+            <field name="offset_label">+30 jours</field>
+            <field name="sequence">90</field>
+        </record>
+        <record id="jn_9_a1" model="civora.seasonal.journey.action">
+            <field name="step_id" ref="jn_9"/>
+            <field name="channel">email</field>
+            <field name="name">Nouvelles disponibilités haute saison — early access VIP</field>
+            <field name="is_ai" eval="True"/>
+            <field name="sequence">10</field>
+        </record>
+
+        <!-- ============ EQUIPE TERRAIN & INVENTAIRE ============ -->
+        <record id="staff_mariam" model="civora.cleaning.staff">
+            <field name="name">Mariam B.</field>
+            <field name="speciality">Ménage</field>
+            <field name="rating">4.9</field>
+            <field name="sequence">10</field>
+        </record>
+        <record id="staff_yacouba" model="civora.cleaning.staff">
+            <field name="name">Yacouba D.</field>
+            <field name="speciality">Ménage / inspection</field>
+            <field name="rating">4.8</field>
+            <field name="sequence">20</field>
+        </record>
+        <record id="staff_karim" model="civora.cleaning.staff">
+            <field name="name">Karim T.</field>
+            <field name="speciality">Maintenance</field>
+            <field name="rating">4.7</field>
+            <field name="sequence">30</field>
+        </record>
+        <record id="inv_draps" model="civora.seasonal.inventory">
+            <field name="name">Draps king</field>
+            <field name="quantity">24</field>
+            <field name="threshold">10</field>
+            <field name="sequence">10</field>
+        </record>
+        <record id="inv_serviettes" model="civora.seasonal.inventory">
+            <field name="name">Serviettes bain</field>
+            <field name="quantity">8</field>
+            <field name="threshold">12</field>
+            <field name="sequence">20</field>
+        </record>
+        <record id="inv_kit" model="civora.seasonal.inventory">
+            <field name="name">Kit accueil</field>
+            <field name="quantity">32</field>
+            <field name="threshold">15</field>
+            <field name="sequence">30</field>
+        </record>
+        <record id="inv_produits" model="civora.seasonal.inventory">
+            <field name="name">Produits ménagers</field>
+            <field name="quantity">5</field>
+            <field name="threshold">8</field>
+            <field name="sequence">40</field>
+        </record>
+        <record id="inv_cafe" model="civora.seasonal.inventory">
+            <field name="name">Café &amp; thé</field>
+            <field name="quantity">18</field>
+            <field name="threshold">10</field>
+            <field name="sequence">50</field>
+        </record>
+
+        <!-- ============ PLANNING MENAGE & MAINTENANCE ============ -->
+        <record id="ct_1" model="civora.cleaning.task">
+            <field name="property_id" ref="prop_villa_assinie"/>
+            <field name="date" eval="(DateTime.now() + timedelta(days=0)).strftime('%Y-%m-%d')"/>
+            <field name="time_slot">matin</field>
+            <field name="task_type">menage</field>
+            <field name="priority">haute</field>
+            <field name="state">en_cours</field>
+            <field name="staff_id" ref="staff_mariam"/>
+        </record>
+        <record id="ct_2" model="civora.cleaning.task">
+            <field name="property_id" ref="prop_appart_cocody"/>
+            <field name="date" eval="(DateTime.now() + timedelta(days=0)).strftime('%Y-%m-%d')"/>
+            <field name="time_slot">apres_midi</field>
+            <field name="task_type">menage</field>
+            <field name="priority">haute</field>
+            <field name="state">a_planifier</field>
+        </record>
+        <record id="ct_3" model="civora.cleaning.task">
+            <field name="property_id" ref="prop_studio_plateau"/>
+            <field name="date" eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d')"/>
+            <field name="time_slot">matin</field>
+            <field name="task_type">maintenance</field>
+            <field name="priority">moyenne</field>
+            <field name="state">planifie</field>
+            <field name="staff_id" ref="staff_yacouba"/>
+        </record>
+        <record id="ct_4" model="civora.cleaning.task">
+            <field name="property_id" ref="prop_villa_riviera"/>
+            <field name="date" eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d')"/>
+            <field name="time_slot">apres_midi</field>
+            <field name="task_type">menage</field>
+            <field name="priority">haute</field>
+            <field name="state">planifie</field>
+            <field name="staff_id" ref="staff_mariam"/>
+        </record>
+        <record id="ct_5" model="civora.cleaning.task">
+            <field name="property_id" ref="prop_villa_assinie"/>
+            <field name="date" eval="(DateTime.now() + timedelta(days=3)).strftime('%Y-%m-%d')"/>
+            <field name="time_slot">matin</field>
+            <field name="task_type">inspection</field>
+            <field name="priority">basse</field>
+            <field name="state">planifie</field>
+            <field name="staff_id" ref="staff_yacouba"/>
+        </record>
+        <record id="ct_6" model="civora.cleaning.task">
+            <field name="property_id" ref="prop_appart_cocody"/>
+            <field name="date" eval="(DateTime.now() + timedelta(days=3)).strftime('%Y-%m-%d')"/>
+            <field name="time_slot">apres_midi</field>
+            <field name="task_type">maintenance</field>
+            <field name="priority">haute</field>
+            <field name="state">planifie</field>
+            <field name="staff_id" ref="staff_karim"/>
+        </record>
+
+
+        <!-- ============ SERVICES VENDUS PAR SEJOUR ============ -->
+        <record id="ul_1" model="civora.seasonal.upsell.line">
+            <field name="upsell_id" ref="ups_early"/>
+            <field name="reservation_id" ref="res_cocody_1"/>
+            <field name="quantity">1</field>
+        </record>
+        <record id="ul_2" model="civora.seasonal.upsell.line">
+            <field name="upsell_id" ref="ups_panier"/>
+            <field name="reservation_id" ref="res_cocody_1"/>
+            <field name="quantity">1</field>
+        </record>
+        <record id="ul_3" model="civora.seasonal.upsell.line">
+            <field name="upsell_id" ref="ups_transfert"/>
+            <field name="reservation_id" ref="res_assinie_1"/>
+            <field name="quantity">2</field>
+        </record>
+        <record id="ul_4" model="civora.seasonal.upsell.line">
+            <field name="upsell_id" ref="ups_chef"/>
+            <field name="reservation_id" ref="res_assinie_1"/>
+            <field name="quantity">4</field>
+        </record>
+        <record id="ul_5" model="civora.seasonal.upsell.line">
+            <field name="upsell_id" ref="ups_late"/>
+            <field name="reservation_id" ref="res_riviera_1"/>
+            <field name="quantity">1</field>
+        </record>
+        <record id="ul_6" model="civora.seasonal.upsell.line">
+            <field name="upsell_id" ref="ups_panier"/>
+            <field name="reservation_id" ref="res_plateau_1"/>
+            <field name="quantity">1</field>
+        </record>
+        <record id="ul_7" model="civora.seasonal.upsell.line">
+            <field name="upsell_id" ref="ups_mer"/>
+            <field name="reservation_id" ref="res_riviera_2"/>
+            <field name="quantity">1</field>
+        </record>
+        <record id="ul_8" model="civora.seasonal.upsell.line">
+            <field name="upsell_id" ref="ups_barista"/>
+            <field name="reservation_id" ref="res_riviera_2"/>
+            <field name="quantity">3</field>
+        </record>
+        <record id="ul_9" model="civora.seasonal.upsell.line">
+            <field name="upsell_id" ref="ups_blanchisserie"/>
+            <field name="reservation_id" ref="res_plateau_2"/>
+            <field name="quantity">2</field>
+        </record>
+
 </odoo>

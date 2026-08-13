@@ -191,6 +191,24 @@ export class CivoraProgram360 extends Component {
     get locLabel() {
         return [this.p.district, this.p.city].filter(Boolean).join(" · ") || "—";
     }
+    /**
+     * Un programme declare un nombre total de lots (ex. 48 logements au
+     * permis) mais la grille de lots peut n'etre saisie que partiellement.
+     * On ne masque pas l'ecart : on l'affiche, sinon l'ecran de liste et la
+     * fiche donnent deux verites differentes sans que personne ne sache
+     * laquelle est bonne.
+     */
+    get lotGapNotice() {
+        const declared = this.p.total_lots || 0;
+        const captured = this.p.lot_count || 0;
+        if (!declared || declared === captured) return "";
+        const missing = declared - captured;
+        if (missing > 0) {
+            return `${captured} lot(s) saisis sur ${declared} déclarés — ${missing} restent à créer dans « Plan & Lots ».`;
+        }
+        return `${captured} lot(s) saisis pour ${declared} déclarés — le total déclaré est à corriger.`;
+    }
+
     get totalLots() {
         return this.p.total_lots || this.p.lot_count || 0;
     }

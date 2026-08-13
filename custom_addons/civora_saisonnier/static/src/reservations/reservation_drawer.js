@@ -8,7 +8,7 @@ export class ReservationDrawer extends Component {
     static components = { CivoraDrawer };
     static props = {
         mode: { type: String },
-        recordId: { type: Number, optional: true },
+        recordId: { type: [Number, Boolean], optional: true },
         onSaved: { type: Function },
         onClose: { type: Function },
     };

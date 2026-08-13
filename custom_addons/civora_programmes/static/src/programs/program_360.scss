@@ -981,3 +981,13 @@
     color: $civora-muted;
     margin-top: 4px;
 }
+
+// Ecart entre lots declares au permis et lots reellement saisis au stock.
+.civora-prg-gap {
+    display: block;
+    margin-top: .2rem;
+    font-style: normal;
+    font-size: .72rem;
+    font-weight: 600;
+    color: $civora-warning;
+}

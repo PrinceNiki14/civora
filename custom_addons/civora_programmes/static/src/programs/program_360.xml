@@ -111,7 +111,11 @@
                             <div><span>LANCEMENT TRAVAUX</span><strong t-esc="monthLabel(p.start_date)"/></div>
                             <div><span>LIVRAISON PRÉVUE</span><strong t-esc="monthLabel(p.delivery_date)"/></div>
                             <div><span>BÂTIMENTS</span><strong t-esc="p.building_count or 0"/></div>
-                            <div><span>TOTAL LOTS</span><strong t-esc="totalLots"/></div>
+                            <div>
+                                <span>TOTAL LOTS</span>
+                                <strong t-esc="totalLots"/>
+                                <em t-if="lotGapNotice" class="civora-prg-gap" t-esc="lotGapNotice"/>
+                            </div>
                             <div><span>RÉGIME</span><strong t-esc="typeLabel"/></div>
                             <div><span>PERMIS DE CONSTRUIRE</span><strong t-esc="p.building_permit or '—'"/></div>
                             <div t-if="p.notary_office"><span>OFFICE NOTARIAL</span><strong t-esc="p.notary_office"/></div>
