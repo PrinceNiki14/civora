@@ -3,6 +3,16 @@ import { Component, useState, onWillStart, useRef } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 import { CivoraDrawer } from "@civora_core/components/civora_drawer";
 
+// Memes libelles que les selecteurs "Canal" et "Statut" de la demo.
+const SOURCES = [
+    ["direct", "Direct"], ["airbnb", "Airbnb"], ["booking", "Booking.com"],
+    ["whatsapp", "WhatsApp"], ["referral", "Référence"], ["other", "Autre"],
+];
+const STATES = [
+    ["draft", "Brouillon"], ["confirmed", "Confirmée"], ["checkin", "En séjour"],
+    ["checkout", "Terminée"], ["cancelled", "Annulée"],
+];
+
 export class ReservationDrawer extends Component {
     static template = "civora_saisonnier.ReservationDrawer";
     static components = { CivoraDrawer };
@@ -20,8 +30,11 @@ export class ReservationDrawer extends Component {
             form: this.emptyForm(),
             properties: [],
             contacts: [],
+            showMore: false,
             saving: false,
         });
+        this.SOURCES = SOURCES;
+        this.STATES = STATES;
         // t-att-value ne repositionne que l'ATTRIBUT : des que l'utilisateur
         // a saisi une valeur, l'input est "dirty" et n'affiche plus l'attribut.
         // Le tarif etant pre-rempli depuis le bien, on force la propriete DOM.
@@ -39,6 +52,7 @@ export class ReservationDrawer extends Component {
             tariff_night: 0,
             deposit_amount: 0,
             source: "direct",
+            state: "confirmed",
             notes: "",
             access_instructions: "",
         };
@@ -61,7 +75,7 @@ export class ReservationDrawer extends Component {
                 [this.props.recordId],
                 ["property_id", "guest_id", "checkin_date", "checkout_date",
                  "num_guests", "tariff_night", "deposit_amount", "source",
-                 "notes", "access_instructions"]);
+                 "state", "notes", "access_instructions"]);
             this.state.form = {
                 property_id: rec.property_id ? rec.property_id[0] : null,
                 guest_id: rec.guest_id ? rec.guest_id[0] : null,
@@ -71,6 +85,7 @@ export class ReservationDrawer extends Component {
                 tariff_night: rec.tariff_night || 0,
                 deposit_amount: rec.deposit_amount || 0,
                 source: rec.source || "direct",
+                state: rec.state || "confirmed",
                 notes: rec.notes || "",
                 access_instructions: rec.access_instructions || "",
             };
@@ -79,6 +94,30 @@ export class ReservationDrawer extends Component {
 
     setField(field, ev) {
         this.state.form[field] = ev.target.value;
+    }
+
+    toggleMore() { this.state.showMore = !this.state.showMore; }
+
+    // Nombre de nuits entre les deux dates : c'est ce que la demo faisait
+    // saisir, on le deduit au lieu de le demander.
+    get nights() {
+        const f = this.state.form;
+        if (!f.checkin_date || !f.checkout_date) return 0;
+        const a = new Date(f.checkin_date), b = new Date(f.checkout_date);
+        const n = Math.round((b - a) / 86400000);
+        return n > 0 ? n : 0;
+    }
+
+    get nightsLabel() {
+        const n = this.nights;
+        if (!n) return "Renseignez les dates du séjour";
+        const tarif = parseInt(this.state.form.tariff_night, 10) || 0;
+        return `${n} nuit${n > 1 ? "s" : ""} × ${tarif.toLocaleString("fr-FR")} F`;
+    }
+
+    get totalLabel() {
+        const total = this.nights * (parseInt(this.state.form.tariff_night, 10) || 0);
+        return total ? total.toLocaleString("fr-FR") : "—";
     }
 
     setNumber(field, ev) {
@@ -131,6 +170,7 @@ export class ReservationDrawer extends Component {
                 tariff_night: this.state.form.tariff_night,
                 deposit_amount: this.state.form.deposit_amount,
                 source: this.state.form.source,
+                state: this.state.form.state,
                 notes: this.state.form.notes || false,
                 access_instructions: this.state.form.access_instructions || false,
             };

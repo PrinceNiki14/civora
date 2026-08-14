@@ -3,6 +3,18 @@ import { Component, useState, onWillStart } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 import { CivoraDrawer } from "@civora_core/components/civora_drawer";
 
+// Meme libelles que le selecteur "Statut" de la demo, mais adosses aux
+// 7 etats reels du modele (la demo n'en connait que 4).
+const STATES = [
+    ["mandat", "Mandat signé"],
+    ["commercialisation", "En commercialisation"],
+    ["offre", "Promesse"],
+    ["compromis", "Compromis signé"],
+    ["acte", "Acte authentique"],
+    ["cloture", "Encaissé"],
+    ["annule", "Annulée"],
+];
+
 export class SaleDrawer extends Component {
     static template = "civora_ventes.SaleDrawer";
     static components = { CivoraDrawer };
@@ -22,6 +34,10 @@ export class SaleDrawer extends Component {
                 property_id: null,
                 seller_id: null,
                 buyer_id: null,
+                agent_id: null,
+                state: "mandat",
+                compromis_date: "",
+                closing_date: "",
                 mandate_type: "simple",
                 mandate_date: "",
                 mandate_end_date: "",
@@ -35,34 +51,46 @@ export class SaleDrawer extends Component {
             },
             properties: [],
             contacts: [],
+            agents: [],
+            showMore: false,
             saving: false,
         });
+        this.STATES = STATES;
         onWillStart(() => this.loadData());
     }
 
     async loadData() {
-        const [properties, contacts] = await Promise.all([
+        const [properties, contacts, agents] = await Promise.all([
             this.orm.searchRead("civora.property", [["transaction", "=", "vente"]], [
                 "name", "ref", "price", "city", "neighborhood",
             ], { order: "name asc", limit: 500 }),
             this.orm.searchRead("res.partner", [["civora_is_contact", "=", true]], [
                 "name", "city",
             ], { order: "name asc", limit: 500 }),
+            // "Commercial" de la demo = l'agent en charge du dossier.
+            this.orm.searchRead("res.users", [["share", "=", false]], ["name"],
+                { order: "name asc", limit: 200 }),
         ]);
         this.state.properties = properties;
         this.state.contacts = contacts;
+        this.state.agents = agents;
 
         if (this.props.mode === "edit" && this.props.recordId) {
             const [rec] = await this.orm.read("civora.sale", [this.props.recordId], [
                 "property_id", "seller_id", "buyer_id", "mandate_type", "mandate_date",
                 "mandate_end_date", "asking_price", "sale_amount", "amount_paid",
                 "commission_rate", "notary_name", "notary_phone", "notes",
+                "agent_id", "state", "compromis_date", "closing_date",
             ]);
             if (rec) {
                 this.state.form = {
                     property_id: rec.property_id ? rec.property_id[0] : null,
                     seller_id: rec.seller_id ? rec.seller_id[0] : null,
                     buyer_id: rec.buyer_id ? rec.buyer_id[0] : null,
+                    agent_id: rec.agent_id ? rec.agent_id[0] : null,
+                    state: rec.state || "mandat",
+                    compromis_date: rec.compromis_date || "",
+                    closing_date: rec.closing_date || "",
                     mandate_type: rec.mandate_type || "simple",
                     mandate_date: rec.mandate_date || "",
                     mandate_end_date: rec.mandate_end_date || "",
@@ -77,6 +105,15 @@ export class SaleDrawer extends Component {
             }
         }
     }
+
+    // La ville n'est pas saisie : elle appartient au bien. On l'affiche pour
+    // rester fidele a la demo, sans dupliquer la donnee.
+    get propertyCity() {
+        const prop = this.state.properties.find(p => p.id === this.state.form.property_id);
+        return prop ? (prop.city || "") : "";
+    }
+
+    toggleMore() { this.state.showMore = !this.state.showMore; }
 
     onFieldChange(field, ev) {
         this.state.form[field] = ev.target.value;
@@ -135,6 +172,10 @@ export class SaleDrawer extends Component {
                 property_id: f.property_id || false,
                 seller_id: f.seller_id || false,
                 buyer_id: f.buyer_id || false,
+                agent_id: f.agent_id || false,
+                state: f.state || "mandat",
+                compromis_date: f.compromis_date || false,
+                closing_date: f.closing_date || false,
                 mandate_type: f.mandate_type,
                 mandate_date: f.mandate_date || false,
                 mandate_end_date: f.mandate_end_date || false,

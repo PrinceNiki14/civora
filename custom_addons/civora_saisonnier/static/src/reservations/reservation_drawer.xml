@@ -1,123 +1,136 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
 <t t-name="civora_saisonnier.ReservationDrawer">
-    <CivoraDrawer title="props.mode === 'edit' ? 'Modifier la réservation' : 'Nouvelle réservation'"
-                  icon="'fa-calendar-plus-o'"
-                  size="'lg'"
+    <!-- Modale CENTREE comme la demo (carte de 486px), et non plus un panneau
+         lateral. Ordre des champs identique : Voyageur, Bien, dates, canal et
+         statut, puis les revenus. -->
+    <CivoraDrawer variant="'modal'" size="'sm'"
+                  title="props.mode === 'edit' ? 'Modifier la réservation' : 'Nouvelle réservation'"
                   onClose="props.onClose">
-        <div class="civora-drawer-form civora-reservation-form">
-            <!-- Bien -->
-            <div class="civora-form-section">
-                <h4>Bien saisonnier</h4>
-                <div class="civora-form-grid">
-                    <div class="civora-field">
-                        <label>Bien *</label>
-                        <select t-on-change="(ev) => this.onPropertyChange(ev)">
-                            <option value="">— Sélectionner —</option>
-                            <t t-foreach="state.properties" t-as="p" t-key="p.id">
-                                <option t-att-value="p.id" t-att-selected="state.form.property_id === p.id">
-                                    <t t-esc="p.name"/> (<t t-esc="p.ref || ''"/>)
-                                </option>
-                            </t>
-                        </select>
-                    </div>
+        <div class="civora-resa-form">
+
+            <div class="civora-resa-field">
+                <label>Voyageur <span class="civora-req">*</span></label>
+                <select t-on-change="(ev) => this.setField('guest_id', ev)">
+                    <option value="">— Sélectionner —</option>
+                    <t t-foreach="state.contacts" t-as="c" t-key="c.id">
+                        <option t-att-value="c.id" t-att-selected="state.form.guest_id === c.id">
+                            <t t-esc="c.name"/>
+                        </option>
+                    </t>
+                </select>
+            </div>
+
+            <div class="civora-resa-field">
+                <label>Bien <span class="civora-req">*</span></label>
+                <select t-on-change="(ev) => this.onPropertyChange(ev)">
+                    <option value="">— Sélectionner —</option>
+                    <t t-foreach="state.properties" t-as="p" t-key="p.id">
+                        <option t-att-value="p.id" t-att-selected="state.form.property_id === p.id">
+                            <t t-esc="p.name"/>
+                        </option>
+                    </t>
+                </select>
+            </div>
+
+            <!-- La demo demande "Jour arrivee" (un numero de jour du mois) et
+                 un nombre de nuits : impossible de reserver a cheval sur deux
+                 mois. On garde arrivee + depart, et on affiche le nombre de
+                 nuits calcule, qui est l'information que la demo montrait. -->
+            <div class="civora-resa-grid2">
+                <div class="civora-resa-field">
+                    <label>Arrivée <span class="civora-req">*</span></label>
+                    <input type="date" t-att-value="state.form.checkin_date"
+                           t-on-input="(ev) => this.setField('checkin_date', ev)"/>
+                </div>
+                <div class="civora-resa-field">
+                    <label>Départ <span class="civora-req">*</span></label>
+                    <input type="date" t-att-value="state.form.checkout_date"
+                           t-on-input="(ev) => this.setField('checkout_date', ev)"/>
                 </div>
             </div>
 
-            <!-- Voyageur -->
-            <div class="civora-form-section">
-                <h4>Voyageur</h4>
-                <div class="civora-form-grid">
-                    <div class="civora-field">
-                        <label>Voyageur *</label>
-                        <select t-on-change="(ev) => this.setSelect('guest_id', ev)">
-                            <option value="">— Sélectionner —</option>
-                            <t t-foreach="state.contacts" t-as="c" t-key="c.id">
-                                <option t-att-value="c.id" t-att-selected="state.form.guest_id === c.id">
-                                    <t t-esc="c.name"/>
-                                </option>
-                            </t>
-                        </select>
-                    </div>
-                    <div class="civora-field">
-                        <label>Nombre de voyageurs</label>
-                        <input type="number" min="1" t-att-value="state.form.num_guests"
-                               t-on-change="(ev) => this.setNumber('num_guests', ev)"/>
-                    </div>
+            <div class="civora-resa-grid2">
+                <div class="civora-resa-field">
+                    <label>Canal</label>
+                    <select t-on-change="(ev) => this.setField('source', ev)">
+                        <t t-foreach="SOURCES" t-as="s" t-key="s[0]">
+                            <option t-att-value="s[0]" t-att-selected="state.form.source === s[0]">
+                                <t t-esc="s[1]"/>
+                            </option>
+                        </t>
+                    </select>
+                </div>
+                <div class="civora-resa-field">
+                    <label>Statut</label>
+                    <select t-on-change="(ev) => this.setField('state', ev)">
+                        <t t-foreach="STATES" t-as="s" t-key="s[0]">
+                            <option t-att-value="s[0]" t-att-selected="state.form.state === s[0]">
+                                <t t-esc="s[1]"/>
+                            </option>
+                        </t>
+                    </select>
                 </div>
             </div>
 
-            <!-- Dates -->
-            <div class="civora-form-section">
-                <h4>Séjour</h4>
-                <div class="civora-form-grid">
-                    <div class="civora-field">
-                        <label>Date d'arrivée *</label>
-                        <input type="date" t-att-value="state.form.checkin_date"
-                               t-on-change="(ev) => this.setField('checkin_date', ev)"/>
-                    </div>
-                    <div class="civora-field">
-                        <label>Date de départ *</label>
-                        <input type="date" t-att-value="state.form.checkout_date"
-                               t-on-change="(ev) => this.setField('checkout_date', ev)"/>
-                    </div>
+            <div class="civora-resa-grid2">
+                <div class="civora-resa-field">
+                    <label>Tarif / nuit (FCFA) <span class="civora-req">*</span></label>
+                    <input type="number" min="0" step="5000" t-ref="tariff"
+                           t-att-value="state.form.tariff_night"
+                           t-on-input="(ev) => this.setField('tariff_night', ev)"/>
+                </div>
+                <div class="civora-resa-field">
+                    <label>Voyageurs</label>
+                    <input type="number" min="1" step="1" t-att-value="state.form.num_guests"
+                           t-on-input="(ev) => this.setField('num_guests', ev)"/>
                 </div>
             </div>
 
-            <!-- Tarification -->
-            <div class="civora-form-section">
-                <h4>Tarification</h4>
-                <div class="civora-form-grid">
-                    <div class="civora-field">
-                        <label>Tarif / nuit (FCFA) *</label>
-                        <input type="number" min="0" step="1000" t-ref="tariff"
-                               t-att-value="state.form.tariff_night"
-                               t-on-change="(ev) => this.setNumber('tariff_night', ev)"/>
-                    </div>
-                    <div class="civora-field">
-                        <label>Caution (FCFA)</label>
-                        <input type="number" min="0" step="1000" t-att-value="state.form.deposit_amount"
-                               t-on-change="(ev) => this.setNumber('deposit_amount', ev)"/>
-                    </div>
-                    <div class="civora-field">
-                        <label>Source</label>
-                        <select t-on-change="(ev) => this.setField('source', ev)">
-                            <option value="direct" t-att-selected="state.form.source === 'direct'">Direct</option>
-                            <option value="airbnb" t-att-selected="state.form.source === 'airbnb'">Airbnb</option>
-                            <option value="booking" t-att-selected="state.form.source === 'booking'">Booking.com</option>
-                            <option value="whatsapp" t-att-selected="state.form.source === 'whatsapp'">WhatsApp</option>
-                            <option value="referral" t-att-selected="state.form.source === 'referral'">Référence</option>
-                            <option value="other" t-att-selected="state.form.source === 'other'">Autre</option>
-                        </select>
-                    </div>
-                </div>
+            <!-- "Revenus (FCFA)" de la demo, mais CALCULE : le laisser
+                 saisissable permettrait d'enregistrer un sejour dont le total
+                 contredit son propre tarif. -->
+            <div class="civora-resa-total">
+                <span class="civora-resa-total-k">Revenus (FCFA)</span>
+                <span class="civora-resa-total-v"><t t-esc="totalLabel"/></span>
+                <span class="civora-resa-total-sub"><t t-esc="nightsLabel"/></span>
             </div>
 
-            <!-- Notes -->
-            <div class="civora-form-section">
-                <h4>Informations complémentaires</h4>
-                <div class="civora-form-grid civora-form-grid-1">
-                    <div class="civora-field">
-                        <label>Instructions d'accès</label>
-                        <textarea rows="2"
-                                  t-on-change="(ev) => this.setField('access_instructions', ev)"><t t-esc="state.form.access_instructions"/></textarea>
+            <div class="civora-resa-more">
+                <button type="button" class="civora-resa-more-toggle"
+                        t-on-click="() => this.toggleMore()">
+                    <i t-attf-class="fa fa-chevron-{{ state.showMore ? 'down' : 'right' }}"/>
+                    Caution, accès et notes
+                </button>
+
+                <t t-if="state.showMore">
+                    <div class="civora-resa-more-body">
+                        <div class="civora-resa-field">
+                            <label>Caution (FCFA)</label>
+                            <input type="number" min="0" step="10000"
+                                   t-att-value="state.form.deposit_amount"
+                                   t-on-input="(ev) => this.setField('deposit_amount', ev)"/>
+                        </div>
+                        <div class="civora-resa-field">
+                            <label>Instructions d'accès</label>
+                            <textarea rows="2" placeholder="Code portail, gardien…"
+                                      t-on-input="(ev) => this.setField('access_instructions', ev)"><t t-esc="state.form.access_instructions"/></textarea>
+                        </div>
+                        <div class="civora-resa-field">
+                            <label>Notes</label>
+                            <textarea rows="2" placeholder="Notes internes…"
+                                      t-on-input="(ev) => this.setField('notes', ev)"><t t-esc="state.form.notes"/></textarea>
+                        </div>
                     </div>
-                    <div class="civora-field">
-                        <label>Notes</label>
-                        <textarea rows="2"
-                                  t-on-change="(ev) => this.setField('notes', ev)"><t t-esc="state.form.notes"/></textarea>
-                    </div>
-                </div>
+                </t>
             </div>
         </div>
 
         <t t-set-slot="footer">
-            <!-- Annuler a gauche, action a droite : meme ordre que tous les
-                 autres drawers CIVORA. Ce drawer etait le seul inverse. -->
             <button class="civora-btn civora-btn-outline" t-on-click="props.onClose">Annuler</button>
             <button class="civora-btn civora-btn-accent" t-on-click="save" t-att-disabled="state.saving">
-                <t t-if="state.saving">Enregistrement...</t>
-                <t t-else="">Enregistrer</t>
+                <t t-if="state.saving">Enregistrement…</t>
+                <t t-else=""><t t-esc="props.mode === 'edit' ? 'Enregistrer' : 'Créer'"/></t>
             </button>
         </t>
     </CivoraDrawer>

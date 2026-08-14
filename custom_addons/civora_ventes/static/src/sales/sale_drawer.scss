@@ -78,3 +78,98 @@
     font-size: .72rem;
     color: $civora-muted;
 }
+
+// =====================================================================
+// Formulaire "Nouvelle vente" — modale centree, calquee sur la demo :
+// une colonne pour le bien, puis des paires de champs. L'ancien panneau
+// lateral utilisait des sections a titres, absentes de la demo.
+// =====================================================================
+.civora-sale-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.civora-sale-grid2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+
+    @media (max-width: 640px) { grid-template-columns: 1fr; }
+}
+
+.civora-sale-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    > label {
+        font-size: 13px;
+        font-weight: 600;
+        color: $civora-fg;
+    }
+
+    input,
+    select,
+    textarea {
+        width: 100%;
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius-sm;
+        padding: 9px 11px;
+        font-size: 14px;
+        color: $civora-fg;
+        background: $civora-card;
+        font-family: inherit;
+
+        &:focus {
+            outline: none;
+            border-color: $civora-accent;
+            box-shadow: 0 0 0 3px rgba($civora-accent, .12);
+        }
+    }
+
+    textarea { resize: vertical; min-height: 72px; }
+}
+
+// Champ derive : apparence d'un input desactive, mais ce n'est pas un input.
+.civora-sale-readonly {
+    border: 1px solid $civora-border;
+    border-radius: $civora-radius-sm;
+    padding: 9px 11px;
+    font-size: 14px;
+    background: $civora-bg;
+    color: $civora-muted;
+    min-height: 38px;
+    display: flex;
+    align-items: center;
+}
+
+// Bloc repliable : nos champs metier qui n'existent pas dans la demo.
+.civora-sale-more {
+    border-top: 1px solid $civora-border;
+    padding-top: 12px;
+}
+
+.civora-sale-more-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: 0;
+    padding: 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: $civora-muted;
+    cursor: pointer;
+
+    &:hover { color: $civora-fg; }
+
+    i { font-size: 11px; width: 10px; }
+}
+
+.civora-sale-more-body {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 14px;
+}

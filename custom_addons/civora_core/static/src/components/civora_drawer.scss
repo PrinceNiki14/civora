@@ -123,3 +123,11 @@
     from { opacity: 0; transform: translate(-50%, -48%) scale(.98); }
     to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 }
+
+// Asterisque de champ obligatoire. Declare ici plutot que dans un module :
+// les formulaires de plusieurs modules l'utilisent, et un module ne doit pas
+// dependre du CSS d'un autre pour s'afficher correctement.
+.civora-req {
+    color: $civora-danger;
+    font-weight: 700;
+}

@@ -1,129 +1,178 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
 <t t-name="civora_ventes.SaleDrawer">
-    <CivoraDrawer title="props.mode === 'edit' ? 'Modifier le dossier' : 'Nouveau dossier de vente'" onClose="props.onClose">
-        <div class="civora-sale-drawer">
-            <!-- Bien -->
-            <div class="civora-drawer-section">
-                <h4>Bien</h4>
-                <div class="civora-field-group full">
-                    <div class="civora-field">
-                        <label>Bien immobilier</label>
-                        <select t-on-change="(ev) => this.onPropertyChange(ev)">
-                            <option value="">— Sélectionner un bien —</option>
-                            <t t-foreach="state.properties" t-as="p" t-key="p.id">
-                                <option t-att-value="p.id" t-att-selected="state.form.property_id === p.id">
-                                    <t t-esc="p.name"/> — <t t-esc="p.city"/>
-                                </option>
-                            </t>
-                        </select>
-                    </div>
+    <!-- Modale CENTREE, largeur "sm" (480px) : la demo affiche une carte de
+         486px au centre de l'ecran, pas un panneau lateral. Les champs suivent
+         son ordre et sa grille a deux colonnes. -->
+    <CivoraDrawer variant="'modal'" size="'sm'"
+                  title="props.mode === 'edit' ? 'Modifier le dossier' : 'Nouvelle vente'"
+                  onClose="props.onClose">
+        <div class="civora-sale-form">
+
+            <div class="civora-sale-field">
+                <label>Bien <span class="civora-req">*</span></label>
+                <select t-on-change="(ev) => this.onPropertyChange(ev)">
+                    <option value="">— Sélectionner un bien —</option>
+                    <t t-foreach="state.properties" t-as="p" t-key="p.id">
+                        <option t-att-value="p.id" t-att-selected="state.form.property_id === p.id">
+                            <t t-esc="p.name"/>
+                        </option>
+                    </t>
+                </select>
+            </div>
+
+            <div class="civora-sale-grid2">
+                <div class="civora-sale-field">
+                    <label>Ville</label>
+                    <!-- Derivee du bien : la rendre saisissable creerait une
+                         seconde source de verite pour la meme information.
+                         Rendu en <div> et non en <input readonly> : t-att-value
+                         ne repositionne que l'ATTRIBUT, la propriete DOM du
+                         champ ne suit pas et la ville restait vide. -->
+                    <div class="civora-sale-readonly"><t t-esc="propertyCity or '—'"/></div>
+                </div>
+                <div class="civora-sale-field">
+                    <label>Commercial</label>
+                    <select t-on-change="(ev) => this.onSelectChange('agent_id', ev)">
+                        <option value="">— Non assigné —</option>
+                        <t t-foreach="state.agents" t-as="a" t-key="a.id">
+                            <option t-att-value="a.id" t-att-selected="state.form.agent_id === a.id">
+                                <t t-esc="a.name"/>
+                            </option>
+                        </t>
+                    </select>
                 </div>
             </div>
 
-            <!-- Vendeur -->
-            <div class="civora-drawer-section">
-                <h4>Vendeur</h4>
-                <div class="civora-field-group">
-                    <div class="civora-field">
-                        <label>Propriétaire / Vendeur</label>
-                        <select t-on-change="(ev) => this.onSelectChange('seller_id', ev)">
-                            <option value="">— Sélectionner —</option>
-                            <t t-foreach="state.contacts" t-as="c" t-key="c.id">
-                                <option t-att-value="c.id" t-att-selected="state.form.seller_id === c.id">
-                                    <t t-esc="c.name"/>
-                                </option>
-                            </t>
-                        </select>
-                    </div>
-                    <div class="civora-field">
-                        <label>Acquéreur</label>
-                        <select t-on-change="(ev) => this.onSelectChange('buyer_id', ev)">
-                            <option value="">— Pas encore identifié —</option>
-                            <t t-foreach="state.contacts" t-as="c" t-key="c.id">
-                                <option t-att-value="c.id" t-att-selected="state.form.buyer_id === c.id">
-                                    <t t-esc="c.name"/>
-                                </option>
-                            </t>
-                        </select>
-                    </div>
+            <div class="civora-sale-grid2">
+                <div class="civora-sale-field">
+                    <label>Acquéreur</label>
+                    <select t-on-change="(ev) => this.onSelectChange('buyer_id', ev)">
+                        <option value="">— Pas encore identifié —</option>
+                        <t t-foreach="state.contacts" t-as="c" t-key="c.id">
+                            <option t-att-value="c.id" t-att-selected="state.form.buyer_id === c.id">
+                                <t t-esc="c.name"/>
+                            </option>
+                        </t>
+                    </select>
+                </div>
+                <div class="civora-sale-field">
+                    <label>Vendeur</label>
+                    <select t-on-change="(ev) => this.onSelectChange('seller_id', ev)">
+                        <option value="">— Sélectionner —</option>
+                        <t t-foreach="state.contacts" t-as="c" t-key="c.id">
+                            <option t-att-value="c.id" t-att-selected="state.form.seller_id === c.id">
+                                <t t-esc="c.name"/>
+                            </option>
+                        </t>
+                    </select>
                 </div>
             </div>
 
-            <!-- Transaction -->
-            <div class="civora-drawer-section">
-                <h4>Transaction</h4>
-                <div class="civora-field-group">
-                    <div class="civora-field">
-                        <label>Prix de vente final (FCFA)</label>
-                        <input type="number" min="0" step="1000000" placeholder="0"
-                               t-att-value="state.form.sale_amount"
-                               t-on-change="(ev) => this.onFieldChange('sale_amount', ev)"/>
-                    </div>
-                    <div class="civora-field">
-                        <label>Montant encaissé (FCFA)</label>
-                        <input type="number" min="0" step="1000000" placeholder="0"
-                               t-att-value="state.form.amount_paid"
-                               t-on-change="(ev) => this.onFieldChange('amount_paid', ev)"/>
-                        <span class="civora-field-hint">Acompte, séquestre et solde cumulés.</span>
-                    </div>
+            <div class="civora-sale-grid2">
+                <div class="civora-sale-field">
+                    <label>Montant (FCFA) <span class="civora-req">*</span></label>
+                    <input type="number" min="0" step="1000000" placeholder="0"
+                           t-att-value="state.form.sale_amount"
+                           t-on-input="(ev) => this.onFieldChange('sale_amount', ev)"/>
+                </div>
+                <div class="civora-sale-field">
+                    <label>Commission (%)</label>
+                    <input type="number" step="0.5" t-att-value="state.form.commission_rate"
+                           t-on-input="(ev) => this.onFieldChange('commission_rate', ev)"/>
                 </div>
             </div>
 
-            <!-- Mandat -->
-            <div class="civora-drawer-section">
-                <h4>Mandat</h4>
-                <div class="civora-field-group">
-                    <div class="civora-field">
-                        <label>Type de mandat</label>
-                        <select t-on-change="(ev) => this.onFieldChange('mandate_type', ev)">
-                            <option value="simple" t-att-selected="state.form.mandate_type === 'simple'">Simple</option>
-                            <option value="exclusif" t-att-selected="state.form.mandate_type === 'exclusif'">Exclusif</option>
-                            <option value="delegue" t-att-selected="state.form.mandate_type === 'delegue'">Délégué</option>
-                        </select>
-                    </div>
-                    <div class="civora-field">
-                        <label>Prix demandé (FCFA)</label>
-                        <input type="number" t-att-value="state.form.asking_price" t-on-input="(ev) => this.onFieldChange('asking_price', ev)"/>
-                    </div>
-                    <div class="civora-field">
-                        <label>Date du mandat</label>
-                        <input type="date" t-att-value="state.form.mandate_date" t-on-input="(ev) => this.onFieldChange('mandate_date', ev)"/>
-                    </div>
-                    <div class="civora-field">
-                        <label>Fin du mandat</label>
-                        <input type="date" t-att-value="state.form.mandate_end_date" t-on-input="(ev) => this.onFieldChange('mandate_end_date', ev)"/>
-                    </div>
+            <div class="civora-sale-grid2">
+                <div class="civora-sale-field">
+                    <label>Statut</label>
+                    <select t-on-change="(ev) => this.onFieldChange('state', ev)">
+                        <t t-foreach="STATES" t-as="s" t-key="s[0]">
+                            <option t-att-value="s[0]" t-att-selected="state.form.state === s[0]">
+                                <t t-esc="s[1]"/>
+                            </option>
+                        </t>
+                    </select>
+                </div>
+                <div class="civora-sale-field">
+                    <label>Acompte (FCFA)</label>
+                    <input type="number" min="0" step="1000000" placeholder="0"
+                           t-att-value="state.form.amount_paid"
+                           t-on-input="(ev) => this.onFieldChange('amount_paid', ev)"/>
                 </div>
             </div>
 
-            <!-- Commission & Notaire -->
-            <div class="civora-drawer-section">
-                <h4>Commission et notaire</h4>
-                <div class="civora-field-group">
-                    <div class="civora-field">
-                        <label>Taux de commission (%)</label>
-                        <input type="number" step="0.5" t-att-value="state.form.commission_rate" t-on-input="(ev) => this.onFieldChange('commission_rate', ev)"/>
-                    </div>
-                    <div class="civora-field">
-                        <label>Notaire</label>
-                        <input type="text" t-att-value="state.form.notary_name" t-on-input="(ev) => this.onFieldChange('notary_name', ev)" placeholder="Me Konan..."/>
-                    </div>
-                    <div class="civora-field">
-                        <label>Tel. notaire</label>
-                        <input type="text" t-att-value="state.form.notary_phone" t-on-input="(ev) => this.onFieldChange('notary_phone', ev)" placeholder="+225 ..."/>
-                    </div>
+            <div class="civora-sale-grid2">
+                <div class="civora-sale-field">
+                    <label>Date signature</label>
+                    <input type="date" t-att-value="state.form.compromis_date"
+                           t-on-input="(ev) => this.onFieldChange('compromis_date', ev)"/>
+                </div>
+                <div class="civora-sale-field">
+                    <label>Date closing</label>
+                    <input type="date" t-att-value="state.form.closing_date"
+                           t-on-input="(ev) => this.onFieldChange('closing_date', ev)"/>
                 </div>
             </div>
 
-            <!-- Notes -->
-            <div class="civora-drawer-section">
-                <h4>Notes</h4>
-                <div class="civora-field-group full">
-                    <div class="civora-field">
-                        <textarea t-on-input="(ev) => this.onFieldChange('notes', ev)" placeholder="Notes internes…"><t t-esc="state.form.notes"/></textarea>
+            <!-- Nos champs metier au-dela de la demo. Replies par defaut :
+                 a l'ouverture le formulaire est celui de la demo, mais rien
+                 n'est perdu cote back (mandat, notaire, notes). -->
+            <div class="civora-sale-more">
+                <button type="button" class="civora-sale-more-toggle"
+                        t-on-click="() => this.toggleMore()">
+                    <i t-attf-class="fa fa-chevron-{{ state.showMore ? 'down' : 'right' }}"/>
+                    Mandat, notaire et notes
+                </button>
+
+                <t t-if="state.showMore">
+                    <div class="civora-sale-more-body">
+                        <div class="civora-sale-grid2">
+                            <div class="civora-sale-field">
+                                <label>Type de mandat</label>
+                                <select t-on-change="(ev) => this.onFieldChange('mandate_type', ev)">
+                                    <option value="simple" t-att-selected="state.form.mandate_type === 'simple'">Simple</option>
+                                    <option value="exclusif" t-att-selected="state.form.mandate_type === 'exclusif'">Exclusif</option>
+                                    <option value="delegue" t-att-selected="state.form.mandate_type === 'delegue'">Délégué</option>
+                                </select>
+                            </div>
+                            <div class="civora-sale-field">
+                                <label>Prix demandé (FCFA)</label>
+                                <input type="number" t-att-value="state.form.asking_price"
+                                       t-on-input="(ev) => this.onFieldChange('asking_price', ev)"/>
+                            </div>
+                        </div>
+                        <div class="civora-sale-grid2">
+                            <div class="civora-sale-field">
+                                <label>Date du mandat</label>
+                                <input type="date" t-att-value="state.form.mandate_date"
+                                       t-on-input="(ev) => this.onFieldChange('mandate_date', ev)"/>
+                            </div>
+                            <div class="civora-sale-field">
+                                <label>Fin du mandat</label>
+                                <input type="date" t-att-value="state.form.mandate_end_date"
+                                       t-on-input="(ev) => this.onFieldChange('mandate_end_date', ev)"/>
+                            </div>
+                        </div>
+                        <div class="civora-sale-grid2">
+                            <div class="civora-sale-field">
+                                <label>Notaire</label>
+                                <input type="text" placeholder="Me Konan…" t-att-value="state.form.notary_name"
+                                       t-on-input="(ev) => this.onFieldChange('notary_name', ev)"/>
+                            </div>
+                            <div class="civora-sale-field">
+                                <label>Tél. notaire</label>
+                                <input type="text" placeholder="+225 …" t-att-value="state.form.notary_phone"
+                                       t-on-input="(ev) => this.onFieldChange('notary_phone', ev)"/>
+                            </div>
+                        </div>
+                        <div class="civora-sale-field">
+                            <label>Notes internes</label>
+                            <textarea rows="3" t-on-input="(ev) => this.onFieldChange('notes', ev)"
+                                      placeholder="Notes internes…"><t t-esc="state.form.notes"/></textarea>
+                        </div>
                     </div>
-                </div>
+                </t>
             </div>
 
             <t t-if="state.error">
@@ -131,16 +180,16 @@
                     <i class="fa fa-exclamation-triangle"/> <t t-esc="state.error"/>
                 </div>
             </t>
-
-            <!-- Footer -->
-            <div class="civora-drawer-footer">
-                <button class="civora-btn civora-btn-outline" t-on-click="props.onClose">Annuler</button>
-                <button class="civora-btn civora-btn-accent" t-on-click="() => this.save()" t-att-disabled="state.saving">
-                    <t t-if="state.saving">Enregistrement...</t>
-                    <t t-else="">Enregistrer</t>
-                </button>
-            </div>
         </div>
+
+        <t t-set-slot="footer">
+            <button class="civora-btn civora-btn-outline" t-on-click="props.onClose">Annuler</button>
+            <button class="civora-btn civora-btn-accent" t-on-click="() => this.save()"
+                    t-att-disabled="state.saving">
+                <t t-if="state.saving">Enregistrement…</t>
+                <t t-else="">Enregistrer</t>
+            </button>
+        </t>
     </CivoraDrawer>
 </t>
 </templates>

@@ -58,3 +58,113 @@
         }
     }
 }
+
+// =====================================================================
+// Formulaire "Nouvelle réservation" — modale centrée calquée sur la démo.
+// =====================================================================
+.civora-resa-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.civora-resa-grid2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+
+    @media (max-width: 640px) { grid-template-columns: 1fr; }
+}
+
+.civora-resa-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    > label {
+        font-size: 13px;
+        font-weight: 600;
+        color: $civora-fg;
+    }
+
+    input,
+    select,
+    textarea {
+        width: 100%;
+        border: 1px solid $civora-border;
+        border-radius: $civora-radius-sm;
+        padding: 9px 11px;
+        font-size: 14px;
+        color: $civora-fg;
+        background: $civora-card;
+        font-family: inherit;
+
+        &:focus {
+            outline: none;
+            border-color: $civora-accent;
+            box-shadow: 0 0 0 3px rgba($civora-accent, .12);
+        }
+    }
+
+    textarea { resize: vertical; }
+}
+
+// Revenus : calcules, donc presentes comme un resultat et non comme un champ.
+.civora-resa-total {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: baseline;
+    gap: 2px 10px;
+    background: $civora-bg;
+    border: 1px solid $civora-border;
+    border-radius: $civora-radius-sm;
+    padding: 11px 13px;
+}
+
+.civora-resa-total-k {
+    font-size: 13px;
+    font-weight: 600;
+    color: $civora-fg;
+}
+
+.civora-resa-total-v {
+    font-size: 17px;
+    font-weight: 700;
+    color: $civora-primary;
+    font-family: $civora-font-display;
+}
+
+.civora-resa-total-sub {
+    grid-column: 1 / -1;
+    font-size: 12px;
+    color: $civora-muted;
+}
+
+.civora-resa-more {
+    border-top: 1px solid $civora-border;
+    padding-top: 12px;
+}
+
+.civora-resa-more-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: 0;
+    padding: 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: $civora-muted;
+    cursor: pointer;
+
+    &:hover { color: $civora-fg; }
+
+    i { font-size: 11px; width: 10px; }
+}
+
+.civora-resa-more-body {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 14px;
+}
